@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: sherpa-tax-rule-studio
+    runtime: python
+    region: virginia
+    plan: starter
+    buildCommand: ./build.sh
+    startCommand: gunicorn server.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: RENDER
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.13.2"
