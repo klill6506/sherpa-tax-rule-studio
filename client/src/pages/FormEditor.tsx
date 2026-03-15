@@ -2,8 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import TopBar from "../components/TopBar";
+import DiagnosticsTab from "../components/tabs/DiagnosticsTab";
 import FactsTab from "../components/tabs/FactsTab";
+import LineMapTab from "../components/tabs/LineMapTab";
 import OverviewTab from "../components/tabs/OverviewTab";
+import RulesTab from "../components/tabs/RulesTab";
+import TestsTab from "../components/tabs/TestsTab";
 import type { TaxForm } from "../types";
 
 const TABS = [
@@ -116,10 +120,10 @@ export default function FormEditor() {
       <div className="flex-1 overflow-auto p-6">
         {activeTab === "overview" && <OverviewTab form={form} onUpdate={fetchForm} />}
         {activeTab === "facts" && <FactsTab formId={form.id} />}
-        {activeTab === "rules" && <PlaceholderTab name="Rules" />}
-        {activeTab === "lines" && <PlaceholderTab name="Line Map" />}
-        {activeTab === "diagnostics" && <PlaceholderTab name="Diagnostics" />}
-        {activeTab === "tests" && <PlaceholderTab name="Tests" />}
+        {activeTab === "rules" && <RulesTab formId={form.id} />}
+        {activeTab === "lines" && <LineMapTab formId={form.id} />}
+        {activeTab === "diagnostics" && <DiagnosticsTab formId={form.id} />}
+        {activeTab === "tests" && <TestsTab formId={form.id} />}
         {activeTab === "sources" && <PlaceholderTab name="Sources" />}
         {activeTab === "conformity" && <PlaceholderTab name="State Conformity" />}
       </div>

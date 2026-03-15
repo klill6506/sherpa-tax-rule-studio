@@ -30,6 +30,7 @@ staticfiles/
 client/node_modules/
 client/dist/
 client/.vite/
+*.tsbuildinfo
 
 # IDE
 .vscode/
