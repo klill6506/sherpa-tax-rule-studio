@@ -1,7 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
+import FeedManager from "./pages/FeedManager";
 import FormEditor from "./pages/FormEditor";
+import SourceDetail from "./pages/SourceDetail";
 import SourceLibrary from "./pages/SourceLibrary";
+import TopicManager from "./pages/TopicManager";
 
 function WelcomePage() {
   return (
@@ -21,6 +24,9 @@ export default function App() {
         <Route index element={<WelcomePage />} />
         <Route path="forms/:formId" element={<FormEditor />} />
         <Route path="sources" element={<SourceLibrary />} />
+        <Route path="sources/:sourceId" element={<SourceDetail />} />
+        <Route path="topics" element={<TopicManager />} />
+        <Route path="feeds" element={<FeedManager />} />
       </Route>
     </Routes>
   );

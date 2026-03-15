@@ -22,6 +22,7 @@ source_children = [
     path("excerpts/<uuid:pk>/", views.AuthorityExcerptViewSet.as_view(_detail), name="source-excerpts-detail"),
     path("versions/", views.AuthorityVersionViewSet.as_view(_actions), name="source-versions-list"),
     path("versions/<uuid:pk>/", views.AuthorityVersionViewSet.as_view(_detail), name="source-versions-detail"),
+    path("versions/<uuid:pk>/mark_current/", views.AuthorityVersionViewSet.as_view({"post": "mark_current"}), name="source-versions-mark-current"),
 ]
 
 urlpatterns = [

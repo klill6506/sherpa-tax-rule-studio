@@ -7,6 +7,7 @@ import FactsTab from "../components/tabs/FactsTab";
 import LineMapTab from "../components/tabs/LineMapTab";
 import OverviewTab from "../components/tabs/OverviewTab";
 import RulesTab from "../components/tabs/RulesTab";
+import SourcesTab from "../components/tabs/SourcesTab";
 import TestsTab from "../components/tabs/TestsTab";
 import type { TaxForm } from "../types";
 
@@ -124,7 +125,7 @@ export default function FormEditor() {
         {activeTab === "lines" && <LineMapTab formId={form.id} />}
         {activeTab === "diagnostics" && <DiagnosticsTab formId={form.id} />}
         {activeTab === "tests" && <TestsTab formId={form.id} />}
-        {activeTab === "sources" && <PlaceholderTab name="Sources" />}
+        {activeTab === "sources" && <SourcesTab formId={form.id} formNumber={form.form_number} />}
         {activeTab === "conformity" && <PlaceholderTab name="State Conformity" />}
       </div>
     </div>

@@ -188,8 +188,8 @@ export default function Sidebar() {
         )}
       </nav>
 
-      {/* Source Library Link */}
-      <div className="border-t border-gray-200 p-2">
+      {/* Source Library Links */}
+      <div className="border-t border-gray-200 p-2 space-y-0.5">
         <NavLink
           to="/sources"
           className={({ isActive }) =>
@@ -199,6 +199,26 @@ export default function Sidebar() {
           }
         >
           <span>Source Library</span>
+        </NavLink>
+        <NavLink
+          to="/topics"
+          className={({ isActive }) =>
+            `flex items-center gap-2 rounded px-3 py-1.5 text-xs transition-colors ml-3 ${
+              isActive ? "bg-purple-50 text-purple-700 font-medium" : "text-gray-500 hover:bg-gray-100"
+            }`
+          }
+        >
+          <span>Topics</span>
+        </NavLink>
+        <NavLink
+          to="/feeds"
+          className={({ isActive }) =>
+            `flex items-center gap-2 rounded px-3 py-1.5 text-xs transition-colors ml-3 ${
+              isActive ? "bg-purple-50 text-purple-700 font-medium" : "text-gray-500 hover:bg-gray-100"
+            }`
+          }
+        >
+          <span>Feeds</span>
         </NavLink>
       </div>
     </aside>

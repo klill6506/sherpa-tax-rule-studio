@@ -52,10 +52,14 @@ class AuthoritySourceViewSet(viewsets.ModelViewSet):
                 ("source_type", "source_type"),
                 ("source_rank", "source_rank"),
                 ("status", "current_status"),
+                ("entity_type", "entity_type_code"),
             ]:
                 val = self.request.query_params.get(param)
                 if val:
                     qs = qs.filter(**{field: val})
+            topic = self.request.query_params.get("topic")
+            if topic:
+                qs = qs.filter(source_topics__authority_topic__topic_code=topic)
             q = self.request.query_params.get("q")
             if q:
                 qs = qs.filter(
@@ -89,6 +93,17 @@ class AuthorityExcerptViewSet(SourceChildMixin, viewsets.ModelViewSet):
 class AuthorityVersionViewSet(SourceChildMixin, viewsets.ModelViewSet):
     queryset = AuthorityVersion.objects.all()
     serializer_class = AuthorityVersionSerializer
+
+    @action(detail=True, methods=["post"])
+    def mark_current(self, request, **kwargs):
+        """Mark this version as current and unmark all others for the same source."""
+        version = self.get_object()
+        AuthorityVersion.objects.filter(
+            authority_source=version.authority_source, is_current=True
+        ).update(is_current=False)
+        version.is_current = True
+        version.save(update_fields=["is_current"])
+        return Response(AuthorityVersionSerializer(version).data)
 
 
 class AuthorityTopicViewSet(viewsets.ModelViewSet):
