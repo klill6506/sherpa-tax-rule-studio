@@ -2,13 +2,9 @@
 set -o errexit
 
 # Install Python dependencies
-pip install poetry
-poetry config virtualenvs.create false
-poetry install --no-interaction --no-ansi
+pip install -r requirements.txt
 
 # Install Node and build frontend
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-apt-get install -y nodejs || true  # May already be installed on Render
 cd client
 npm ci
 npm run build
@@ -19,3 +15,6 @@ python manage.py collectstatic --no-input
 
 # Run migrations
 python manage.py migrate --no-input
+
+# Seed initial data (idempotent)
+python manage.py seed_sources

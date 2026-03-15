@@ -198,6 +198,95 @@ class TaxFormViewSet(viewsets.ModelViewSet):
         form = self.get_object()
         return Response(_build_export(form))
 
+    @action(detail=True, methods=["post"])
+    def run_test(self, request, pk=None):
+        """Run test scenario(s) against this form's rules."""
+        from .evaluator import run_rules
+
+        form = self.get_object()
+        rules_data = []
+        for rule in form.rules.order_by("precedence", "sort_order"):
+            rules_data.append({
+                "rule_id": rule.rule_id,
+                "formula": rule.formula,
+                "inputs": rule.inputs,
+                "outputs": rule.outputs,
+                "precedence": rule.precedence,
+                "conditions": rule.conditions,
+            })
+
+        scenario_id = request.data.get("scenario_id")
+        ad_hoc_inputs = request.data.get("inputs")
+
+        if scenario_id:
+            # Run a specific scenario
+            try:
+                scenario = form.test_scenarios.get(id=scenario_id)
+            except TestScenario.DoesNotExist:
+                return Response({"error": "Scenario not found"}, status=status.HTTP_404_NOT_FOUND)
+            result = run_rules(rules_data, scenario.inputs)
+            # Compare to expected
+            mismatches = {}
+            for key, expected in scenario.expected_outputs.items():
+                actual = result["values"].get(key)
+                if actual != expected:
+                    # Try numeric comparison for float imprecision
+                    try:
+                        if abs(float(actual) - float(expected)) < 0.01:
+                            continue
+                    except (TypeError, ValueError):
+                        pass
+                    mismatches[key] = {"expected": expected, "actual": actual}
+            return Response({
+                "scenario_id": str(scenario.id),
+                "scenario_name": scenario.scenario_name,
+                "passed": len(mismatches) == 0 and len(result["errors"]) == 0,
+                "values": result["values"],
+                "errors": result["errors"],
+                "mismatches": mismatches,
+            })
+
+        elif ad_hoc_inputs:
+            # Run ad-hoc inputs
+            result = run_rules(rules_data, ad_hoc_inputs)
+            return Response({
+                "passed": len(result["errors"]) == 0,
+                "values": result["values"],
+                "errors": result["errors"],
+            })
+
+        elif request.data.get("run_all"):
+            # Run all scenarios
+            results = []
+            for scenario in form.test_scenarios.order_by("sort_order"):
+                result = run_rules(rules_data, scenario.inputs)
+                mismatches = {}
+                for key, expected in scenario.expected_outputs.items():
+                    actual = result["values"].get(key)
+                    if actual != expected:
+                        try:
+                            if abs(float(actual) - float(expected)) < 0.01:
+                                continue
+                        except (TypeError, ValueError):
+                            pass
+                        mismatches[key] = {"expected": expected, "actual": actual}
+                results.append({
+                    "scenario_id": str(scenario.id),
+                    "scenario_name": scenario.scenario_name,
+                    "scenario_type": scenario.scenario_type,
+                    "passed": len(mismatches) == 0 and len(result["errors"]) == 0,
+                    "errors": result["errors"],
+                    "mismatches": mismatches,
+                })
+            passed = sum(1 for r in results if r["passed"])
+            failed = sum(1 for r in results if not r["passed"])
+            return Response({
+                "summary": {"total": len(results), "passed": passed, "failed": failed},
+                "results": results,
+            })
+
+        return Response({"error": "Provide scenario_id, inputs, or run_all"}, status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=False, methods=["post"], parser_classes=[JSONParser])
     def import_spec(self, request):
         """Import a JSON spec package, creating a TaxForm and all children."""
