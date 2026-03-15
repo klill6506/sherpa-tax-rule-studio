@@ -196,11 +196,12 @@ IRC_INCOME_DEDUCTION = [
                      "which paid or accrued: (1) State, local, and foreign real property taxes; "
                      "(2) State and local personal property taxes; (3) State, local, and foreign "
                      "income, war profits, and excess profits taxes. For individuals, the aggregate "
-                     "deduction for state and local taxes is limited to $10,000 ($5,000 MFS) under "
-                     "§164(b)(6) (TCJA SALT cap, effective 2018-2025). For tax years beginning after "
-                     "December 31, 2025, this limitation is scheduled to expire."
+                     "deduction for state and local taxes is limited to $40,000 ($20,000 MFS) per "
+                     "OBBBA amendments to §164(b)(6) (increased from $10,000 TCJA cap). The $40,000 "
+                     "cap is reduced (but not below $10,000/$5,000 MFS) for MAGI exceeding $500,000 "
+                     "($250,000 MFS). Business taxes remain fully deductible."
                  ),
-                 "summary_text": "SALT deduction capped at $10K for individuals (TCJA). Business taxes fully deductible.",
+                 "summary_text": "SALT cap: $40K ($20K MFS) per OBBBA. Phasedown above $500K MAGI to $10K floor. Business taxes exempt.",
                  "is_key_excerpt": True,
                  "topic_tags": ["salt"],
              },
@@ -281,13 +282,12 @@ IRC_INCOME_DEDUCTION = [
                  "location_reference": "§170(a)-(b)",
                  "excerpt_text": (
                      "There shall be allowed as a deduction any charitable contribution made within "
-                     "the taxable year. For individuals: cash contributions to public charities "
-                     "limited to 60% of AGI; capital gain property to public charities limited to "
-                     "30% of AGI (or 50% if reduced to basis); contributions to private foundations "
-                     "limited to 30% of AGI (20% for capital gain property). For corporations: "
+                     "the taxable year. For individuals (2025, per OBBBA): cash contributions to "
+                     "public charities limited to 30% of AGI (reduced from 60%); capital gain "
+                     "property to public charities limited to 20% of AGI. For corporations: "
                      "limited to 10% of taxable income. Excess contributions carry forward 5 years."
                  ),
-                 "summary_text": "Charitable deduction with AGI-based percentage limits. 5-year carryforward for excess.",
+                 "summary_text": "Charitable: 30% AGI cash, 20% capital gain property (OBBBA). Corps: 10%. 5-year carryforward.",
                  "is_key_excerpt": True,
                  "topic_tags": ["charitable"],
              },
@@ -361,7 +361,7 @@ IRC_INCOME_DEDUCTION = [
                      "(including through a pass-through entity) is allowed a deduction equal to the "
                      "lesser of: (A) the combined qualified business income amount, or (B) 20% of "
                      "the excess (if any) of taxable income over net capital gain. The deduction is "
-                     "available regardless of whether the taxpayer itemizes."
+                     "available regardless of whether the taxpayer itemizes. Made permanent by OBBBA."
                  ),
                  "summary_text": "20% deduction on qualified business income, limited to taxable income less net capital gain.",
                  "is_key_excerpt": True,
@@ -371,8 +371,8 @@ IRC_INCOME_DEDUCTION = [
                  "excerpt_label": "§199A(b)-(d) — W-2/UBIA and SSTB limitations",
                  "location_reference": "§199A(b)-(d)",
                  "excerpt_text": (
-                     "For taxpayers above the threshold amount ($191,950 single / $383,900 MFJ for "
-                     "2025, indexed), the QBI deduction for each qualified trade or business is "
+                     "For taxpayers above the threshold amount ($197,300 single / $394,600 MFJ for "
+                     "2025), the QBI deduction for each qualified trade or business is "
                      "limited to the greater of: (1) 50% of W-2 wages, or (2) 25% of W-2 wages "
                      "plus 2.5% of the unadjusted basis immediately after acquisition (UBIA) of "
                      "qualified property. Specified service trades or businesses (SSTBs) — health, "

@@ -60,11 +60,11 @@ SOURCES_1040 = [
                     "deduction, penalty on early withdrawal of savings, IRA deduction, student loan "
                     "interest deduction ($2,500 max), and other above-the-line deductions. "
                     "Line 11: Adjusted gross income (AGI). Line 12: Standard deduction or itemized "
-                    "deductions (Schedule A). Standard deduction for 2025: $15,000 Single/MFS, "
-                    "$30,000 MFJ/QSS, $22,500 HOH (approximate, indexed for inflation). Additional "
+                    "deductions (Schedule A). Standard deduction for 2025: $15,750 Single/MFS, "
+                    "$31,500 MFJ/QSS, $23,625 HOH. Additional "
                     "standard deduction for age 65+ or blind: $1,600 (married) / $2,000 (unmarried)."
                 ),
-                "summary_text": "Above-the-line: educator, HSA, SE tax, IRA, student loan. Std deduction ~$15K/$30K/$22.5K (2025).",
+                "summary_text": "Above-the-line: educator, HSA, SE tax, IRA, student loan. Std deduction $15,750/$31,500/$23,625 (2025).",
                 "is_key_excerpt": True,
                 "topic_tags": ["adjusted_gross_income", "standard_deduction", "form_1040"],
             },
@@ -77,7 +77,8 @@ SOURCES_1040 = [
                     "Line 16: Tax — from Tax Table, Tax Computation Worksheet, or Qualified "
                     "Dividends and Capital Gain Tax Worksheet (preferential rates for LTCG and "
                     "qualified dividends). Schedule 2 Part I: AMT (Form 6251), excess premium tax "
-                    "credit repayment. Line 19: Child tax credit / credit for other dependents "
+                    "credit repayment. Line 19: Child tax credit ($2,200 per qualifying child per "
+                    "OBBBA, up from $2,000) / credit for other dependents "
                     "(Schedule 8812). Line 21: Total credits from Schedule 3 — foreign tax credit, "
                     "education credits (Form 8863), retirement savings credit, child/dependent care "
                     "credit (Form 2441), energy credits, and other nonrefundable credits."
@@ -125,14 +126,15 @@ SOURCES_1040 = [
                 "excerpt_text": (
                     "Deduct state and local income taxes (or general sales taxes in lieu of income "
                     "taxes), state and local real estate taxes, and state and local personal property "
-                    "taxes. The total deduction for state and local taxes is limited to $10,000 "
-                    "($5,000 if married filing separately) under §164(b)(6) (TCJA SALT cap, effective "
-                    "2018-2025). Foreign real property taxes are NOT deductible for individuals "
-                    "(post-TCJA). Taxes paid on property held for business or rental purposes are "
+                    "taxes. The total deduction for state and local taxes is limited to $40,000 "
+                    "($20,000 if married filing separately) under OBBBA amendments to §164(b)(6). "
+                    "The $40,000 cap is reduced (but not below $10,000/$5,000 MFS) for MAGI "
+                    "exceeding $500,000 ($250,000 MFS). Foreign real property taxes are NOT deductible "
+                    "for individuals. Taxes paid on property held for business or rental purposes are "
                     "deductible on the appropriate business schedule, not on Schedule A, and are "
-                    "NOT subject to the $10,000 cap."
+                    "NOT subject to the SALT cap."
                 ),
-                "summary_text": "$10K SALT cap ($5K MFS). Income or sales tax + real estate + personal property. Business taxes exempt from cap.",
+                "summary_text": "$40K SALT cap ($20K MFS) per OBBBA. Phased down above $500K MAGI to $10K floor. Business taxes exempt.",
                 "is_key_excerpt": True,
                 "topic_tags": ["salt", "itemized_deduction"],
             },
@@ -158,16 +160,16 @@ SOURCES_1040 = [
                 "excerpt_label": "Charitable contributions",
                 "location_reference": "Lines 11-14",
                 "excerpt_text": (
-                    "Cash contributions to qualifying organizations: deductible up to 60% of AGI. "
-                    "Noncash contributions: generally limited to 30% of AGI for capital gain property "
-                    "to public charities (50% if reduced to basis). Contributions to private "
-                    "foundations: 30% of AGI for cash, 20% for capital gain property. Excess carries "
+                    "Cash contributions to qualifying organizations: deductible up to 30% of AGI "
+                    "(OBBBA reduced from 60%). "
+                    "Noncash contributions: capital gain property to public charities limited to "
+                    "20% of AGI. Excess carries "
                     "forward 5 years. Substantiation: cash — bank record or written receipt required "
                     "for any amount; $250+ requires contemporaneous written acknowledgment. Noncash "
                     "over $500: Form 8283 required. Over $5,000 (non-securities): qualified appraisal "
                     "required. Clothing/household items must be in good used condition."
                 ),
-                "summary_text": "Cash: 60% AGI limit. Capital gain property: 30%. $250+ needs acknowledgment. $5K+ needs appraisal.",
+                "summary_text": "Cash: 30% AGI limit (OBBBA). Capital gain property: 20%. $250+ needs acknowledgment. $5K+ needs appraisal.",
                 "is_key_excerpt": True,
                 "topic_tags": ["charitable", "itemized_deduction"],
             },

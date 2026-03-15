@@ -390,14 +390,14 @@ SOURCES_SUPPORTING = [
                 "location_reference": "General Instructions",
                 "excerpt_text": (
                     "Use Form 8995 if your taxable income before the QBI deduction is at or below "
-                    "the threshold amount: $191,950 for all filing statuses other than MFJ, "
-                    "$383,900 for MFJ (2025 amounts, indexed for inflation). Below the threshold, "
+                    "the threshold amount: $197,300 for all filing statuses other than MFJ, "
+                    "$394,600 for MFJ (2025 amounts). Below the threshold, "
                     "there is no W-2 wage or UBIA limitation and no SSTB phase-out. The simplified "
                     "deduction is simply 20% of total QBI (the lesser of combined QBI or 20% of "
                     "taxable income minus net capital gain). If your taxable income exceeds the "
                     "threshold, you must use Form 8995-A instead."
                 ),
-                "summary_text": "Simplified 8995: below $191,950/$383,900. Deduction = 20% of QBI (no W-2/UBIA limits, no SSTB issue).",
+                "summary_text": "Simplified 8995: below $197,300/$394,600. Deduction = 20% of QBI (no W-2/UBIA limits, no SSTB issue).",
                 "is_key_excerpt": True,
                 "topic_tags": ["qbi_deduction", "form_8995"],
             },
@@ -420,7 +420,7 @@ SOURCES_SUPPORTING = [
                 "excerpt_label": "Full computation — W-2/UBIA limitations",
                 "location_reference": "General Instructions",
                 "excerpt_text": (
-                    "Use Form 8995-A if taxable income exceeds the threshold ($191,950/$383,900 for "
+                    "Use Form 8995-A if taxable income exceeds the threshold ($197,300/$394,600 for "
                     "2025). The QBI deduction for each qualified trade or business is the lesser of: "
                     "(A) 20% of QBI from that business, or (B) the greater of: (i) 50% of W-2 wages "
                     "paid by the business, or (ii) 25% of W-2 wages plus 2.5% of UBIA (unadjusted "
