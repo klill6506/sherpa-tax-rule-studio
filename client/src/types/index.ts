@@ -224,6 +224,7 @@ export interface JurisdictionConformitySource {
   conformity_type: "rolling" | "static" | "partial" | "decoupled";
   authority_source: string | null;
   summary: string | null;
+  decoupled_items: unknown[];
   notes: string | null;
   created_at: string;
   updated_at: string;

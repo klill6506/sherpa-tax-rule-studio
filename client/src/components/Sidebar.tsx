@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
+import ImportDialog from "./ImportDialog";
 import type { PaginatedResponse, TaxForm } from "../types";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -24,6 +25,7 @@ export default function Sidebar() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [newForm, setNewForm] = useState<NewFormData>({
     jurisdiction: "federal",
     form_number: "",
@@ -89,13 +91,24 @@ export default function Sidebar() {
         <NavLink to="/" className="text-lg font-bold text-gray-800 hover:text-gray-600">
           Rule Studio
         </NavLink>
-        <button
-          onClick={() => setShowCreate(!showCreate)}
-          className="mt-2 w-full rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-        >
-          + New Form
-        </button>
+        <div className="mt-2 flex gap-1.5">
+          <button
+            onClick={() => setShowCreate(!showCreate)}
+            className="flex-1 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          >
+            + New Form
+          </button>
+          <button
+            onClick={() => setShowImport(true)}
+            className="rounded border border-gray-300 px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+            title="Import JSON spec"
+          >
+            Import
+          </button>
+        </div>
       </div>
+
+      {showImport && <ImportDialog onClose={() => { setShowImport(false); void fetchForms(); }} />}
 
       {/* New Form Panel */}
       {showCreate && (

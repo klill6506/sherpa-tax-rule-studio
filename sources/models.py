@@ -245,6 +245,11 @@ class JurisdictionConformitySource(models.Model):
         AuthoritySource, on_delete=models.SET_NULL, blank=True, null=True, related_name="conformity_records",
     )
     summary = models.TextField(blank=True, null=True)
+    decoupled_items = models.JSONField(
+        default=list, blank=True,
+        help_text="Structured list of items where state diverges from federal. "
+        "Each entry: {item, federal_treatment, state_treatment, authority_source_id, notes}",
+    )
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

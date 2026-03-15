@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import type { TaxForm } from "../types";
 
 const STATUS_OPTIONS = ["draft", "review", "approved", "archived"] as const;
@@ -10,10 +11,14 @@ const JURISDICTION_BADGE: Record<string, string> = {
 interface TopBarProps {
   form: TaxForm;
   onStatusChange: (status: TaxForm["status"]) => void;
-  onExport: () => void;
+  onExportJson: () => void;
+  onExportMarkdown: () => void;
 }
 
-export default function TopBar({ form, onStatusChange, onExport }: TopBarProps) {
+export default function TopBar({ form, onStatusChange, onExportJson, onExportMarkdown }: TopBarProps) {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const jurisdictionClass =
     form.jurisdiction.toLowerCase() === "federal"
       ? JURISDICTION_BADGE.federal
@@ -41,12 +46,34 @@ export default function TopBar({ form, onStatusChange, onExport }: TopBarProps) 
             </option>
           ))}
         </select>
-        <button
-          onClick={onExport}
-          className="rounded bg-emerald-600 px-3 py-1 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
-        >
-          Export
-        </button>
+
+        {/* Export Dropdown */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            className="rounded bg-emerald-600 px-3 py-1 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
+          >
+            Export ▾
+          </button>
+          {showExportMenu && (
+            <div className="absolute right-0 top-full mt-1 rounded border border-gray-200 bg-white shadow-lg z-10 py-1 w-48">
+              <button
+                onClick={() => { onExportJson(); setShowExportMenu(false); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+              >
+                Export JSON
+                <span className="block text-xs text-gray-400">For coding agents</span>
+              </button>
+              <button
+                onClick={() => { onExportMarkdown(); setShowExportMenu(false); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+              >
+                Export Markdown
+                <span className="block text-xs text-gray-400">For human review</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
