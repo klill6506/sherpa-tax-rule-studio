@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig(({ command }) => ({
   plugins: [react(), tailwindcss()],
-  base: command === "build" ? "/assets/" : "/",
+  base: command === "build" ? "/" : "/",
   build: {
     outDir: "dist",
     assetsDir: "assets",
