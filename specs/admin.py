@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
+from .models import FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
 
 
 @admin.register(TaxForm)
@@ -38,3 +38,11 @@ class FormDiagnosticAdmin(admin.ModelAdmin):
 class TestScenarioAdmin(admin.ModelAdmin):
     list_display = ["scenario_name", "scenario_type", "tax_form"]
     list_filter = ["scenario_type"]
+
+
+@admin.register(FlowAssertion)
+class FlowAssertionAdmin(admin.ModelAdmin):
+    list_display = ["assertion_id", "title", "assertion_type", "status", "entity_types"]
+    list_filter = ["assertion_type", "status"]
+    search_fields = ["assertion_id", "title", "description"]
+    ordering = ["sort_order", "assertion_id"]

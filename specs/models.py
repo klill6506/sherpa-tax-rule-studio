@@ -184,3 +184,40 @@ class TestScenario(models.Model):
 
     def __str__(self):
         return self.scenario_name
+
+
+class FlowAssertion(models.Model):
+    """Cross-form validation assertion — exported as JSON, tested in tts-tax-app."""
+
+    class AssertionType(models.TextChoices):
+        TABLE_INVARIANT = "table_invariant", "Table Invariant"
+        FLOW_ASSERTION = "flow_assertion", "Flow Assertion"
+        RECONCILIATION = "reconciliation", "Reconciliation Check"
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        ACTIVE = "active", "Active"
+        DISABLED = "disabled", "Disabled"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    assertion_id = models.CharField(max_length=20, unique=True,
+        help_text="Human-readable code: TI001, FA001, RC001")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    assertion_type = models.CharField(max_length=20, choices=AssertionType.choices)
+    entity_types = models.JSONField(default=list,
+        help_text="e.g. ['1120S', '1065']. Empty = all entity types.")
+    definition = models.JSONField(default=dict,
+        help_text="Machine-readable assertion parameters (type-specific)")
+    bug_reference = models.CharField(max_length=255, blank=True, default="",
+        help_text="What bug this would have caught, e.g. 'Mar 30 — 150DB tables wrong'")
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
+    sort_order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "assertion_id"]
+
+    def __str__(self):
+        return f"{self.assertion_id}: {self.title}"

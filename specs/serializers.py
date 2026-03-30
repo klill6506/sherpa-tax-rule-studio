@@ -1,7 +1,7 @@
 """DRF serializers for form specification models."""
 from rest_framework import serializers
 
-from .models import FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
+from .models import FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
 
 
 class FormFactSerializer(serializers.ModelSerializer):
@@ -39,6 +39,12 @@ class TestScenarioSerializer(serializers.ModelSerializer):
         model = TestScenario
         fields = "__all__"
         read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class FlowAssertionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlowAssertion
+        fields = "__all__"
 
 
 class TaxFormListSerializer(serializers.ModelSerializer):

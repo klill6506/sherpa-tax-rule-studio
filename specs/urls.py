@@ -6,6 +6,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r"forms", views.TaxFormViewSet, basename="taxform")
+router.register(r"flow-assertions", views.FlowAssertionViewSet, basename="flow-assertion")
 
 # Nested routes under /api/forms/{form_pk}/
 _actions = {"get": "list", "post": "create"}

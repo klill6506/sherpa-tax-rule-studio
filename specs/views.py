@@ -9,8 +9,9 @@ from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from .models import FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
+from .models import FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario
 from .serializers import (
+    FlowAssertionSerializer,
     FormDiagnosticSerializer,
     FormFactSerializer,
     FormLineSerializer,
@@ -450,3 +451,41 @@ class FormDiagnosticViewSet(FormChildMixin, viewsets.ModelViewSet):
 class TestScenarioViewSet(FormChildMixin, viewsets.ModelViewSet):
     queryset = TestScenario.objects.all()
     serializer_class = TestScenarioSerializer
+
+
+class FlowAssertionViewSet(viewsets.ModelViewSet):
+    queryset = FlowAssertion.objects.all()
+    serializer_class = FlowAssertionSerializer
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export_assertions(self, request):
+        """Export flow assertions as JSON for tts-tax-app consumption."""
+        entity_type = request.query_params.get("entity_type", "")
+        qs = FlowAssertion.objects.filter(status="active")
+        if entity_type:
+            from django.db.models import Q
+            qs = qs.filter(
+                Q(entity_types__contains=[entity_type]) |
+                Q(entity_types=[])
+            )
+
+        assertions = []
+        for a in qs.order_by("sort_order", "assertion_id"):
+            assertions.append({
+                "assertion_id": a.assertion_id,
+                "title": a.title,
+                "description": a.description,
+                "assertion_type": a.assertion_type,
+                "entity_types": a.entity_types,
+                "definition": a.definition,
+                "bug_reference": a.bug_reference,
+                "status": a.status,
+            })
+
+        return Response({
+            "export_version": "1.0",
+            "exported_at": datetime.now(timezone.utc).isoformat(),
+            "entity_type": entity_type or "all",
+            "assertion_count": len(assertions),
+            "assertions": assertions,
+        })
