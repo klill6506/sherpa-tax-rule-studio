@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from django.db.models import Count
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
@@ -167,6 +167,42 @@ def _build_export(form: TaxForm) -> dict:
         "authority_sources": authority_sources_export,
         "state_conformity": state_conformity,
     }
+
+
+def _lookup_queryset(request, form_number):
+    """Build filtered queryset for form lookup by form_number."""
+    qs = TaxForm.objects.filter(form_number__iexact=form_number)
+    tax_year = request.query_params.get("tax_year")
+    entity_type = request.query_params.get("entity_type")
+    if tax_year:
+        qs = qs.filter(tax_year=int(tax_year))
+    if entity_type:
+        qs = qs.filter(entity_types__contains=[entity_type])
+    return qs.order_by("-version").first()
+
+
+@api_view(["GET"])
+def form_lookup(request, form_number):
+    """Look up a form spec by form_number (e.g., '8825', '1120S_SCHL')."""
+    form = _lookup_queryset(request, form_number)
+    if not form:
+        return Response(
+            {"error": f"No spec found for form '{form_number}'", "form_number": form_number},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    return Response(TaxFormDetailSerializer(form).data)
+
+
+@api_view(["GET"])
+def form_lookup_export(request, form_number):
+    """Export the latest spec for a form by form_number."""
+    form = _lookup_queryset(request, form_number)
+    if not form:
+        return Response(
+            {"error": f"No spec found for form '{form_number}'", "form_number": form_number},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    return Response(_build_export(form))
 
 
 class TaxFormViewSet(viewsets.ModelViewSet):
@@ -353,8 +389,8 @@ class TaxFormViewSet(viewsets.ModelViewSet):
                         sort_order=rule.get("sort_order", 0),
                     )
 
-                # Lines
-                for line in data.get("line_map", []):
+                # Lines (accept both "line_map" and "form_lines" keys)
+                for line in data.get("line_map", data.get("form_lines", [])):
                     FormLine.objects.create(
                         tax_form=form,
                         line_number=line["line_number"],

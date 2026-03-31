@@ -1,0 +1,418 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-03-31T12:00:00.000000+00:00",
+  "metadata": {
+    "form_number": "8825",
+    "form_title": "Rental Real Estate Income and Expenses of a Partnership or an S Corporation",
+    "form_revision": "Rev. December 2025",
+    "jurisdiction": "FED",
+    "entity_types": ["1120S", "1065"],
+    "tax_year": 2025,
+    "version": 2,
+    "status": "draft",
+    "change_notes": "v2: Updated to December 2025 revision. Per-property lines now 1-19 (was 1-17). Summary section Lines 20a-23 fully defined. Fixes incorrect implementation where 20a/20b were positive/negative net splits and Line 21 was treated as total net."
+  },
+  "facts": [
+    {"fact_key": "property_address", "label": "Property address (street, city, state, ZIP)", "data_type": "string", "required": true, "sort_order": 1, "notes": "Line 1, column (a)"},
+    {"fact_key": "property_type_code", "label": "Type of property (code 1-8)", "data_type": "choice", "required": true, "choices": ["1", "2", "3", "4", "5", "6", "7", "8"], "sort_order": 2, "notes": "Line 1, column (b). 1=SFR, 2=Multi-family, 3=Vacation/short-term, 4=Commercial, 5=Land, 6=Royalties, 7=Self-rental, 8=Other"},
+    {"fact_key": "other_info_code", "label": "Other information code (A-I)", "data_type": "choice", "required": false, "choices": ["A", "B", "C", "D", "E", "F", "G", "H", "I"], "sort_order": 3, "notes": "Line 1, column (c). Only required if M-3 filing requirement. New for 2025 revision."},
+    {"fact_key": "fair_rental_days", "label": "Fair rental days", "data_type": "integer", "required": true, "sort_order": 4, "notes": "Line 1, column (d)"},
+    {"fact_key": "personal_use_days", "label": "Personal-use days", "data_type": "integer", "required": false, "sort_order": 5, "notes": "Line 1, column (e). Triggers §280A if > 0"},
+    {"fact_key": "gross_rents", "label": "Gross rents (Line 2a)", "data_type": "decimal", "required": true, "sort_order": 6},
+    {"fact_key": "other_rental_income", "label": "Other income related to rental real estate activity (Line 2b)", "data_type": "decimal", "required": false, "sort_order": 7, "notes": "New for 2025 revision — split from old Line 2"},
+    {"fact_key": "total_rental_income", "label": "Total rental real estate income per property (Line 2c)", "data_type": "decimal", "required": false, "sort_order": 8, "notes": "Line 2c = 2a + 2b. Computed."},
+    {"fact_key": "advertising", "label": "Advertising (Line 3)", "data_type": "decimal", "sort_order": 10},
+    {"fact_key": "auto_travel", "label": "Auto and travel (Line 4)", "data_type": "decimal", "sort_order": 11},
+    {"fact_key": "cleaning", "label": "Cleaning and maintenance (Line 5)", "data_type": "decimal", "sort_order": 12},
+    {"fact_key": "commissions", "label": "Commissions (Line 6)", "data_type": "decimal", "sort_order": 13},
+    {"fact_key": "insurance", "label": "Insurance (Line 7)", "data_type": "decimal", "sort_order": 14},
+    {"fact_key": "interest", "label": "Interest (Line 8) — see instructions re §163(j)", "data_type": "decimal", "sort_order": 15},
+    {"fact_key": "legal_professional", "label": "Legal and other professional fees (Line 9)", "data_type": "decimal", "sort_order": 16},
+    {"fact_key": "real_estate_taxes", "label": "Real estate taxes (Line 10)", "data_type": "decimal", "sort_order": 17},
+    {"fact_key": "repairs", "label": "Repairs (Line 11)", "data_type": "decimal", "sort_order": 18},
+    {"fact_key": "utilities", "label": "Utilities (Line 12)", "data_type": "decimal", "sort_order": 19},
+    {"fact_key": "wages_salaries", "label": "Wages and salaries (Line 13)", "data_type": "decimal", "sort_order": 20},
+    {"fact_key": "depreciation", "label": "Depreciation (Line 14)", "data_type": "decimal", "sort_order": 21, "notes": "Rental property depreciation appears HERE, not on Form 4562 Line 22 / Page 1 Line 14. See instructions."},
+    {"fact_key": "other_expenses", "label": "Other deductions (Line 17) — attach Schedule A if M-3 required", "data_type": "decimal", "sort_order": 24, "notes": "Lines 15 and 16 are reserved for future use in the 2025 revision."},
+    {"fact_key": "total_expenses", "label": "Total rental real estate expenses per property (Line 18)", "data_type": "decimal", "sort_order": 25, "notes": "Sum of Lines 3-17. Computed."},
+    {"fact_key": "net_income_per_property", "label": "Income or (loss) from each rental real estate property (Line 19)", "data_type": "decimal", "sort_order": 26, "notes": "Line 2c minus Line 18. Computed per property."},
+    {"fact_key": "total_rental_income_all", "label": "Total rental real estate income (Line 20a)", "data_type": "decimal", "sort_order": 30, "notes": "SUMMARY LINE: Add total rental real estate income from Line 2c across ALL properties/pages. This is GROSS INCOME, not net."},
+    {"fact_key": "total_rental_expenses_all", "label": "Total rental real estate expenses (Line 20b)", "data_type": "decimal", "sort_order": 31, "notes": "SUMMARY LINE: Add total rental real estate expenses from Line 18 across ALL properties/pages. Shown in parentheses."},
+    {"fact_key": "net_gain_loss_4797", "label": "Net gain (loss) from Form 4797, Part II, line 17, from disposition of rental real estate (Line 21)", "data_type": "decimal", "sort_order": 32, "notes": "Only rental real estate property dispositions. Not all 4797 gains."},
+    {"fact_key": "net_income_passthrough", "label": "Net income (loss) from rental real estate activities from partnerships, estates, and trusts (Line 22a)", "data_type": "decimal", "sort_order": 33, "notes": "From Schedule K-1 received by this entity as partner/beneficiary."},
+    {"fact_key": "net_rental_real_estate", "label": "Net rental real estate income (loss) (Line 23)", "data_type": "decimal", "sort_order": 35, "notes": "FINAL LINE: Combine Lines 20a through 22a. This amount flows to Schedule K, Line 2."}
+  ],
+  "rules": [
+    {
+      "rule_id": "R001",
+      "title": "Total rental income per property (Line 2c)",
+      "description": "Line 2c = Line 2a (gross rents) + Line 2b (other rental income). New for December 2025 revision — old form had a single Line 2.",
+      "rule_type": "calculation",
+      "formula": "total_rental_income = gross_rents + other_rental_income",
+      "inputs": ["gross_rents", "other_rental_income"],
+      "outputs": ["total_rental_income"],
+      "precedence": 1,
+      "sort_order": 1,
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 2c: 'Total rental real estate income for each property. Add lines 2a and 2b'"}
+      ]
+    },
+    {
+      "rule_id": "R002",
+      "title": "Total expenses per property (Line 18)",
+      "description": "Sum of all expense lines 3 through 17 for each property. Lines 15-16 are reserved for future use in the 2025 revision.",
+      "rule_type": "calculation",
+      "formula": "total_expenses = sum(Lines 3-14, 17)",
+      "inputs": ["advertising", "auto_travel", "cleaning", "commissions", "insurance", "interest", "legal_professional", "real_estate_taxes", "repairs", "utilities", "wages_salaries", "depreciation", "other_expenses"],
+      "outputs": ["total_expenses"],
+      "precedence": 2,
+      "sort_order": 2,
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 18: 'Total rental real estate expenses for each property. Add lines 3 through 17'"}
+      ]
+    },
+    {
+      "rule_id": "R003",
+      "title": "Net income per property (Line 19)",
+      "description": "Income or (loss) from each rental real estate property = Line 2c minus Line 18.",
+      "rule_type": "calculation",
+      "formula": "net_income_per_property = total_rental_income - total_expenses",
+      "inputs": ["total_rental_income", "total_expenses"],
+      "outputs": ["net_income_per_property"],
+      "precedence": 3,
+      "sort_order": 3,
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 19: 'Subtract line 18 from line 2c'"}
+      ]
+    },
+    {
+      "rule_id": "R004",
+      "title": "Line 20a — Total rental real estate income (all properties)",
+      "description": "CRITICAL: Line 20a is the sum of ALL Line 2c amounts across ALL properties and pages. This is GROSS INCOME, not net income, not positive-only nets. The IRS form says 'Add total rental real estate income from line 2c.' The instructions say 'The figures on lines 20a and 20b should be the combined totals from all pages.'",
+      "rule_type": "aggregation",
+      "formula": "total_rental_income_all = sum(line_2c for ALL properties across ALL pages)",
+      "inputs": ["total_rental_income"],
+      "outputs": ["total_rental_income_all"],
+      "precedence": 10,
+      "sort_order": 10,
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 20a: 'Total rental real estate income. Add total rental real estate income from line 2c. See instructions'"},
+        {"source_code": "IRS_2025_I8825", "citation": "Instructions for Form 8825 (Rev. 12-2025)", "source_type": "official_instruction", "support_level": "primary", "relevance_note": "'The figures on lines 20a and 20b should be the combined totals from all pages.'"}
+      ]
+    },
+    {
+      "rule_id": "R005",
+      "title": "Line 20b — Total rental real estate expenses (all properties)",
+      "description": "CRITICAL: Line 20b is the sum of ALL Line 18 amounts across ALL properties and pages. This is TOTAL EXPENSES. Shown in parentheses on the form. NOT net losses.",
+      "rule_type": "aggregation",
+      "formula": "total_rental_expenses_all = sum(line_18 for ALL properties across ALL pages)",
+      "inputs": ["total_expenses"],
+      "outputs": ["total_rental_expenses_all"],
+      "precedence": 11,
+      "sort_order": 11,
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 20b: 'Total rental real estate expenses. Add total rental real estate expenses from line 18. See instructions'"}
+      ]
+    },
+    {
+      "rule_id": "R006",
+      "title": "Line 21 — Net gain/loss from Form 4797 rental dispositions",
+      "description": "Line 21 pulls from Form 4797 Part II Line 17, but ONLY for dispositions of rental real estate property. This is NOT the total 4797 gain — only the portion attributable to rental properties reported on 8825.",
+      "rule_type": "routing",
+      "formula": "net_gain_loss_4797 = Form 4797 Part II Line 17 (rental real estate portion only)",
+      "inputs": ["form_4797_part_ii_line_17_rental"],
+      "outputs": ["net_gain_loss_4797"],
+      "precedence": 12,
+      "sort_order": 12,
+      "notes": "Most S-Corps with simple rental properties will have $0 here unless they sold a rental property during the year.",
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 21: 'Net gain (loss) from Form 4797, Part II, line 17, from the disposition of property from rental real estate activities'"}
+      ]
+    },
+    {
+      "rule_id": "R007",
+      "title": "Line 22a — Pass-through rental income from other entities",
+      "description": "Net income (loss) from rental real estate activities from partnerships, estates, and trusts in which this entity is a partner or beneficiary. Pulled from Schedule K-1 received by this entity.",
+      "rule_type": "input",
+      "formula": "net_income_passthrough = sum(K-1 rental real estate income received)",
+      "inputs": ["schedule_k1_received_rental"],
+      "outputs": ["net_income_passthrough"],
+      "precedence": 13,
+      "sort_order": 13,
+      "notes": "Line 22b requires identifying the partnerships/estates/trusts by name and EIN.",
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 22a: 'Net income (loss) from rental real estate activities from partnerships, estates, and trusts in which this partnership or S corporation is a partner or beneficiary (from Schedule K-1)'"}
+      ]
+    },
+    {
+      "rule_id": "R008",
+      "title": "Line 23 — Net rental real estate income (loss) → Schedule K Line 2",
+      "description": "CRITICAL FLOW RULE: Line 23 = Line 20a + Line 20b + Line 21 + Line 22a (note: 20b is negative/in parentheses, so 20a + 20b = net from operations). This is the ONLY amount that flows to Schedule K, Line 2. The form says 'Combine lines 20a through 22a'.",
+      "rule_type": "calculation",
+      "formula": "net_rental_real_estate = total_rental_income_all - total_rental_expenses_all + net_gain_loss_4797 + net_income_passthrough",
+      "inputs": ["total_rental_income_all", "total_rental_expenses_all", "net_gain_loss_4797", "net_income_passthrough"],
+      "outputs": ["net_rental_real_estate"],
+      "precedence": 20,
+      "sort_order": 20,
+      "notes": "20b is shown in parentheses on the form, so 'combine lines 20a through 22a' means 20a MINUS 20b PLUS 21 PLUS 22a.",
+      "authorities": [
+        {"source_code": "IRS_2025_F8825", "citation": "Form 8825 (Rev. 12-2025)", "source_type": "official_form", "support_level": "primary", "relevance_note": "Line 23: 'Net rental real estate income (loss). Combine lines 20a through 22a. Enter the result here and on Schedule K, line 2, of Form 1065 or 1120-S'"}
+      ]
+    },
+    {
+      "rule_id": "R009",
+      "title": "Rental depreciation stays on 8825, NOT Page 1",
+      "description": "Rental property depreciation is reported on Form 8825 Line 14, not on Form 4562 Line 22 / Page 1 Line 14. This keeps rental and trade/business depreciation separate for passive activity purposes.",
+      "rule_type": "validation",
+      "formula": "rental_depreciation NOT in Page1_Line14",
+      "inputs": ["depreciation"],
+      "outputs": [],
+      "precedence": 0,
+      "sort_order": 30,
+      "authorities": [
+        {"source_code": "IRS_2025_I8825", "citation": "Instructions for Form 8825 (Rev. 12-2025)", "source_type": "official_instruction", "support_level": "primary", "relevance_note": "Depreciation for rental properties goes on 8825 Line 14, not Page 1"}
+      ]
+    },
+    {
+      "rule_id": "R010",
+      "title": "Only render properties that exist",
+      "description": "The form supports up to 4 property columns (A-D) per page and 8 properties across 2 pages. Only populate columns for properties that actually exist in the database. Empty property slots should have NO labels, NO headers, NO data.",
+      "rule_type": "rendering",
+      "formula": "property_columns = count(rental_properties). Only render columns A through chr(A + count - 1).",
+      "inputs": ["rental_property_count"],
+      "outputs": ["rendered_columns"],
+      "precedence": 0,
+      "sort_order": 31,
+      "authorities": [
+        {"source_code": "IRS_2025_I8825", "citation": "Instructions for Form 8825 (Rev. 12-2025)", "source_type": "official_instruction", "support_level": "primary", "relevance_note": "'Complete lines 1 through 19 for each property' — only existing properties get columns"}
+      ]
+    }
+  ],
+  "form_lines": [
+    {"line_number": "1", "description": "Property address, type, other info, fair rental days, personal-use days", "line_type": "input", "sort_order": 1, "notes": "Per-property header. Up to 4 per page (A-D), 8 across 2 pages."},
+    {"line_number": "2a", "description": "Gross rents", "line_type": "input", "sort_order": 2, "notes": "Per property. New for 2025 — was single Line 2."},
+    {"line_number": "2b", "description": "Other income related to rental real estate activity", "line_type": "input", "sort_order": 3, "notes": "Per property. New for 2025."},
+    {"line_number": "2c", "description": "Total rental real estate income for each property (2a + 2b)", "line_type": "calculated", "source_rules": ["R001"], "sort_order": 4},
+    {"line_number": "3", "description": "Advertising", "line_type": "input", "sort_order": 5},
+    {"line_number": "4", "description": "Auto and travel", "line_type": "input", "sort_order": 6},
+    {"line_number": "5", "description": "Cleaning and maintenance", "line_type": "input", "sort_order": 7},
+    {"line_number": "6", "description": "Commissions", "line_type": "input", "sort_order": 8},
+    {"line_number": "7", "description": "Insurance", "line_type": "input", "sort_order": 9},
+    {"line_number": "8", "description": "Interest (see instructions re §163(j))", "line_type": "input", "sort_order": 10},
+    {"line_number": "9", "description": "Legal and other professional fees", "line_type": "input", "sort_order": 11},
+    {"line_number": "10", "description": "Real estate taxes", "line_type": "input", "sort_order": 12},
+    {"line_number": "11", "description": "Repairs", "line_type": "input", "sort_order": 13},
+    {"line_number": "12", "description": "Utilities", "line_type": "input", "sort_order": 14},
+    {"line_number": "13", "description": "Wages and salaries", "line_type": "input", "sort_order": 15},
+    {"line_number": "14", "description": "Depreciation (see instructions)", "line_type": "input", "sort_order": 16, "notes": "Rental depreciation only. NOT on Page 1 Line 14."},
+    {"line_number": "15", "description": "Reserved for future use", "line_type": "reserved", "sort_order": 17},
+    {"line_number": "16", "description": "Reserved for future use", "line_type": "reserved", "sort_order": 18},
+    {"line_number": "17", "description": "Other deductions (attach Schedule A (Form 8825))", "line_type": "input", "sort_order": 19, "notes": "Schedule A required if M-3 filing requirement."},
+    {"line_number": "18", "description": "Total rental real estate expenses for each property (sum lines 3-17)", "line_type": "subtotal", "source_rules": ["R002"], "sort_order": 20},
+    {"line_number": "19", "description": "Income or (loss) from each rental real estate property (line 2c minus line 18)", "line_type": "calculated", "source_rules": ["R003"], "sort_order": 21},
+    {"line_number": "20a", "description": "Total rental real estate income — add total from line 2c across all properties/pages", "line_type": "aggregation", "source_rules": ["R004"], "sort_order": 30, "notes": "GROSS INCOME total. NOT net. NOT positive-only."},
+    {"line_number": "20b", "description": "Total rental real estate expenses — add total from line 18 across all properties/pages", "line_type": "aggregation", "source_rules": ["R005"], "sort_order": 31, "notes": "GROSS EXPENSES total. Shown in parentheses."},
+    {"line_number": "21", "description": "Net gain (loss) from Form 4797, Part II, line 17, from disposition of rental real estate", "line_type": "input", "source_rules": ["R006"], "destination_form": "From Form 4797 Part II Line 17", "sort_order": 32},
+    {"line_number": "22a", "description": "Net income (loss) from rental real estate from partnerships, estates, trusts (from Schedule K-1)", "line_type": "input", "source_rules": ["R007"], "sort_order": 33},
+    {"line_number": "22b", "description": "Identify partnerships, estates, or trusts (name and EIN)", "line_type": "disclosure", "sort_order": 34},
+    {"line_number": "23", "description": "Net rental real estate income (loss) — combine lines 20a through 22a", "line_type": "total", "source_rules": ["R008"], "destination_form": "Schedule K, Line 2 (Form 1065 or 1120-S)", "sort_order": 35}
+  ],
+  "diagnostics": [
+    {"diagnostic_id": "D001", "title": "No rents on listed property", "severity": "warning", "condition": "gross_rents == 0 AND property_address is not empty", "message": "Property listed but gross rents = $0. Verify this property had rental activity during the year."},
+    {"diagnostic_id": "D002", "title": "Missing rental depreciation", "severity": "warning", "condition": "depreciation == 0 AND property has depreciable improvements", "message": "Rental property with no depreciation. Buildings and improvements should be depreciated (27.5yr residential, 39yr nonresidential)."},
+    {"diagnostic_id": "D003", "title": "Line 23 does not equal K Line 2", "severity": "error", "condition": "net_rental_real_estate != schedule_k_line_2", "message": "Form 8825 Line 23 does not match Schedule K Line 2. These must be equal."},
+    {"diagnostic_id": "D004", "title": "Line 20a shows net instead of gross", "severity": "error", "condition": "total_rental_income_all != sum(line_2c_all_properties)", "message": "Line 20a should be the sum of ALL Line 2c (gross income) amounts, not net income amounts. Verify aggregation logic."},
+    {"diagnostic_id": "D005", "title": "Line 20b shows net instead of expenses", "severity": "error", "condition": "total_rental_expenses_all != sum(line_18_all_properties)", "message": "Line 20b should be the sum of ALL Line 18 (total expenses) amounts. Verify aggregation logic."},
+    {"diagnostic_id": "D006", "title": "Personal use days without §280A allocation", "severity": "warning", "condition": "personal_use_days > 0", "message": "Personal-use days reported. Section 280A may limit deductions. Review allocation."},
+    {"diagnostic_id": "D007", "title": "More than 8 properties", "severity": "info", "condition": "property_count > 8", "message": "More than 8 rental properties — attach additional Form 8825 pages."}
+  ],
+  "tests": [
+    {
+      "scenario_name": "Single rental property — net income, no dispositions, no pass-through",
+      "scenario_type": "normal",
+      "inputs": {
+        "property_count": 1,
+        "gross_rents_A": 24000,
+        "other_rental_income_A": 0,
+        "insurance_A": 1200,
+        "interest_A": 6000,
+        "repairs_A": 800,
+        "real_estate_taxes_A": 3000,
+        "depreciation_A": 5000,
+        "other_expenses_A": 500,
+        "net_gain_loss_4797": 0,
+        "net_income_passthrough": 0
+      },
+      "expected_outputs": {
+        "line_2c_A": 24000,
+        "line_18_A": 16500,
+        "line_19_A": 7500,
+        "line_20a": 24000,
+        "line_20b": 16500,
+        "line_21": 0,
+        "line_22a": 0,
+        "line_23": 7500,
+        "schedule_k_line_2": 7500
+      },
+      "sort_order": 1,
+      "notes": "Basic case. 20a = gross rents, 20b = total expenses, 23 = net = 24000 - 16500 = 7500"
+    },
+    {
+      "scenario_name": "Two properties — one profit, one loss",
+      "scenario_type": "normal",
+      "inputs": {
+        "property_count": 2,
+        "gross_rents_A": 24000,
+        "total_expenses_A": 16500,
+        "gross_rents_B": 12000,
+        "total_expenses_B": 20000,
+        "net_gain_loss_4797": 0,
+        "net_income_passthrough": 0
+      },
+      "expected_outputs": {
+        "line_19_A": 7500,
+        "line_19_B": -8000,
+        "line_20a": 36000,
+        "line_20b": 36500,
+        "line_23": -500,
+        "schedule_k_line_2": -500
+      },
+      "sort_order": 2,
+      "notes": "20a = 24000 + 12000 = 36000 (gross). 20b = 16500 + 20000 = 36500 (expenses). 23 = 36000 - 36500 = -500. NOT 7500 + (-8000) — that gives the same answer but is the WRONG computation path."
+    },
+    {
+      "scenario_name": "Rental property with 4797 disposition gain",
+      "scenario_type": "normal",
+      "inputs": {
+        "property_count": 1,
+        "gross_rents_A": 18000,
+        "total_expenses_A": 12000,
+        "net_gain_loss_4797": 15000,
+        "net_income_passthrough": 0
+      },
+      "expected_outputs": {
+        "line_20a": 18000,
+        "line_20b": 12000,
+        "line_21": 15000,
+        "line_23": 21000,
+        "schedule_k_line_2": 21000
+      },
+      "sort_order": 3,
+      "notes": "23 = 18000 - 12000 + 15000 = 21000. The 4797 gain adds to net rental."
+    },
+    {
+      "scenario_name": "Pass-through rental income from partnership K-1",
+      "scenario_type": "normal",
+      "inputs": {
+        "property_count": 1,
+        "gross_rents_A": 24000,
+        "total_expenses_A": 16500,
+        "net_gain_loss_4797": 0,
+        "net_income_passthrough": 5000
+      },
+      "expected_outputs": {
+        "line_20a": 24000,
+        "line_20b": 16500,
+        "line_22a": 5000,
+        "line_23": 12500,
+        "schedule_k_line_2": 12500
+      },
+      "sort_order": 4,
+      "notes": "23 = 24000 - 16500 + 0 + 5000 = 12500. Pass-through rental adds to total."
+    },
+    {
+      "scenario_name": "Only 1 property exists — columns B-D must be empty",
+      "scenario_type": "rendering",
+      "inputs": {
+        "property_count": 1,
+        "gross_rents_A": 24000
+      },
+      "expected_outputs": {
+        "column_B_rendered": false,
+        "column_C_rendered": false,
+        "column_D_rendered": false
+      },
+      "sort_order": 5,
+      "notes": "Only Column A should have data. Columns B-D should be completely blank — no labels, no headers, no data."
+    },
+    {
+      "scenario_name": "Zero rental properties — form should not render",
+      "scenario_type": "edge",
+      "inputs": {
+        "property_count": 0
+      },
+      "expected_outputs": {
+        "form_included_in_return": false
+      },
+      "sort_order": 6
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRS_2025_F8825",
+      "source_type": "official_form",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "Form 8825 (Rev. December 2025) — Rental Real Estate Income and Expenses",
+      "citation": "Form 8825 (Rev. 12-2025)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": ["rental_real_estate", "8825", "passive_activity"],
+      "excerpts": [
+        {
+          "excerpt_label": "Line 20a — Total rental real estate income",
+          "excerpt_text": "Total rental real estate income. Add total rental real estate income from line 2c. See instructions.",
+          "summary_text": "Line 20a = sum of ALL Line 2c (gross income) across all properties/pages.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Line 20b — Total rental real estate expenses",
+          "excerpt_text": "Total rental real estate expenses. Add total rental real estate expenses from line 18. See instructions.",
+          "summary_text": "Line 20b = sum of ALL Line 18 (total expenses) across all properties/pages. In parentheses.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Line 21 — 4797 disposition gain from rental property",
+          "excerpt_text": "Net gain (loss) from Form 4797, Part II, line 17, from the disposition of property from rental real estate activities.",
+          "summary_text": "Line 21 = Form 4797 Part II Line 17, rental real estate property dispositions only.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Line 23 — Net rental → Schedule K Line 2",
+          "excerpt_text": "Net rental real estate income (loss). Combine lines 20a through 22a. Enter the result here and on Schedule K, line 2, of Form 1065 or 1120-S.",
+          "summary_text": "Line 23 = 20a - 20b + 21 + 22a → Schedule K Line 2.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_I8825",
+      "source_type": "official_instruction",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "Instructions for Form 8825 (Rev. December 2025)",
+      "citation": "Instructions for Form 8825 (Rev. 12-2025)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": ["rental_real_estate", "8825", "passive_activity"],
+      "excerpts": [
+        {
+          "excerpt_label": "Lines 20a/20b are combined totals from all pages",
+          "excerpt_text": "Complete lines 1 through 19 for each property. Complete lines 20a through 23 on page 1 only once. The figures on lines 20a and 20b should be the combined totals from all pages.",
+          "summary_text": "Per-property: Lines 1-19. Summary (once): Lines 20a-23. Totals combine across all pages.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Rental depreciation on 8825, not Page 1",
+          "excerpt_text": "The partnership or S corporation may claim a depreciation deduction each year for rental property (except for land). See Form 4562 and its instructions to figure the depreciation deduction.",
+          "summary_text": "Rental depreciation on Line 14 of 8825, not on Form 4562/Page 1 Line 14.",
+          "is_key_excerpt": true
+        }
+      ]
+    }
+  ]
+}

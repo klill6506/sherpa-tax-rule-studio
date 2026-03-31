@@ -27,5 +27,8 @@ form_children = [
 
 urlpatterns = [
     path("", include(router.urls)),
+    # Lookup by form number (must come BEFORE uuid paths)
+    path("forms/lookup/<str:form_number>/", views.form_lookup, name="form-lookup"),
+    path("forms/lookup/<str:form_number>/export/", views.form_lookup_export, name="form-lookup-export"),
     path("forms/<uuid:form_pk>/", include(form_children)),
 ]

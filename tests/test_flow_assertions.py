@@ -16,11 +16,11 @@ class TestFlowAssertionModel:
         assert a.assertion_id == "TEST001"
         assert a.status == "active"
 
-    def test_seed_creates_15_assertions(self):
+    def test_seed_creates_20_assertions(self):
         from django.core.management import call_command
 
         call_command("seed_flow_assertions")
-        assert FlowAssertion.objects.count() == 15
+        assert FlowAssertion.objects.count() == 20
         assert FlowAssertion.objects.filter(assertion_type="table_invariant").count() == 4
-        assert FlowAssertion.objects.filter(assertion_type="flow_assertion").count() == 7
-        assert FlowAssertion.objects.filter(assertion_type="reconciliation").count() == 4
+        assert FlowAssertion.objects.filter(assertion_type="flow_assertion").count() == 9
+        assert FlowAssertion.objects.filter(assertion_type="reconciliation").count() == 7

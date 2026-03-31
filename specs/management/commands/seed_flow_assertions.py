@@ -242,11 +242,85 @@ ASSERTIONS = [
         },
         "bug_reference": "Mar 30 2026 — AMT not halved on disposal, showed $2,034 instead of $1,271",
     },
+    # --- 8825 + Schedule L Assertions (Session 13) ---
+    {
+        "assertion_id": "FA008",
+        "title": "8825 Line 20a must equal sum of Line 2c across all properties",
+        "description": "Line 20a is total GROSS rental income (sum of Line 2c), not net income, not positive-only nets. The December 2025 revision explicitly says 'Add total rental real estate income from line 2c.'",
+        "assertion_type": "reconciliation",
+        "entity_types": ["1120S", "1065"],
+        "definition": {
+            "check_type": "aggregation_equals",
+            "assert_field": "8825_Line_20a",
+            "expected_formula": "sum(RentalProperty.gross_rents + RentalProperty.other_rental_income for all properties)",
+            "description": "Line 20a = sum of all Line 2c (gross income), not net",
+        },
+        "bug_reference": "Mar 30 2026 — CC implemented 20a as positive-only net splits instead of gross income total",
+    },
+    {
+        "assertion_id": "FA009",
+        "title": "8825 Line 20b must equal sum of Line 18 across all properties",
+        "description": "Line 20b is total GROSS expenses (sum of Line 18), not net losses. Shown in parentheses.",
+        "assertion_type": "reconciliation",
+        "entity_types": ["1120S", "1065"],
+        "definition": {
+            "check_type": "aggregation_equals",
+            "assert_field": "8825_Line_20b",
+            "expected_formula": "sum(RentalProperty.total_expenses for all properties)",
+            "description": "Line 20b = sum of all Line 18 (total expenses)",
+        },
+        "bug_reference": "Mar 30 2026 — CC implemented 20b as negative-only net splits instead of expense total",
+    },
+    {
+        "assertion_id": "FA010",
+        "title": "8825 Line 23 = 20a - 20b + 21 + 22a → K Line 2",
+        "description": "The final net rental flows to Schedule K Line 2. Must include 4797 disposition gains (Line 21) and pass-through rental (Line 22a), not just property nets.",
+        "assertion_type": "flow_assertion",
+        "entity_types": ["1120S", "1065"],
+        "definition": {
+            "check_type": "formula_equals",
+            "assert_field": "K2",
+            "expected_formula": "8825_Line_20a - 8825_Line_20b + 8825_Line_21 + 8825_Line_22a",
+            "description": "K2 = Line 23 = combined Lines 20a through 22a",
+        },
+        "bug_reference": "Mar 30 2026 — CC collapsed everything into Line 21 as 'total net', missing 4797 and pass-through lines",
+    },
+    {
+        "assertion_id": "FA011",
+        "title": "Schedule L Line 10b col (a) must contain accumulated depreciation, not net",
+        "description": "The 'Less accumulated depreciation' row uses col (a) for BOY accum depr and col (c) for EOY accum depr. Columns (b) and (d) are the NET book values (gross minus accum).",
+        "assertion_type": "reconciliation",
+        "entity_types": ["1120S", "1065", "1120"],
+        "definition": {
+            "check_type": "rendering_column_check",
+            "L10b_col_a": "l10b_accum_depr_boy",
+            "L10b_col_b": "l10a_gross_boy - l10b_accum_depr_boy",
+            "L10b_col_c": "l10b_accum_depr_eoy",
+            "L10b_col_d": "l10a_gross_eoy - l10b_accum_depr_eoy",
+            "description": "Accum depr in (a)/(c), NET in (b)/(d). Previous bug had accum depr in (b)/(d) and nothing in (a)/(c).",
+        },
+        "bug_reference": "Mar 30 2026 — CC 'verified correct' but translation map was actually wrong, putting accum depr in net columns",
+    },
+    {
+        "assertion_id": "FA012",
+        "title": "Total assets (L15) must use NET depreciable, not gross",
+        "description": "Line 15 total assets includes L10 net book value (gross minus accum depr), NOT the gross cost alone. Using gross would overstate total assets.",
+        "assertion_type": "flow_assertion",
+        "entity_types": ["1120S", "1065", "1120"],
+        "definition": {
+            "check_type": "formula_component_check",
+            "target_formula": "L15",
+            "must_use": "l10b_net (gross - accum_depr)",
+            "must_not_use": "l10a_gross alone",
+            "description": "Total assets uses the NET of buildings/accum depr",
+        },
+        "bug_reference": "Preventive — if L10 columns are wrong, L15 could use wrong value",
+    },
 ]
 
 
 class Command(BaseCommand):
-    help = "Seed the 15 starter flow assertions"
+    help = "Seed flow assertions (15 original + 5 from Session 13)"
 
     def handle(self, *args, **options):
         created = 0
