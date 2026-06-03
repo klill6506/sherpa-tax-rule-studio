@@ -27,9 +27,9 @@ rule: no live-RS-DB writes without Ken's explicit go.
 
 Authoring notes
 ---------------
-- TEST_SCENARIOS were NOT supplied in the authoring content for this session, so
-  that list is left as an explicit TODO rather than guessed. The guard does not
-  require it; Ken adds tests when he has verified input/expected pairs.
+- TEST_SCENARIOS (21) were added in Session 17, transcribed verbatim from values
+  computed independently from the 2025 Schedule 1-A line math and reviewed by Ken.
+  They exist to VALIDATE the rules and are deliberately NOT derived from them.
 - Diagnostic severities are Ken's calls. The supplied effect words map to the
   model's {error, warning, info} enum as: BLOCK→error; NOT QUALIFIED(+flag)→warning;
   WARNING→warning. Each diagnostic's notes restate the supplied effect so Ken can
@@ -1315,11 +1315,188 @@ FORM_DIAGNOSTICS: list[dict] = [
 # Ken adds verified input/expected pairs before relying on these.
 # ═══════════════════════════════════════════════════════════════════════════
 
+# 21 scenarios (Session 17). Expected values TRANSCRIBED VERBATIM — computed
+# independently from the authoritative 2025 Schedule 1-A line math and reviewed by
+# Ken; they exist to VALIDATE the rules, so they are NOT derived from the rules here.
+#
+# Input-key conventions (per task STEP 2):
+#   - MAGI is set with no foreign add-backs: "agi_1040_line_11b" = MAGI and the four
+#     exclusion facts = 0, so L3 (R-MAGI-02) computes to MAGI.
+#   - Part aggregate inputs are injected at the line level the task specifies:
+#       Tips → "6" (L6);  Overtime → "14c" (L14c);  Car loan → "23" (L23, col iii total).
+#   - Senior uses MAGI + DOB(s): "taxpayer_dob" / "spouse_dob" (ISO date), so the
+#     born-before-Jan-2-1961 (TY2025) cutoff is exercised, not pre-computed.
+#   - "taxpayer_has_valid_ssn"/"spouse_has_valid_ssn" = True and non-MFS status are the
+#     standing eligibility preconditions (Session-16 common gates) so the math is
+#     exercised rather than blocked.
+# Expected-output keys are the form's output line numbers: Tips "13", Overtime "21",
+# Car "30", Senior "37", Total "38" (Total also asserts components 13/21/30/37).
 TEST_SCENARIOS: list[dict] = [
-    # TODO: Ken — test scenarios were not part of the supplied content. Author
-    # verified input/expected pairs per part (e.g., tips cap+phaseout round-down,
-    # overtime round-down, car-loan round-UP, senior continuous-6%, MFS block,
-    # missing-SSN block). Do not guess expected numbers.
+    # ── Part II — Tips (assert L13) ──
+    {"scenario_name": "T1 — single, tips $12,000, MAGI $90,000 → L13 $12,000",
+     "scenario_type": "normal", "sort_order": 1,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 90000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "6": 12000},
+     "expected_outputs": {"13": 12000},
+     "notes": "Below cap and below phaseout threshold. Verbatim expected value (Ken-reviewed)."},
+    {"scenario_name": "T2 — single, tips $30,000, MAGI $120,000 → L13 $25,000",
+     "scenario_type": "normal", "sort_order": 2,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 120000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "6": 30000},
+     "expected_outputs": {"13": 25000},
+     "notes": "$25,000 cap binds; below phaseout threshold. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "T3 — single, tips $30,000, MAGI $163,400 → L13 $23,700",
+     "scenario_type": "normal", "sort_order": 3,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 163400, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "6": 30000},
+     "expected_outputs": {"13": 23700},
+     "notes": "Cap $25,000 then phaseout (round DOWN ×$100). Verbatim (Ken-reviewed)."},
+    {"scenario_name": "T4 — MFJ, tips $20,000, MAGI $312,500 → L13 $18,800",
+     "scenario_type": "normal", "sort_order": 4,
+     "inputs": {"filing_status": "mfj", "taxpayer_has_valid_ssn": True, "spouse_has_valid_ssn": True,
+                "agi_1040_line_11b": 312500, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "6": 20000},
+     "expected_outputs": {"13": 18800},
+     "notes": "MFJ threshold $300,000; phaseout round DOWN ×$100. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "T5 — single, tips $25,000, MAGI $400,000 → L13 $0",
+     "scenario_type": "edge", "sort_order": 5,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 400000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "6": 25000},
+     "expected_outputs": {"13": 0},
+     "notes": "Phaseout fully eliminates the deduction. Verbatim (Ken-reviewed)."},
+
+    # ── Part III — Overtime (assert L21) ──
+    {"scenario_name": "O1 — single, overtime $8,000, MAGI $100,000 → L21 $8,000",
+     "scenario_type": "normal", "sort_order": 6,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 100000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "14c": 8000},
+     "expected_outputs": {"21": 8000},
+     "notes": "Below cap and threshold. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "O2 — MFJ, overtime $30,000, MAGI $310,000 → L21 $24,000",
+     "scenario_type": "normal", "sort_order": 7,
+     "inputs": {"filing_status": "mfj", "taxpayer_has_valid_ssn": True, "spouse_has_valid_ssn": True,
+                "agi_1040_line_11b": 310000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "14c": 30000},
+     "expected_outputs": {"21": 24000},
+     "notes": "MFJ cap $25,000 then phaseout (round DOWN ×$100). Verbatim (Ken-reviewed)."},
+    {"scenario_name": "O3 — single, overtime $12,500, MAGI $158,700 → L21 $11,700",
+     "scenario_type": "normal", "sort_order": 8,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 158700, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "14c": 12500},
+     "expected_outputs": {"21": 11700},
+     "notes": "Single cap $12,500 then phaseout (round DOWN ×$100). Verbatim (Ken-reviewed)."},
+
+    # ── Part IV — Car Loan / QPVLI (assert L30) — ceil() rounding ──
+    {"scenario_name": "C1 — single, QPVLI $6,000, MAGI $90,000 → L30 $6,000",
+     "scenario_type": "normal", "sort_order": 9,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 90000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "23": 6000},
+     "expected_outputs": {"30": 6000},
+     "notes": "Below cap and threshold. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "C2 — single, QPVLI $8,000, MAGI $103,500 → L30 $7,200",
+     "scenario_type": "edge", "sort_order": 10,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 103500, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "23": 8000},
+     "expected_outputs": {"30": 7200},
+     "notes": "ROUND-UP edge: excess 3500 → ceil 4 × $200 = 800. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "C3 — MFJ, QPVLI $12,000, MAGI $222,000 → L30 $5,600",
+     "scenario_type": "normal", "sort_order": 11,
+     "inputs": {"filing_status": "mfj", "taxpayer_has_valid_ssn": True, "spouse_has_valid_ssn": True,
+                "agi_1040_line_11b": 222000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "23": 12000},
+     "expected_outputs": {"30": 5600},
+     "notes": "MFJ threshold $200,000; cap $10,000 then phaseout (round UP ×$200). Verbatim (Ken-reviewed)."},
+    {"scenario_name": "C4 — single, QPVLI $10,000, MAGI $150,000 → L30 $0",
+     "scenario_type": "edge", "sort_order": 12,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 150000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0, "23": 10000},
+     "expected_outputs": {"30": 0},
+     "notes": "Phaseout fully eliminates the deduction. Verbatim (Ken-reviewed)."},
+
+    # ── Part V — Senior (assert L37) — TY2025 cutoff: born BEFORE Jan 2, 1961 qualifies ──
+    {"scenario_name": "S1 — single, MAGI $60,000, DOB 1960-06-01 → L37 $6,000",
+     "scenario_type": "normal", "sort_order": 13,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 60000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01"},
+     "expected_outputs": {"37": 6000},
+     "notes": "Below threshold; full $6,000. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S2 — single, MAGI $80,000, DOB 1960-06-01 → L37 $5,700",
+     "scenario_type": "normal", "sort_order": 14,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 80000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01"},
+     "expected_outputs": {"37": 5700},
+     "notes": "Continuous 6% phaseout (no rounding). Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S3 — MFJ, MAGI $200,000, both DOB 1960-06-01 → L37 $6,000 (per-spouse)",
+     "scenario_type": "normal", "sort_order": 15,
+     "inputs": {"filing_status": "mfj", "taxpayer_has_valid_ssn": True, "spouse_has_valid_ssn": True,
+                "agi_1040_line_11b": 200000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01", "spouse_dob": "1960-06-01"},
+     "expected_outputs": {"37": 6000},
+     "notes": "MFJ threshold $150,000; L35 $3,000 claimed per qualifying spouse (×2). Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S4 — MFJ, MAGI $160,000, TP 1960-06-01 / SP 1965-03-01 → L37 $5,400 (one spouse)",
+     "scenario_type": "normal", "sort_order": 16,
+     "inputs": {"filing_status": "mfj", "taxpayer_has_valid_ssn": True, "spouse_has_valid_ssn": True,
+                "agi_1040_line_11b": 160000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01", "spouse_dob": "1965-03-01"},
+     "expected_outputs": {"37": 5400},
+     "notes": "Only the taxpayer qualifies by age; spouse (1965) does not. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S5 — single, MAGI $60,000, DOB 1961-01-01 → L37 $6,000 (boundary: qualifies)",
+     "scenario_type": "edge", "sort_order": 17,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 60000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1961-01-01"},
+     "expected_outputs": {"37": 6000},
+     "notes": "Boundary: born before Jan 2, 1961 → qualifies. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S6 — single, MAGI $60,000, DOB 1961-01-02 → L37 $0 (boundary: NOT before Jan 2)",
+     "scenario_type": "edge", "sort_order": 18,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 60000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1961-01-02"},
+     "expected_outputs": {"37": 0},
+     "notes": "Boundary: NOT born before Jan 2, 1961 → does not qualify. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "S7 — single, MAGI $175,000, DOB 1960-06-01 → L37 $0 (income zero-out)",
+     "scenario_type": "edge", "sort_order": 19,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 175000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01"},
+     "expected_outputs": {"37": 0},
+     "notes": "Continuous 6% phaseout reduces $6,000 to $0 at this MAGI. Verbatim (Ken-reviewed)."},
+
+    # ── Part VI — Total (assert L13/L21/L30/L37/L38 → Form 1040 line 13b) ──
+    {"scenario_name": "TOT1 — single, MAGI $70,000, DOB 1960-06-01, tips $10,000 / OT $5,000 / QPVLI $4,000 → L38 $25,000",
+     "scenario_type": "normal", "sort_order": 20,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 70000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01", "6": 10000, "14c": 5000, "23": 4000},
+     "expected_outputs": {"13": 10000, "21": 5000, "30": 4000, "37": 6000, "38": 25000},
+     "notes": "All four parts active; L38 → Form 1040 line 13b. Verbatim (Ken-reviewed)."},
+    {"scenario_name": "TOT2 — single, MAGI $160,000, DOB 1960-06-01, tips $30,000 → L38 $24,900",
+     "scenario_type": "normal", "sort_order": 21,
+     "inputs": {"filing_status": "single", "taxpayer_has_valid_ssn": True,
+                "agi_1040_line_11b": 160000, "pr_excluded_income": 0, "feie_2555_line_45": 0,
+                "housing_2555_line_50": 0, "american_samoa_4563_line_15": 0,
+                "taxpayer_dob": "1960-06-01", "6": 30000, "14c": 0, "23": 0},
+     "expected_outputs": {"13": 24000, "21": 0, "30": 0, "37": 900, "38": 24900},
+     "notes": "Tips phaseout + senior phaseout both active; L38 → Form 1040 line 13b. Verbatim (Ken-reviewed)."},
 ]
 
 
