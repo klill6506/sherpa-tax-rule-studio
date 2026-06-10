@@ -4,6 +4,20 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM — SCH_1A seeded on Ken's approval
+- Review packet walked with Ken in-session (constants, rounding directions,
+  17 requires_human_review excerpts, diagnostics severities, 5 documented
+  v1 deviations in tts-tax-app). **Approved.**
+- `READY_TO_SEED` flipped → `load_sch_1a` run: 38 rules, 47 lines, 31 facts,
+  6 diagnostics, 21 scenarios, 7 flow assertions, 66 authority links (all
+  rules cited). RS DB now 30 forms.
+- Export verified via `lookup/SCH_1A/export/`; committed to tts-tax-app as
+  the canonical `server/specs/sch_1a_spec.json`. tts-tax-app implemented
+  Part IV (car loan) from it the same day — all 21 scenarios green.
+- Flow-assertion export note: `/api/flow-assertions/export/?entity_type=1040`
+  returns 20 (13 CTC + 7 SCH1A). RS SCH1A-01..04 duplicate locally-wired
+  assertions in tts-tax-app; -05/-06/-07 were newly wired there.
+
 ## 2026-06-10 — 1040 campaign Phase 0 state audit (read-only)
 - No RS code or data changes. Inventoried authored specs vs. the deployed DB.
 - Deployed RS DB holds 29 seeded forms (all status=draft). 1040-relevant: SCH_8812
