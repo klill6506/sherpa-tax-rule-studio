@@ -84,10 +84,12 @@ from specs.models import (
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SAFETY GUARD — Ken flips this after reviewing the packet. Not before.
+# SAFETY GUARD — flipped to True 2026-06-10 on Ken's in-session approval of
+# the review packet (constants per year, the Tax Table midpoint/half-up
+# convention, diagnostics severities, stub retirement, the 33 scenarios).
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 # ═══════════════════════════════════════════════════════════════════════════

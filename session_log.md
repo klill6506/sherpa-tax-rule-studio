@@ -4,6 +4,21 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM #5b — 1040 SPINE seeded on Ken's approval
+- Review packet walked with Ken in-session (constants per year, the Tax Table
+  midpoint/half-up convention inference, diagnostics severities, stub
+  retirement, 33 scenarios). **Approved as authored.**
+- `READY_TO_SEED` flipped → `load_1040_spine` run: stub retired (R001/R002 +
+  line_11_agi + line 11), then 91 facts / 45 rules / 72 links / 72 lines /
+  16 diagnostics / 33 scenarios / 16 flow assertions. RS DB: 30 forms (1040
+  updated in place), FlowAssertions 51, all 1040 rules cited.
+- Deployed export verified: `lookup/1040/export/` returns the spine (metadata
+  correct, R-TAX-02 present, stub rules absent, TT-5 half-up pin intact).
+  Committed to tts-tax-app as `server/specs/1040_spine_spec.json`.
+- `/api/flow-assertions/export/?entity_type=1040` now returns 36 (13 CTC +
+  7 SCH1A + 16 SPINE). The 16 spine assertions are STAGED in tts-tax-app
+  (`flow_assertions_1040_spine_pending.json`) — wired leg by leg as compute lands.
+
 ## 2026-06-10 PM #5 — 1040 SPINE spec authored (Sprint Topic 1), READY_TO_SEED=False
 - `specs/management/commands/load_1040_spine.py` authored: updates the Session-14
   "1040" stub TaxForm in place into the full spine spec. **45 rules (100% cited,
