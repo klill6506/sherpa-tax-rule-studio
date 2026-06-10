@@ -4,6 +4,34 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM #5 — 1040 SPINE spec authored (Sprint Topic 1), READY_TO_SEED=False
+- `specs/management/commands/load_1040_spine.py` authored: updates the Session-14
+  "1040" stub TaxForm in place into the full spine spec. **45 rules (100% cited,
+  72 authority links), 91 facts, 72 lines, 16 diagnostics, 33 scenarios, 16 flow
+  assertions (FA-1040-SPINE-01..16), 11 new authority sources.**
+- Stub retirement: the loader deletes R001/R002 (re-specified as R-CR-03/R-PAY-06),
+  fact `line_11_agi` (→ `agi`), and line "11" (→ 11a/11b) with stdout notes.
+- All constants transcribed from primary sources fetched + layout-extracted the
+  same day: 2025 f1040.pdf (both pages, line by line); Pub 1040-TT (2025) Tax
+  Table + Tax Computation Worksheet; i1040gi (2025) Line 16 routing / std-ded
+  exceptions / L37-38 rules; Pub 501 (2025) Tables 6/7/8; RP 2024-40 §2.01;
+  RP 2025-32 §4.01/§4.14; OBBBA §70102.
+- **Tax Table convention verified, not assumed:** rows are $10/$25/$50 bands
+  (0-5→$0; 5-25 by $10; 25-3,000 by $25; 3,000-100,000 by $50); row tax = rate
+  schedule at the band MIDPOINT rounded HALF-UP (pinned by published rows
+  302.50→303, 357.50→358, and the 99,950-100,000 row across all four columns).
+  QSS uses the MFJ column (footnote). ≥$100,000 → TCW ≡ cumulative brackets
+  (verified equal at $100,000). The midpoint inference is flagged for Ken's
+  explicit blessing in the review packet.
+- `check_spine_integrity.py` (repo root): pre-seed content-list checker —
+  uncited rules / dangling links / duplicate ids / excerpt+choice field
+  validation. Run via `Get-Content check_spine_integrity.py -Raw | poetry run
+  python manage.py shell` (or exec in a shell). All checks pass.
+- Guard verified: `manage.py load_1040_spine` refuses with CommandError while
+  `READY_TO_SEED = False`. No DB writes this session.
+- Next: Ken's review walk (packet prepared in tts-tax-app session) → flip →
+  seed → export → wire into tts-tax-app compute.
+
 ## 2026-06-10 PM — SCH_1A seeded on Ken's approval
 - Review packet walked with Ken in-session (constants, rounding directions,
   17 requires_human_review excerpts, diagnostics severities, 5 documented
