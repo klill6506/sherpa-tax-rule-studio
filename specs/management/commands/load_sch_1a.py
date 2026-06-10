@@ -70,11 +70,12 @@ from specs.models import (
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SAFETY GUARD — Ken: flip to True ONLY after review. Content is authored;
-# seeding is still gated pending Ken's go.
+# SAFETY GUARD — flipped to True 2026-06-10 on Ken's in-session approval of
+# the review packet (constants, rounding directions, diagnostics severities,
+# 21 scenarios, and the five documented v1 deviations).
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 # ═══════════════════════════════════════════════════════════════════════════
