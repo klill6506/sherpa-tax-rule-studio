@@ -1,0 +1,397 @@
+"""Pre-seed content checker for load_1040_retirement (Topic 5).
+
+Run:  poetry run python check_retirement_integrity.py
+
+Mirrors check_intdiv_integrity.py / check_sch123_integrity.py: validates the
+authored lists WITHOUT touching the DB, then INDEPENDENTLY recomputes every
+numeric scenario — the full Social Security Benefits Worksheet (18 lines,
+transcribed independently from i1040gi p.31), Form 5329 Part I (the 10%/25%
+additional tax), and the 1099-R aggregation to 1040 lines 4a/4b/5a/5b/25b.
+This is the MATH GATE that must pass before Ken's review walk.
+
+The checker carries its OWN transcription of the worksheet logic and the
+statutory §86 constants ($25,000/$32,000 base; $9,000/$12,000 second tier;
+50%/85% tiers) so a transcription error in the loader cannot also pass the
+checker.
+"""
+import os
+import sys
+from decimal import Decimal
+
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+django.setup()
+
+from specs.management.commands import load_1040_retirement as m  # noqa: E402
+
+errors: list[str] = []
+
+
+def err(msg):
+    errors.append(msg)
+
+
+def D(x):
+    return Decimal(str(x if x is not None else 0))
+
+
+def check(name, got, want):
+    if D(got) != D(want):
+        err(f"{name}: recomputed {got} != authored {want}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Independent statutory constants (§86 — NON-indexed, identical 2025/2026)
+# ═══════════════════════════════════════════════════════════════════════════
+
+SS_BASE = {"mfj": 32000, "single": 25000, "hoh": 25000, "qss": 25000, "mfs": 25000}
+SS_SECOND = {"mfj": 12000, "single": 9000, "hoh": 9000, "qss": 9000, "mfs": 9000}
+TIER1 = Decimal("0.50")
+TIER2 = Decimal("0.85")
+
+# v1 supported sets (Ken-confirmed 2026-06-11) — transcribed independently.
+SUPPORTED_CODES = set("1234789BDGHQSY")
+SUPPORTED_EXCEPTIONS = {f"{n:02d}" for n in range(1, 13)} | {"19"}
+EARLY_CODES = set("1JS")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Independent recomputations
+# ═══════════════════════════════════════════════════════════════════════════
+
+def ss_worksheet(ssa_box5, ws3_income, filing_status, mfs_with_spouse=False,
+                 ws4_taxexempt=0, ws6_adjustments=0):
+    """Social Security Benefits Worksheet (i1040gi p.31), all 18 lines.
+
+    Returns a dict keyed by line number string ("1".."18") plus "6a"/"6b".
+    Honors the two worksheet STOP conditions (line 7 and line 9) and the
+    MFS-lived-with-spouse short-circuit (skip lines 8-15).
+    """
+    ws = {}
+    ws["1"] = D(ssa_box5)          # -> 1040 line 6a
+    ws["2"] = TIER1 * ws["1"]
+    ws["3"] = D(ws3_income)        # 1040 1z+2b+3b+4b+5b+7a+8
+    ws["4"] = D(ws4_taxexempt)     # 1040 line 2a
+    ws["5"] = ws["2"] + ws["3"] + ws["4"]
+    ws["6"] = D(ws6_adjustments)   # Sch 1 lines 11-20 + 23 + 25
+    ws["6a"] = ws["1"]
+    # Line 7: "Is line 6 less than line 5?" No -> none taxable.
+    if ws["6"] >= ws["5"]:
+        ws["7"] = Decimal("0")
+        ws["6b"] = Decimal("0")
+        return ws
+    ws["7"] = ws["5"] - ws["6"]
+    # MFS lived with spouse: skip 8-15, tax 85% from dollar one.
+    if mfs_with_spouse:
+        ws["16"] = TIER2 * ws["7"]
+        ws["17"] = TIER2 * ws["1"]
+        ws["18"] = min(ws["16"], ws["17"])
+        ws["6b"] = ws["18"]
+        return ws
+    ws["8"] = D(SS_BASE[filing_status])
+    # Line 9: "Is line 8 less than line 7?" No -> none taxable.
+    if ws["8"] >= ws["7"]:
+        ws["9"] = Decimal("0")
+        ws["6b"] = Decimal("0")
+        return ws
+    ws["9"] = ws["7"] - ws["8"]
+    ws["10"] = D(SS_SECOND[filing_status])
+    ws["11"] = max(Decimal("0"), ws["9"] - ws["10"])
+    ws["12"] = min(ws["9"], ws["10"])
+    ws["13"] = TIER1 * ws["12"]
+    ws["14"] = min(ws["2"], ws["13"])
+    ws["15"] = TIER2 * ws["11"]
+    ws["16"] = ws["14"] + ws["15"]
+    ws["17"] = TIER2 * ws["1"]
+    ws["18"] = min(ws["16"], ws["17"])
+    ws["6b"] = ws["18"]
+    return ws
+
+
+def aggregate(docs):
+    """1099-R aggregation to 1040 lines 4a/4b (IRA) and 5a/5b (pension) + 25b."""
+    out = {"4a": Decimal("0"), "4b": Decimal("0"),
+           "5a": Decimal("0"), "5b": Decimal("0"), "25b": Decimal("0")}
+    for d in docs:
+        box1 = D(d.get("box1", 0))
+        box2a = D(d.get("box2a", 0))
+        roll = D(d.get("rollover", 0))
+        qcd = D(d.get("qcd", 0))
+        out["25b"] += D(d.get("box4", 0))
+        if d.get("ira", False):
+            out["4a"] += box1
+            out["4b"] += max(Decimal("0"), box2a - roll - qcd)
+        else:
+            out["5a"] += box1
+            out["5b"] += max(Decimal("0"), box2a - roll)
+    return out
+
+
+def early_from_docs(docs):
+    """5329 line 1 source: taxable amount of early-code (1/J/S) docs, net of
+    rollover; plus whether any SIMPLE-first-2-years (code S) is present (25%)."""
+    total = Decimal("0")
+    simple = False
+    for d in docs:
+        code = str(d.get("code", ""))
+        if any(c in EARLY_CODES for c in code):
+            total += max(Decimal("0"), D(d.get("box2a", 0)) - D(d.get("rollover", 0)))
+        if "S" in code:
+            simple = True
+    return total, simple
+
+
+def f5329_part1(line1, line2=0, simple=False):
+    l3 = max(Decimal("0"), D(line1) - D(line2))
+    rate = Decimal("0.25") if simple else Decimal("0.10")
+    return {"3": l3, "4": rate * l3}
+
+
+def f5329_generated(line2, docs):
+    """R-5329-03 generation gate: exception claimed OR any J/S code OR >1 doc."""
+    any_js = any(("J" in str(d.get("code", "")) or "S" in str(d.get("code", "")))
+                 for d in docs)
+    return (D(line2) > 0) or any_js or (len(docs) > 1)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Structural checks (mirror check_intdiv_integrity.py)
+# ═══════════════════════════════════════════════════════════════════════════
+
+for spec in m.FORMS:
+    fn = spec["identity"]["form_number"]
+
+    fact_keys = [f["fact_key"] for f in spec["facts"]]
+    if len(fact_keys) != len(set(fact_keys)):
+        dupes = sorted({k for k in fact_keys if fact_keys.count(k) > 1})
+        err(f"{fn}: duplicate fact keys {dupes}")
+
+    rule_ids = [r["rule_id"] for r in spec["rules"]]
+    if len(rule_ids) != len(set(rule_ids)):
+        err(f"{fn}: duplicate rule ids")
+
+    line_nos = [ln["line_number"] for ln in spec["lines"]]
+    if len(line_nos) != len(set(line_nos)):
+        dupes = sorted({k for k in line_nos if line_nos.count(k) > 1})
+        err(f"{fn}: duplicate line numbers {dupes}")
+
+    diag_ids = [d["diagnostic_id"] for d in spec["diagnostics"]]
+    if len(diag_ids) != len(set(diag_ids)):
+        err(f"{fn}: duplicate diagnostic ids")
+
+    linked = {rid for rid, *_ in spec["rule_links"]}
+    uncited = [rid for rid in rule_ids if rid not in linked]
+    if uncited:
+        err(f"{fn}: uncited rules {uncited}")
+    dangling = [rid for rid in linked if rid not in rule_ids]
+    if dangling:
+        err(f"{fn}: rule_links reference unknown rules {dangling}")
+
+    for ln in spec["lines"]:
+        for rid in ln.get("source_rules", []):
+            if rid not in rule_ids:
+                err(f"{fn} line {ln['line_number']}: unknown source_rule {rid}")
+
+    for r in spec["rules"]:
+        for key in r.get("inputs", []):
+            if key not in fact_keys:
+                err(f"{fn} {r['rule_id']}: input '{key}' is not a declared fact")
+
+    for f in spec["facts"]:
+        if f["data_type"] == "choice" and not f.get("choices"):
+            err(f"{fn} fact {f['fact_key']}: choice type without choices")
+
+# ── flow assertions ──
+fa_ids = [a["assertion_id"] for a in m.FLOW_ASSERTIONS]
+if len(fa_ids) != len(set(fa_ids)):
+    err("duplicate flow assertion ids")
+for a in m.FLOW_ASSERTIONS:
+    if len(a["assertion_id"]) > 20:
+        err(f"assertion_id too long (>20): {a['assertion_id']}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Scenario lookup (key on the first token of scenario_name)
+# ═══════════════════════════════════════════════════════════════════════════
+
+s = {sc["scenario_name"].split(" ")[0]: sc for spec in m.FORMS for sc in spec["scenarios"]}
+
+
+def ss_recompute(sc):
+    i = sc["inputs"]
+    return ss_worksheet(
+        i["ssa_box5"], i["other_ws3_income"], i["filing_status"],
+        mfs_with_spouse=i.get("mfs_lived_with_spouse", False),
+    )
+
+
+def check_ss(key):
+    sc = s[key]
+    ws = ss_recompute(sc)
+    for out_key, want in sc["expected_outputs"].items():
+        if out_key.startswith("ws_"):
+            line = out_key.removeprefix("ws_")
+            if line not in ws:
+                err(f"{key} {out_key}: worksheet line {line} not reached (recompute STOPped early)")
+            else:
+                check(f"{key} {out_key}", ws[line], want)
+        elif out_key == "1040_line_6a":
+            check(f"{key} 6a", ws["6a"], want)
+        elif out_key == "1040_line_6b":
+            check(f"{key} 6b", ws["6b"], want)
+    # invariant FA-1040-RET-05: 6b <= 85% of net benefits, and 6b <= WS1
+    if D(ws["6b"]) > TIER2 * D(ws["1"]):
+        err(f"{key}: 6b exceeds 85% of WS1 (cap violated)")
+    if D(ws["6b"]) > D(ws["1"]):
+        err(f"{key}: 6b exceeds WS1 (net benefits)")
+
+
+# ── Social Security worksheet scenarios ──
+for key in ("SS-1", "SS-2", "SS-3", "SS-4", "SS-5"):
+    check_ss(key)
+
+# ── 1099-R aggregation scenarios ──
+for key in ("RET-T1", "RET-T2", "RET-T3", "RET-T4", "RET-T5"):
+    sc = s[key]
+    out = aggregate(sc["inputs"]["r_docs"])
+    for line in ("4a", "4b", "5a", "5b", "25b"):
+        ek = f"1040_line_{line}"
+        if ek in sc["expected_outputs"]:
+            check(f"{key} {line}", out[line], sc["expected_outputs"][ek])
+    # literal flags must be consistent with a nonzero rollover/qcd in the docs
+    eo = sc["expected_outputs"]
+    if eo.get("rollover_literal") and not any(D(d.get("rollover", 0)) > 0 for d in sc["inputs"]["r_docs"]):
+        err(f"{key}: rollover_literal asserted but no doc has a rollover amount")
+    if eo.get("qcd_literal") and not any(D(d.get("qcd", 0)) > 0 for d in sc["inputs"]["r_docs"]):
+        err(f"{key}: qcd_literal asserted but no doc has a QCD amount")
+
+# ── Form 5329 early-distribution scenarios (doc-driven) ──
+for key in ("RET-5329-1", "RET-5329-2", "RET-5329-3"):
+    sc = s[key]
+    i = sc["inputs"]
+    eo = sc["expected_outputs"]
+    line1, simple = early_from_docs(i["r_docs"])
+    line2 = D(i.get("exception_amount_5329", 0))
+    parts = f5329_part1(line1, line2, simple)
+    if "5329_line_1" in eo:
+        check(f"{key} L1", line1, eo["5329_line_1"])
+    if "5329_line_2" in eo:
+        check(f"{key} L2", line2, eo["5329_line_2"])
+    if "5329_line_3" in eo:
+        check(f"{key} L3", parts["3"], eo["5329_line_3"])
+    if "5329_line_4" in eo:
+        check(f"{key} L4", parts["4"], eo["5329_line_4"])
+    if "schedule_2_line_8" in eo:
+        check(f"{key} Sch2 L8", parts["4"], eo["schedule_2_line_8"])
+    if "form_5329_generated" in eo:
+        got = f5329_generated(line2, i["r_docs"])
+        if got != eo["form_5329_generated"]:
+            err(f"{key}: form_5329_generated recomputed {got} != authored {eo['form_5329_generated']}")
+    if "D_RET_007_fires" in eo and eo["D_RET_007_fires"] != simple:
+        err(f"{key}: D_RET_007 (SIMPLE 25%) expected {eo['D_RET_007_fires']} but recompute simple={simple}")
+
+# ── Form 5329 direct-fact scenarios ──
+for key in ("F5329-T1", "F5329-T2", "F5329-T3"):
+    sc = s[key]
+    i = sc["inputs"]
+    eo = sc["expected_outputs"]
+    parts = f5329_part1(
+        i.get("f5329_line1_early_in_income", 0),
+        i.get("f5329_line2_exception_amount", 0),
+        i.get("f5329_simple_25pct", False),
+    )
+    check(f"{key} L3", parts["3"], eo["3"])
+    check(f"{key} L4", parts["4"], eo["4"])
+    check(f"{key} Sch2 L8", parts["4"], eo["schedule_2_line_8"])
+
+# ── RED-gate fixtures actually trigger their condition ──
+g1 = s["RET-G1"]["inputs"]["r_docs"][0]
+if not ((g1.get("box2a") is None or g1.get("box2b_not_determined"))
+        and (D(g1.get("box5", 0)) > 0 or D(g1.get("box9b", 0)) > 0)):
+    err("RET-G1: fixture does not satisfy D_RET_001 (box-2a-blank + basis)")
+
+g2 = s["RET-G2"]["inputs"]["r_docs"][0]
+if not D(g2.get("box6", 0)) > 0:
+    err("RET-G2: fixture has no NUA (box 6) to fire D_RET_002")
+
+g3 = s["RET-G3"]["inputs"]["r_docs"][0]
+if all(c in SUPPORTED_CODES for c in str(g3.get("code", ""))):
+    err("RET-G3: fixture code is fully supported — D_RET_003 would not fire")
+
+if not s["RET-G4"]["inputs"].get("ssa_lump_sum_prior_year"):
+    err("RET-G4: fixture does not set ssa_lump_sum_prior_year for D_RET_004")
+
+g5_exc = str(s["RET-G5"]["inputs"].get("exception_number_5329", ""))
+if g5_exc in SUPPORTED_EXCEPTIONS:
+    err(f"RET-G5: exception {g5_exc} is in the supported set — D_RET_006 would not fire")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Load-bearing checks (the pins must actually be able to catch a regression)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# 1. The 85% cap (WS17) is binding in SS-3 — WS16 > WS17, so min() matters.
+ws3 = ss_worksheet(20000, 40000, "single")
+if not (ws3["16"] > ws3["17"]):
+    err("SS-3: WS16 <= WS17 — the 85% cap pin is not load-bearing here")
+
+# 2. The MFS-lived-with-spouse branch differs from the normal path.
+mfs_branch = ss_worksheet(10000, 5000, "mfs", mfs_with_spouse=True)["6b"]
+mfs_normal = ss_worksheet(10000, 5000, "mfs", mfs_with_spouse=False)["6b"]
+if mfs_branch == mfs_normal:
+    err("SS-5: the MFS-with-spouse branch produces the same 6b as the normal path — branch not load-bearing")
+
+# 3. The SIMPLE 25% rate differs from the 10% rate.
+if f5329_part1(10000, 0, simple=True)["4"] == f5329_part1(10000, 0, simple=False)["4"]:
+    err("RET-5329-3: 25% and 10% produce the same line 4 — the SIMPLE-rate pin is dead")
+
+# 4. The FA-1040-RET-06 constants_check matches this checker's independent values.
+fa06 = next((a for a in m.FLOW_ASSERTIONS if a["assertion_id"] == "FA-1040-RET-06"), None)
+if fa06:
+    c = fa06["definition"]["constants"]
+    for status, amt in SS_BASE.items():
+        # the FA uses 'mfs_apart' for the $25,000 MFS row
+        fa_key = "mfs_apart" if status == "mfs" else status
+        if c["base_amount"].get(fa_key) != amt:
+            err(f"FA-06 base_amount[{fa_key}]={c['base_amount'].get(fa_key)} != independent {amt}")
+        if c["second_tier"].get(fa_key) != SS_SECOND[status]:
+            err(f"FA-06 second_tier[{fa_key}]={c['second_tier'].get(fa_key)} != independent {SS_SECOND[status]}")
+    if c["rates"].get("tier1") != float(TIER1) or c["rates"].get("tier2") != float(TIER2):
+        err(f"FA-06 rates {c['rates']} != independent {{tier1:{TIER1}, tier2:{TIER2}}}")
+    if c.get("applies_to_years") != [2025, 2026]:
+        err(f"FA-06 applies_to_years {c.get('applies_to_years')} != [2025, 2026] (statutory non-indexed)")
+else:
+    err("FA-1040-RET-06 (constants_check) not found")
+
+# 5. Every supported distribution code in the docstring set is single-char and
+#    the early set is a subset of supported (1, S supported; J is NOT in v1).
+if not EARLY_CODES.issubset(SUPPORTED_CODES | {"J"}):
+    err("EARLY_CODES contains a code outside supported∪{J}")
+if "J" in SUPPORTED_CODES:
+    err("J should NOT be in the v1 supported set (Ken-confirmed set excludes J)")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Report
+# ═══════════════════════════════════════════════════════════════════════════
+
+counts = {spec["identity"]["form_number"]: (len(spec["facts"]), len(spec["rules"]),
+          len(spec["lines"]), len(spec["diagnostics"]), len(spec["scenarios"]),
+          len(spec["rule_links"])) for spec in m.FORMS}
+
+print("Per-form counts (facts/rules/lines/diagnostics/scenarios/links):")
+for fn, c in counts.items():
+    print(f"  {fn}: {c}")
+print(f"Flow assertions: {len(m.FLOW_ASSERTIONS)}")
+print(f"Authority sources (new): {len(m.AUTHORITY_SOURCES)}; topics: {len(m.AUTHORITY_TOPICS)}; "
+      f"new excerpts on existing: {len(m.NEW_EXCERPTS_ON_EXISTING)}")
+print("Independently recomputed: SS-1..5 (18-line worksheet), RET-T1..5 (aggregation), "
+      "RET-5329-1..3 + F5329-T1..3 (Part I), RET-G1..5 (RED-gate fixtures).")
+
+if errors:
+    print("\nFAILURES:")
+    for e in errors:
+        print(f"  X {e}")
+    sys.exit(1)
+print("\nALL CHECKS PASS")

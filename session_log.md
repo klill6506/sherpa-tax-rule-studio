@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 e — Topic 5 integrity check written + green (math gate before Ken's walk)
+- `check_retirement_integrity.py` authored (RS root; mirrors
+  `check_intdiv_integrity.py`/`check_sch123_integrity.py`). Validates the authored
+  lists WITHOUT touching the DB, then INDEPENDENTLY recomputes every numeric
+  scenario from its OWN transcription:
+  - **SS Benefits Worksheet (18 lines)** — full re-implementation of i1040gi p.31
+    incl. both STOP conditions (line 7, line 9) and the MFS-lived-with-spouse
+    short-circuit; verifies SS-1..5 line-by-line (every authored `ws_*` +
+    6a/6b), plus the FA-RET-05 invariant (6b ≤ 85%×WS1 and ≤ WS1) on each.
+  - **1099-R aggregation** — RET-T1..5 (4a/4b IRA, 5a/5b pension, 25b withholding;
+    rollover/QCD per-doc floor; rollover/QCD literal-flag consistency).
+  - **Form 5329 Part I** — RET-5329-1..3 (doc-driven early amount + 10%/25%) and
+    F5329-T1..3 (direct facts); the direct-to-Sch-2 generation gate (R-5329-03).
+  - **RED-gate fixtures** — RET-G1..5 each verified to actually satisfy its
+    diagnostic condition (D_RET_001/002/003/004/006).
+  - **Load-bearing pins** — 85% cap binding in SS-3; MFS branch ≠ normal path;
+    SIMPLE 25% ≠ 10%; FA-1040-RET-06 constants_check matches the independent §86
+    values (25k/32k, 9k/12k, 0.50/0.85, years [2025,2026]); J excluded from v1.
+  - Structural checks (dup keys/ids/lines, uncited rules, dangling links,
+    inputs-are-facts) all clean.
+- **ALL CHECKS PASS.** Loader guard still REFUSES (READY_TO_SEED=False, exit 1,
+  zero DB writes); **RS DB UNCHANGED (35 forms; 1040_RETIREMENT/5329 absent).**
+- ONE packet item surfaced for the walk: R-RET-CODE's formula lists
+  "J (10%, RED if box2a blank)" as an early code, but the Ken-confirmed v1 set
+  and D_RET_003 exclude J entirely (always RED). Wording to reconcile — no math
+  impact (no J scenario).
+- NEXT: Ken's review walk → on approval flip READY_TO_SEED → seed → verify →
+  export canonical specs + stage flow assertions → tts-tax-app build legs.
+
 ## 2026-06-11 d — Topic 5 (Retirement Income) specs AUTHORED, READY_TO_SEED=False
 - `specs/management/commands/load_1040_retirement.py` authored (Sprint Topic 5).
   Creates TWO TaxForms: **1040_RETIREMENT** (pseudo-form: ~33 facts [full 1099-R
