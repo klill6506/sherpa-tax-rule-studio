@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 f — Topic 5 (Retirement) REVIEWED + SEEDED on Ken's approval
+- Review walk in-session: Ken **approved** (source citations + SS Benefits
+  Worksheet transcription + scope already confirmed). Two walk outcomes:
+  (a) **TY2026 §86/5329 constants confirmed NON-INDEXED** — SS base/second-tier
+  ($25k/$32k, $9k/$12k) and the 50%/85% rates are statutory §86 (no inflation
+  adjustment cross-reference), and the §72(t) 10%/25% rates are statutory; RP
+  2025-32 adjusts none — same pattern as Schedule 1-A. So NO `_constants_for_year`
+  in this topic. (b) **R-RET-CODE J-wording tightened** — the formula listed
+  "J (10%, RED if box2a blank)" among early codes; J/T are OUT of v1 and always
+  RED, so the EARLY clause now lists only `1 (10%), S (25%)` and J/T moved to the
+  RED-UNSUPPORTED clause; D_RET_003 condition reworded to "{v1 set} (J and T OUT
+  of v1 -> always RED)". No math impact (no J/T scenario). Integrity check re-run
+  green after the edit.
+- `READY_TO_SEED` flipped → `load_1040_retirement` run clean: **Created
+  1040_RETIREMENT** (25 facts/8 rules/24 lines/7 diags/18 scenarios) + **5329**
+  (3/3/4/1/3), 16 authority links (100% cited), 2 new excerpts on
+  IRS_2025_1040_INSTR, **7 flow assertions**. **RS DB: 35 → 37 forms,
+  FlowAssertions 75 → 82.**
+- Deployed exports verified (`lookup/1040_RETIREMENT|5329/export/` HTTP 200 —
+  counts 25/8/24/7/18 + 3/3/4/1/3 survive; SS-3 6b=17,000 / SS-4 15,350 /
+  SS-5 8,500 / RET-T4 4b=0 / RET-5329-3 line4=2,500 / F5329-T2 1,200 all
+  round-trip). Committed to tts-tax-app as canonical `server/specs/
+  retirement_spec.json` + `5329_spec.json`; the 7 assertions STAGED in
+  `flow_assertions_1040_retirement_pending.json` (active 1040 gate untouched at
+  70; flow gate still 92 passed).
+- NEXT: tts-tax-app build legs (seed → compute → render → input → diagnostics →
+  assertions), starting with the new **RetirementDistribution** model + the
+  SSA-1099 return-level fields + f5329 manifest/field-map.
+
 ## 2026-06-11 e — Topic 5 integrity check written + green (math gate before Ken's walk)
 - `check_retirement_integrity.py` authored (RS root; mirrors
   `check_intdiv_integrity.py`/`check_sch123_integrity.py`). Validates the authored

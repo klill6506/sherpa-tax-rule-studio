@@ -106,7 +106,11 @@ from specs.models import (
 # transcription, and the TY2026 statutory-constant confirmation).
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+# Ken approved in-session 2026-06-11 (review walk: source citations + SS Benefits
+# Worksheet transcription + TY2026 §86/5329 constants confirmed non-indexed +
+# R-RET-CODE J-wording tightened). Math gate (check_retirement_integrity.py)
+# green before the flip.
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -553,9 +557,12 @@ RET_RULES: list[dict] = [
          "Per document, classify by box 7 code(s): "
          "SUPPORTED (compute taxable from box 2a): 1,2,3,4,7,8,9,B,D + IRA flow. "
          "ROLLOVER (0 taxable, 'Rollover'): G,H. QCD (reduce 4b, 'QCD'): Y. "
-         "ROTH-QUALIFIED (0 taxable): Q. EARLY (-> 5329): 1 (10%), J (10%, RED if box2a blank), "
-         "S (25%). RED-UNSUPPORTED (D_RET_003): A (4972), 5 (prohibited), 6 (1035), "
-         "C,E,F,K,L,M,N,P,R,T(blank-2a),U,W, and any unrecognized code."),
+         "ROTH-QUALIFIED (0 taxable): Q. EARLY (-> 5329, v1): 1 (10%), S (25%). "
+         "RED-UNSUPPORTED (D_RET_003), OUT of the v1 set: A (4972), 5 (prohibited), "
+         "6 (1035), J (Roth early — needs Form 8606 basis), T (Roth exception — "
+         "needs basis), C,E,F,K,L,M,N,P,R,U,W, and any unrecognized code. "
+         "(J/T are early/Roth in tax law but are NOT in v1 — always RED, never "
+         "computed.)"),
      "inputs": ["r_box7_codes", "r_box7_ira_sep_simple", "r_box2a_taxable"], "outputs": [],
      "description": ("ONCE PER DOCUMENT. JUDGMENT 1 (Ken-confirmed v1 set). i1099r Table 1. Unsupported codes "
                      "fire RED 'prepare manually' (no silent gap, SPRINT quality rule 2). Two-code combos "
@@ -679,7 +686,7 @@ RET_DIAGNOSTICS: list[dict] = [
                  "distribution is NOT computed."),
      "notes": "Lump-sum/NUA territory (Pub 575). Stored only."},
     {"diagnostic_id": "D_RET_003", "title": "Unsupported distribution code", "severity": "error",
-     "condition": "any 1099-R doc has a box-7 code not in {1,2,3,4,7,8,9,B,D,G,H,Q,S,Y} (or T/J with blank box 2a)",
+     "condition": "any 1099-R doc has a box-7 code not in the v1 supported set {1,2,3,4,7,8,9,B,D,G,H,Q,S,Y} (J and T are OUT of v1 -> always RED)",
      "message": ("Not supported — prepare manually: the 1099-R distribution code is outside this version's "
                  "supported set (e.g. A=10-year option/Form 4972, 5=prohibited transaction, 6=§1035 exchange, "
                  "N/R=recharacterization, or a Roth code J/T with a blank box 2a needing Form 8606 basis). This "
