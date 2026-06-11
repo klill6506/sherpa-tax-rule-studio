@@ -113,13 +113,15 @@ FORM_NOTES = (
     "Worksheet (= rate schedules) at/above; credits/other-taxes/payments chains; "
     "estimated payments (four quarters + prior-year applied); refund/owe incl. the "
     "line 38 penalty inclusion rule. Constants year-keyed for TY2025 AND TY2026 "
-    "(_constants_for_year pattern) — every constant cited per year. BRIDGE: until "
-    "Sprint Topic 3 lands, any line 3a amount or line 7a capital gain distribution "
-    "fires a RED diagnostic and the spine must NOT compute table-only tax on that "
-    "return (D_1040_001). Unsupported paths are enumerated as RED diagnostics — the "
-    "spine never computes a wrong number silently. Supersedes the Session-14 stub "
-    "(R001/R002/line_11_agi retired by this loader; semantics re-specified as "
-    "R-CR-03 / R-PAY-07 / lines 11a-11b)."
+    "(_constants_for_year pattern) — every constant cited per year. BRIDGE RETIRED "
+    "2026-06-11 (Topic 3, Ken-approved narrowing): the QDCGT worksheet "
+    "(1040_INTDIV spec) now computes line 16 on supported preferential-rate paths "
+    "(R-QDCGT-GATE supersedes R-TAX-07); still-unsupported paths fire "
+    "D_INTDIV_001..004 (Sch D required / unasserted 2a / 8814 / 2555-FEIE) — "
+    "D_1040_001 retired with the gate. Unsupported paths remain enumerated as RED "
+    "diagnostics — the spine never computes a wrong number silently. Supersedes "
+    "the Session-14 stub (R001/R002/line_11_agi retired by this loader; semantics "
+    "re-specified as R-CR-03 / R-PAY-07 / lines 11a-11b)."
 )
 
 # Existing sources to REUSE (looked up, not modified). New excerpts attach via
@@ -983,9 +985,11 @@ FORM_FACTS: list[dict] = [
      "default_value": "0", "sort_order": 50, "notes": "AGGREGATE over InterestIncome rows (computed feeder, exists today)."},
     {"fact_key": "qualified_dividends", "label": "Qualified dividends (3a)", "data_type": "decimal",
      "default_value": "0", "sort_order": 51,
-     "notes": "Direct entry until Topic 3 (1099-DIV model). ANY value here fires the D_1040_001 bridge — tax not computable."},
+     "notes": "COMPUTED feeder from the 1099-DIV model (Topic 3, R-AGG-3A; override = holding-period escape "
+              "hatch). Tax via the QDCGT worksheet (1040_INTDIV R-QDCGT-GATE); blocked paths fire D_INTDIV_001..004."},
     {"fact_key": "ordinary_dividends", "label": "Ordinary dividends (3b)", "data_type": "decimal",
-     "default_value": "0", "sort_order": 52, "notes": "Direct entry until Topic 3. Included in line 9."},
+     "default_value": "0", "sort_order": 52,
+     "notes": "COMPUTED feeder from the 1099-DIV model (Topic 3, R-AGG-3B). Included in line 9."},
     {"fact_key": "ira_distributions_gross", "label": "IRA distributions (4a)", "data_type": "decimal",
      "default_value": "0", "sort_order": 53, "notes": "Direct entry until Topic 5 (1099-R model)."},
     {"fact_key": "ira_distributions_taxable", "label": "IRA distributions — taxable (4b)", "data_type": "decimal",
@@ -1002,7 +1006,9 @@ FORM_FACTS: list[dict] = [
      "sort_order": 59, "notes": "RED unsupported (Topic 5 keeps it RED too) — D_1040_014."},
     {"fact_key": "capital_gain_or_loss", "label": "Capital gain or (loss) (7a)", "data_type": "decimal",
      "default_value": "0", "sort_order": 60,
-     "notes": "Direct entry until Topics 3/8. ANY nonzero value fires the D_1040_001 bridge — tax not computable."},
+     "notes": "COMPUTED on the Exception-1 checkbox path (Topic 3, R-AGG-7A: sum of 1099-DIV box 2a when "
+              "asserted + docs clean). Otherwise direct entry — a loss or an unasserted/manual entry blocks "
+              "line 16 (D_INTDIV_001/002) until Schedule D (Topic 8)."},
     {"fact_key": "schedule_1_additional_income", "label": "Additional income — Schedule 1 line 10 (line 8)",
      "data_type": "decimal", "default_value": "0", "sort_order": 61,
      "notes": "Direct entry until Topic 2 seeds Schedule 1 (then computed from its total)."},
@@ -1250,14 +1256,18 @@ FORM_RULES: list[dict] = [
     {"rule_id": "R-TAX-01", "title": "Line 16 method routing", "rule_type": "routing",
      "precedence": 9, "sort_order": 40,
      "formula": ("if TI < 100000: Tax Table (MANDATORY) | if TI >= 100000: Tax Computation Worksheet | "
-                 "OVERRIDES (any -> D_1040_001/003/004, tax NOT computed): QDCGT triggers (L3a > 0, or "
-                 "cap-gain distributions on L7a), Sch D Tax Worksheet triggers, Form 8615 conditions, "
-                 "Schedule J, Form 2555 FEIE worksheet"),
+                 "QDCGT triggers (L3a > 0, or Exception-1 cap-gain distributions on L7a): the QDCGT "
+                 "worksheet (1040_INTDIV R-QDCGT-GATE/R-QDCGT-01..07) computes line 16 | "
+                 "STILL-BLOCKED OVERRIDES (tax NOT computed): Sch D / Sch D Tax Worksheet triggers "
+                 "(D_INTDIV_001/002), Form 8814 inclusion (D_INTDIV_003), Form 2555 FEIE worksheet "
+                 "(D_INTDIV_004), Form 8615 conditions (D_1040_004), 8814/4972/box-3 add-ons (D_1040_003), "
+                 "Schedule J"),
      "inputs": ["taxable_income", "qualified_dividends", "capital_gain_or_loss"], "outputs": [],
      "description": ("ONCE PER RETURN. Verbatim from the 2025 instructions: under $100,000 the Tax Table "
                      "is mandatory ('you must use'); the spine NEVER applies rate schedules below the "
-                     "threshold. Until Topic 3, any QDCGT trigger fires the RED bridge instead of "
-                     "computing a wrong table-only number.")},
+                     "threshold. Topic 3 (2026-06-11): the QDCGT worksheet handles supported "
+                     "preferential-rate paths; the remaining unsupported triggers blank line 16 with "
+                     "their granular REDs — never a wrong table-only number.")},
     {"rule_id": "R-TAX-02", "title": "Tax Table convention (TI < $100,000) — midpoint, half-up", "rule_type": "calculation",
      "precedence": 10, "sort_order": 41,
      "formula": ("rows: [0,5)->tax 0 by convention; [5,25) in $10 bands; [25,3000) in $25 bands; "
@@ -1295,13 +1305,10 @@ FORM_RULES: list[dict] = [
      "formula": "if tax_8814_amount or tax_4972_amount or tax_other_box3_amount != 0: D_1040_003 (error)",
      "inputs": ["tax_8814_amount", "tax_4972_amount", "tax_other_box3_amount"], "outputs": [],
      "description": "ONCE PER RETURN. Checkbox literals + amounts are stored for the render leg, but v1 does not compute them."},
-    {"rule_id": "R-TAX-07", "title": "BRIDGE — qualified dividends / capital gains block table-only tax", "rule_type": "validation",
-     "precedence": 9, "sort_order": 46,
-     "formula": "if L3a > 0 OR L7a != 0: D_1040_001 (error); line 16 NOT computed by the table/TCW",
-     "inputs": ["qualified_dividends", "capital_gain_or_loss"], "outputs": [],
-     "description": ("ONCE PER RETURN. Sprint Topic 1 DoD bridge: those returns need the QDCGT worksheet "
-                     "(Topic 3) or Schedule D (Topic 8). The spine must never compute ordinary-rate tax on "
-                     "preferential-rate income. Topic 3 replaces this diagnostic with the worksheet.")},
+    # R-TAX-07 (BRIDGE) RETIRED 2026-06-11 — Topic 3's R-QDCGT-GATE (1040_INTDIV
+    # spec) superseded it; the loader deletes the seeded rule via
+    # BRIDGE_RETIRE_RULE_IDS (same explicit-retirement pattern as the
+    # Session-14 stub). D_1040_001 and FA-1040-SPINE-15 retire with it.
     {"rule_id": "R-TAX-08", "title": "Kiddie-tax exposure (Form 8615) — unsupported", "rule_type": "validation",
      "precedence": 0, "sort_order": 47,
      "formula": ("if taxpayer_claimed_as_dependent AND unearned income > 2700 (TY2025): D_1040_004 (error). "
@@ -1496,7 +1503,8 @@ RULE_AUTHORITY_LINKS: list[tuple[str, str, str, str]] = [
     ("R-TAX-04", "RP_2025_32", "primary", "§4.01 TY2026 schedules"),
     ("R-TAX-05", "IRS_2025_1040_TT", "secondary", "No published table for other years — hard stop"),
     ("R-TAX-06", "IRS_2025_1040_INSTR", "primary", "Line 16 add-on taxes list (8814/4972/962/ECR/8621/965INC)"),
-    ("R-TAX-07", "IRS_2025_1040_INSTR", "primary", "QDCGT worksheet triggers (3a; 7a cap-gain distributions)"),
+    # R-TAX-07 link retired with the bridge (2026-06-11) — the QDCGT triggers
+    # are cited on the 1040_INTDIV spec's R-QDCGT-GATE.
     ("R-TAX-08", "IRS_2025_1040_INSTR", "primary", "Form 8615 conditions; $2,700 TY2025 threshold"),
 
     # ── Credits / other taxes ──
@@ -1560,10 +1568,11 @@ FORM_LINES: list[dict] = [
      "source_rules": ["R-INC-03"], "sort_order": 20, "notes": "Computed feeder (InterestIncome aggregate)."},
     {"line_number": "2b", "description": "Taxable interest", "line_type": "calculated",
      "source_rules": ["R-INC-03"], "sort_order": 21, "notes": "Computed feeder (InterestIncome aggregate)."},
-    {"line_number": "3a", "description": "Qualified dividends", "line_type": "input", "sort_order": 22,
-     "notes": "Direct entry until Topic 3. ANY value -> D_1040_001 bridge (tax not computed)."},
-    {"line_number": "3b", "description": "Ordinary dividends", "line_type": "input", "sort_order": 23,
-     "notes": "Direct entry until Topic 3. Included in line 9."},
+    {"line_number": "3a", "description": "Qualified dividends", "line_type": "calculated", "sort_order": 22,
+     "notes": "Computed feeder — Topic 3 R-AGG-3A (override = holding-period escape hatch). "
+              "Tax via the QDCGT worksheet (1040_INTDIV)."},
+    {"line_number": "3b", "description": "Ordinary dividends", "line_type": "calculated", "sort_order": 23,
+     "notes": "Computed feeder — Topic 3 R-AGG-3B. Included in line 9."},
     {"line_number": "3c", "description": "Child's dividends included (checkboxes: in 3a / in 3b)", "line_type": "informational",
      "sort_order": 24, "notes": "Form 8814 interplay -> RED via line 16 box 1 when tax effect claimed."},
     {"line_number": "4a", "description": "IRA distributions", "line_type": "input", "sort_order": 25,
@@ -1581,7 +1590,8 @@ FORM_LINES: list[dict] = [
      "sort_order": 33, "notes": "Checked -> D_1040_014 RED (unsupported, stays RED through Topic 5)."},
     {"line_number": "6d", "description": "MFS lived apart all year checkbox", "line_type": "informational", "sort_order": 34},
     {"line_number": "7a", "description": "Capital gain or (loss); attach Schedule D if required", "line_type": "input",
-     "sort_order": 35, "notes": "App key 7. Direct entry until Topics 3/8. Nonzero -> D_1040_001 bridge."},
+     "sort_order": 35, "notes": "App key 7. Computed on the Exception-1 path (Topic 3 R-AGG-7A); direct entry "
+              "otherwise — a loss or unasserted entry blocks line 16 (D_INTDIV_001/002) until Schedule D (Topic 8)."},
     {"line_number": "7b", "description": "Checkboxes: Schedule D not required / includes child's gain", "line_type": "informational", "sort_order": 36},
     {"line_number": "8", "description": "Additional income from Schedule 1, line 10", "line_type": "input",
      "sort_order": 37, "notes": "Direct entry until Topic 2 wires the Schedule 1 total."},
@@ -1614,9 +1624,10 @@ FORM_LINES: list[dict] = [
     {"line_number": "15", "description": "Taxable income = max(0, 11b - 14)", "line_type": "calculated", "sort_order": 58},
 
     # ── Tax and credits ──
-    {"line_number": "16", "description": "Tax (Tax Table / Tax Computation Worksheet; checkboxes 8814 / 4972 / other)",
-     "line_type": "calculated", "source_rules": ["R-TAX-01", "R-TAX-02", "R-TAX-03", "R-TAX-05", "R-TAX-06", "R-TAX-07"],
-     "sort_order": 60, "notes": "Table semantics below $100,000 — NOT rate formulas (today's code uses brackets everywhere: must change)."},
+    {"line_number": "16", "description": "Tax (Tax Table / Tax Computation Worksheet / QDCGT Worksheet; checkboxes 8814 / 4972 / other)",
+     "line_type": "calculated", "source_rules": ["R-TAX-01", "R-TAX-02", "R-TAX-03", "R-TAX-05", "R-TAX-06"],
+     "sort_order": 60, "notes": "Table semantics below $100,000 — NOT rate formulas. Preferential-rate income routes "
+              "through the QDCGT worksheet (1040_INTDIV R-QDCGT-GATE) since Topic 3 (2026-06-11)."},
     {"line_number": "17", "description": "Amount from Schedule 2, line 3", "line_type": "input",
      "source_rules": ["R-CR-01"], "sort_order": 61},
     {"line_number": "18", "description": "Add lines 16 and 17", "line_type": "subtotal", "source_rules": ["R-CR-02"], "sort_order": 62},
@@ -1684,11 +1695,9 @@ FORM_LINES: list[dict] = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 FORM_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_1040_001", "title": "BRIDGE — qualified dividends / capital gain present", "severity": "error",
-     "condition": "L3a > 0 OR L7a != 0",
-     "message": ("Qualified dividends / capital gain distributions present — tax computation not yet "
-                 "supported (Qualified Dividends and Capital Gain Tax Worksheet / Schedule D). Prepare manually."),
-     "notes": "Sprint Topic 1 DoD bridge. Topic 3 (QDCGT worksheet) replaces this; Topic 8 extends to Schedule D."},
+    # D_1040_001 (BRIDGE) RETIRED 2026-06-11 with R-TAX-07 — replaced by
+    # D_INTDIV_001..004 in the 1040_INTDIV spec (deleted via
+    # BRIDGE_RETIRE_DIAGNOSTIC_IDS below).
     {"diagnostic_id": "D_1040_002", "title": "Unsupported tax year", "severity": "error",
      "condition": "tax_year not in year-keyed constants (brackets / std deduction / aged-blind / dependent cap)",
      "message": "Tax year {tax_year} is not supported — constants not verified. Tax and standard deduction NOT computed.",
@@ -1930,12 +1939,10 @@ TEST_SCENARIOS: list[dict] = [
                "Line 37 = 4,055 + 50 penalty (instructions: include line 38 in line 37).")},
 
     # ── Diagnostics fire ──
-    {"scenario_name": "DG-1 — bridge: qualified dividends present -> D_1040_001, no tax computed",
-     "scenario_type": "failure", "sort_order": 50,
-     "inputs": {"tax_year": 2025, "filing_status": "single", "taxpayer_dob": "1985-01-01",
-                "1a": 30000, "3a": 500, "3b": 500},
-     "expected_outputs": {"D_1040_001_fires": True, "16_not_computed": True},
-     "notes": "The spine must never compute table-only tax on a return with line 3a amounts."},
+    # DG-1 (bridge scenario) RETIRED 2026-06-11 with D_1040_001 — direct-entry
+    # 3a is no longer possible (computed feeder); the blocked/computed paths
+    # are pinned by the 1040_INTDIV ID-T*/ID-G* scenarios instead (deleted via
+    # BRIDGE_RETIRE_SCENARIO_NAMES below).
     {"scenario_name": "DG-2 — unsupported year 2024 -> D_1040_002, no silent $0",
      "scenario_type": "failure", "sort_order": 51,
      "inputs": {"tax_year": 2024, "filing_status": "single", "taxpayer_dob": "1985-01-01", "1a": 50000},
@@ -2075,14 +2082,9 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "sum_check", "form": "1040", "output": "L34", "sum_of": ["L35a", "L36"],
                     "when": "L34 > 0"},
      "sort_order": 14},
-    {"assertion_id": "FA-1040-SPINE-15", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "BRIDGE gate: 3a/7a present -> table-only tax NOT computed",
-     "description": ("Validates R-TAX-07 / D_1040_001. Bug it catches: the spine quietly taxing "
-                     "preferential-rate income at ordinary rates (the exact failure the sprint forbids)."),
-     "definition": {"kind": "gating_check", "form": "1040",
-                    "trigger": "L3a > 0 OR L7a != 0", "blocked_output": "L16",
-                    "diagnostic": "D_1040_001", "replaced_by": "Topic 3 QDCGT worksheet"},
-     "sort_order": 15},
+    # FA-1040-SPINE-15 RETIRED 2026-06-11 with the bridge — its successors are
+    # FA-1040-INTDIV-05/10 (authored in load_1040_intdiv_qdcgt.py). Deleted via
+    # BRIDGE_RETIRE_ASSERTION_IDS below.
     {"assertion_id": "FA-1040-SPINE-16", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Unsupported year is a hard stop, never silent $0",
      "description": "Validates R-TAX-05 / D_1040_002 (the audited silent gap).",
@@ -2141,6 +2143,15 @@ class Command(BaseCommand):
     STUB_FACT_KEYS = ("line_11_agi",)
     STUB_LINE_NUMBERS = ("11",)
 
+    # Topic 3 bridge retirement (2026-06-11, Ken-approved narrowing):
+    # R-TAX-07 / D_1040_001 / DG-1 / FA-1040-SPINE-15 are superseded by the
+    # 1040_INTDIV spec's R-QDCGT-GATE, D_INTDIV_001..004, ID-T*/ID-G*
+    # scenarios, and FA-1040-INTDIV-05/10.
+    BRIDGE_RETIRE_RULE_IDS = ("R-TAX-07",)
+    BRIDGE_RETIRE_DIAGNOSTIC_IDS = ("D_1040_001",)
+    BRIDGE_RETIRE_SCENARIO_PREFIXES = ("DG-1 ",)
+    BRIDGE_RETIRE_ASSERTION_IDS = ("FA-1040-SPINE-15",)
+
     @transaction.atomic
     def handle(self, *args, **opts):
         self._guard_against_hollow_seed()
@@ -2152,6 +2163,7 @@ class Command(BaseCommand):
         self._load_new_excerpts_on_existing(sources)
         form = self._upsert_form()
         self._retire_stub_artifacts(form)
+        self._retire_bridge_artifacts(form)
         self._upsert_facts(form)
         rules = self._upsert_rules(form)
         self._upsert_authority_links(rules, sources)
@@ -2207,6 +2219,35 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(
                 f"  retired stub artifacts: rules+links={n_rules}, facts={n_facts}, lines={n_lines} "
                 "(R001/R002 -> R-CR-03/R-PAY-06; line_11_agi -> agi; line 11 -> 11a/11b)"
+            ))
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Bridge retirement (Topic 3, 2026-06-11 — Ken-approved narrowing)
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def _retire_bridge_artifacts(self, form):
+        n_rules, _ = FormRule.objects.filter(
+            tax_form=form, rule_id__in=self.BRIDGE_RETIRE_RULE_IDS,
+        ).delete()
+        n_diags, _ = FormDiagnostic.objects.filter(
+            tax_form=form, diagnostic_id__in=self.BRIDGE_RETIRE_DIAGNOSTIC_IDS,
+        ).delete()
+        n_tests = 0
+        for prefix in self.BRIDGE_RETIRE_SCENARIO_PREFIXES:
+            n, _ = TestScenario.objects.filter(
+                tax_form=form, scenario_name__startswith=prefix,
+            ).delete()
+            n_tests += n
+        n_fas, _ = FlowAssertion.objects.filter(
+            assertion_id__in=self.BRIDGE_RETIRE_ASSERTION_IDS,
+        ).delete()
+        if n_rules or n_diags or n_tests or n_fas:
+            self.stdout.write(self.style.WARNING(
+                f"  retired bridge artifacts: rules+links={n_rules}, "
+                f"diagnostics={n_diags}, scenarios={n_tests}, "
+                f"flow_assertions={n_fas} (R-TAX-07/D_1040_001/DG-1/"
+                f"FA-1040-SPINE-15 -> 1040_INTDIV R-QDCGT-GATE/"
+                f"D_INTDIV_001..004/ID scenarios/FA-1040-INTDIV-05+10)"
             ))
 
     # ─────────────────────────────────────────────────────────────────────────

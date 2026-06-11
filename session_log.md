@@ -4,6 +4,24 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 c — Spine bridge retired (Topic 3 compute leg, Ken-approved narrowing)
+- `load_1040_spine.py` edited per the approved D_1040_001-narrowing plan
+  (PM #11 pattern, new explicit `_retire_bridge_artifacts` step mirroring
+  the Session-14 stub retirement): **R-TAX-07 rule (+1 authority link),
+  D_1040_001 diagnostic, DG-1 scenario, and FA-1040-SPINE-15 deleted**;
+  R-TAX-01 routing now names the QDCGT worksheet for supported
+  preferential-rate paths + the still-blocked overrides
+  (D_INTDIV_001..004 / D_1040_003/004); facts 3a/3b/7a + lines 3a/3b
+  (now `calculated`) /7a/16 notes updated to the computed-feeder reality.
+- `run_spine_check.py` clean (44 rules / 16 diags / 32 scenarios / 15
+  assertions, 0 uncited, no dangling links) → loader re-run idempotent
+  against the deployed DB (retirement report: rules+links=2, diags=1,
+  scenarios=1, FAs=1). **RS DB: 35 forms, FlowAssertions 75; 1040 FA
+  export 61 → 60 (SPINE-15 gone, verified).**
+- Deployed `lookup/1040/export/` semantically diffed vs the old canonical
+  spec: ONLY the intended removals + the 8 narrowed-note items — committed
+  to tts-tax-app as the new canonical `server/specs/1040_spine_spec.json`.
+
 ## 2026-06-11 b — 1040_INTDIV / SCH_B seeded on Ken's approval
 - Review packet walked with Ken in-session (six judgment items incl. the
   WS18/WS21 half-up whole-dollar rounding, both years' breakpoint tables,
