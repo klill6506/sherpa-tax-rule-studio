@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM #11 — D_1040_017 added to the spine spec (digital-asset question)
+- Ken approved closing the digital-asset question gap (REVIEW_QUEUE item) in
+  tts-tax-app's session Q&A; the spine spec already carried the fact
+  (`digital_assets_answer`, choice yes/no, required) but no diagnostic.
+- `load_1040_spine.py`: +D_1040_017 "Digital-asset question unanswered"
+  (warning; condition `digital_assets_answer is None`). Loader re-run
+  (idempotent): 1040 now 17 diagnostics; everything else unchanged
+  (45 rules / 91 facts / 72 lines / 33 scenarios / 16 flow assertions).
+- Deployed export verified (17 diagnostics, D_1040_017 last); semantic diff vs
+  the prior canonical export showed ONLY the added diagnostic. Committed to
+  tts-tax-app as `server/specs/1040_spine_spec.json`.
+- New helper `run_spine_check.py` (RS root): wraps `check_spine_integrity.py`
+  with django.setup() — the checker imports loader modules that touch models
+  and can't run bare. (Note: `poetry run python -c` with a MULTILINE script
+  silently produces nothing on this Windows box — use wrapper files.)
+
 ## 2026-06-10 PM #5b — 1040 SPINE seeded on Ken's approval
 - Review packet walked with Ken in-session (constants per year, the Tax Table
   midpoint/half-up convention inference, diagnostics severities, stub
