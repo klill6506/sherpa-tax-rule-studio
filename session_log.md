@@ -4,6 +4,27 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM #12b — SCH_1/SCH_2/SCH_3 seeded on Ken's approval
+- Review packet walked with Ken in-session (totals formulas incl. the Sch 2
+  line-20 exclusion, sign conventions, diagnostics severities, 13 scenarios,
+  8812 placeholder re-pointing by semantic content). **Approved as authored.**
+- `READY_TO_SEED` flipped → `load_1040_sch123` run. One fix en route: the
+  IRC_62 excerpt carried `requires_human_review` — **AuthorityExcerpt has no
+  such field (source-level only, re-learned from PM #5)**; moved the flag into
+  summary_text. Atomic transaction = no partial writes from the failed run.
+- Seeded: SCH_1 (69 facts/10 rules/63 lines/6 diags/6 scenarios), SCH_2
+  (53/10/45/5/4), SCH_3 (34/8/33/3/4), 13 flow assertions, 36 links (100%
+  cited). **RS DB: 33 forms, FlowAssertions 64.**
+- Deployed exports verified (`lookup/SCH_1|SCH_2|SCH_3/export/` — counts match,
+  R-S2-05 "EXCLUDES L20" + S2-T2 1884 + S1-T2 -21000 survive the round trip).
+  Committed to tts-tax-app as canonical `server/specs/sch_{1,2,3}_spec.json`.
+- `/api/flow-assertions/export/?entity_type=1040` now returns 49 (13 CTC +
+  7 SCH1A + 16 SPINE + 13 SCH123). The 13 are STAGED in tts-tax-app
+  (`flow_assertions_1040_sch123_pending.json`) — wired leg by leg.
+- Export-format note: spec export top-level keys are `metadata` / `facts` /
+  `rules` / `line_map` / `diagnostics` / `tests` / `authority_sources` /
+  `state_conformity` (no `form` / `lines` keys).
+
 ## 2026-06-10 PM #12 — Schedules 1/2/3 specs authored (Sprint Topic 2), READY_TO_SEED=False
 - `specs/management/commands/load_1040_sch123.py` authored: creates THREE TaxForms
   (SCH_1 / SCH_2 / SCH_3, FED TY2025 v1) in one idempotent command.
