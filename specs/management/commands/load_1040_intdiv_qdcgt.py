@@ -97,11 +97,13 @@ from specs.models import (
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SAFETY GUARD — Ken flips this to True after the review walk. Never flip it
-# yourself.
+# SAFETY GUARD — flipped to True 2026-06-11 on Ken's in-session approval of
+# the review packet (the six judgment items incl. WS18/WS21 half-up rounding,
+# both years' breakpoint tables, the aggregation rosters, diagnostics
+# severities, the 21 scenarios, the D_1040_001-narrowing plan).
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
