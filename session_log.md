@@ -4,6 +4,47 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 — Topic 3 specs authored (Interest, Dividends & QDCGT), READY_TO_SEED=False
+- `specs/management/commands/load_1040_intdiv_qdcgt.py` authored: creates TWO
+  TaxForms in one idempotent command. **1040_INTDIV (pseudo-form): 55 facts /
+  17 rules / 30 lines / 10 diagnostics / 15 scenarios — 1099-INT/DIV document
+  facts + aggregation to 1040 2a/2b/3a/3b/7a + 25b extension + the full
+  25-line QDCGT worksheet. SCH_B: 5 facts / 6 rules / 10 lines / 7
+  diagnostics / 6 scenarios. 12 flow assertions (FA-1040-INTDIV-01..10,
+  FA-1040-SCHB-01..02), 4 new authority sources (Sch B face + instructions,
+  1099-INT, 1099-DIV), 5 new excerpts on existing sources (QDCGT worksheet
+  verbatim + Exception 1 + line sources on IRS_2025_1040_INSTR; §2.03/§4.03
+  breakpoints on RP_2024_40/RP_2025_32), 37 rule links (100% cited).**
+- Sources: 2025 f1040sb downloaded into the tts-tax-app manifest (SHA
+  recorded); i1040sb (3pp), i1040gi pp.25-26/31/33/37-38, 1099-INT/DIV
+  Rev. 1-2024 faces, RP 2024-40 §2.03 + RP 2025-32 §4.03 all transcribed
+  positionally the same session (dumps in tts-tax-app server/.scratch/).
+- **Year-keyed constants (the only ones):** QDCGT WS6/WS13 breakpoints.
+  TY2025 triple-verified (rev proc + worksheet face + prior capture);
+  TY2026 from RP 2025-32 §4.03 — incl. the trap that WS13 single ≠ MFS
+  (533,400 vs 300,000) while WS6 single == MFS.
+- **Six judgment items flagged for Ken** (module docstring + rule
+  descriptions): ABP box-11/12 default subtraction, per-doc tax-exempt
+  floor, box-10 market-discount inclusion, WS18/WS21 half-up whole-dollar
+  rounding (pinned by scenario ID-Q9 247.50→248), the Exception-1
+  preparer-assertion fact, 3a override convention for holding-period
+  exceptions.
+- **Spine supersession documented:** R-TAX-07/D_1040_001 bridge NARROWS to
+  D_INTDIV_001/002/003/004 (Sch D required / unasserted 2a / 8814 / 2555);
+  spine R-PAY-02 25b roster extends to DIV box 4; 1040 2a/2b/3a/3b become
+  computed feeders. D_1040_001 retires at the build leg via spine-loader
+  edit (PM #11 pattern) on Ken's approval.
+- `check_intdiv_integrity.py` (RS root): structural checks + INDEPENDENT
+  recomputation of every scenario — full 25-line worksheet from its own
+  bracket/breakpoint transcription (2026 MFJ uppers verified against the
+  Ken-blessed compute.py table), boundary-pair checks, rounding-pin
+  load-bearing check, cross-fixture SB-T1 == ID-T1 roster tie. ALL CHECKS
+  PASS.
+- Guard verified: `manage.py load_1040_intdiv_qdcgt` refuses with
+  CommandError while READY_TO_SEED=False. No DB writes this session.
+- Next: Ken's review walk (packet in the tts-tax-app session) → flip →
+  seed → export 1040_INTDIV/SCH_B specs + flow assertions → build legs.
+
 ## 2026-06-10 PM #12b — SCH_1/SCH_2/SCH_3 seeded on Ken's approval
 - Review packet walked with Ken in-session (totals formulas incl. the Sch 2
   line-20 exclusion, sign conventions, diagnostics severities, 13 scenarios,
