@@ -69,10 +69,13 @@ from specs.models import (
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SAFETY GUARD — Ken flips this after the review packet walk
+# SAFETY GUARD — flipped to True 2026-06-10 on Ken's in-session approval of
+# the review packet (totals formulas incl. the Sch 2 line-20 exclusion, sign
+# conventions, diagnostics severities, the 13 scenarios, 8812 placeholder
+# re-pointing by semantic content, the candidate YELLOW feeders).
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -341,9 +344,10 @@ AUTHORITY_SOURCES: list[dict] = [
                     "the case of an individual, gross income minus the following deductions: ... "
                     "[enumerated above-the-line deductions]"
                 ),
-                "summary_text": "AGI = gross income minus the §62(a)-listed deductions — the law behind Schedule 1 Part II.",
+                "summary_text": ("AGI = gross income minus the §62(a)-listed deductions — the law behind "
+                                 "Schedule 1 Part II. PENDING VERBATIM CONFIRMATION (source-level "
+                                 "requires_human_review=True; excerpt model has no such field)."),
                 "is_key_excerpt": True,
-                "requires_human_review": True,
             },
         ],
     },
