@@ -4,6 +4,42 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-10 PM #12 — Schedules 1/2/3 specs authored (Sprint Topic 2), READY_TO_SEED=False
+- `specs/management/commands/load_1040_sch123.py` authored: creates THREE TaxForms
+  (SCH_1 / SCH_2 / SCH_3, FED TY2025 v1) in one idempotent command.
+  **SCH_1: 69 facts / 10 rules / 63 lines / 6 diagnostics / 6 scenarios.
+  SCH_2: 53 / 10 / 45 / 5 / 4. SCH_3: 34 / 8 / 33 / 3 / 4.
+  13 flow assertions (FA-1040-SCH1-01..04, SCH2-01..05, SCH3-01..04).
+  4 new authority sources (3 form faces + IRC_62), 36 rule-authority links
+  (100% cited).**
+- Sources: 2025 f1040s1/f1040s2/f1040s3 downloaded fresh from irs.gov into
+  tts-tax-app's manifest (SHA256 recorded) and transcribed positionally with
+  pymupdf the same session. Schedule 3 (2025) is a SINGLE page — manifest
+  corrected. Schedule 2 (2025) adds EPE recapture lines 1d/1e/1f/19 (Form 4255).
+- Aggregation-form scope: every line direct-entry; computed lines are the face
+  sums only (S1: 9/10/25/26 · S2: 1z/3/7/18/21 · S3: 7/8/14/15). NO year-keyed
+  constants exist on these forms — the TY2026 faces must be re-verified on
+  release (tracker note).
+- Load-bearing subtleties encoded: **Sch 2 line 20 (965 installment) is NOT in
+  the line-21 sum** (scenario S2-T2 pins 1,884 not 3,884); Sch 1 8a/8d/8s are
+  NEGATIVE entries (parentheses); 'combine' lines 10/9 allow negatives (loss
+  year scenario pins -21,000); Sch 3 6l (8978) is signed; reserved lines
+  S1.22 / S2.10 / S3.6e police-checked.
+- Spine supersession documented per rule: 1040 lines 8/10/17/20/23/31 become
+  COMPUTED feeders from S1.10/S1.26/S2.3/S3.8/S2.21/S3.15, retiring the spine's
+  six direct-entry schedule facts. 8812 placeholder re-pointing (se_tax_total,
+  additional_medicare_tax_amount, other_employment_taxes, excess_ss_rrta_withheld,
+  deductible_se_tax_half, schedule_3_pre_ctc_credits_total) flagged for Ken in
+  the review walk — the 8812 spec's Sch 2/3 line references predate the 2025
+  renumbering.
+- `check_sch123_integrity.py` (RS root): pre-seed checker — duplicate ids,
+  uncited rules, dangling links, choice fields, rule inputs vs declared facts,
+  AND independent re-computation of every scenario sum. ALL CHECKS PASS.
+- Guard verified: `manage.py load_1040_sch123` refuses with CommandError while
+  READY_TO_SEED=False. No DB writes this session.
+- Next: Ken's review walk (packet prepared in tts-tax-app session) → flip →
+  seed → export SCH_1/SCH_2/SCH_3 specs + flow assertions → tts-tax-app build legs.
+
 ## 2026-06-10 PM #11 — D_1040_017 added to the spine spec (digital-asset question)
 - Ken approved closing the digital-asset question gap (REVIEW_QUEUE item) in
   tts-tax-app's session Q&A; the spine spec already carried the fact
