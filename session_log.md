@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 d — Topic 5 (Retirement Income) specs AUTHORED, READY_TO_SEED=False
+- `specs/management/commands/load_1040_retirement.py` authored (Sprint Topic 5).
+  Creates TWO TaxForms: **1040_RETIREMENT** (pseudo-form: ~33 facts [full 1099-R
+  box surface + SSA-1099 + rollover/QCD/5329-linkage], 12 rules, 27 lines [4a/4b/
+  5a/5b/6a/6b aggregation + the 18-line SS Benefits Worksheet], 7 diagnostics,
+  14 scenarios) and **5329** (real face Part I: 3 facts, 3 rules, 4 lines, 1
+  diagnostic, 3 scenarios). **7 flow assertions** (FA-1040-RET-01..07: 4a/4b &
+  5a/5b rosters, 25b extension, 5329 line-4 rate, SS 6b=min(WS16,WS17)+85% cap,
+  the statutory SS constants both years, the RED-gate truth table). **4 new
+  authority sources** (Form 1099-R, i1099r Table 1 distribution codes, Form 5329,
+  i5329 exception list) + 2 new excerpts on IRS_2025_1040_INSTR (the SS worksheet
+  verbatim + lines 4a/4b/5a/5b rollover/QCD literals). Rule links 100% cited.
+- Sources fetched + text-extracted the same day (tts-tax-app `server/.scratch/`:
+  f1099r/i1099r/f5329/i5329-2025.pdf + dumps; SS worksheet from the existing
+  i1040gi-2025.pdf p.31). Consolidated brief committed at tts-tax-app
+  `server/specs/_topic5_retirement_source_brief.md`.
+- **Ken's 5 scope decisions confirmed in-session 2026-06-11** and encoded: v1
+  distribution-code set (1,2,3,4,7,8,9,B,D,G,H,Q,S,Y + IRA checkbox; rest RED);
+  5329 exceptions 01-12+19 (≥13/99 RED); direct-to-Sch-2 shortcut; rollover/QCD
+  preparer-entered; TY2026 statutory constants to confirm at the walk.
+- **No year-keyed constants** (SS §86 thresholds + 5329 10%/25% are statutory
+  non-indexed — same both years, unlike Topic 3's breakpoints).
+- Verified: `py_compile` clean; `manage.py load_1040_retirement` REFUSES
+  (READY_TO_SEED=False, "all populated", exit 1, zero DB writes — imports + guard
+  + roster all valid). **RS DB UNCHANGED (still 35 forms).**
+- NEXT: (1) write `check_retirement_integrity.py` (independent recompute of the
+  SS worksheet + 5329 scenarios — the math-verification gate before the walk);
+  (2) Ken's review walk; (3) on approval flip → seed → verify → export canonical
+  `retirement_spec.json` + `5329_spec.json` to tts-tax-app + stage flow
+  assertions; (4) tts-tax-app build legs.
+
 ## 2026-06-11 c — Spine bridge retired (Topic 3 compute leg, Ken-approved narrowing)
 - `load_1040_spine.py` edited per the approved D_1040_001-narrowing plan
   (PM #11 pattern, new explicit `_retire_bridge_artifacts` step mirroring
