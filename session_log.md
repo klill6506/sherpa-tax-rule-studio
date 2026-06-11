@@ -4,6 +4,27 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 b — 1040_INTDIV / SCH_B seeded on Ken's approval
+- Review packet walked with Ken in-session (six judgment items incl. the
+  WS18/WS21 half-up whole-dollar rounding, both years' breakpoint tables,
+  aggregation rosters, diagnostics severities, the 21 scenarios, the
+  D_1040_001-narrowing plan). **Approved as authored.**
+- `READY_TO_SEED` flipped → `load_1040_intdiv_qdcgt` run clean (no en-route
+  fixes). Seeded: 1040_INTDIV (55 facts/17 rules/30 lines/10 diags/15
+  scenarios), SCH_B (5/6/10/7/6), 12 flow assertions, 4 new sources + 5 new
+  excerpts on existing, 37 links (100% cited). **RS DB: 35 forms,
+  FlowAssertions 76.**
+- Deployed exports verified (`lookup/1040_INTDIV|SCH_B/export/` — counts +
+  both years' breakpoints + the ID-Q9 248 rounding pin + SB-T1 2,375 tie all
+  survive the round trip). Committed to tts-tax-app as canonical
+  `server/specs/intdiv_spec.json` / `sch_b_spec.json` (`ebfe2d1`).
+- `/api/flow-assertions/export/?entity_type=1040` now returns **61** (49 +
+  12 INTDIV/SCHB). The 12 are STAGED in tts-tax-app
+  (`flow_assertions_1040_intdiv_pending.json`) — wired leg by leg.
+- Next: tts-tax-app build legs (seed → compute → render → input →
+  diagnostics → assertions; D_1040_001 narrows via load_1040_spine edit at
+  the compute leg).
+
 ## 2026-06-11 — Topic 3 specs authored (Interest, Dividends & QDCGT), READY_TO_SEED=False
 - `specs/management/commands/load_1040_intdiv_qdcgt.py` authored: creates TWO
   TaxForms in one idempotent command. **1040_INTDIV (pseudo-form): 55 facts /
