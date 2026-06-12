@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-12 c — 8995 L11 sourcing amended on Ken's approval (subtract Sch 1-A 13b)
+
+- At the tts-tax-app compute leg the engine flagged that the 8995 spec sources L11
+  (taxable income before QBI) as "1040 L11 − L12" verbatim — it did NOT subtract the
+  OBBBA Schedule 1-A line-13b deduction, although taxable income now includes 13b.
+  **Ken ruled in-session: subtract 13b** (L11 = 1040 L11 − L12 − L13b — every non-QBI
+  deduction comes out before the QBI income limitation). Affects the L14 limitation
+  cap and the 8995-vs-8995-A threshold boundary on senior/tips/overtime QBI returns.
+- `load_1040_schedule_c.py` updated in 3 places (the `qbi_taxable_income_before_qbi`
+  fact note, the R-8995-L13-L14 formula + description, the line-11 line_map
+  description) and RE-RUN idempotently — **DB counts unchanged** (44 forms, FA 105;
+  update-in-place). Deployed export verified (fact/rule/line carry the 13b text;
+  counts 13/8/21/5/7). Canonical `8995_spec.json` re-exported + committed in
+  tts-tax-app; engine (`compute_8995_db`) + diagnostic (D_8995_001) + tests updated
+  the same sitting.
+
 ## 2026-06-12 b — Topic 8 (Sch C + SE + 8995 re-author + 8959) REVIEWED + SEEDED on Ken's approval
 - Review walk in-session: Ken **APPROVED as authored**. The 4 `requires_human_review`
   walk items accepted as recommended: (1) 2026 MFS 8995 threshold $201,775 as

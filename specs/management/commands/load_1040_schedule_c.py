@@ -1171,7 +1171,10 @@ F8995_FACTS: list[dict] = [
      "notes": "RETURN LEVEL. Negative. WALK ITEM 4."},
     {"fact_key": "qbi_taxable_income_before_qbi", "label": "Line 11 — taxable income before the QBI deduction",
      "data_type": "decimal", "default_value": "0", "sort_order": 6,
-     "notes": "RETURN LEVEL. = Form 1040 line 11 (AGI) - line 12 (std/itemized deduction). The scope gate compares this to the threshold."},
+     "notes": ("RETURN LEVEL. = Form 1040 line 11 (AGI) - line 12 (std/itemized deduction) - line 13b "
+               "(Schedule 1-A additional deductions, OBBBA). Ken-approved 2026-06-12: 13b is a non-QBI "
+               "deduction that reduces taxable income, so 'before the QBI deduction' subtracts it too. "
+               "The scope gate compares this to the threshold.")},
     {"fact_key": "qbi_net_capital_gain", "label": "Line 12 — net capital gain (qualified dividends + net capital gain)",
      "data_type": "decimal", "default_value": "0", "sort_order": 7,
      "notes": ("RETURN LEVEL. = 1040 L3a (qualified dividends) + net capital gain. WALK ITEM 3: Schedule D not "
@@ -1217,9 +1220,11 @@ F8995_RULES: list[dict] = [
      "formula": "L10 = L5 + L9.",
      "inputs": [], "outputs": ["10"], "description": "RETURN LEVEL."},
     {"rule_id": "R-8995-L13-L14", "title": "Lines 11/12/13/14 — income limitation", "rule_type": "calculation", "precedence": 5, "sort_order": 6,
-     "formula": "L11 = taxable income before QBI (1040 L11 - L12); L12 = net capital gain (L3a + net cap gain); L13 = max(0, L11 - L12); L14 = L13 x 20%.",
+     "formula": "L11 = taxable income before QBI (1040 L11 - L12 - L13b Sch 1-A); L12 = net capital gain (L3a + net cap gain); L13 = max(0, L11 - L12); L14 = L13 x 20%.",
      "inputs": ["qbi_taxable_income_before_qbi", "qbi_net_capital_gain", "qbi_rate"], "outputs": ["11", "12", "13", "14"],
-     "description": "RETURN LEVEL. The income limitation reduces taxable income by net capital gain before the 20%. WALK ITEM 3 (net cap gain / Sch D)."},
+     "description": ("RETURN LEVEL. The income limitation reduces taxable income by net capital gain before the 20%. "
+                     "WALK ITEM 3 (net cap gain / Sch D). L11 subtracts the OBBBA Schedule 1-A line-13b deduction "
+                     "(Ken-approved 2026-06-12 — every non-QBI deduction comes out before the QBI limitation).")},
     {"rule_id": "R-8995-L15", "title": "Line 15 — QBI deduction = min(L10, L14) -> 1040 line 13a", "rule_type": "calculation", "precedence": 6, "sort_order": 7,
      "formula": "L15 = min(L10, L14) -> qbi_deduction_l15 -> Form 1040 line 13a.",
      "inputs": [], "outputs": ["15"],
@@ -1245,7 +1250,7 @@ F8995_LINES: list[dict] = [
     {"line_number": "8", "description": "Total REIT/PTP income. Combine lines 6 and 7 (if <= 0, enter 0)", "line_type": "calculated"},
     {"line_number": "9", "description": "REIT/PTP component. Line 8 x 20%", "line_type": "calculated"},
     {"line_number": "10", "description": "QBI deduction before income limitation. Add lines 5 and 9", "line_type": "subtotal"},
-    {"line_number": "11", "description": "Taxable income before the QBI deduction (1040 L11 - L12)", "line_type": "calculated"},
+    {"line_number": "11", "description": "Taxable income before the QBI deduction (1040 L11 - L12 - L13b Sch 1-A)", "line_type": "calculated"},
     {"line_number": "12", "description": "Net capital gain (qualified dividends + net capital gain)", "line_type": "calculated"},
     {"line_number": "13", "description": "Subtract line 12 from line 11 (if <= 0, enter 0)", "line_type": "calculated"},
     {"line_number": "14", "description": "Income limitation. Line 13 x 20%", "line_type": "calculated"},
