@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-12 b — Topic 8 (Sch C + SE + 8995 re-author + 8959) REVIEWED + SEEDED on Ken's approval
+- Review walk in-session: Ken **APPROVED as authored**. The 4 `requires_human_review`
+  walk items accepted as recommended: (1) 2026 MFS 8995 threshold $201,775 as
+  published (RP 2025-32 §4.26 rounding artifact, $25 above 'other' — diagnostic
+  boundary only); (2) multi-business QBI reduction (½-SE/SEHI/retirement) allocated
+  **pro-rata by net SE earnings**; (3) 8995 L12 net capital gain = 1040 L3a +
+  cap-gain distributions in v1, net-LT-gain added when Schedule D lands +
+  D_8995_002 warning; (4) QBI loss carryforward **supported** in v1. RED-defer
+  enumeration confirmed.
+- `READY_TO_SEED` flipped → `load_1040_schedule_c` run clean (no en-route fixes).
+  **Created SCHEDULE_C** (24 facts/9 rules/56 lines/7 diags/7 scenarios) + **SCHEDULE_SE**
+  (17/12/24/4/5) + **8959** (13/6/24/4/5); **8995 RE-AUTHORED** (13/8/21/5/7) — the
+  `_retire_stale_8995` step deleted **28 stale stub rows** (10 facts / 11 rules / 1
+  line / 3 diags / 3 tests + cascading RuleAuthorityLinks). **14 flow assertions.**
+  6 new authority sources + RP 2025-32 §4.26 excerpt, 100% cited. **RS DB: 41 → 44
+  forms; FlowAssertions 91 → 105.** Math gate re-run green pre-seed.
+- Deployed exports verified (`lookup/SCHEDULE_C|SCHEDULE_SE|8995|8959/export/` HTTP
+  200 — counts round-trip 24/9/56/7/7 · 17/12/24/4/5 · 13/8/21/5/7 · 13/6/24/4/5; 8995
+  re-author pins survive: R-8995-L15 present, stub R001 / `qualified_business_income`
+  GONE, real 17-line face incl. 1i-1v / 17). Committed to tts-tax-app as canonical
+  `server/specs/{schedule_c,schedule_se,8995,8959}_spec.json` + the 14 assertions
+  STAGED in `flow_assertions_1040_topic8_pending.json` (active 1040 gate untouched at
+  86; flow gate 108 passed — no tts-tax-app code touched).
+- NEXT: tts-tax-app build legs (seed → compute → render → input → diagnostics →
+  assertions per form), starting with build leg 1 — the **multi-business Schedule C FK
+  model** (proprietor=taxpayer|spouse) + Schedule SE/8995/8959 models + the
+  `seed_schedule_c`/`seed_schedule_se`/`seed_8995`/`seed_8959` commands + the
+  f1040sc/f1040sse/f8995(have)/f8959 manifest entries.
+
 ## 2026-06-12 — Topic 8 (Schedule C + SE + 8995 re-author + 8959) specs AUTHORED + math gate GREEN (READY_TO_SEED=False)
 - `specs/management/commands/load_1040_schedule_c.py` authored (Sprint Topic 8 /
   NEXT-UP #1), commit `aac4a38`. ONE idempotent command (the `load_1040_eic.py`
