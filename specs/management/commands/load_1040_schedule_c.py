@@ -134,8 +134,15 @@ from specs.models import (
 # citations, the verified constants BOTH years, the 4 requires_human_review walk
 # items, the cross-form flow map, the RED-defer enumeration). Until then the
 # command refuses to write to the DB (zero writes while False).
+#
+# FLIPPED 2026-06-12 — Ken APPROVED the review walk in-session: the verified
+# constants both years, the 4 requires_human_review walk items (2026 MFS 8995
+# threshold $201,775 as published; multi-business QBI reduction allocated pro-rata
+# by net SE earnings; 8995 L12 net capital gain = 1040 L3a + cap-gain distributions
+# in v1, net-LT-gain added when Schedule D lands + D_8995_002 warning; QBI loss
+# carryforward supported in v1), and the RED-defer enumeration.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -1102,8 +1109,8 @@ SCHEDSE_SCENARIOS: list[dict] = [
                "L11=230,875 x 0.029=6,695.38 (uncapped). Year-keying load-bearing (2025 base would differ).")},
     {"scenario_name": "SE-T5 — 1/2-SE-tax feeds Schedule 1 line 15 (EIC/8812 feeder)", "scenario_type": "normal", "sort_order": 5,
      "inputs": {"tax_year": 2025, "line_2": 30000, "se_w2_ss_wages_l8a": 0},
-     "expected_outputs": {"line_4a": 27705, "line_12": 4238.87, "line_13": 2119.43, "feeds_sch1_l15": True},
-     "notes": ("L4a=27,705; L12=27,705 x 0.153=4,238.87; L13=2,119.43 -> Sch 1 L15 (re-points the EIC Worksheet-B "
+     "expected_outputs": {"line_4a": 27705, "line_12": 4238.87, "line_13": 2119.44, "feeds_sch1_l15": True},
+     "notes": ("L4a=27,705; L12=27,705 x 0.153=4,238.87; L13=2,119.44 -> Sch 1 L15 (re-points the EIC Worksheet-B "
                "+ 8812 feeder from direct-entry to computed).")},
 ]
 
@@ -1381,7 +1388,7 @@ F8959_FACTS: list[dict] = [
 F8959_RULES: list[dict] = [
     {"rule_id": "R-8959-ENGAGE", "title": "Engage gate — compute only when wages/SE exceed the threshold", "rule_type": "routing", "precedence": 0, "sort_order": 1,
      "formula": "8959 engages iff line 4 (Medicare wages) > threshold OR (line 8 SE income + line 4) > threshold. Else line 11 (Sch 2) untouched.",
-     "inputs": ["amt_medicare_wages_l1", "amt_se_income_l8", "amt_filing_status", "amt_threshold"], "outputs": [],
+     "inputs": ["amt_medicare_wages_l1", "amt_se_income_l8", "amt_filing_status", "addl_medicare_threshold"], "outputs": [],
      "description": ("RETURN LEVEL. The EIC engage-gate precedent: no Form 8959 / Schedule 2 line 11 entry on "
                      "ordinary returns under the threshold (D_8959_001 explains when it engages).")},
     {"rule_id": "R-8959-L4-L7", "title": "Part I lines 4/6/7 — Additional Medicare on wages", "rule_type": "calculation", "precedence": 1, "sort_order": 2,
