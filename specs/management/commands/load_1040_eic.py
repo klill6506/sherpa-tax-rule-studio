@@ -114,15 +114,14 @@ from specs.models import (
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SAFETY GUARD — authored 2026-06-11, NOT yet reviewed/approved by Ken.
-# Flip to True ONLY after the in-session review walk (the source citations, the
-# §32 parameter tables BOTH years verified independently, the EIC Table midpoint
-# convention, the v1 in/out scope enumeration, the Worksheet-B SE sourcing, and
-# the qualifying-child / eligibility gate set). The math gate
-# (check_eic_integrity.py) must be green before the flip.
+# SAFETY GUARD — Ken APPROVED in-session 2026-06-11 (review walk: §32 parameter
+# tables both years math-gated cell-by-cell + reconciled within $1; EIC Table
+# $50-midpoint = the blessed Tax-Table convention; v1 in/out scope per the kickoff
+# decisions; Worksheet-B SE sourcing confirmed = Schedule 1 line 3 (net SE) − line
+# 15 (½-SE-tax)). Math gate check_eic_integrity.py GREEN before the flip.
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
