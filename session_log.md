@@ -36,13 +36,25 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   election; Worksheet-B SE; the 5 RED-gate fixtures; FA-02/06/08 constants. ALL PASS.
 - **Loader REFUSES (READY_TO_SEED=False, "all populated", exit 1, zero DB writes).
   RS DB UNCHANGED (still 37 forms; 1040_EIC/SCHEDULE_EIC/8867/8862 absent).**
-- ONE item to confirm at the walk: the Worksheet-B SE-component sourcing
-  (`eic_se_net_earnings` ← Sch 1 L3 net SE / `eic_se_half_deduction` ← Sch 1 L15) —
-  the DoD says "SE from Schedule 1 flowed-or-direct; Schedule C compute NOT required",
-  flagged in the rule descriptions for Ken's confirmation.
-- NEXT: Ken's review walk → on approval flip READY_TO_SEED → seed → verify → export
-  canonical `eic_spec.json` (+ the 3 face specs) + stage flow assertions → tts-tax-app
-  build legs (seed/compute/render/input/diagnostics/assertions).
+- **Ken's review walk — APPROVED in-session.** The one open item (Worksheet-B
+  SE-component sourcing) confirmed = `eic_se_net_earnings` ← Sch 1 L3 (net SE) /
+  `eic_se_half_deduction` ← Sch 1 L15 (½-SE-tax) per the DoD "Schedule 1
+  flowed-or-direct, Schedule C compute NOT required".
+- **Flipped `READY_TO_SEED=True` + seeded** (commit `00a550c`): `load_1040_eic`
+  created 1040_EIC (33/10/18/16/16) + SCHEDULE_EIC (7/1/7/1/2) + 8867 (16/1/12/2/3)
+  + 8862 (6/1/6/1/2), 4 new authority sources + §2.06 EIC excerpts on
+  RP_2024_40/RP_2025_32 + Worksheet/EIC-Table excerpts on the 1040 instructions,
+  **9 flow assertions**. All 4 forms 100% cited. **RS DB: 37 → 41 forms;
+  FlowAssertions 82 → 91.** Math gate re-run green pre-seed.
+- Deployed exports verified (`lookup/1040_EIC|SCHEDULE_EIC|8867|8862/export/` HTTP
+  200 — counts round-trip + pins EIC-T4 842 / EIC-T9 8231). Committed to tts-tax-app
+  as canonical `server/specs/{eic,schedule_eic,8867,8862}_spec.json` + the 9
+  assertions STAGED in `flow_assertions_1040_eic_pending.json` (active 1040 gate
+  untouched at 77; flow gate 99 passed).
+- NEXT: tts-tax-app build legs (seed → compute → render → input → diagnostics →
+  assertions), starting with build leg 1 — Dependent + Taxpayer additive migrations
+  (EIC reuses Dependent, no new doc model) + seed_1040_eic/schedule_eic/8867/8862 +
+  the f1040sei/f8867/f8862 manifest entries.
 
 ## 2026-06-11 f — Topic 5 (Retirement) REVIEWED + SEEDED on Ken's approval
 - Review walk in-session: Ken **approved** (source citations + SS Benefits
