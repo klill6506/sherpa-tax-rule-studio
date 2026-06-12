@@ -4,6 +4,60 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-12 — Topic 8 (Schedule C + SE + 8995 re-author + 8959) specs AUTHORED + math gate GREEN (READY_TO_SEED=False)
+- `specs/management/commands/load_1040_schedule_c.py` authored (Sprint Topic 8 /
+  NEXT-UP #1), commit `aac4a38`. ONE idempotent command (the `load_1040_eic.py`
+  4-form precedent) creating FOUR TaxForms from the Topic 8 source brief
+  (tts-tax-app `server/specs/_topic8_schedulec_source_brief.md`), 100% cited:
+  - **SCHEDULE_C** (24 facts / 9 rules / 56 lines / 7 diags / 7 scenarios / 10
+    links): Parts I-V incl. Part III COGS (Decision 1); line-30 simplified home
+    office (Decision 2 — min(sqft,300)x$5, gross-income limited to line 29, no
+    carryover); per-business (Decision 3); line 13 -> 4562 engine; line 31 ->
+    Sch 1 L3 + Sch SE L2. RED-defers: statutory employee, line 32b (6198), 8829.
+  - **SCHEDULE_SE** (17/12/24/4/5/13): Part I standard method, per proprietor;
+    year-keyed SS wage base (176,100 / 184,500); L12 -> Sch 2 L4, L13 -> Sch 1
+    L15 (existing EIC Worksheet-B + 8812 feeder); L6 -> 8959 L8. Part II
+    optional + church = RED-defer.
+  - **8995** RE-AUTHORED (13/8/21/5/7/10): retires the wrong stub (R001-R005 /
+    D001-D003 / lines 1-8 / 3 tests via `_retire_stale_8995`) and writes the
+    real 17-line face — per-business QBI reduced by 1/2-SE/SEHI/SE-retirement,
+    REIT/PTP component, income limitation -> 1040 L13a; year-keyed threshold
+    (above -> 8995-A RED-defer).
+  - **8959** (13/6/24/4/5/7, Decision 4): Part I wages + Part II SE (threshold
+    REDUCED BY Medicare wages) -> Sch 2 L11; Part V withholding -> 1040 L25c;
+    non-indexed thresholds; Part III RRTA RED-defer.
+  - **14 flow assertions** (FA-1040-SCHC-01..04, SCHSE-01..03, 8995-01..03,
+    8959-01..03, TOPIC8-01 the Sch C -> Sch SE L6 -> 8959 L8 chain).
+  - 6 NEW authority sources (Sch C face + i1040sc, Sch SE face, 8995 face +
+    re-authored i8995, 8959 face, Topic 751/SSA) + RP 2025-32 §4.26 excerpt on
+    the EXISTING RP_2025_32. 4 `requires_human_review` WALK ITEMS flagged in the
+    module docstring + rule descriptions: (1) 2026 MFS 8995 threshold $201,775 is
+    $25 above 'other' $201,750; (2) multi-business QBI allocation of
+    1/2-SE/SEHI/retirement (pro-rata default); (3) net-cap-gain / Schedule-D
+    deferral for 8995 L12; (4) QBI loss carryforward in/out.
+  - Year-keyed: SE_WAGE_BASE (176,100/184,500), QBI_THRESHOLDS (per status, both
+    years). Statutory/non-indexed (NOT year-keyed): SE 92.35/12.4/2.9/50 + $400;
+    8959 thresholds + 0.9%/1.45%; 20% QBI rate; home-office $5/300.
+- `check_topic8_integrity.py` authored + GREEN (commit `338a373`, the math gate
+  before Ken's walk). Carries its OWN re-typed constants + independent
+  recomputations of Schedule SE Part I (incl. the W-2-SS-wage cap), the Schedule
+  C gross-income/COGS/simplified-home-office chain, the 8995 QBI
+  reduction+income-limitation, and the 8959 reduced-threshold math; every
+  scenario (SC-T1..T7 / SE-T1..T5 / 8995-T1..T7 / 8959-T1..T5) recomputed and
+  matched; loader module constants cross-checked cell-by-cell; load-bearing pins
+  (SS cap binds; year-keying load-bearing; 8959 line 11 = threshold - Medicare
+  wages; QBI income limit binds; home-office gross-income limit). Found + fixed
+  one loader slip (SE-T5 L13 2119.43 -> 2119.44 ROUND_HALF_UP) + one structural
+  input typo (8959 ENGAGE). **ALL CHECKS PASS.**
+- **Loader REFUSES (READY_TO_SEED=False, "all populated", CommandError, zero DB
+  writes). RS DB UNCHANGED (still 41 forms; SCHEDULE_C/SCHEDULE_SE/8959 absent;
+  8995 stub NOT yet replaced — the re-author waits for the flip).**
+- NEXT: Ken's review walk (in-session) → on approval flip `READY_TO_SEED=True` →
+  seed (re-authors 8995) → verify deployed exports → commit canonical
+  `server/specs/{schedule_c,schedule_se,8995,8959}_spec.json` to tts-tax-app +
+  stage flow assertions → build legs (seed → compute → render → input →
+  diagnostics → assertions per form).
+
 ## 2026-06-11 g — Topic 7 (EIC + 8867/8862) specs AUTHORED + math gate GREEN (READY_TO_SEED=False)
 - `specs/management/commands/load_1040_eic.py` authored (Sprint Topic 7), commit
   `48e1fef`. Creates FOUR TaxForms from the Topic 7 source brief (tts-tax-app
