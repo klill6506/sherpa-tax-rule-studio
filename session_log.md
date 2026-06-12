@@ -4,6 +4,46 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-11 g — Topic 7 (EIC + 8867/8862) specs AUTHORED + math gate GREEN (READY_TO_SEED=False)
+- `specs/management/commands/load_1040_eic.py` authored (Sprint Topic 7), commit
+  `48e1fef`. Creates FOUR TaxForms from the Topic 7 source brief (tts-tax-app
+  `server/specs/_topic7_eic_source_brief.md`), the `load_1040_retirement.py`
+  precedent, 100% cited:
+  - **1040_EIC** (computational pseudo-form): 33 facts / 10 rules / 18 lines /
+    16 diagnostics / 16 scenarios / 16 rule_links. Step-5 earned income,
+    Worksheet A (non-SE) + mainstream Worksheet B (SE: Sch1 L3 net SE − Sch1 L15
+    ½-SE-tax), the EIC Table $50-bracket midpoint×rate ROUND_HALF_UP lookup, the
+    lower-of-AGI/earned-income rule, the Pub 596 Worksheet-1 investment-income
+    limit, the Rules-for-Everyone + childless eligibility gates → 1040 line 27a.
+    **YEAR-KEYED `EIC_PARAMS`** (both years, each verified independently — unlike
+    Topic 5's statutory non-indexed constants).
+  - **SCHEDULE_EIC** (7/1/7/1/2/1): model-driven per-child face from Dependent rows.
+  - **8867** (16/1/12/2/3/1) + **8862** (6/1/6/1/2/1): data-map faces, no compute.
+  - **9 flow assertions** FA-1040-EIC-01..09 (27a feeder; the year-keyed §32
+    constants_check; the midpoint-table convention; lower-of rule; investment-income
+    gate; childless age band; combat-pay election; QSS=other column; the
+    eligibility-gate truth table).
+  - NEW sources: Pub 596, Schedule EIC, Form 8867, Form 8862. NEW excerpts on the
+    EXISTING `RP_2024_40`/`RP_2025_32` (§2.06 EIC, distinct from intdiv's §2.03/§4.03
+    QDCGT excerpts) + `IRS_2025_1040_INSTR` (Worksheets A/B + EIC Table).
+- `check_eic_integrity.py` authored + GREEN (commit `5051f81`, the math gate before
+  Ken's walk). Carries its OWN re-typed §32 tables + EIC Table evaluator (not
+  imported from the loader): loader `EIC_PARAMS` cross-checked cell-by-cell both
+  years; §32 internal reconciliation within $1 (covers the published TY2026 0-QC
+  $664 vs 663.42); the i1040gi midpoint pin 2,475→842 (841.5 ROUND_HALF_UP, not
+  truncate); lower-of binds T3→1,663; exact phaseout T2→389; year-keying
+  load-bearing (TY2026 3+ 8,231 ≠ TY2025 8,046); MFJ-vs-other column; combat-pay
+  election; Worksheet-B SE; the 5 RED-gate fixtures; FA-02/06/08 constants. ALL PASS.
+- **Loader REFUSES (READY_TO_SEED=False, "all populated", exit 1, zero DB writes).
+  RS DB UNCHANGED (still 37 forms; 1040_EIC/SCHEDULE_EIC/8867/8862 absent).**
+- ONE item to confirm at the walk: the Worksheet-B SE-component sourcing
+  (`eic_se_net_earnings` ← Sch 1 L3 net SE / `eic_se_half_deduction` ← Sch 1 L15) —
+  the DoD says "SE from Schedule 1 flowed-or-direct; Schedule C compute NOT required",
+  flagged in the rule descriptions for Ken's confirmation.
+- NEXT: Ken's review walk → on approval flip READY_TO_SEED → seed → verify → export
+  canonical `eic_spec.json` (+ the 3 face specs) + stage flow assertions → tts-tax-app
+  build legs (seed/compute/render/input/diagnostics/assertions).
+
 ## 2026-06-11 f — Topic 5 (Retirement) REVIEWED + SEEDED on Ken's approval
 - Review walk in-session: Ken **approved** (source citations + SS Benefits
   Worksheet transcription + scope already confirmed). Two walk outcomes:
