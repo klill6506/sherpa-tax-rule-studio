@@ -4,6 +4,32 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-13 — Form 8880 (Saver's Credit, roster #9) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the scope walk in-session ("Looks good. Run it.")** — incl. the
+  W-2 box-12 elective-deferral auto-derive (qualifying codes D/E/F/G/H/S/AA/BB/EE
+  per owner; new tts-tax-app `W2Income.owner` field at the build leg). Authored +
+  math-gated + flipped + seeded in one sitting: **RS DB 47 → 48 forms, FA 123 →
+  128.** `load_1040_form_8880.py` — FORM_8880 (11 facts / 5 rules / 18 lines /
+  6 diagnostics D_8880_001..006 / 7 scenarios / 5 flow assertions FA-1040-8880-01..05
+  / 2 new sources). Nonrefundable §25B credit → Schedule 3 line 4 (already a
+  direct-entry feeder).
+- **Constants:** 2025 line-9 AGI tier table VERBATIM from f8880.pdf (pymupdf);
+  2026 TOP cutoffs VERIFIED from the IRS 2026 COLA notice (MFJ $80,500 / HoH
+  $60,375 / single-MFS $40,250) + the 2026 intermediate 50%/20% breakpoints
+  carried from 2025 as an INTERIM (D_8880_003 re-pin ~Dec 2026 when the 2026 Form
+  8880 publishes — the spine derived-2026 precedent). Per-person $2,000 cap + the
+  50/20/10% statutory §25B.
+- **`check_8880_integrity.py` ALL CHECKS PASS** — independent recompute of all 7
+  scenarios (T1 MFJ 50%→2,000 / T2 single 20%→400 / T3 IRA+box12 cap→200 / T4
+  distribution-reduces / T5 over-limit→0 / T6 2026-top-cutoff / G1 student-excluded)
+  + the tier table cross-checked both years.
+- **HUMAN-REVIEW flag:** `IRS_2026_COLA_8880.requires_human_review=True` (the 2026
+  intermediate breakpoints are interim). **Canonical `form_8880_spec.json` committed
+  to tts-tax-app** + 5 FA-1040-8880 staged. Deployed export verified (HTTP 200).
+  Next (tts-tax-app): build legs — seed (W2Income.owner + the 8880 facts + the
+  pseudo-form), compute (box-12 derive + tier + credit → Sch 3 L4), render, input,
+  diagnostics, assertions.
+
 ## 2026-06-13 — NEXT-UP #1 (Simplified Method Worksheet) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Looks good").** Flipped READY_TO_SEED
   + seeded: **RS DB 46 → 47 forms, FlowAssertions 117 → 123** (SIMPLIFIED_METHOD
