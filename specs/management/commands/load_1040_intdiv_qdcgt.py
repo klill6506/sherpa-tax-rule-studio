@@ -808,24 +808,28 @@ INTDIV_RULES: list[dict] = [
     # ── QDCGT worksheet ──
     {"rule_id": "R-QDCGT-GATE", "title": "QDCGT worksheet applies on the supported preferential-rate paths",
      "rule_type": "routing", "precedence": 0, "sort_order": 10,
-     "formula": ("USE the QDCGT worksheet for line 16 when: (L3a > 0 OR (L7a > 0 AND sch-D-not-required path "
-                 "active)) AND NOT files_form_2555 AND no 8814 child-income inclusion AND no Schedule D. "
-                 "BLOCKED (line 16 BLANK + RED): 7a < 0 (loss needs Sch D); 7a != 0 without the checkbox "
-                 "path; any DIV 2b/2c/2d; files_form_2555 on a preferential-rate return; any 8814 flag. "
-                 "When no preferential-rate income exists, spine R-TAX-01 routing stands unchanged."),
+     "formula": ("TOPIC 9 FORM. Route line 16: Schedule D ENGAGED -> follow Schedule D line 20 (Yes -> "
+                 "QDCGT with the Sch-D WS3 branch; No -> the Schedule D Tax Worksheet on 1040_SCHD_WS); "
+                 "Schedule D NOT engaged -> USE the QDCGT worksheet when L3a > 0 OR (L7a > 0 AND the "
+                 "sch-D-not-required checkbox path). BLOCKED (line 16 BLANK + RED) ONLY: DIV box 2c "
+                 "(D_SCHD_002); files_form_2555 on a preferential-rate return; any 8814 flag; Form 4952 "
+                 "(D_SCHD_001). A 7a loss or unasserted distributions now ENGAGE Schedule D instead of "
+                 "blocking. When no preferential-rate income exists, spine R-TAX-01 routing stands unchanged."),
      "inputs": ["capital_gain_distributions_only", "child_dividends_3c_qualified", "child_dividends_3c_ordinary",
                 "child_capgain_7b"],
      "outputs": [],
-     "description": ("ONCE PER RETURN. SUPERSEDES spine R-TAX-07: the bridge gate (blank line 16 on ANY 3a/7a "
-                     "value) NARROWS to the still-unsupported paths. D_1040_001 retires at the build leg "
-                     "(spine loader edit on Ken's approval); D_INTDIV_001/002/003/004 carry the narrowed "
-                     "REDs. Topic 8 (Schedule D) later replaces the line-3 No-branch with the Sch-D branch.")},
+     "description": ("ONCE PER RETURN. SUPERSEDES spine R-TAX-07; AMENDED at the Topic 9 authoring leg "
+                     "(2026-06-13): the Schedule-D branch is here — D_INTDIV_001/002 retire (the universal "
+                     "Sch-D fallback), D_INTDIV_003/004 stay, D_SCHD_001/002 join the blocked set. "
+                     "route_line_16 in compute_intdiv gains the engaged path at the Topic 9 build leg.")},
     {"rule_id": "R-QDCGT-01", "title": "WS1-WS5: income split", "rule_type": "calculation",
      "precedence": 2, "sort_order": 11,
-     "formula": "WS1 = 1040.L15; WS2 = 1040.L3a; WS3 = 1040.L7a (No-Schedule-D branch this sprint); WS4 = WS2 + WS3; WS5 = max(0, WS1 - WS4)",
+     "formula": ("WS1 = 1040.L15; WS2 = 1040.L3a; WS3 = Schedule D engaged ? min(Sch D 15, Sch D 16) [0 if "
+                 "blank or a loss] : 1040.L7a (the checkbox path); WS4 = WS2 + WS3; WS5 = max(0, WS1 - WS4)"),
      "inputs": [], "outputs": ["WS1", "WS2", "WS3", "WS4", "WS5"],
-     "description": ("Worksheet lines 1-5 verbatim (i1040gi p.38). WS5 = ordinary-rate income. The Yes-branch "
-                     "of line 3 (smaller of Sch D 15/16, 0 if blank/loss) lands with Topic 8.")},
+     "description": ("Worksheet lines 1-5 verbatim (i1040gi p.38). WS5 = ordinary-rate income. AMENDED at the "
+                     "Topic 9 authoring leg: the line-3 Yes-branch (smaller of Sch D 15/16, 0 if blank/loss — "
+                     "== schd_net_capital_gain) is now specified; the No-branch remains for the checkbox path.")},
     {"rule_id": "R-QDCGT-02", "title": "WS6-WS9: 0% rate slice", "rule_type": "calculation",
      "precedence": 2, "sort_order": 12,
      "formula": ("WS6 = zero_rate_max(filing_status, tax_year); WS7 = min(WS1, WS6); WS8 = min(WS5, WS7); "
@@ -954,20 +958,14 @@ INTDIV_LINES: list[dict] = [
 ]
 
 INTDIV_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_INTDIV_001", "title": "1099-DIV box 2b/2c/2d present — Schedule D required (unsupported)",
-     "severity": "error",
-     "condition": "any 1099-DIV doc has box2b > 0 OR box2c > 0 OR box2d > 0",
-     "message": ("Not supported — prepare manually: a 1099-DIV reports unrecaptured §1250 gain (2b), §1202 "
-                 "gain (2c), or collectibles 28% gain (2d). Schedule D and the Schedule D Tax Worksheet are "
-                 "required; line 16 is NOT computed."),
-     "notes": "Exception 1 condition (2) verbatim. Line 16 stays blank (gate). Topic 8 narrows further; Sch D Tax Worksheet is post-sprint."},
-    {"diagnostic_id": "D_INTDIV_002", "title": "Capital gain distributions without the Exception-1 assertion",
-     "severity": "error",
-     "condition": "SUM(div box2a) > 0 AND NOT (capital_gain_distributions_only AND all docs clean of 2b/2c/2d)",
-     "message": ("Not supported — capital gain distributions are present but the 'Schedule D not required' "
-                 "path is not asserted (or is blocked). Either assert capital-gain-distributions-only "
-                 "(Exception 1) or prepare Schedule D manually; line 16 is NOT computed."),
-     "notes": "Narrows spine D_1040_001 for the 7a-direct-entry / unasserted cases."},
+    # D_INTDIV_001 + D_INTDIV_002 RETIRED at the Topic 9 (Schedule D) authoring
+    # leg (2026-06-13, the D_1040_001 bridge-retirement precedent — Ken walks it):
+    #   - 001 (box 2b/2c/2d -> blocked): boxes 2b/2d now FLOW (u1250_11 / w28_4
+    #     on 1040_SCHD_WS); the 2c-only RED survives as D_SCHD_002.
+    #   - 002 (unasserted 2a -> blocked): Schedule D is the universal fallback —
+    #     unasserted distributions land on Schedule D line 13 (R-SCHD-L13-CGD)
+    #     and route_line_16 gains the Schedule-D path. Nothing is blocked.
+    # Deleted from the DB by _retire_topic9_superseded() on the post-walk re-run.
     {"diagnostic_id": "D_INTDIV_003", "title": "Form 8814 child-income inclusion (unsupported)", "severity": "error",
      "condition": "child_dividends_3c_qualified OR child_dividends_3c_ordinary OR child_capgain_7b != 0",
      "message": ("Not supported — prepare manually: Form 8814 (child's interest/dividends election) inclusion "
@@ -1038,9 +1036,8 @@ INTDIV_SCENARIOS: list[dict] = [
      "scenario_type": "normal", "sort_order": 3,
      "inputs": {"capital_gain_distributions_only": True,
                 "div_docs": [{"box2a": 1200}, {"box2a": 800}]},
-     "expected_outputs": {"1040_line_7a": 2000, "line_7b_box_checked": True, "D_INTDIV_001_fires": False,
-                          "D_INTDIV_002_fires": False},
-     "notes": "Exception 1 satisfied: assertion + no 2b/2c/2d anywhere."},
+     "expected_outputs": {"1040_line_7a": 2000, "line_7b_box_checked": True, "schedule_d_engaged": False},
+     "notes": "Exception 1 satisfied: assertion + no 2b/2c/2d anywhere. (Topic 9: the D_INTDIV_001/002-quiet pins became the not-engaged pin.)"},
     # ── QDCGT computes (Tax Table values via midpoint/half-up; TCW exact at >= $100K) ──
     {"scenario_name": "ID-Q1 — single TY2025, QD entirely in the 0% slice -> WS25 = 3,965",
      "scenario_type": "normal", "sort_order": 4,
@@ -1107,17 +1104,21 @@ INTDIV_SCENARIOS: list[dict] = [
      "notes": ("HOH-specific 64,750/566,700. WS22 = table(63,150): mid 63,175 -> 1,700 + 12% x 46,175 = "
                "7,241 exact. WS24 = table(71,150): mid 71,175 -> 7,442 + 22% x 6,325 = 8,833.50 -> 8,834.")},
     # ── Gates ──
-    {"scenario_name": "ID-G1 — box 2b blocks the checkbox path; line 16 not computed",
-     "scenario_type": "failure", "sort_order": 12,
+    {"scenario_name": "ID-G1 — box 2b forces the Schedule D path (Topic 9: flows, no longer blocked)",
+     "scenario_type": "normal", "sort_order": 12,
      "inputs": {"capital_gain_distributions_only": True,
                 "div_docs": [{"box2a": 1000, "box2b": 50}]},
-     "expected_outputs": {"D_INTDIV_001_fires": True, "16_not_computed": True},
-     "notes": "Exception 1 condition (2) violated even WITH the assertion — the documents win."},
-    {"scenario_name": "ID-G2 — cap-gain distributions without the assertion; line 16 not computed",
-     "scenario_type": "failure", "sort_order": 13,
+     "expected_outputs": {"schedule_d_engaged": True, "schd_line_13": 1000, "u1250_11": 50,
+                          "line16_path": "sdtw"},
+     "notes": ("Exception 1 condition (2) still bars the 7a-checkbox shortcut, but Topic 9 makes Schedule D "
+               "the path: 2a -> Sch D line 13, 2b -> u1250_11 -> D19 -> the SDTW. Was the D_INTDIV_001 RED.")},
+    {"scenario_name": "ID-G2 — cap-gain distributions without the assertion engage Schedule D (Topic 9)",
+     "scenario_type": "normal", "sort_order": 13,
      "inputs": {"div_docs": [{"box2a": 1000}]},
-     "expected_outputs": {"D_INTDIV_002_fires": True, "16_not_computed": True},
-     "notes": "The narrowed bridge: unasserted 2a -> Sch D path -> RED."},
+     "expected_outputs": {"schedule_d_engaged": True, "schd_line_13": 1000, "schd_line_16": 1000,
+                          "f1040_line_7a": 1000, "line16_path": "qdcgt"},
+     "notes": ("Topic 9: Schedule D is the universal fallback — unasserted distributions land on line 13 and "
+               "flow 15 -> 16 -> 1040 7a (no 7b checkbox). Was the D_INTDIV_002 RED; nothing is blocked now.")},
     {"scenario_name": "ID-G3 — Form 2555 with qualified dividends; line 16 not computed",
      "scenario_type": "failure", "sort_order": 14,
      "inputs": {"files_form_2555": True, "div_docs": [{"box1a": 2000, "box1b": 2000}]},
@@ -1417,16 +1418,20 @@ FLOW_ASSERTIONS: list[dict] = [
      "sort_order": 4},
     {"assertion_id": "FA-1040-INTDIV-05", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "7a checkbox path truth table (Exception 1)",
-     "description": ("Validates R-AGG-7A: assertion + clean docs -> 7a = sum(2a) + box checked; any 2b/2c/2d "
-                     "or missing assertion -> 7a not computed + RED + line 16 blank."),
+     "description": ("Validates R-AGG-7A (Topic 9 form): assertion + clean docs -> 7a = sum(2a) + the 7b box. "
+                     "Any 2b/2d or a missing assertion -> Schedule D engages (line 13) and line 16 routes per "
+                     "D18/D19; only box 2c still REDs (D_SCHD_002). Nothing is blocked."),
      "definition": {"kind": "gating_check", "form": "1040_INTDIV",
                     "truth_table": [
                         {"asserted": True, "docs_clean": True, "sum_2a_positive": True,
                          "expect": {"7a_computed": True, "box_checked": True, "line16_path": "qdcgt"}},
                         {"asserted": True, "docs_clean": False, "sum_2a_positive": True,
-                         "expect": {"7a_computed": False, "D_INTDIV_001": True, "line16_blank": True}},
+                         "expect": {"schedule_d_engaged": True, "schd_13": "sum_2a",
+                                    "line16_path": "sdtw_or_qdcgt_per_D18_D19",
+                                    "D_SCHD_002_only_if_2c": True}},
                         {"asserted": False, "docs_clean": True, "sum_2a_positive": True,
-                         "expect": {"7a_computed": False, "D_INTDIV_002": True, "line16_blank": True}},
+                         "expect": {"schedule_d_engaged": True, "schd_13": "sum_2a",
+                                    "7a_from_schd_16": True, "box_checked": False}},
                         {"asserted": False, "docs_clean": True, "sum_2a_positive": False,
                          "expect": {"7a_computed": False, "no_red": True}}]},
      "sort_order": 5},
@@ -1559,9 +1564,29 @@ class Command(BaseCommand):
             self._upsert_lines(form, spec["lines"])
             self._upsert_diagnostics(form, spec["diagnostics"])
             self._upsert_tests(form, spec["scenarios"])
+        self._retire_topic9_superseded()
         self._upsert_form_links(sources)
         self._load_flow_assertions()
         self._report_totals()
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Topic 9 supersession — retire D_INTDIV_001/002 (Schedule D landed)
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def _retire_topic9_superseded(self):
+        """Delete D_INTDIV_001/002 from the DB (Topic 9, 2026-06-13): boxes
+        2b/2d now flow to the 1040_SCHD_WS worksheets (2c-only survives as
+        D_SCHD_002), and unasserted 2a distributions engage Schedule D instead
+        of blocking. Idempotent (no-op once gone). Renumbering is forbidden —
+        the ids stay retired."""
+        gone = FormDiagnostic.objects.filter(
+            tax_form__form_number="1040_INTDIV",
+            diagnostic_id__in=["D_INTDIV_001", "D_INTDIV_002"],
+        ).delete()[0]
+        if gone:
+            self.stdout.write(self.style.WARNING(
+                f"  Topic 9 supersession: {gone} diagnostics retired (D_INTDIV_001/002)"
+            ))
 
     # ─────────────────────────────────────────────────────────────────────────
     # Safety guard

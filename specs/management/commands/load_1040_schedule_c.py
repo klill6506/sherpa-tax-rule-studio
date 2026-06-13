@@ -1220,11 +1220,15 @@ F8995_RULES: list[dict] = [
      "formula": "L10 = L5 + L9.",
      "inputs": [], "outputs": ["10"], "description": "RETURN LEVEL."},
     {"rule_id": "R-8995-L13-L14", "title": "Lines 11/12/13/14 — income limitation", "rule_type": "calculation", "precedence": 5, "sort_order": 6,
-     "formula": "L11 = taxable income before QBI (1040 L11 - L12 - L13b Sch 1-A); L12 = net capital gain (L3a + net cap gain); L13 = max(0, L11 - L12); L14 = L13 x 20%.",
+     "formula": ("L11 = taxable income before QBI (1040 L11 - L12 - L13b Sch 1-A); L12 = net capital gain = "
+                 "1040 L3a + (Schedule D engaged ? schd_net_capital_gain [min(D15, D16), 0 if not both gains] "
+                 ": the line-7 cap-gain distributions); L13 = max(0, L11 - L12); L14 = L13 x 20%."),
      "inputs": ["qbi_taxable_income_before_qbi", "qbi_net_capital_gain", "qbi_rate"], "outputs": ["11", "12", "13", "14"],
      "description": ("RETURN LEVEL. The income limitation reduces taxable income by net capital gain before the 20%. "
-                     "WALK ITEM 3 (net cap gain / Sch D). L11 subtracts the OBBBA Schedule 1-A line-13b deduction "
-                     "(Ken-approved 2026-06-12 — every non-QBI deduction comes out before the QBI limitation).")},
+                     "L11 subtracts the OBBBA Schedule 1-A line-13b deduction (Ken-approved 2026-06-12 — every "
+                     "non-QBI deduction comes out before the QBI limitation). AMENDED at the Topic 9 authoring leg "
+                     "(2026-06-13): L12 gains the Schedule D net-capital-gain component (i8995 verbatim: 'qualified "
+                     "dividends plus net capital gain') — WALK ITEM 3 closes; D_8995_002 retires.")},
     {"rule_id": "R-8995-L15", "title": "Line 15 — QBI deduction = min(L10, L14) -> 1040 line 13a", "rule_type": "calculation", "precedence": 6, "sort_order": 7,
      "formula": "L15 = min(L10, L14) -> qbi_deduction_l15 -> Form 1040 line 13a.",
      "inputs": [], "outputs": ["15"],
@@ -1266,12 +1270,11 @@ F8995_DIAGNOSTICS: list[dict] = [
                  "§199A threshold (${threshold}), so the simplified Form 8995 cannot be used. Form 8995-A "
                  "(W-2 wages / UBIA limits, SSTB phase-out) is required and is not built this sprint."),
      "notes": "Year-keyed threshold. WALK ITEM 1 (2026 MFS $25 split). RED-defer Form 8995-A."},
-    {"diagnostic_id": "D_8995_002", "title": "Net capital gain — Schedule D not built (line 12 partial)", "severity": "warning",
-     "condition": "Schedule D / 8949 not built AND (1040 line 7 capital gain present)",
-     "message": ("Line 12 (net capital gain) currently uses qualified dividends (1040 line 3a) plus capital-gain "
-                 "distributions only. When Schedule D is built, net long-term capital gain must be added to line 12 "
-                 "— a higher line 12 lowers the income-limitation cap (line 14) and can reduce the QBI deduction."),
-     "notes": "WALK ITEM 3 deferred-interaction. No-silent-gap reminder."},
+    # D_8995_002 RETIRED at the Topic 9 (Schedule D) authoring leg (2026-06-13):
+    # line 12 now carries the full net capital gain (L3a + the Schedule D
+    # min(15,16) component) — the partial-L12 warning has nothing to warn about.
+    # Removed from this keep-set, so _retire_stale_8995 deletes the DB row on
+    # the post-walk re-run. The id stays retired (never renumber).
     {"diagnostic_id": "D_8995_003", "title": "QBI loss carryforward present — verify prior/next-year amounts", "severity": "info",
      "condition": "qbi_loss_carryforward_prior < 0 OR qbi_reit_ptp_carryforward_prior < 0 OR line 16 < 0 OR line 17 < 0",
      "message": ("A qualified-business or REIT/PTP loss carryforward is present (line 3/7 in, or line 16/17 out). "
