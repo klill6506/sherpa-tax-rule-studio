@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-13 — Topic 9 (Schedule D + 8949) spec-authoring leg — AUTHORED, math gate GREEN, NOT seeded
+- `load_1040_schedule_d.py` authored (commit `f2c98f0`, 2,123 lines, READY_TO_SEED=False —
+  guard verified refusing, zero DB writes): **SCHEDULE_D** (16 facts / 9 rules / 47 lines /
+  11 diagnostics / 12 scenarios — the real 2025 face incl. the QOF question, per-box 8949
+  totals pairwise A/G->1b..F/L->10, lines 4/5/11/12 direct-entry, carryover facts -> 6/14,
+  DIV 2a -> 13, the line-16 -> 1040 7a routing + $3,000/$1,500 §1211(b) limit, the
+  17/20/22 worksheet routing), **1040_SCHD_WS** (5/8/85/1/8 — sdtw_1..47 + clc_1..13
+  carryover-OUT + w28_1..7 + u1250_1..18, all transcribed verbatim from i1040sd 2025),
+  **8949 RE-AUTHOR** (29/5/26/5/6 — the 12-box A-L system incl. 1099-DA digital assets,
+  the 18-code column-(f) table as adj_code_* data-list facts, Exception-2 summary rows,
+  CapitalTransaction surface; `_retire_stale_8949` drops the thin 1120-S-era draft by
+  keep-set; entity_types stays multi-entity). 12 flow assertions FA-1040-SCHD-01..12.
+- Primary sources fetched + dumped same day (tts-tax-app server/.scratch/): f1040sd /
+  i1040sd (16pp, all four worksheets) / i8949 (13pp, the code table) / f8949 (local copy
+  confirmed = the 2025 12-box revision). 4 new AuthoritySources + RP_2025_32 §4.01 excerpt.
+- **`check_topic9_integrity.py` ALL CHECKS PASS**: independent retype of the netting/CLC/
+  28%/1250/SDTW math + the Tax Table/TCW convention; every scenario pin recomputed
+  (SDTW-T1 pins 25% partial-bind 675 / SDTW-T2 28%-cap-no-bind L43=0 / SDTW-T3 28% binds
+  28,000 / SDTW-T4 the 1==16 skip + table 3,605); **the SDTW==QDCGT invariant swept over
+  13 cases x both years x 5 statuses**; constants cross-checked cell-by-cell incl.
+  line-19 == the 24%-bracket tops BOTH years (2026 derived from RP 2025-32 §4.01 —
+  walk item 1; HOH $201,750 vs single/MFS $201,775).
+- **Sibling supersession edits authored (NOT run — they apply at the post-walk re-run):**
+  `load_1040_intdiv_qdcgt.py` — D_INTDIV_001/002 retired (+ `_retire_topic9_superseded`
+  deletion helper; ID-T3/G1/G2 + FA-1040-INTDIV-05 re-pointed to the Schedule-D path;
+  R-QDCGT-GATE + WS3 gain the Sch-D branch). `load_1040_schedule_c.py` — 8995 L12 gains
+  the Schedule D net-capital-gain component (i8995 verbatim); D_8995_002 retired from the
+  keep-set (deleted on re-run).
+- 10 requires_human_review walk items in the loader docstring. Next: Ken's review walk ->
+  flip -> seed -> export canonical specs + staged assertions -> tts-tax-app build legs.
+
 ## 2026-06-12 c — 8995 L11 sourcing amended on Ken's approval (subtract Sch 1-A 13b)
 
 - At the tts-tax-app compute leg the engine flagged that the 8995 spec sources L11
