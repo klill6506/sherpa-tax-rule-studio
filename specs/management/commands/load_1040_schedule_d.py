@@ -175,8 +175,17 @@ from specs.models import (
 # citations, the verified constants BOTH years, the 10 requires_human_review
 # walk items, the cross-form flow map, the RED-defer enumeration, the 8949
 # stale-artifact retire plan). Until then the command refuses to write.
+#
+# FLIPPED 2026-06-13 — Ken APPROVED the review walk in-session ("Looks good.
+# Go."): the verified constants both years (the QDCGT-identity breakpoints,
+# the DERIVED 2026 SDTW line-19 bracket tops incl. the $25 HOH asymmetry, the
+# statutory $3,000/$1,500 + 25%/28%), all 10 walk items as recommended
+# (boxes G-L IN; 4952 RED; lines 4/5/11/12 direct-entry info; the 1250-WS v1
+# sourcing; the SS1202 add-back fact; 1a/8a unused; the DIV 2a/2b/2d RED
+# retirements with 2c surviving; the year-shifted carryover-out; the 8949
+# retire plan), and the sibling intdiv/8995 supersession edits.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"

@@ -35,6 +35,20 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 - 10 requires_human_review walk items in the loader docstring. Next: Ken's review walk ->
   flip -> seed -> export canonical specs + staged assertions -> tts-tax-app build legs.
 
+## 2026-06-13 — Topic 9 SEEDED on Ken's approval ("Looks good. Go.")
+- `READY_TO_SEED` flipped -> `load_1040_schedule_d` run: SCHEDULE_D (16f/9r/47L/11d/12s)
+  + 1040_SCHD_WS (5f/8r/85L/1d/8s) created; **8949 re-authored** (`_retire_stale_8949`
+  deleted 38 stale 1120-S-era rows -> 29f/5r/26L/5d/6s, all cited); 12 FA-1040-SCHD.
+  **RS DB 44->46 forms, FlowAssertions 105->117.**
+- Sibling loaders re-run to apply the supersession edits: `load_1040_intdiv_qdcgt`
+  retired **D_INTDIV_001/002** (`_retire_topic9_superseded`; deployed export confirms —
+  diags now 003-010); `load_1040_schedule_c` retired **D_8995_002** (deployed export
+  confirms — diags 001/003/004/005). Both deployed and round-trip-verified.
+- tts-tax-app committed canonical `{schedule_d,1040_schd_ws,8949}_spec.json` + 12 staged
+  assertions (`272aeee`). Amended intdiv/8995 canonical re-export DEFERRED to the
+  Topic 9 compute leg (the spec-driven scenario tests read those files — re-export in
+  lock-step with route_line_16 / compute_8995_db). Next: tts-tax-app build legs.
+
 ## 2026-06-12 c — 8995 L11 sourcing amended on Ken's approval (subtract Sch 1-A 13b)
 
 - At the tts-tax-app compute leg the engine flagged that the 8995 spec sources L11
