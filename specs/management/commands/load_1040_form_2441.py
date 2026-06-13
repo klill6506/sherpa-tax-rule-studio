@@ -55,7 +55,7 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # GATED until Ken's review walk (the 2025 table + the 2026 OBBBA interim + Part III + the deeming).
+READY_TO_SEED = True  # FLIPPED 2026-06-13 — Ken approved the review walk ("Looks good.").
 
 
 FORM_JURISDICTION = "FED"
