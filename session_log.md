@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-13 — NEXT-UP #1 (Simplified Method Worksheet) spec-authoring leg — AUTHORED, math gate GREEN, NOT seeded
+- `load_1040_simplified_method.py` authored (single form SIMPLIFIED_METHOD, the
+  `load_1040_schedule_d.py` precedent, **READY_TO_SEED=False** — guard verified
+  REFUSING, zero DB writes). 14 facts / 6 rules / 11 lines (sm_1..sm_11) / 6
+  diagnostics (D_SM_001..006) / 7 scenarios / 8 rule_links / 6 flow assertions
+  (FA-1040-SM-01..06) / 2 new authority sources (Pub 575 + i1040 SMW).
+- Replaces a LIVE tts-tax-app RED: **D_RET_001** (1099-R box-2a-blank-with-basis,
+  the OPM/CSA-1099-R pattern). Computes the taxable pension via cost recovery →
+  Form 1040 line 5b.
+- **Constants VERIFIED vs IRS Pub 575 (2025):** Table 1 single-life (≤55→360 /
+  56-60→310 / 61-65→260 / 66-70→210 / 71+→160) + Table 2 joint-survivor by
+  COMBINED age (≤110→410 / 111-120→360 / 121-130→310 / 131-140→260 / 141+→210);
+  the Nov-19-1996 (in-scope) / 1998 (Table 2) / 1987 (uncapped) boundary dates,
+  statutory non-indexed. Ken's 7 scope decisions in tts-tax-app
+  `server/specs/_next1_simplified_method_source_brief.md`.
+- **`check_simplified_method_integrity.py` ALL CHECKS PASS** — independent retype
+  of the 11-line worksheet + both tables (cell-by-cell cross-check) + the scope
+  gates; load-bearing pins SM-T1 (single age 66 → 210, taxable 21,600), SM-T2
+  (joint combined 130 → 310), SM-T3 (the cost cap binds → balance 0 / D_SM_004),
+  SM-T4 (partial 7-month, age 71 → 160).
+- **HUMAN-REVIEW flag:** the 11-line worksheet text is RECONSTRUCTED from the
+  i1040 Simplified Method Worksheet + Pub 575 (the i1040 instructions page blocked
+  verbatim auto-fetch); `IRS_2025_1040_SMW.requires_human_review=True`. Re-check
+  the line text/order against the 2025 i1040 at Ken's walk. The ARITHMETIC is
+  independently re-derived (the math gate is the real guard).
+- **AWAITING Ken's review walk** → flip READY_TO_SEED → seed → export canonical
+  `simplified_method_spec.json` to tts-tax-app + stage assertions → build legs
+  (seed: new RetirementDistribution fields; compute: supersede D_RET_001; render:
+  worksheet statement page; input; diagnostics; assertions). NOT seeded; RS DB
+  unchanged. NOTE: RS root STATUS/MEMORY/DECISIONS still stale (Phase-0 note).
+
 ## 2026-06-13 — Topic 9 (Schedule D + 8949) spec-authoring leg — AUTHORED, math gate GREEN, NOT seeded
 - `load_1040_schedule_d.py` authored (commit `f2c98f0`, 2,123 lines, READY_TO_SEED=False —
   guard verified refusing, zero DB writes): **SCHEDULE_D** (16 facts / 9 rules / 47 lines /
