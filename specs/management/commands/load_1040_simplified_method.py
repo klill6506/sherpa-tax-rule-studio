@@ -56,7 +56,7 @@ from specs.models import (
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk.
 # ═══════════════════════════════════════════════════════════════════════════
 
-READY_TO_SEED = False
+READY_TO_SEED = True  # FLIPPED 2026-06-13 — Ken approved the review walk ("Looks good").
 
 
 FORM_JURISDICTION = "FED"
@@ -160,7 +160,6 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "Table 1: ≤55→360, 56-60→310, 61-65→260, 66-70→210, 71+→160. Lookup by annuitant age at the annuity starting date.",
                 "is_key_excerpt": True,
-                "requires_human_review": False,
             },
             {
                 "excerpt_label": "Table 2 — multiple annuitants (number of payments by combined age)",
@@ -173,7 +172,6 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "Table 2 (joint/survivor): combined ≤110→410, 111-120→360, 121-130→310, 131-140→260, 141+→210. Applies when the annuity starting date is after 1997.",
                 "is_key_excerpt": True,
-                "requires_human_review": False,
             },
             {
                 "excerpt_label": "Boundaries + cost cap + death deduction (verbatim summary)",
@@ -190,7 +188,6 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "In-scope: start ≥ Nov 19 1996 (before → General Rule, OUT). Post-1986 → cost cap. Death → unrecovered cost is a Schedule A deduction (NEXT-UP #2). Table 2 only post-1997.",
                 "is_key_excerpt": True,
-                "requires_human_review": False,
             },
         ],
     },
@@ -232,7 +229,6 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "RECONSTRUCTED (human review). Cost ÷ number = per-payment; × months = tax-free candidate; capped at cost remaining; box1 − tax-free = taxable → 5b; the recovered/balance carry to next year.",
                 "is_key_excerpt": True,
-                "requires_human_review": True,
             },
         ],
     },

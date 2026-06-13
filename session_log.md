@@ -4,10 +4,19 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-13 — NEXT-UP #1 (Simplified Method Worksheet) spec-authoring leg — AUTHORED, math gate GREEN, NOT seeded
-- `load_1040_simplified_method.py` authored (single form SIMPLIFIED_METHOD, the
-  `load_1040_schedule_d.py` precedent, **READY_TO_SEED=False** — guard verified
-  REFUSING, zero DB writes). 14 facts / 6 rules / 11 lines (sm_1..sm_11) / 6
+## 2026-06-13 — NEXT-UP #1 (Simplified Method Worksheet) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks good").** Flipped READY_TO_SEED
+  + seeded: **RS DB 46 → 47 forms, FlowAssertions 117 → 123** (SIMPLIFIED_METHOD
+  created, all rules cited). One seed-fix: `requires_human_review` is an
+  AuthoritySource field, NOT an AuthorityExcerpt field — removed from the 4
+  excerpt dicts (kept on the SMW source). **Deployed export verified** (HTTP 200,
+  `lookup/SIMPLIFIED_METHOD/export/` — 14 facts / 6 rules / 11 lines / 6 diags /
+  7 tests). **Canonical `simplified_method_spec.json` committed to tts-tax-app** +
+  6 FA-1040-SM staged in `flow_assertions_1040_simplified_method_pending.json`.
+  Next (tts-tax-app): build legs seed → compute (supersede D_RET_001) → render →
+  input → diagnostics → assertions.
+- `load_1040_simplified_method.py` (single form SIMPLIFIED_METHOD, the
+  `load_1040_schedule_d.py` precedent). 14 facts / 6 rules / 11 lines (sm_1..sm_11) / 6
   diagnostics (D_SM_001..006) / 7 scenarios / 8 rule_links / 6 flow assertions
   (FA-1040-SM-01..06) / 2 new authority sources (Pub 575 + i1040 SMW).
 - Replaces a LIVE tts-tax-app RED: **D_RET_001** (1099-R box-2a-blank-with-basis,
