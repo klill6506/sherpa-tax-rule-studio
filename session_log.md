@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — Form 8863 (Education Credits, NEXT-UP #8) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks good.")** — the §25A constants
+  (AOTC 100%/25% to $4,000 / max $2,500 / 40% refundable $1,000; LLC 20% of
+  $10,000 / max $2,000) + the shared phaseout ($90k/$180k ceiling, $10k/$20k
+  divisor) + the per-student tiers + the 40% refundable split + the line-7
+  kiddie-tax lockout (preparer checkbox, decision 2) + the full Credit Limit
+  Worksheet (decision 3) + the MFS/dependent bars + the TY2026 §70606 defer.
+- `load_1040_form_8863.py` + `check_8863_integrity.py` ALL CHECKS PASS
+  (independent re-type of the §25A tiers + the shared phaseout + the LLC + the
+  CLW + the 9 scenarios + the helper fns; loader & gate share no math). Guard
+  verified REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **FORM_8863** (7 facts / 7 rules / 32 lines /
+  7 diagnostics / 9 scenarios / 12 cited links) + 6 flow assertions. **RS DB →53
+  forms, FA →158.** All rules cited. 3 sources (i8863 / IRC §25A / Pub 970).
+- CONSTANTS verified from the published 2025 f8863.pdf (9/23/25) / i8863 / Pub
+  970 — all §25A STATUTORY, NOT inflation-indexed (identical 2024/25/26). AOTC
+  L8 (40% refundable) → 1040 L29; the nonrefundable education credit L19 (the
+  Credit Limit Worksheet) → Schedule 3 L3.
+- **varchar(20) lesson — this time a diagnostic_id:** `D_8863_AOTC_INELIGIBLE`
+  (22) overflowed FormDiagnostic.diagnostic_id → renamed `D_8863_AOTC_INELIG`
+  (18). Added a diagnostic_id length guard to the integrity gate (it already
+  guarded rule_id). (`R-8863-AOTC-PHASEOUT` = exactly 20, fits.)
+- Deployed export verified HTTP 200 (`lookup/FORM_8863/export/`); committed to
+  tts-tax-app as canonical `server/specs/form_8863_spec.json` + 6 FA staged in
+  `flow_assertions_1040_8863_pending.json` (active 1040 gate stays 147).
+- Next (tts-tax-app): the 6 build legs — seed (a new **EducationStudent** model +
+  RLS, the FORM_8863 FormDef + facts; decision 1) → compute (`compute_8863.py`:
+  the per-student AOTC + LLC + phaseout + the Credit Limit Worksheet → Sch 3 L3 /
+  1040 L29) → render (f8863.pdf downloaded; per-student Part III copies) → input →
+  diagnostics → assertions → tag `1040-form-8863-complete`.
+
 ## 2026-06-14 — Form 8962 (Premium Tax Credit, NEXT-UP #7) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Looks right")** — Table 2 applicable
   figure (interpolation, verified endpoints) + the 2024 FPL + Table 5 + line-5
