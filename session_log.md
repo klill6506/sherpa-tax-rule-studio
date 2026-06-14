@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — State refund worksheet (NEXT-UP #9, the LAST item) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("No changes. Continue")** — the §111
+  tax-benefit computation (Pub 525 Worksheet 2 + 2a): the SALT-cap recapture (the
+  prior-year Sch A 5d/5e), the itemized-vs-standard difference limit, the negative-
+  prior-year-TI reduction, the line-1/line-8z allocation, the §111 gates, the
+  prior-year std-ded constants (2024 verified / 2025 interim), and the RED-deferred
+  AMT/credit/multi-year exceptions.
+- `load_1040_state_refund.py` + `check_state_refund_integrity.py` ALL CHECKS PASS
+  (independent re-type of Worksheet 2/2a + the 2024/2025 std-ded + the 9 scenarios;
+  loader & gate share no math). Guard verified REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **STATE_REFUND** (19 facts / 5 rules / 17 lines /
+  7 diagnostics / 9 scenarios / 8 cited links) + 6 flow assertions. **RS DB →54
+  forms, FA →164.** All rules cited. 3 sources (i1040 Sch 1 worksheet / Pub 525 /
+  IRC §111).
+- **KEY:** the SALT cap is NOT a compute constant — the worksheet reads the
+  preparer-entered prior-year Sch A 5d/5e, so only the prior-year std-ded table is
+  year-keyed (to the refund year = tax_year − 1). 2024 verified; 2025 INTERIM
+  (requires_human_review, re-pin from the 2026 worksheet ~Dec 2026).
+- Taxable income-tax refund → Sch 1 line 1; RE/PP + other recoveries → Sch 1 line 8z.
+  NO IRS AcroForm — a statement page (the Simplified Method precedent).
+- Deployed export verified HTTP 200 (`lookup/STATE_REFUND/export/`); committed to
+  tts-tax-app as canonical `server/specs/state_refund_spec.json` + 6 FA staged in
+  `flow_assertions_1040_sr_pending.json` (active 1040 gate stays 153).
+- Next (tts-tax-app): the build legs — seed (the 19 sr_* Taxpayer facts + a
+  STATE_REFUND FormDef worksheet + serializer) → compute (`compute_state_refund.py`
+  → Sch 1 L1 + L8z; runs BEFORE the first formula pass — it's INCOME, feeds 1040
+  line 8 / AGI, NOT a credit) → render (statement page) → input → diagnostics →
+  assertions → tag `1040-state-refund-complete`. This is the LAST post-sprint item.
+
 ## 2026-06-14 — Form 8863 (Education Credits, NEXT-UP #8) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Looks good.")** — the §25A constants
   (AOTC 100%/25% to $4,000 / max $2,500 / 40% refundable $1,000; LLC 20% of
