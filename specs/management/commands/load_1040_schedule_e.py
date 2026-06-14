@@ -65,7 +65,7 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # Gated until Ken's review walk.
+READY_TO_SEED = True  # FLIPPED 2026-06-14 — Ken approved the review walk ("Looks good.").
 
 
 FORM_JURISDICTION = "FED"
@@ -516,7 +516,7 @@ F8582_RULES: list[dict] = [
                  "v1 adds back what the engine has and flags the rest (D_8582_005)."),
      "inputs": [], "outputs": ["f8582_magi"],
      "description": "Decision 4. The proper modified AGI; partial add-backs flagged."},
-    {"rule_id": "R-8582-SPECIAL-ALLOWANCE", "title": "Lines 4-9 — the $25,000 active-participation special allowance", "rule_type": "calculation",
+    {"rule_id": "R-8582-ALLOWANCE", "title": "Lines 4-9 — the $25,000 active-participation special allowance", "rule_type": "calculation",
      "precedence": 3, "sort_order": 3,
      "formula": ("line 4 = smaller of |line 1d loss| or |line 3 loss| (active rental). line 5 = $150,000 "
                  "($75,000 MFS-apart). line 7 = max(0, line 5 − MAGI). line 8 = floor(50% × line 7), capped "
@@ -650,8 +650,8 @@ F8582_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8582-PASSIVE", "IRC_469", "primary", "§469(c)(2) rental = passive per se; the netting"),
     ("R-8582-PASSIVE", "IRS_2025_F8582_INSTR", "secondary", "Part I lines 1a-3"),
     ("R-8582-MAGI", "IRS_2025_F8582_INSTR", "primary", "The modified-AGI add-back list (line 6)"),
-    ("R-8582-SPECIAL-ALLOWANCE", "IRC_469", "primary", "§469(i) the $25,000 offset + phaseout"),
-    ("R-8582-SPECIAL-ALLOWANCE", "IRS_2025_F8582_INSTR", "primary", "Part II lines 4-9"),
+    ("R-8582-ALLOWANCE", "IRC_469", "primary", "§469(i) the $25,000 offset + phaseout"),
+    ("R-8582-ALLOWANCE", "IRS_2025_F8582_INSTR", "primary", "Part II lines 4-9"),
     ("R-8582-ALLOWED", "IRS_2025_F8582_INSTR", "primary", "Part III lines 10-11 (total allowed)"),
     ("R-8582-DISPOSITION", "IRC_469", "primary", "§469(g) disposition releases the suspended loss"),
     ("R-8582-RE-PRO", "IRC_469", "primary", "§469(c)(7) real-estate-professional exception"),
@@ -684,7 +684,7 @@ FLOW_ASSERTIONS: list[dict] = [
      "sort_order": 3},
     {"assertion_id": "FA-1040-8582-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Special allowance = min(line 4 loss, 50%×($150k − MAGI) capped $25k)",
-     "description": "Validates R-8582-SPECIAL-ALLOWANCE. Bug it catches: the phaseout not applied (8582-T2 → $15k) or the cap exceeded.",
+     "description": "Validates R-8582-ALLOWANCE. Bug it catches: the phaseout not applied (8582-T2 → $15k) or the cap exceeded.",
      "definition": {"kind": "formula_check", "form": "FORM_8582",
                     "formula": "line_9 == min(line_4_loss, min(cap, floor(0.50*(top - magi)))); top/cap = 150000/25000 or 75000/12500 MFS-apart"},
      "sort_order": 4},

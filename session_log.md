@@ -4,6 +4,36 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — Schedule E (Part I) + Form 8582 (NEXT-UP #6) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks good.")** — the $25k/$12,500
+  special allowance + the 50%×($150k/$75k−MAGI) phaseout + the MFS amounts + the
+  modified-AGI add-back list (NOT §199A) + the v1 simplified-bucket deviations
+  (aggregate columns, no per-activity Parts IV/V, RE-pro RED, MFS-together $0,
+  §280A vacation-home not applied, partial MAGI add-backs).
+- `load_1040_schedule_e.py` seeds BOTH forms (the load_1040_schedule_d 3-form
+  precedent); `check_schedule_e_8582_integrity.py` ALL CHECKS PASS (independent
+  re-type of the §469(i) constants + the special-allowance helper + both forms'
+  scenarios; loader & gate share no math). Guard verified REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **SCHEDULE_E** (8 facts/4 rules/33 lines/4
+  diag/4 scenarios/5 cited links) + **FORM_8582** (17 facts/6 rules/17 lines/6
+  diag/7 scenarios/8 cited links) + 6 flow assertions. **RS DB 50→52 forms,
+  FA 140→146.** All rules cited.
+- **SUPERSESSION:** deleted the old non-standard `form_number="8582"` draft
+  (generic R001/D001 ids, wrong line numbering — invented a CRD line 2). The
+  re-authored form is the standard `FORM_8582`. The real 2025 structure: 1a-1d
+  rental-RE-active / 2a-2d all-other-passive / 3 combine / Part II 4-9 special
+  allowance / 10-11 total allowed.
+- Deployed exports verified HTTP 200 (`lookup/SCHEDULE_E/export/` +
+  `lookup/FORM_8582/export/`); committed to tts-tax-app as canonical
+  `server/specs/{schedule_e,form_8582}_spec.json` + 6 FA staged in
+  `flow_assertions_1040_sche_8582_pending.json` (active 1040 gate stays 135).
+- rule_id length lesson: FormRule.rule_id is varchar(20) — `R-8582-SPECIAL-ALLOWANCE`
+  (24) overflowed; renamed → `R-8582-ALLOWANCE`.
+- Next (tts-tax-app): the 6 build legs — seed (extend RentalProperty: address/
+  active_participation/is_qjv/type-1-8/the two 1099-Qs, migration 0068; route the
+  serializer/CRUD by form code) → compute → render → input → diagnostics →
+  assertions → tag `1040-schedule-e-8582-complete`.
+
 ## 2026-06-13 — Form 8880 (Saver's Credit, roster #9) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the scope walk in-session ("Looks good. Run it.")** — incl. the
   W-2 box-12 elective-deferral auto-derive (qualifying codes D/E/F/G/H/S/AA/BB/EE
