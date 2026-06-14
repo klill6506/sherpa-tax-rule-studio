@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — Form 8962 (Premium Tax Credit, NEXT-UP #7) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks right")** — Table 2 applicable
+  figure (interpolation, verified endpoints) + the 2024 FPL + Table 5 + line-5
+  truncation + the monthly method + the iterative SEHI<->PTC + Parts 4/5 + the
+  2026 RED-defer + the two requires_human_review flags (the full Table 2 lookup;
+  the Pub 974 convergence).
+- `load_1040_form_8962.py` + `check_8962_integrity.py` ALL CHECKS PASS (independent
+  re-type of the FPL/Table-2/Table-5 math + the 5 helper fns + the 6 scenarios;
+  loader & gate share no math). Guard verified REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **FORM_8962** (17 facts / 13 rules / 38 lines /
+  6 diagnostics / 6 scenarios / 15 cited links) + 6 flow assertions. **RS DB →52
+  forms, FA →152.** All rules cited. 3 sources (i8962 / IRC §36B / Pub 974).
+- CONSTANTS verified cell-by-cell from the 2025 i8962 PDF: line 5 trunc cap 401
+  (400% cliff suspended 2025); Table 2 0/.02/.04/.06/.085 (+.0004/pt 150-300%,
+  +.00025/pt 300-400%); Table 5 375/975/1,625 single & 750/1,950/3,250 other,
+  no-limit >=400%; 2024 FPL 48-state 15,060/+5,380, AK 18,810/+6,730, HI 17,310/
+  +6,190. Net PTC L26 -> Sch 3 L9; excess L29 -> Sch 2 L1a.
+- Deployed export verified HTTP 200 (`lookup/FORM_8962/export/`); committed to
+  tts-tax-app as canonical `server/specs/form_8962_spec.json` + 6 FA staged in
+  `flow_assertions_1040_8962_pending.json` (active 1040 gate stays 141).
+- rule_id length lesson (again): FormRule.rule_id is varchar(20) —
+  R-8962-HOUSEHOLD-INCOME (23) / R-8962-APPLICABLE-FIGURE (24) overflowed; renamed
+  -> R-8962-MAGI / R-8962-APPL-FIG.
+- Next (tts-tax-app): the 6 build legs — seed (a new Form1095A model + RLS, mig
+  0069; FORM_8962 FormDef + facts) → compute (`compute_8962.py`: the MAGI helper +
+  the monthly method + the SEHI iterative + Part 4/5 → Sch 3 L9 / Sch 2 L1a; the
+  BIGGEST build leg) → render (f8962.pdf downloaded) → input → diagnostics →
+  assertions → tag `1040-form-8962-complete`.
+
 ## 2026-06-14 — Schedule E (Part I) + Form 8582 (NEXT-UP #6) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Looks good.")** — the $25k/$12,500
   special allowance + the 50%×($150k/$75k−MAGI) phaseout + the MFS amounts + the

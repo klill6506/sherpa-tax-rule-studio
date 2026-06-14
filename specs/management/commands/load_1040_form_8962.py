@@ -58,7 +58,7 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # Gated until Ken's review walk.
+READY_TO_SEED = True  # FLIPPED 2026-06-14 — Ken approved the review walk ("Looks right").
 
 
 FORM_JURISDICTION = "FED"
@@ -356,7 +356,7 @@ F8962_RULES: list[dict] = [
      "precedence": 1, "sort_order": 1,
      "formula": "line 1 = taxpayer + spouse (if not MFS) + dependents claimed.",
      "inputs": [], "outputs": [], "description": "§36B(d)(1). Drives the FPL lookup."},
-    {"rule_id": "R-8962-HOUSEHOLD-INCOME", "title": "Lines 2a/2b/3 — household income (MAGI)", "rule_type": "calculation",
+    {"rule_id": "R-8962-MAGI", "title": "Lines 2a/2b/3 — household income (MAGI)", "rule_type": "calculation",
      "precedence": 2, "sort_order": 2,
      "formula": ("line 2a = taxpayer (+spouse) MAGI = AGI + tax-exempt interest (1040 2a) + excluded foreign "
                  "earned income (Form 2555) + non-taxable SS (1040 6a − 6b); line 2b = f8962_dependents_magi; "
@@ -374,7 +374,7 @@ F8962_RULES: list[dict] = [
      "formula": "line 5 = TRUNCATE(line 3 / line 4 × 100); if > 400 enter 401. The 400% cliff is SUSPENDED for 2025.",
      "inputs": [], "outputs": ["f8962_fpl_pct"],
      "description": "Truncation (NOT rounding). >400% still eligible (2025)."},
-    {"rule_id": "R-8962-APPLICABLE-FIGURE", "title": "Line 7 — applicable figure (Table 2)", "rule_type": "calculation",
+    {"rule_id": "R-8962-APPL-FIG", "title": "Line 7 — applicable figure (Table 2)", "rule_type": "calculation",
      "precedence": 5, "sort_order": 5,
      "formula": ("line 7 = Table 2(line 5): 0.0000 <150%; +0.0004/pt 150-300% (0.0200 at 200, 0.0400 at 250, "
                  "0.0600 at 300); +0.00025/pt 300-400% (0.0850 at 400); 0.0850 >=400%. Round 4 decimals."),
@@ -549,11 +549,11 @@ F8962_SCENARIOS: list[dict] = [
 
 F8962_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8962-FAMILY-SIZE", "IRC_36B", "primary", "§36B(d)(1) family size"),
-    ("R-8962-HOUSEHOLD-INCOME", "IRC_36B", "primary", "§36B(d)(2) household income / MAGI"),
-    ("R-8962-HOUSEHOLD-INCOME", "IRS_2025_F8962_INSTR", "secondary", "Lines 2a/2b/3"),
+    ("R-8962-MAGI", "IRC_36B", "primary", "§36B(d)(2) household income / MAGI"),
+    ("R-8962-MAGI", "IRS_2025_F8962_INSTR", "secondary", "Lines 2a/2b/3"),
     ("R-8962-FPL", "IRS_2025_F8962_INSTR", "primary", "The 2024 FPL Tables 1-1/1-2/1-3"),
     ("R-8962-FPL-PCT", "IRS_2025_F8962_INSTR", "primary", "Line 5 truncation + the 401 cap"),
-    ("R-8962-APPLICABLE-FIGURE", "IRS_2025_F8962_INSTR", "primary", "Table 2 (the applicable figure)"),
+    ("R-8962-APPL-FIG", "IRS_2025_F8962_INSTR", "primary", "Table 2 (the applicable figure)"),
     ("R-8962-CONTRIBUTION", "IRS_2025_F8962_INSTR", "primary", "Lines 8a/8b"),
     ("R-8962-MONTHLY", "IRS_2025_F8962_INSTR", "primary", "Lines 12-23 the monthly method"),
     ("R-8962-RECONCILE", "IRC_36B", "primary", "§36B(f) reconciliation → Sch 3 line 9"),
@@ -582,7 +582,7 @@ FLOW_ASSERTIONS: list[dict] = [
      "sort_order": 1},
     {"assertion_id": "FA-1040-8962-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Line 5 = truncate(income/FPL×100), cap 401; Table 2 interpolation",
-     "description": "Validates R-8962-FPL-PCT + R-8962-APPLICABLE-FIGURE. Bug it catches: rounding instead of truncating, the 400% cliff wrongly applied, or a bad interpolation (175%→0.0100, 250%→0.0400).",
+     "description": "Validates R-8962-FPL-PCT + R-8962-APPL-FIG. Bug it catches: rounding instead of truncating, the 400% cliff wrongly applied, or a bad interpolation (175%→0.0100, 250%→0.0400).",
      "definition": {"kind": "formula_check", "form": "FORM_8962",
                     "formula": "line5 == trunc(line3/line4*100) capped 401; line7 == Table2(line5)"},
      "sort_order": 2},
