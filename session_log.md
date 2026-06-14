@@ -4,6 +4,33 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — Form 8889 (HSA, Phase 2 first common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks right.")** — the §223 limits +
+  the catch-up + the deduction (min(own, limit−employer)) + the proration + the
+  last-month rule + the married family split + the distribution/20% (with the
+  exception) + Part III/10% + the Sch-2-17c/17d flow correction.
+- `load_1040_form_8889.py` + `check_8889_integrity.py` ALL CHECKS PASS (independent
+  re-type of the §223 limits + the proration + the deduction/distribution/Part-III
+  math + the 11 scenarios; loader & gate share no math). Guard verified REFUSING.
+- Flipped READY_TO_SEED → seeded: **FORM_8889** (18 facts / 6 rules / 24 lines /
+  6 diagnostics / 11 scenarios / 11 cited links) + 6 flow assertions. **RS DB →55
+  forms, FA →170.** All rules cited. 3 sources (i8889 / IRC §223 / Pub 969).
+- CONSTANTS verified vs Rev. Proc. 2024-25 §2.01 (2025) + 2025-19 §2.01 (2026):
+  self-only/family 2025 $4,300/$8,550, 2026 $4,400/$8,750; $1,000 catch-up (55+,
+  statutory, both). FLOW: line 13 → Sch 1 L13; line 16 + line 20 → Sch 1 L8f; line
+  17b (20%) → **Sch 2 L17c**; line 21 (10%) → **Sch 2 L17d** (corrected from the
+  13c premise — both HSA additional taxes live under Sch 2 line 17 "Other").
+- Deployed export verified HTTP 200 (`lookup/FORM_8889/export/`); committed to
+  tts-tax-app as canonical `server/specs/form_8889_spec.json` + 6 FA staged in
+  `flow_assertions_1040_8889_pending.json` (active 1040 gate stays 159).
+- Next (tts-tax-app): the 6 build legs — seed (a per-owner **HSA** sub-model + RLS,
+  the FORM_8889 FormDef + facts) → compute (`compute_8889.py` → Sch 1 L13/L8f + Sch
+  2 L17c/L17d; **runs BEFORE compute_sch123** — L13 is an above-the-line ADJUSTMENT,
+  the compute_state_refund_db precedent) → render (f8889.pdf, per-owner copies) →
+  input → diagnostics → assertions → tag `1040-form-8889-complete`. RED-deferred:
+  the 6% excess excise (5329 Part VII), the IRA→HSA funding distribution, non-spouse
+  death. WALK ITEM: re-verify the 2026 Form 8889 line numbers when posted.
+
 ## 2026-06-14 — State refund worksheet (NEXT-UP #9, the LAST item) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("No changes. Continue")** — the §111
   tax-benefit computation (Pub 525 Worksheet 2 + 2a): the SALT-cap recapture (the
