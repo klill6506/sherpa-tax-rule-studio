@@ -4,6 +4,30 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-15 — Form 8960 (net investment income tax §1411, Phase 2 fifth common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it, include render")** — the 3.8% NIIT
+  on min(net investment income, MAGI − threshold); the auto-feed (interest 1040 2b / dividends 3b /
+  net gain line 7) + the §1411 adjustments on 4b/5b/6/7; the MAGI = AGI + §911 base; the statutory
+  thresholds. Ken's 2 scope decisions: auto-aggregate clean feeders + overrides; §1411 nuances are
+  preparer adjustments via 4b/6/7.
+- `load_1040_8960.py` + `check_8960_integrity.py` ALL CHECKS PASS (independent re-type of the §1411
+  chain + the thresholds + all 7 numeric scenarios; loader & gate share no math). Guard verified REFUSING.
+- Flipped READY_TO_SEED → seeded: **FORM_8960** (17 facts / 3 rules / 15 lines / 5 diagnostics / 8
+  scenarios / 5 cited links) + 6 flow assertions. **RS DB →59 forms, FA →194.** All rules cited. 2
+  sources (i8960 / IRC §1411).
+- **KEY:** NIIT = 3.8% × min(max(0, line 12 NII), MAGI − threshold) → Schedule 2 line 12 (already the
+  NIIT slot, direct-entry → now computed). Thresholds STATUTORY/non-indexed (MFJ/QSS $250k, MFS $125k,
+  single/HoH $200k) — same 2025/2026. MAGI = AGI + §911 (the 8962 base). Return-level facts (no
+  sub-model — per-return tax). RED-deferred: estates/trusts, the disposition-of-active-interest
+  worksheet, the precise state-tax allocation ratio.
+- Deployed export verified HTTP 200 (`lookup/FORM_8960/export/`); committed to tts-tax-app as canonical
+  `server/specs/8960_spec.json` + 6 FA staged in `flow_assertions_1040_8960_pending.json` (active 1040
+  gate stays 183).
+- Next (tts-tax-app): the 6 build legs — seed (~12 e8960_* Taxpayer facts + a FORM_8960 FormDef) →
+  compute (`compute_8960.py` → Schedule 2 line 12; auto-feeds interest 2b / dividends 3b / gain line 7;
+  MAGI from AGI; runs after AGI final) → render (f8960.pdf) → input → diagnostics → assertions → tag
+  `1040-form-8960-complete`.
+
 ## 2026-06-15 — Form 8606 (nondeductible IRAs §408(d)+§408A, Phase 2 fourth common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it, include render")** — the §408(d)
   pro-rata (nontaxable% = basis / (year-end + distributions + conversions), capped 1.0), the Part II
