@@ -4,6 +4,30 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-15 — Form 5695 (residential energy credits §25D+§25C, Phase 2 third common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it, include render")** — the §25D 30% +
+  fuel-cell $500/½kW cap + carryforward + tax limit; the §25C caps ($1,200 aggregate + $250/$500 doors
+  / $600 windows / $600-per-item / $150 audit + the separate $2,000 heat-pump group, max $3,200); the
+  OBBBA termination after 2025. Ken's 2 scope decisions: both parts with caps modeled; model the
+  tax-liability limit + the §25D carryforward. Render INCLUDED (full 6-leg build).
+- `load_1040_5695.py` + `check_5695_integrity.py` ALL CHECKS PASS (independent re-type of credit_25d/
+  credit_25c + all 8 numeric scenarios; loader & gate share no math). Guard verified REFUSING. Fix:
+  the loader was missing the FormRule import (NameError on first seed) → added.
+- Flipped READY_TO_SEED → seeded: **FORM_5695** (21 facts / 4 rules / 15 lines / 6 diagnostics / 9
+  scenarios / 7 cited links) + 6 flow assertions. **RS DB →57 forms, FA →182.** All rules cited. 3
+  sources (i5695 / IRC §25D / IRC §25C).
+- **KEY:** TY2025-only — OBBBA terminates BOTH credits after 12/31/2025 (D_5695_2026 RED for 2026+).
+  §25D → Sch 3 5a (carries forward); §25C → Sch 3 5b (no carryforward, excess lost). The Credit Limit
+  Worksheet ordering is simplified in v1 (i5695 requires_human_review). Deferred: joint occupancy,
+  QM-PIN/CEE-tier qualification, per-door/window itemization.
+- Deployed export verified HTTP 200 (`lookup/FORM_5695/export/`); committed to tts-tax-app as canonical
+  `server/specs/5695_spec.json` + 6 FA staged in `flow_assertions_1040_5695_pending.json` (active 1040
+  gate stays 171).
+- Next (tts-tax-app): the 6 build legs — seed (FORM_5695 FormDef + ~21 e5695_* Taxpayer facts, the
+  Sch-A/8889 return-level precedent) → compute (`compute_5695.py` → Sch 3 5a/5b; in the Sch-3 credit
+  block, needs tax liability for the Credit Limit Worksheet) → render (download f5695.pdf) → input →
+  diagnostics → assertions → tag `1040-form-5695-complete`.
+
 ## 2026-06-14 — Form 1099-G (unemployment, Phase 2 second common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it; no render form")** — §85
   full inclusion (NO exclusion for 2025/2026; the 2020 ARPA $10,200 was COVID-only), the
