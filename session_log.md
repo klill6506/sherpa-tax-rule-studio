@@ -4,6 +4,31 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-15 — Form 8606 (nondeductible IRAs §408(d)+§408A, Phase 2 fourth common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it, include render")** — the §408(d)
+  pro-rata (nontaxable% = basis / (year-end + distributions + conversions), capped 1.0), the Part II
+  conversion taxable (line 18 = line 16 − the line-11 pro-rata basis), the §408A(d)(4) Roth ordering
+  (contributions→conversions→earnings), and the 1099-R box-2a SUPERSESSION on line 4b. Ken's 3 scope
+  decisions: ALL THREE PARTS; a per-owner Form8606 sub-model; the 8606 supersedes the 1099-R box-2a.
+- `load_1040_8606.py` + `check_8606_integrity.py` ALL CHECKS PASS (independent re-type of part_i/
+  part_ii/part_iii + all 7 numeric scenarios incl. basis conservation; loader & gate share no math).
+  Guard verified REFUSING.
+- Flipped READY_TO_SEED → seeded: **FORM_8606** (16 facts / 4 rules / 22 lines / 6 diagnostics / 8
+  scenarios / 6 cited links) + 6 flow assertions. **RS DB →58 forms, FA →188.** All rules cited. 3
+  sources (i8606 / IRC §408(d) / IRC §408A).
+- **KEY:** the 8606 owner-with-basis taxable amount (line 15c + 18 + 25c) drives 1040 line 4b,
+  SUPERSEDING the 1099-R box-2a (the Simplified Method precedent — the gross 4a still sums). **WALK
+  ITEM:** line 17 = line 11 (the pro-rata; the IRS "line 2 + pre-conversion line 1" plain-language form
+  equals line 11 in the no-other-IRA backdoor case — i8606 requires_human_review). RED-deferred:
+  disaster distributions, outstanding rollovers, recharacterizations, inherited-IRA basis.
+- Deployed export verified HTTP 200 (`lookup/FORM_8606/export/`); committed to tts-tax-app as canonical
+  `server/specs/8606_spec.json` + 6 FA staged in `flow_assertions_1040_8606_pending.json` (active 1040
+  gate stays 177).
+- Next (tts-tax-app): the 6 build legs — seed (a per-owner Form8606 sub-model + mig + RLS + FORM_8606
+  FormDef + CRUD) → compute (`compute_8606.py` → 1040 line 4b, superseding the 1099-R IRA box-2a; runs
+  in/after compute_retirement_aggregation, re-deriving 4b) → render (f8606.pdf, one copy per owner) →
+  input → diagnostics → assertions → tag `1040-form-8606-complete`.
+
 ## 2026-06-15 — Form 5695 (residential energy credits §25D+§25C, Phase 2 third common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it, include render")** — the §25D 30% +
   fuel-cell $500/½kW cap + carryforward + tax limit; the §25C caps ($1,200 aggregate + $250/$500 doors
