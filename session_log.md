@@ -4,6 +4,31 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-14 — Form 1099-G (unemployment, Phase 2 second common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it; no render form")** — §85
+  full inclusion (NO exclusion for 2025/2026; the 2020 ARPA $10,200 was COVID-only), the
+  same-year-repayment netting on Sch 1 line 7 (the "Repaid" literal), box 4 → 1040 line 25b,
+  the §1341 prior-year-repayment RED, the box-5/6/7/9 RED, box 2 stays in STATE_REFUND.
+- `load_1040_1099g.py` + `check_1099g_integrity.py` ALL CHECKS PASS (independent re-type of
+  max(0, box1−repaid) summed + the box-4 aggregation + a "no exclusion ever applied" invariant
+  + the 7 scenarios; loader & gate share no math). Guard verified REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **FORM_1099G** (10 facts / 4 rules / 7 lines / 5 diagnostics
+  / 7 scenarios / 5 cited links) + 6 flow assertions. **RS DB →56 forms, FA →176.** All rules
+  cited. 3 sources (IRC §85 / 2025 i1040 Sch 1 Line 7 / Pub 525).
+- **KEY:** NO year-keyed constants — §85 full inclusion is identical for 2025/2026; the only
+  year-sensitivity is the form line numbers (2025 i1040 Sch 1 Line 7 source = requires_human_review,
+  re-verify the 2026 1099-G box layout + line 7 number ~Dec 2026). Ken's scope decisions:
+  Form1099G doc model; same-year netting computed + §1341 RED; v1 box 1+4 only + other-boxes RED.
+- Deployed export verified HTTP 200 (`lookup/FORM_1099G/export/`); committed to tts-tax-app as
+  canonical `server/specs/1099g_spec.json` + 6 FA staged in `flow_assertions_1040_1099g_pending.json`
+  (active 1040 gate stays 165).
+- **NO RENDER LEG** (Ken's call) — 1099-G is an input document (like W-2), not filed with the
+  return; the value renders on Schedule 1 (already built). Build legs (tts-tax-app): seed (a
+  Form1099G doc model + mig + RLS + FORM_1099G FormDef + CRUD) → compute (`compute_1099g.py` →
+  Sch 1 L7 + the 7_repaid literal + 1040 L25b; runs in the pre-formula-pass income feeder block —
+  line 7 is INCOME, the compute_state_refund_db precedent) → input → diagnostics → assertions →
+  tag `1040-form-1099g-complete`. RED-deferred: §1341 prior-year repayment, boxes 5/6/7/9.
+
 ## 2026-06-14 — Form 8889 (HSA, Phase 2 first common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Looks right.")** — the §223 limits +
   the catch-up + the deduction (min(own, limit−employer)) + the proration + the
