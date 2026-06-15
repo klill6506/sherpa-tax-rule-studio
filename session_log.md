@@ -4,6 +4,32 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-15 — Form 2210 (underpayment of estimated tax §6654, Phase 2 sixth common form) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it, include render")** — the FULL build:
+  Part I safe harbors ($1,000 de-minimis / 90% / 100% / 110% over $150k AGI), the Regular Method
+  penalty (§6621 7% through 3/31/2026, 6% for 4/1-4/15/2026 — verified web vs the 2025 Rev. Ruls.),
+  and Schedule AI (factors 4/2.4/1.5/1, applicable % 22.5/45/67.5/90, smaller-of). Ken's 2 scope
+  decisions: FULL (regular + annualized); prior-year inputs as preparer facts.
+- `load_1040_2210.py` + `check_2210_integrity.py` ALL CHECKS PASS (independent re-type of the §6654
+  safe harbors + the §6621 penalty day-factors + Schedule AI + all 6 numeric scenarios, AND cross-
+  checks the loader's compute_2210; loader & gate share no math). Guard verified REFUSING.
+- Flipped READY_TO_SEED → seeded: **FORM_2210** (10 facts / 3 rules / 11 lines / 5 diagnostics / 7
+  scenarios / 5 cited links) + 6 flow assertions. **RS DB →60 forms, FA →200.** All rules cited. 2
+  sources (i2210 / IRC §6654).
+- **KEY:** penalty → 1040 line 38 (already the manual NIIT... no, the est-tax-penalty slot, direct-
+  entry → now computed). §6621 penalty day-factors [0.069589, 0.057890, 0.040247, 0.016849] for the 4
+  periods (due 4/15, 6/15, 9/15/2025, 1/15/2026). **WALK ITEMS (requires_human_review):** Schedule AI
+  takes the per-period annualized TAX as a preparer input (t2210_ai_tax_q*; the full per-period
+  bracket/QDCGT/AMT computation deferred); withholding spread evenly (no actual-date election); Part
+  II waiver + farmers/fishermen out of v1. TY2026 → re-pin the §6621 rates.
+- Deployed export verified HTTP 200 (`lookup/FORM_2210/export/`); committed to tts-tax-app as canonical
+  `server/specs/2210_spec.json` + 6 FA staged in `flow_assertions_1040_2210_pending.json` (active 1040
+  gate stays 189).
+- Next (tts-tax-app): the 6 build legs — seed (~10 t2210_* Taxpayer facts + a FORM_2210 FormDef) →
+  compute (`compute_2210.py` → 1040 line 38; reads current tax/withholding/est payments, runs near the
+  end of the 1040 pass) → render (f2210.pdf incl. Schedule AI) → input → diagnostics → assertions →
+  tag `1040-form-2210-complete`.
+
 ## 2026-06-15 — Form 8960 (net investment income tax §1411, Phase 2 fifth common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it, include render")** — the 3.8% NIIT
   on min(net investment income, MAGI − threshold); the auto-feed (interest 1040 2b / dividends 3b /
