@@ -4,6 +4,45 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-16 — MINISTER (Minister/Clergy Housing Allowance & SE Tax §107/§1402, W-2 Unit 4) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Looks good. Continue")** — a worksheet-style spec (NOT a
+  single IRS form; reconstructed from Pub 517) for the church-employed (common-law-employee) minister's
+  DUAL STATUS: income-tax EMPLOYEE (W-2) but SELF-EMPLOYED for SE tax. INCOME TAX (§107): housing/rental
+  allowance excluded up to the **least of (designated / used / FRV+utilities)**; the EXCESS → **Form 1040
+  line 1h** ("Excess allowance"). SE TAX (§1402(a)(8)): the FULL housing allowance + parsonage FRV go BACK
+  into the SE base — **Schedule SE line 2 = wages + housing allowance + parsonage FRV − unreimbursed
+  ministerial expenses** (full; no Deason for SE); the EXISTING Topic-8 SE engine applies × 0.9235 + the
+  SS cap + ½-SE → Sch 1 L15 + SE → Sch 2 L4. **Form 4361** approved → Schedule SE line 2 = 0.
+- LAW VERIFIED 2026-06-16 vs IRS Pub 517 (2025) + IRC §107 + §1402(a)(8)/(c)(4)/(e) (live WebFetch):
+  the §107 least-of-three; the §1402(a)(8) housing-in-SE inclusion ("doesn't apply for SE tax purposes",
+  Pastor Leslie Adams example $39k+$12k=$51k SE); excess → 1040 1h; W-2 minister wages → Schedule SE
+  line 2 (no Schedule C, no FICA); Form 4361 omits ministerial earnings. ½-SE-tax (Sch 1 L15) normal.
+- **KEN'S 3 SCOPE DECISIONS (2026-06-16 AskUserQuestion):** (1) v1 = "W-2 minister core" (RED-defer
+  Schedule-C ministerial side income, §265/Deason allocation, retired-minister housing, 4361
+  adjudication); (2) clergy inputs ON `W2Income` + a person-level `clergy_4361_exempt` Taxpayer fact;
+  (3) include one preparer-entered unreimbursed-ministerial-expenses input (full, for SE).
+- `load_1040_minister.py` + `check_minister_integrity.py` **ALL CHECKS PASS** (independent re-type of
+  the §107 least-of-three + the §1402(a)(8) SE base + the Form 4361 zeroing + all 6 scenarios + the 6
+  diagnostic conditions + negative-floor/below-FRV edges; loader & gate share no math). Guard verified
+  REFUSING before the flip.
+- Flipped READY_TO_SEED → seeded: **MINISTER** (10 facts / 4 rules / 11 lines / 6 diagnostics / 6
+  scenarios / 7 links) + 6 flow assertions. **RS DB 61→62 forms, FA 206→212.** All rules cited. 4
+  sources (Pub 517 / §107 / §1402 / Form 4361), all `requires_human_review=True`.
+- **WALK ITEMS (requires_human_review):** (a) the worksheet line LABELS are reconstructed from the Pub
+  517 narrative + examples (PDF worksheet tables don't render in HTML) — the COMPUTATION is math-gated;
+  (b) the SE housing component uses the full DESIGNATED allowance (line 2), confirmed vs §1402(a)(8) +
+  the Pastor Adams example; (c) reasonable-comp §107 limit NOT modeled (D_MIN_REASONABLE info); (d)
+  Form 4361 preparer-asserted, not adjudicated.
+- Deployed export verified HTTP 200 (`lookup/MINISTER/export/`, 24,185 bytes; 10/4/11/6/6/4); committed
+  to tts-tax-app as canonical `server/specs/minister_spec.json` + 6 FA staged in
+  `flow_assertions_1040_minister_pending.json` (active 1040 gate stays 223). Source brief
+  `server/specs/_minister_source_brief.md`.
+- Next (tts-tax-app): the 6 build legs — seed (clergy fields on W2Income + `clergy_4361_exempt` Taxpayer
+  fact + migration) → compute (`compute_minister.py` → 1040 line 1h + a clergy Schedule SE row at line 2
+  feeding the existing SE engine) → render (Pub 517 worksheet statement, the SM-statement precedent) →
+  input (clergy fields on the W2Screen FieldGrid) → diagnostics (`rules_minister.py`, 6) → assertions
+  (merge the 6 FA + `_run_minister_assertion`) → tag `1040-minister-complete`.
+
 ## 2026-06-15 — Form 7206 (Self-Employed Health Insurance Deduction §162(l), W-2 Unit 3) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it")** — the §162(l) SEHI deduction
   → Schedule 1 line 17, computed on **Form 7206** (the form that replaced the old SEHI worksheet
