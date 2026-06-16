@@ -691,8 +691,8 @@ SCHEDC_FACTS: list[dict] = [
      "notes": "PER BUSINESS. True -> attach explanation (metadata/diagnostic)."},
     {"fact_key": "sc_sehi_amount", "label": "Self-employed health insurance premiums (-> Schedule 1 line 17, limited)",
      "data_type": "decimal", "default_value": "0", "sort_order": 27,
-     "notes": ("PER PROPRIETOR. SEHI deduction -> Sch 1 L17, LIMITED to net SE profit (this business / proprietor). "
-               "SEHI<->PTC circular = RED-defer until Form 8962. Lives with Schedule C but feeds Schedule 1.")},
+     "notes": ("PER PROPRIETOR. SEHI deduction -> Sch 1 L17, computed on FORM_7206 (limit = net SE profit - 1/2-SE-tax "
+               "- SE-retirement; W-2 Unit 3 fix). SEHI<->PTC = Form 8962. Lives with Schedule C but feeds Sch 1 via Form 7206.")},
     {"fact_key": "sc_se_retirement_amount", "label": "Self-employed retirement contributions (SEP/SIMPLE/qualified; -> Schedule 1 line 16)",
      "data_type": "decimal", "default_value": "0", "sort_order": 28,
      "notes": "PER PROPRIETOR. Reduces QBI for this business (i8995). v1 preparer-entered -> Sch 1 L16 (direct-entry feeder)."},
@@ -750,11 +750,13 @@ SCHEDC_RULES: list[dict] = [
      "formula": "If L31 < 0: require 32a XOR 32b. 32a -> loss allowed (v1 assumes all at risk). 32b -> D_SC_002 RED-defer (Form 6198).",
      "inputs": ["sc_all_at_risk", "sc_some_not_at_risk"], "outputs": ["32a", "32b"],
      "description": "PER BUSINESS. v1 supports the all-at-risk case only; 32b (Form 6198 at-risk limitation) is RED-defer."},
-    {"rule_id": "R-SC-SEHI", "title": "Self-employed health insurance -> Schedule 1 line 17 (limited)", "rule_type": "calculation", "precedence": 9, "sort_order": 9,
-     "formula": "Sch 1 L17 = min(sc_sehi_amount summed per proprietor, net SE profit of that proprietor). SEHI<->PTC circular = RED-defer.",
+    {"rule_id": "R-SC-SEHI", "title": "Self-employed health insurance -> Schedule 1 line 17 (computed on Form 7206)", "rule_type": "calculation", "precedence": 9, "sort_order": 9,
+     "formula": "SUPERSEDED by FORM_7206 (W-2 Unit 3, 2026-06-15): Sch 1 L17 = sum over businesses of min(sc_sehi_amount, net SE profit - apportioned 1/2-SE-tax - SE-retirement) + any 2% S-corp SEHI (Box-5 limited). SEHI<->PTC = Form 8962.",
      "inputs": ["sc_sehi_amount"], "outputs": [],
-     "description": ("PER PROPRIETOR. SEHI deduction limited to net SE earnings from the trade/business. Feeds Schedule "
-                     "1 line 17 (computed feeder). The §162(l)/§36B circular interaction is RED-deferred until Form 8962.")},
+     "description": ("PER PROPRIETOR input (sc_sehi_amount = Form 7206 line 1 premiums). The deduction MATH is now "
+                     "FORM_7206's: the earned-income limit is net profit - 1/2-SE-tax (7206 line 7) - SE-retirement "
+                     "(line 9), NOT net profit alone (the old cap was incomplete). Feeds Schedule 1 line 17 "
+                     "(computed feeder). The §162(l)/§36B circular interaction is owned by Form 8962.")},
 ]
 
 SCHEDC_LINES: list[dict] = [

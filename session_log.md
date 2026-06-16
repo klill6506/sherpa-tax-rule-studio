@@ -4,6 +4,38 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-15 — Form 7206 (Self-Employed Health Insurance Deduction §162(l), W-2 Unit 3) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approved — seed it")** — the §162(l) SEHI deduction
+  → Schedule 1 line 17, computed on **Form 7206** (the form that replaced the old SEHI worksheet
+  since TY2023). TWO earned-income limit paths on one form: the **Sch C/SE path** (line 10 = net
+  profit − apportioned ½-SE-tax line 7 − SEP/SIMPLE line 9) and the **S-corporation 2% shareholder
+  path** (line 4 "skip to line 11"; line 11 = **Box 5 Medicare wages**). Line 14 = min(line 3
+  premiums, line 13 limit); the return total = Σ each form's line 14. **One Form 7206 per business.**
+- LAW VERIFIED 2026-06-15 cell-by-cell from the 2025 Form 7206 PDF (pulled via pymupdf) + i7206 +
+  §162(l)(2)(A): the 2% shareholder limit is the **W-2 Box 5** Medicare wages (form line 11 verbatim);
+  no ½-SE-tax reduction on the S-corp path (no SE tax). Form 2555 line 12 RED-deferred (v1 = 0); LTC
+  line 2 folded into the premium input (preparer age-capped) — no auto-cap, no new model field.
+- `load_1040_form_7206.py` + `check_form_7206_integrity.py` **ALL CHECKS PASS** (independent re-type
+  of both limit paths + the smaller-of + all 8 scenarios + the 3 limit diagnostics; loader & gate
+  share no math). Guard verified REFUSING before the flip.
+- **Ken's 2 decisions (AskUserQuestion):** (1) author a Form 7206 RS spec (not a bare engine
+  extension); (2) **fix the existing Schedule C SEHI limit** — the old R-SC-SEHI capped only at net
+  profit, NOT subtracting the ½-SE-tax / SE-retirement. Scenario **SC-T6** pins the fix (net 5,000 /
+  ½-SE 700 / premium 6,000 → deduction **4,300**, was 5,000).
+- Flipped READY_TO_SEED → seeded: **FORM_7206** (12 facts / 4 rules / 15 lines / 6 diagnostics / 8
+  scenarios / 7 links) + 6 flow assertions. **RS DB 60→61 forms, FA 200→206.** All rules cited. 3
+  sources (Form 7206 / i7206 / IRC §162(l)).
+- **R-SC-SEHI updated in lock-step (Ken's call):** `load_1040_schedule_c.py` R-SC-SEHI formula +
+  description repointed to FORM_7206 (text-only, no count change); Schedule C re-seeded (TaxForms 61,
+  FA 206 unchanged).
+- Deployed export verified HTTP 200 (`lookup/FORM_7206/export/`, 20,856 bytes; 12/4/15/6/8/3);
+  committed to tts-tax-app as canonical `server/specs/7206_spec.json` + 6 FA staged in
+  `flow_assertions_1040_7206_pending.json` (active 1040 gate stays 217).
+- Next (tts-tax-app): build legs — compute (`compute_7206` replacing `sehi_deduction_for_proprietor`:
+  Sch C limit fix + the S-corp Box-5 path; new engage so a no-Schedule-C 2%-shareholder return writes
+  Sch 1 L17; the existing 8962 SEHI↔PTC iterative reads line 17 source-agnostically) → diagnostics →
+  assertions → tag.
+
 ## 2026-06-15 — Form 2210 (underpayment of estimated tax §6654, Phase 2 sixth common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it, include render")** — the FULL build:
   Part I safe harbors ($1,000 de-minimis / 90% / 100% / 110% over $150k AGI), the Regular Method
