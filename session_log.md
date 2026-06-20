@@ -4,16 +4,16 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-20 — Form W-2G (certain gambling winnings §61, effort #4) spec leg — AUTHORED, NOT YET SEEDED ⏳
-- **`READY_TO_SEED = False` — awaiting Ken's review walk.** `load_1040_w2g.py` + `check_w2g_integrity.py`
-  authored, mirroring the 1099-G vertical (the closest precedent — same input-document shape, simpler:
-  no repayment netting, no §1341). **`check_w2g_integrity.py` ALL CHECKS PASS** (independent re-type of
-  the §61 full-inclusion aggregation Σ box1 + non-W-2G winnings, the box-4 → 25c aggregation, the 5
-  scenarios; loader & gate share no math). Seed guard verified **REFUSING** (zero DB writes; RS DB
-  untouched).
-- **FORM_W2G:** 7 facts / 2 rules / 6 lines / 2 diagnostics / 5 scenarios / 5 cited links + 5 flow
-  assertions; 4 authority sources (IRC §61, IRC §165(d), Instr. W-2G & 5754 box layout, 2025 i1040
-  Sch 1 L8b + 1040 L25c).
+## 2026-06-20 — Form W-2G (certain gambling winnings §61, effort #4) spec leg — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approve & seed as recommended").** Flipped
+  `READY_TO_SEED → True` → `check_w2g_integrity.py` **ALL CHECKS PASS** → **seeded FORM_W2G** (7 facts /
+  2 rules / 6 lines / 2 diagnostics / 5 scenarios / 5 cited links + 5 flow assertions; 4 authority
+  sources: IRC §61, IRC §165(d), Instr. W-2G & 5754 box layout, 2025 i1040 Sch 1 L8b + 1040 L25c).
+  **RS DB →63 forms, FA →217.** All rules cited. Mirrors the 1099-G vertical (same input-document
+  shape, simpler: no repayment netting, no §1341).
+- **Deployed export verified HTTP 200** (`lookup/FORM_W2G/export/`, 12,733 bytes); committed to
+  tts-tax-app as canonical `server/specs/w2g_spec.json` + 5 FA staged in
+  `flow_assertions_1040_w2g_pending.json` (active 1040 gate unchanged until the Part-B assertions leg).
 - **Scope (Ken):** (1) pull W-2G into effort #4 WITH compute (a FormW2G doc sub-model → Sch 1 L8b +
   1040 L25c). (2/recommended, confirm at walk) line 8b = Σ box1 + a return-level `other_gambling_winnings`
   (non-W-2G winnings) so 8b is the TOTAL (it backs the Sch A §165(d) loss cap).

@@ -57,7 +57,7 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # Gated until Ken's review walk (§61 full inclusion + 8b/25c routing).
+READY_TO_SEED = True  # FLIPPED 2026-06-20 — Ken approved the review walk ("Approve & seed as recommended").
 
 
 FORM_JURISDICTION = "FED"
