@@ -4,6 +4,31 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-20 — Form W-2G (certain gambling winnings §61, effort #4) spec leg — AUTHORED, NOT YET SEEDED ⏳
+- **`READY_TO_SEED = False` — awaiting Ken's review walk.** `load_1040_w2g.py` + `check_w2g_integrity.py`
+  authored, mirroring the 1099-G vertical (the closest precedent — same input-document shape, simpler:
+  no repayment netting, no §1341). **`check_w2g_integrity.py` ALL CHECKS PASS** (independent re-type of
+  the §61 full-inclusion aggregation Σ box1 + non-W-2G winnings, the box-4 → 25c aggregation, the 5
+  scenarios; loader & gate share no math). Seed guard verified **REFUSING** (zero DB writes; RS DB
+  untouched).
+- **FORM_W2G:** 7 facts / 2 rules / 6 lines / 2 diagnostics / 5 scenarios / 5 cited links + 5 flow
+  assertions; 4 authority sources (IRC §61, IRC §165(d), Instr. W-2G & 5754 box layout, 2025 i1040
+  Sch 1 L8b + 1040 L25c).
+- **Scope (Ken):** (1) pull W-2G into effort #4 WITH compute (a FormW2G doc sub-model → Sch 1 L8b +
+  1040 L25c). (2/recommended, confirm at walk) line 8b = Σ box1 + a return-level `other_gambling_winnings`
+  (non-W-2G winnings) so 8b is the TOTAL (it backs the Sch A §165(d) loss cap).
+- **KEY ROUTING (verified vs IRS, not memory):** box 1 winnings → **Sch 1 line 8b** ("Gambling"); box 4
+  federal withholding → **1040 line 25c** ("Other forms") — **NOT 25b** (W-2G is not a 1099). Line 25c is
+  a **roster** shared with Form 8959 (additional-Medicare withholding), so the tts-tax-app compute must
+  ADD W-2G box 4 to 25c, not clobber the 8959 write (FA-1040-W2G-05 guards this). No render face (input
+  document, like 1099-G / W-2). No year-keyed constants (§61 identical 2025/2026).
+- **WALK ITEMS (requires_human_review):** confirm the exact 2025/2026 i1040 wording + line numbers (8b,
+  25c); confirm the W-2G box numbering vs the target-year revision (box 1/4/15 stable across recent revs).
+- **Next:** Ken review walk → flip READY_TO_SEED → seed (RS DB +1 form, FA +5) → verify deployed export →
+  commit canonical `server/specs/w2g_spec.json` + stage assertions in `flow_assertions_1040_w2g_pending.json`
+  → then tts-tax-app build legs (model 0096+ → serializer/CRUD → compute → diagnostics → input/Misc Income
+  page → assertions). Spec/design doc: tts-tax-app `docs/superpowers/specs/2026-06-20-effort4-retirement-misc-reorg-design.md`.
+
 ## 2026-06-15 — Form 2210 (underpayment of estimated tax §6654, Phase 2 sixth common form) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approved — seed it, include render")** — the FULL build:
   Part I safe harbors ($1,000 de-minimis / 90% / 100% / 110% over $150k AGI), the Regular Method
