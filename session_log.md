@@ -4,6 +4,48 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-21 — SCHEDULE_K1 (recipient K-1 router, effort #5) + SCHEDULE_E page-2 amendment — SEEDED + EXPORTED ✅
+- **Ken approved the review walk in-session ("Approve & seed as authored").** The RECIPIENT-side K-1
+  full router (TaxWise/Lacerte model): a 1040 partner (1065 K-1) / S-corp shareholder (1120-S K-1) /
+  estate-trust beneficiary (1041 K-1) routing EVERY box to its destination. NEW form **SCHEDULE_K1**
+  (31 facts / 11 rules / 21 lines / 10 diagnostics / 12 scenarios / 18 links) + **SCHEDULE_E AMENDED**
+  additively with page 2 (Parts II-V lines 27-43; +3 rules R-SCHE-P2-*; +2 diags D_SCHE_REMIC/4835) +
+  7 flow assertions FA-1040-K1-01..07. `check_schedule_k1_integrity.py` **ALL CHECKS PASS** (independent
+  re-type of the page-2 aggregation + cross-form routing; loader & gate share no math). Guard verified
+  REFUSING before the flip (zero DB writes). **RS DB 63→64 forms, FA 217→224.** All rules cited. 6 new
+  sources (i1065sk1 / i1120ssk / i1041sk1 / §199A / §1402 / §702-1366-652 conduit), the 3 K-1 instruction
+  sources `requires_human_review=True`.
+- **LAW VERIFIED 2026-06-21 against the actual 2025 IRS PDFs (pymupdf dumps) + the K-1 instruction
+  booklets — NOT memory** (tts-tax-app `server/specs/_schedule_k1_source_brief.md`):
+  - **⚠ CORRECTION to the brainstorm design spec:** the summary that flows to Schedule 1 line 5 is
+    Schedule E **line 41** ("Combine lines 26, 32, 37, 39, and 40"), NOT line 40 (= Form 4835 farm
+    rental) — the brainstorm recalled it wrong. Encoded line 41 = 26+32+37+39+40 → Sch 1 L5.
+  - Part II (1065/1120-S) line 28 cols (g) passive loss / (h) passive income / (i) nonpassive loss /
+    (j) §179 / (k) nonpassive income → 30/31/32. Part III (1041) line 33 cols (c)/(d)/(e)/(f) → 35/36/37.
+  - **§199A codes:** 1065 box **20Z**, 1120-S box **17V**, 1041 box **14I** — all "Section 199A
+    information" → Form 8995 (QBI line 2; REIT/PTP line 6). **SE:** 1065 box **14 code A** → Schedule SE;
+    "S corporation income isn't subject to self-employment tax" (no S-corp/1041 SE).
+- **v1 scope (Ken Decisions 1-6, 2026-06-21):** full router; sources 1065+1120-S+1041; **passive losses
+  RED-deferred** (route passive income + all nonpassive; passive loss → RED "limit via 8582 manually");
+  §199A → 8995 IN; partnership SE → Sch SE IN. RED-defer (no silent gap, each a D_K1_*): passive loss,
+  §1231→4797, 28%/§1250→SDTW, AMT→6251, basis/at-risk (warning), other income, foreign/K-3, PTP (warning),
+  REMIC, Form 4835.
+- **Deployed exports verified HTTP 200** (`lookup/SCHEDULE_K1/export/` 59,809 B; `SCHEDULE_E` 29,748 B —
+  re-exported since amended); committed to tts-tax-app as canonical `server/specs/schedule_k1_spec.json` +
+  re-committed `schedule_e_spec.json` + 7 FA staged in `flow_assertions_1040_schedule_k1_pending.json`
+  (status:active; active 1040 gate 234 unchanged until the assertions build leg). Source brief
+  `server/specs/_schedule_k1_source_brief.md`.
+- **WALK ITEMS (requires_human_review, Ken's recommendation accepted):** (1) severity split — passive
+  loss=error, basis/at-risk=warning; (2) 1041 boxes 6/7/8 default to material-participation (preparer
+  toggles per-K-1); (3) §199A split into two facts (QBI line 2 + REIT/PTP line 6); (4) PTP loss = warning
+  (per-PTP netting bounded out of v1).
+- **Next (tts-tax-app): the 6 build legs** — seed (new per-entity K-1 recipient model + migration + RLS +
+  serializer/CRUD + seed command + manifest) → compute (`compute_schedule_e_p2.py`/extend: K-1 aggregation
+  + line-41 summary + cross-form routing addends + RED diagnostics) → render (extend `f1040se_2025.py`
+  Parts II/III/V) → input (un-stub `schedule_e_p2`; per-entity K-1 UI) → diagnostics (`rules_schedule_e_p2.py`)
+  → assertions (merge 7 FA + `_run_k1_assertion`; **REPOINT FA-1040-SCHE-01 line 26 → line 41**). Design
+  doc tts-tax-app `docs/superpowers/specs/2026-06-21-effort5-schedule-e-p2-k1-router-design.md`.
+
 ## 2026-06-20 — Form W-2G (certain gambling winnings §61, effort #4) spec leg — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approve & seed as recommended").** Flipped
   `READY_TO_SEED → True` → `check_w2g_integrity.py` **ALL CHECKS PASS** → **seeded FORM_W2G** (7 facts /
