@@ -4,7 +4,18 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-21 — SCHEDULE_F (1040 farm, cash-method v1) + SCHEDULE_SE farm-optional amendment — AUTHORED + MATH-GATED ✅ (NOT seeded — Ken review walk pending)
+## 2026-06-21 — SCHEDULE_F (1040 farm, cash-method v1) + SCHEDULE_SE farm-optional amendment — SEEDED + EXPORTED ✅
+- **Ken APPROVED the review walk in-session ("Approve & seed")** + chose Schedule J = **fast-follow**
+  (its own form unit). Flipped `READY_TO_SEED → True` → math gate stayed green → **seeded: RS DB
+  64→65 forms, FA 224→232** (SCHEDULE_F created; SCHEDULE_SE amended; both forms all-rules-cited).
+  **Deployed exports verified HTTP 200** (`lookup/SCHEDULE_F/export/` 49,790 B; `SCHEDULE_SE` 33,791 B
+  re-exported); committed tts-tax-app canonical `server/specs/schedule_f_spec.json` + re-committed
+  `schedule_se_spec.json` + **8 FA staged** in `flow_assertions_1040_schedule_f_pending.json`
+  (status:active; active 1040 gate stays 241 until the assertions build leg).
+- **SEED GOTCHA:** `FormDiagnostic.diagnostic_id` is **varchar(20)** — `D_SE_FARMOPT_INELIGIBLE` (23)
+  raised `DataError` (atomic rollback, zero partial writes). Renamed → `D_SE_FARMOPT_INELIG` (19) +
+  **hardened the math gate** with rule_id/diagnostic_id/line_number ≤20 guards (caught pre-seed next time).
+- **Authoring details (below) unchanged.** AUTHORED + MATH-GATED:
 - **Spec-first probe re-confirmed NO RS Schedule F spec** (SCHEDULE_F / 1040_SCHF / F / SCHF all 404;
   RS up, real 404s). Per the MANDATORY Rule Studio rule + Division of Authority: drafted the loader
   for Ken's review — did NOT improvise farm-tax compute.
@@ -35,10 +46,14 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 - **WALK ITEMS (requires_human_review):** A) 2026 farm-optional constants unpublished → 2025 supported,
   2026 RED + re-pin; B) Schedule J bundle-vs-fast-follow; C) Pub 225 narrative definitions / §77 §451
   RED-defer treatment; D) QBI farm-reduction allocation when a proprietor has both a Sch C and a Sch F.
-- **Next:** Ken in-session review walk → on approval flip READY_TO_SEED → seed (RS DB 64→65; FA 224→232)
-  → verify deployed export HTTP 200 → commit tts-tax-app canonical `server/specs/schedule_f_spec.json` +
-  re-export `schedule_se_spec.json` + stage the 8 FA in `flow_assertions_1040_schedule_f_pending.json`
-  → then the 6 tts-tax-app build legs (seed→compute→render→input→diagnostics→assertions).
+- **Next (tts-tax-app): the 6 build legs** — seed (new per-farm ScheduleF FK model + migration + RLS +
+  serializer/CRUD + seed command + manifest; flip Sch 1 L6 + Sch SE L1a computed; extend
+  `compute_schedule_se_lines` for Part II farm optional) → compute (`compute_schedule_f.py`: line
+  1c/9/33/34 + cross-form routing addends + RED diagnostics; QBI → 8995; depreciation 4562 flow_to) →
+  render (un-stub `f1040sf_2025.py` field map — 89 PDF fields; cash-method Parts I/II + line 34; skip
+  page 2) → input (un-stub the `schedule_f` React tab; per-farm card UI) → diagnostics (`rules_schedule_f.py`)
+  → assertions (merge the 8 FA via `merge_schedule_f_assertions.py` + `_run_schf_assertion`; gate 241→249).
+  Then **Schedule J** as the fast-follow (its own RS spec). Design precedent: `load_1040_schedule_c.py`.
 
 ## 2026-06-21 — SCHEDULE_K1 (recipient K-1 router, effort #5) + SCHEDULE_E page-2 amendment — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approve & seed as authored").** The RECIPIENT-side K-1

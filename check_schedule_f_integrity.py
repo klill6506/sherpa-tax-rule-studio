@@ -114,6 +114,17 @@ for spec in m.FORMS:
     if len(diag_ids) != len(set(diag_ids)):
         err(f"{fn}: duplicate diagnostic ids")
 
+    # DB column caps: rule_id / diagnostic_id / line_number are varchar(20).
+    for did in diag_ids:
+        if len(did) > 20:
+            err(f"{fn}: diagnostic_id too long (>20): {did}")
+    for rid in rule_ids:
+        if len(rid) > 20:
+            err(f"{fn}: rule_id too long (>20): {rid}")
+    for lno in line_nos:
+        if len(str(lno)) > 20:
+            err(f"{fn}: line_number too long (>20): {lno}")
+
     linked = {rid for rid, *_ in spec["rule_links"]}
     uncited = [rid for rid in rule_ids if rid not in linked]
     if uncited:

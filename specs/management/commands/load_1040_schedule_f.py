@@ -110,8 +110,15 @@ from specs.models import (
 # line formulas, the cross-form flow map, the farm-optional 2025 constants + the
 # 2026 gap, the 4 requires_human_review walk items, the RED-defer enumeration).
 # Until then the command refuses to write to the DB (zero writes while False).
+#
+# FLIPPED 2026-06-21 — Ken APPROVED the review walk in-session ("Approve & seed"):
+# the verified line-9 right-column sum + line-33/34 formulas, the cross-form flow map
+# (L34 -> Sch 1 L6 + Sch SE L1a, CRP -> SE 1b, depreciation <- 4562, farm net -> 8995
+# QBI), the farm-optional 2025 constants ($7,240 / $10,860 / $7,840) + the 2026 RED,
+# and walk items A (2026 RED + re-pin) / C (§77 §451 capture-income-flag-election) /
+# D (pro-rata QBI). Schedule J = fast-follow (its own form unit).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -863,7 +870,7 @@ SCHEDSE_DIAGNOSTICS: list[dict] = [
                  "income, eligibility thresholds) are SSA-indexed and the 2026 figures are not yet published. "
                  "Re-pin when the 2026 Schedule SE is released."),
      "notes": "WALK ITEM A. Standing obligation to re-pin the 2026 farm-optional constants."},
-    {"diagnostic_id": "D_SE_FARMOPT_INELIGIBLE", "title": "Farm optional method elected but not eligible", "severity": "warning",
+    {"diagnostic_id": "D_SE_FARMOPT_INELIG", "title": "Farm optional method elected but not eligible", "severity": "warning",
      "condition": "se_farm_optional_elected AND gross farm income > ceiling AND net farm profit >= floor",
      "message": ("You elected the farm optional method, but this proprietor does not appear eligible: gross "
                  "farm income exceeds the ceiling AND net farm profit is at or above the floor. The optional "
@@ -884,9 +891,9 @@ SCHEDSE_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2026, "se_farm_optional_elected": True, "se_gross_farm_income": 6000},
      "expected_outputs": {"D_SE_FARMOPT_2026": True, "line_15": None},
      "notes": "2026 farm-optional constants unpublished -> RED, no silent compute (WALK ITEM A)."},
-    {"scenario_name": "SE-FARMOPT-4 — ineligible election (D_SE_FARMOPT_INELIGIBLE)", "scenario_type": "normal", "sort_order": 16,
+    {"scenario_name": "SE-FARMOPT-4 — ineligible election (D_SE_FARMOPT_INELIG)", "scenario_type": "normal", "sort_order": 16,
      "inputs": {"tax_year": 2025, "se_farm_optional_elected": True, "se_gross_farm_income": 50000, "se_net_farm_profit": 12000},
-     "expected_outputs": {"D_SE_FARMOPT_INELIGIBLE": True},
+     "expected_outputs": {"D_SE_FARMOPT_INELIG": True},
      "notes": "Gross 50,000 > 10,860 AND net profit 12,000 >= 7,840 -> not eligible for the farm optional method."},
 ]
 
