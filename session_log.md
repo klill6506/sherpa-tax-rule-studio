@@ -4,6 +4,42 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-21 — SCHEDULE_F (1040 farm, cash-method v1) + SCHEDULE_SE farm-optional amendment — AUTHORED + MATH-GATED ✅ (NOT seeded — Ken review walk pending)
+- **Spec-first probe re-confirmed NO RS Schedule F spec** (SCHEDULE_F / 1040_SCHF / F / SCHF all 404;
+  RS up, real 404s). Per the MANDATORY Rule Studio rule + Division of Authority: drafted the loader
+  for Ken's review — did NOT improvise farm-tax compute.
+- **NEW loader `specs/management/commands/load_1040_schedule_f.py`** — creates **SCHEDULE_F** (31 facts /
+  11 rules / 71 lines / 8 diagnostics / 10 scenarios / 14 rule_links) and **AMENDS SCHEDULE_SE** additively
+  (10 facts / 2 rules / 7 lines / 3 diagnostics / 4 scenarios / 3 rule_links — the Part II FARM OPTIONAL
+  METHOD + line-1a/1b computed-feeder re-point + narrowed R-SE-OPTIONAL/D_SE_003) + **8 flow assertions
+  FA-1040-SCHF-01..08**. `READY_TO_SEED = False` — **guard verified REFUSING (zero DB writes; "(all
+  populated)")**. 6 new sources (Sch F form/instr, Pub 225 [requires_human_review], IRC §77 / §451(e)(f) /
+  §1402(a)(1)); 2 new topics. RS DB still 64 forms (nothing seeded).
+- **LAW VERIFIED 2026-06-21 against the actual 2025 IRS PDFs (pymupdf dumps) — NOT memory**
+  (tts-tax-app `server/specs/_schedule_f_source_brief.md`):
+  - **Line 9 gross income = 1c + 2 + 3b + 4b + 5a + 5c + 6b + 6d + 7 + 8** (verbatim right-column list;
+    includes BOTH 5a [CCC elected] and 5c [forfeiture taxable], NOT 5b). L1c = 1a − 1b. L33 = sum(10..32f).
+    **L34 = L9 − L33 → Schedule 1 line 6 (sum farms) + Schedule SE line 1a (per proprietor); CRP → SE 1b.**
+    Sch F has NO home-office line. L14 depreciation ← 4562; farm net → 8995 QBI.
+  - **Schedule SE Part II farm optional method (2025, off the face):** eligible iff gross farm income ≤
+    **$10,860** OR net farm profit < **$7,840**; line 14 max = **$7,240**; line 15 = min(⅔ × gross farm
+    income, $7,240) → line 4b. SSA-indexed (NOT in RP 2025-32); **2026 UNPUBLISHED → fires RED
+    (D_SE_FARMOPT_2026) + standing re-pin** (the Tax-Table-interim precedent).
+- **MATH GATE `check_schedule_f_integrity.py` ALL CHECKS PASS** — independent re-type of the line
+  1c/9/33/34 chain (incl. 5a-in-9 / 6a-not-in-9 membership + multi-farm aggregation) + the farm-optional
+  ⅔/cap/eligibility/2026-RED; loader & gate share no math; loader constants cross-checked cell-by-cell.
+- **v1 SCOPE (Ken-locked):** cash method; per-farm (multi-Schedule-F); farm optional SE IN. **RED-defer
+  (no silent gap, each a D_SF_*/D_SE_*):** accrual Part III; CCC §77 / crop-insurance §451(f) / weather
+  §451(e) ELECTIONS (capture the $, flag the election); passive loss (line E No → Form 8582); at-risk
+  (36b → Form 6198); §461(l). Nonfarm optional / church / clergy SE stay RED (D_SE_003 narrowed).
+- **WALK ITEMS (requires_human_review):** A) 2026 farm-optional constants unpublished → 2025 supported,
+  2026 RED + re-pin; B) Schedule J bundle-vs-fast-follow; C) Pub 225 narrative definitions / §77 §451
+  RED-defer treatment; D) QBI farm-reduction allocation when a proprietor has both a Sch C and a Sch F.
+- **Next:** Ken in-session review walk → on approval flip READY_TO_SEED → seed (RS DB 64→65; FA 224→232)
+  → verify deployed export HTTP 200 → commit tts-tax-app canonical `server/specs/schedule_f_spec.json` +
+  re-export `schedule_se_spec.json` + stage the 8 FA in `flow_assertions_1040_schedule_f_pending.json`
+  → then the 6 tts-tax-app build legs (seed→compute→render→input→diagnostics→assertions).
+
 ## 2026-06-21 — SCHEDULE_K1 (recipient K-1 router, effort #5) + SCHEDULE_E page-2 amendment — SEEDED + EXPORTED ✅
 - **Ken approved the review walk in-session ("Approve & seed as authored").** The RECIPIENT-side K-1
   full router (TaxWise/Lacerte model): a 1040 partner (1065 K-1) / S-corp shareholder (1120-S K-1) /
