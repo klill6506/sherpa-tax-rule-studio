@@ -4,6 +4,45 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-21 — SCHEDULE_J (1040 income averaging) — AUTHORED + MATH-GATED (NOT seeded; awaiting Ken's walk)
+- **Spec-first probe re-confirmed NO RS Schedule J spec** (SCHEDULE_J / 1040_SCHJ / SCHJ / J / f1040sj
+  all 404; RS up, real 404s). Per the MANDATORY Rule Studio rule + Division of Authority: drafted the
+  loader for Ken's review — did NOT improvise income-averaging compute.
+- **NEW loader `specs/management/commands/load_1040_schedule_j.py`** — creates **SCHEDULE_J** (42 facts /
+  20 rules / 25 lines / 5 diagnostics / 10 scenarios / 23 rule_links) + **8 flow assertions
+  FA-1040-SCHJ-01..08**. `READY_TO_SEED = False` — **guard verified REFUSING (zero DB writes; "(all
+  populated)"; id-length ≤20 guards pass)**. 4 new sources (Sch J form/instr, the Schedule D Tax
+  Worksheet, IRC §1301 [requires_human_review]); 2 new topics. NO amendment (single new form).
+- **LAW VERIFIED 2026-06-21 against the actual 2025 IRS PDFs (pymupdf dumps) — NOT memory**
+  (tts-tax-app `server/specs/_schedule_j_source_brief.md`, sha256s in §1):
+  - **23-line chain** (f1040sj): L3=L1−L2a; L4=tax(L3) current-year; L6=round(L2a/3); L7=max(0,L5+L6);
+    L11=L9+L6 & L15=L13+L6 (signed); L8/12/16 = base-year tax on L7/L11/L15 (0 when ≤0); L17=4+8+12+16;
+    L22=19+20+21; **L23=L18−L22 → 1040 line 16** (route gate, only when elected). Base years (TY2025) =
+    2022/23/24; (TY2026) = 2023/24/25.
+  - **Base-year RATE SCHEDULES 2022/23/24** (i1040sj pp.4/8/12, all 4 statuses) + **base-year QDCGT**
+    (27-line) + **Schedule D Tax Worksheet** (i1040sd — IDENTICAL 47-line structure 2022/23/24/25, only
+    3 breakpoint sets differ → ONE year-keyed engine). **KEY override:** base-year tax uses the base-year
+    RATE SCHEDULE for the ordinary sub-tax, NEVER the Tax Table. **Stale-cross-ref:** instr cite SDTW
+    "34/36"(2022)/"42/44"(2023) but the real worksheets are 44/46 — implement 44/46.
+- **MATH GATE `check_schedule_j_integrity.py` ALL CHECKS PASS** — independent re-type of the 23-line
+  chain over re-typed rate schedules (SJ-T1: L4=21,647 / L8=6,617 / L12=7,408 / L16=8,253 / L23=31,982 <
+  regular 36,047), the negative/floor (SJ-T2 L12=0) + line-6 round-half-up (SJ-T10) + differing-status
+  (SJ-T9); loader rate schedules / preferential breakpoints / SDTW mid threshold cross-checked
+  cell-by-cell. Loader & gate share no math.
+- **v1 SCOPE (Ken-locked 2026-06-21, AskUserQuestion):** IN — the chain + elected farm income incl. net
+  capital gain (2b/2c); L4/8/12/16 route rate-schedule/QDCGT/SDTW year-keyed; **build SDTW + base-year
+  QDCGT**; base-year amounts DIRECT ENTRY (+ PriorYearReturn pull). RED-defer (each a D_SJ_*):
+  prior-Sch-J chaining (D_SJ_CHAIN), zero-or-less Taxable-Income worksheets (D_SJ_NEG_TI warning), Form
+  2555/FEI (D_SJ_2555). Plus D_SJ_2A_EXCEED, D_SJ_ELECT_HIGH.
+- **WALK ITEMS (requires_human_review, brief §10):** **A — line-4 capital-gain netting** (does the
+  current-year SDTW reduce Sch D figures by 2b/2c when 2b>0? recommend yes-reduce floored at 0 —
+  LOAD-BEARING, confirm vs §1301/Reg 1.1301-1); B — line-6 rounding (recommend round-half-up whole
+  dollar); C — stale SDTW cross-ref (confirm 44/46); D — elect-when-higher warning-only.
+- **Next:** Ken review walk → on approval flip `READY_TO_SEED=True` → seed (RS DB 65→66 forms; FA
+  232→240) → deployed export verify → commit canonical `schedule_j_spec.json` + stage 8 FA in
+  `flow_assertions_1040_schedule_j_pending.json` → the 6 build legs in tts-tax-app. Design precedent:
+  `load_1040_schedule_f.py`.
+
 ## 2026-06-21 — SCHEDULE_F (1040 farm, cash-method v1) + SCHEDULE_SE farm-optional amendment — SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve & seed")** + chose Schedule J = **fast-follow**
   (its own form unit). Flipped `READY_TO_SEED → True` → math gate stayed green → **seeded: RS DB
