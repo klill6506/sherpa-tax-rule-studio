@@ -4,6 +4,43 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-22 — FORM 4562 §179 PRIOR-YEAR CARRYOVER (Part I L10/12/13) — AMENDED + SEEDED + EXPORTED ✅
+- **Ken APPROVED the review walk in-session ("Approve & seed")** — the verified L10-L13 wording off the
+  2025 Form 4562 PDF; the Line 11 **Individuals** business-income definition; R014/R015 carryover rules;
+  D014 proforma-continuity; the 3 instruction excerpts. Flipped `READY_TO_SEED → True` → math gate stayed
+  green → **seeded onto the EXISTING 4562 v1** (additive amendment): **facts 19→20, rules 10→12, lines
+  24→26, diagnostics 8→9, tests 9→14**; entity_types **['1120S','1065','1120','1040'] UNTOUCHED**.
+  **Deployed export verified HTTP 200** (`lookup/4562/export/`; L10/L11/L12/L13 present, L12 calc =
+  `min(line_9 + line_10, line_11)`, R014/R015/D014/section_179_carryover_prior present). Committed
+  tts-tax-app canonical `server/specs/form_4562_spec.json` (re-export) + **4 FA staged** in
+  `flow_assertions_4562_section179_pending.json` (FA-4562-179-01..04).
+- **WHY:** the 1040 proforma unit (Tier 1 Item 1) carries a prior-year §179 carryover forward
+  (Taxpayer.sec_179_carryover_prior → line 10), which must be consumed (line 12) and any remainder
+  re-carried (line 13). The existing 4562 spec was SILENT on lines 10/13 and its line-12 description was
+  WRONG ("smaller of line 9 or line 11"). Per the MANDATORY Rule Studio rule + "flag if the spec is silent,
+  do not guess" — fetched the spec, found the gap, Ken chose **amend RS spec first, then build inline**
+  (AskUserQuestion 2026-06-22). NEW loader `load_4562_section179_carryover.py` AMENDS additively (looks up
+  the form, never recreates it).
+- **LAW VERIFIED 2026-06-22 — NOT memory:** Form face `resources/irs_forms/2025/f4562.pdf` (pymupdf dump):
+  L10 "Carryover of disallowed deduction from line 13 of your 2024 Form 4562"; L11 "Business income
+  limitation. Enter the smaller of business income (not less than zero) or line 5"; L12 "Add lines 9 and
+  10, but don't enter more than line 11"; L13 "Add lines 9 and 10, less line 12". Instructions
+  (irs.gov/instructions/i4562) Line 11 **Individuals**: smaller of L5 or total taxable income from any
+  actively-conducted trade/business + **all wages/salaries/tips (Form 1040 line 1a)**, computed without
+  §179, the §164(f) ½-SE-tax deduction, or any NOL; MFJ combine both spouses.
+- **MATH GATE `check_4562_section179_integrity.py` ALL CHECKS PASS** — independent re-type of
+  L12 = min(L9+L10, L11) / L13 = (L9+L10) − L12 over 5 scenarios (fully-absorbed / income-limited→3k carry /
+  zero-carryover regression / both-limited→25k carry / zero-income→full carry) + carryover-conservation
+  invariant (L12+L13 = L9+L10) + text-pins guarding against reverting L12 to the old wrong formula. Loader
+  & gate share no math.
+- **TWO BUILD-LEG decisions (downstream — do NOT change this spec):** (a) the line-11 v1 component scope
+  for 1040 (recommend Sch C + Sch F net + W-2 wages 1040 L1a; flag K-1 active income / business §1231);
+  (b) per-business allocation of a return-level carryover. Decide at the §179-consumption compute leg.
+- **Next (tts-tax-app): the proforma build legs** — model/migration (Taxpayer.sec_179_carryover_prior +
+  TaxReturn provenance pointer); §179 consumption compute+render (line 11 business-income limit + L12/L13 +
+  per-business allocation, renderer.py:1748); 1040 roll-forward `_populate_*_from_prior_year`; UI;
+  tests + merge the 4 FA. Design precedent: `_expand_4562` (the prior 4562 authoring) + `load_1040_schedule_f.py`.
+
 ## 2026-06-21 — SCHEDULE_J (1040 income averaging) — SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve & seed now")** — the 4 requires_human_review walk
   items ruled, ALL matching the authored spec (no edits): Q-A line-4 SDTW REDUCES the current-year Sch D
