@@ -4,15 +4,24 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-21 — SCHEDULE_J (1040 income averaging) — AUTHORED + MATH-GATED (NOT seeded; awaiting Ken's walk)
+## 2026-06-21 — SCHEDULE_J (1040 income averaging) — SEEDED + EXPORTED ✅
+- **Ken APPROVED the review walk in-session ("Approve & seed now")** — the 4 requires_human_review walk
+  items ruled, ALL matching the authored spec (no edits): Q-A line-4 SDTW REDUCES the current-year Sch D
+  net cap gain by 2b (unrecap §1250 by 2c), floored at 0; Q-B line 6 = round_half_up(2a/3); Q-C SDTW
+  ordinary lines 44/46 (instr's 34/36 & 42/44 are stale); Q-D D_SJ_ELECT_HIGH = warning. Flipped
+  `READY_TO_SEED → True` → math gate stayed green → **seeded: RS DB 65→66 forms, FA 232→240** (SCHEDULE_J
+  created; all 20 rules cited). **Deployed export verified HTTP 200** (`lookup/SCHEDULE_J/export/`
+  53,036 B; 42 facts/20 rules/25 line_map/5 diagnostics/10 tests/4 sources). Committed tts-tax-app
+  canonical `server/specs/schedule_j_spec.json` + **8 FA staged** in
+  `flow_assertions_1040_schedule_j_pending.json` (status:active; active 1040 gate stays 249 until the
+  assertions build leg).
 - **Spec-first probe re-confirmed NO RS Schedule J spec** (SCHEDULE_J / 1040_SCHJ / SCHJ / J / f1040sj
   all 404; RS up, real 404s). Per the MANDATORY Rule Studio rule + Division of Authority: drafted the
   loader for Ken's review — did NOT improvise income-averaging compute.
-- **NEW loader `specs/management/commands/load_1040_schedule_j.py`** — creates **SCHEDULE_J** (42 facts /
-  20 rules / 25 lines / 5 diagnostics / 10 scenarios / 23 rule_links) + **8 flow assertions
-  FA-1040-SCHJ-01..08**. `READY_TO_SEED = False` — **guard verified REFUSING (zero DB writes; "(all
-  populated)"; id-length ≤20 guards pass)**. 4 new sources (Sch J form/instr, the Schedule D Tax
-  Worksheet, IRC §1301 [requires_human_review]); 2 new topics. NO amendment (single new form).
+- **Loader `specs/management/commands/load_1040_schedule_j.py`** — SCHEDULE_J (42 facts / 20 rules / 25
+  lines / 5 diagnostics / 10 scenarios / 23 rule_links) + 8 FA. Pre-seed: guard verified REFUSING (zero
+  DB writes; id-length ≤20 guards pass). 4 new sources (Sch J form/instr, the Schedule D Tax Worksheet,
+  IRC §1301 [requires_human_review]); 2 new topics. NO amendment (single new form).
 - **LAW VERIFIED 2026-06-21 against the actual 2025 IRS PDFs (pymupdf dumps) — NOT memory**
   (tts-tax-app `server/specs/_schedule_j_source_brief.md`, sha256s in §1):
   - **23-line chain** (f1040sj): L3=L1−L2a; L4=tax(L3) current-year; L6=round(L2a/3); L7=max(0,L5+L6);
@@ -38,10 +47,14 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   current-year SDTW reduce Sch D figures by 2b/2c when 2b>0? recommend yes-reduce floored at 0 —
   LOAD-BEARING, confirm vs §1301/Reg 1.1301-1); B — line-6 rounding (recommend round-half-up whole
   dollar); C — stale SDTW cross-ref (confirm 44/46); D — elect-when-higher warning-only.
-- **Next:** Ken review walk → on approval flip `READY_TO_SEED=True` → seed (RS DB 65→66 forms; FA
-  232→240) → deployed export verify → commit canonical `schedule_j_spec.json` + stage 8 FA in
-  `flow_assertions_1040_schedule_j_pending.json` → the 6 build legs in tts-tax-app. Design precedent:
-  `load_1040_schedule_f.py`.
+- **Next (tts-tax-app): the 6 build legs** — seed (`ScheduleJ` OneToOne model + migration + RLS +
+  serializer/CRUD + `seed_schedule_j` + `f1040sj` manifest; merge the 2022/23/24 base-year schedules
+  into the spine `TAX_BRACKETS`) → compute (`compute_schedule_j.py`: the 23-line chain + the year-keyed
+  rate-schedule/QDCGT/SDTW engines [reuse the Topic-3 QDCGT engine; NEW year-keyed SDTW] + `route_line_16`
+  when elected + RED diagnostics) → render (`f1040sj_2025.py` 2-page map + statement pages for the
+  base-year worksheets) → input (new `schedule_j` tab; per-base-year cards) → diagnostics
+  (`rules_schedule_j.py` — the 5 D_SJ_*) → assertions (merge the 8 FA via `merge_schedule_j_assertions.py`
+  + `_run_schj_assertion`; gate 249→257). Design precedent: `load_1040_schedule_f.py` / `compute_intdiv.py`.
 
 ## 2026-06-21 — SCHEDULE_F (1040 farm, cash-method v1) + SCHEDULE_SE farm-optional amendment — SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve & seed")** + chose Schedule J = **fast-follow**

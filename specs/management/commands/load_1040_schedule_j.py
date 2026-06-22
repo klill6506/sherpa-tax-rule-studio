@@ -113,8 +113,16 @@ from specs.models import (
 # RED-defer enumeration, the 4 requires_human_review walk items — especially
 # Q-A line-4 capital-gain netting). Until then the command refuses to write to
 # the DB (zero writes while False).
+#
+# FLIPPED 2026-06-21 — Ken APPROVED the review walk in-session ("Approve & seed
+# now"). The 4 requires_human_review walk items were ruled, ALL matching the
+# authored spec (no edits): Q-A line-4 SDTW REDUCES the current-year Sch D net
+# capital gain by 2b (and unrecap §1250 by 2c), floored at 0; Q-B line 6 =
+# round_half_up(2a/3) to whole dollar; Q-C SDTW ordinary-tax lines are 44/46
+# (the instr's 34/36 & 42/44 cross-refs are stale); Q-D D_SJ_ELECT_HIGH is a
+# WARNING (the election is the preparer's choice). Math gate ALL CHECKS PASS.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
