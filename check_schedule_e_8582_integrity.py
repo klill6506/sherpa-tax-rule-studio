@@ -88,6 +88,60 @@ def recompute_8582(inp):
             "f8582_total_allowed": total_allowed, "f8582_suspended": suspended}
 
 
+def recompute_per_activity(inp):
+    """Independent per-activity 8582 (Parts IV-VIII): line 9 / line C and each LOSS
+    activity's allowed + suspended. Mirrors NO loader code — re-typed from the
+    f8582.pdf Part IV-VIII line definitions + i8582 (2025)."""
+    fs = inp["filing_status"]
+    mfs_apart = bool(inp.get("mfs_lived_apart", False))
+    mfs_together = (fs == "mfs" and not mfs_apart)
+    magi = inp.get("magi", 0)
+    acts = []
+    for a in inp["activities"]:
+        inc, loss, prior = a.get("income", 0), a.get("loss", 0), a.get("prior", 0)
+        overall = inc - loss - prior
+        acts.append({"name": a["name"], "bucket": a["bucket"], "inc": inc,
+                     "col_e": (-overall if overall < 0 else 0),  # overall loss (positive)
+                     "gross": loss + prior})                     # Part VIII col (a)
+    IV = [a for a in acts if a["bucket"] == "IV"]
+    V = [a for a in acts if a["bucket"] == "V"]
+    line1d = sum(a["inc"] for a in IV) - sum(a["gross"] for a in IV)
+    line2d = sum(a["inc"] for a in V) - sum(a["gross"] for a in V)
+    line3 = line1d + line2d
+    out = {"f8582_special_allowance": 0, "f8582_line_c": 0,
+           "f8582_total_allowed": 0, "f8582_suspended": 0, "per_activity": []}
+    if line3 >= 0:                                        # line 3 >= 0 -> all losses allowed
+        for a in acts:
+            if a["col_e"] > 0:
+                out["per_activity"].append({"name": a["name"], "allowed": a["gross"], "suspended": 0})
+        out["f8582_total_allowed"] = sum(a["gross"] for a in acts if a["col_e"] > 0)
+        return out
+    loss_1d = -line1d if line1d < 0 else 0
+    loss_3 = -line3 if line3 < 0 else 0
+    line4 = min(loss_1d, loss_3)
+    line9 = ind_special_allowance(line4, magi, mfs_apart, mfs_together)
+    line_c = loss_3 - line9
+    # Part VI — allocate line 9 across active-rental loss activities by loss-ratio
+    iv_losses = [a for a in IV if a["col_e"] > 0]
+    tot_iv = sum(a["col_e"] for a in iv_losses)
+    for a in iv_losses:
+        a["vi_remaining"] = a["col_e"] - (line9 * a["col_e"] / tot_iv if tot_iv else 0)
+    # Part VII — allocate line C across the pool [Part VI col(d) + Part V col(e)] by loss-ratio
+    pool = [(a, a["vi_remaining"]) for a in iv_losses] + [(a, a["col_e"]) for a in V if a["col_e"] > 0]
+    tot_pool = sum(b for _, b in pool)
+    total_allowed = 0
+    for a, basis in pool:
+        unallowed = (line_c * basis / tot_pool) if tot_pool else 0   # Part VII col (c)
+        allowed = a["gross"] - unallowed                              # Part VIII col (c)
+        out["per_activity"].append({"name": a["name"], "allowed": allowed, "suspended": unallowed})
+        total_allowed += allowed
+    out["f8582_special_allowance"] = line9
+    out["f8582_line_c"] = line_c
+    out["f8582_total_allowed"] = total_allowed
+    out["f8582_suspended"] = line_c
+    return out
+
+
 def recompute_sche(inp):
     """Independent Schedule E: line 21 net + line 26 (after the 8582 limit)."""
     before = inp.get("rents", 0) + inp.get("royalties", 0) - inp.get("expenses", 0)
@@ -126,16 +180,30 @@ if len(m.MAGI_ADDBACKS) != 9:
 if any("199A" in s for s in m.MAGI_ADDBACKS):
     err("MAGI_ADDBACKS must NOT include §199A")
 
-# ── 2. FORM_8582 scenarios — independent recompute ──
+# ── 2. FORM_8582 scenarios — independent recompute (aggregate + per-activity) ──
 DIAG_KEYS_8582 = {"D_8582_RE_PRO", "D_8582_MFS_TOGETHER", "D_8582_SUSPENDED",
-                  "D_8582_PHASEOUT", "D_8582_005", "D_8582_DISPOSITION"}
+                  "D_8582_PHASEOUT", "D_8582_005", "D_8582_DISPOSITION", "D_8582_MULTIFORM"}
 f8582_spec = next(s for s in m.FORMS if s["identity"]["form_number"] == "FORM_8582")
 for s in f8582_spec["scenarios"]:
     name = s["scenario_name"].split(" ")[0]
     inp, exp = s["inputs"], s["expected_outputs"]
-    got = recompute_8582(inp)
+    per_activity = "activities" in inp
+    got = recompute_per_activity(inp) if per_activity else recompute_8582(inp)
     for k, want in exp.items():
         if k in DIAG_KEYS_8582:
+            continue
+        if k == "per_activity":
+            got_pa = {p["name"]: p for p in got.get("per_activity", [])}
+            for wp in want:
+                gp = got_pa.get(wp["name"])
+                if gp is None:
+                    err(f"{name}.per_activity[{wp['name']}]: not recomputed")
+                    continue
+                check(f"{name}.{wp['name']}.allowed", gp["allowed"], wp["allowed"])
+                check(f"{name}.{wp['name']}.suspended", gp["suspended"], wp["suspended"])
+            # conservation: sum(allowed) == line 11; sum(suspended) == line C
+            check(f"{name}.sum_allowed", sum(p["allowed"] for p in got["per_activity"]), got["f8582_total_allowed"])
+            check(f"{name}.sum_suspended", sum(p["suspended"] for p in got["per_activity"]), got["f8582_line_c"])
             continue
         if k not in got:
             err(f"{name}.{k}: no independent recompute mapped")
@@ -145,6 +213,8 @@ for s in f8582_spec["scenarios"]:
         err(f"{name}: D_8582_RE_PRO expected without the RE-pro flag")
     if exp.get("D_8582_MFS_TOGETHER") and not (inp.get("filing_status") == "mfs" and not inp.get("mfs_lived_apart")):
         err(f"{name}: D_8582_MFS_TOGETHER expected without the MFS-together condition")
+    if exp.get("D_8582_MULTIFORM") and not any(a.get("losses_on_multiple_forms") for a in inp.get("activities", [])):
+        err(f"{name}: D_8582_MULTIFORM expected without a multi-form activity flag")
 
 # ── 3. SCHEDULE_E scenarios — independent recompute ──
 sche_spec = next(s for s in m.FORMS if s["identity"]["form_number"] == "SCHEDULE_E")

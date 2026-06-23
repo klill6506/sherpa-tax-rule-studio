@@ -65,7 +65,9 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = True  # FLIPPED 2026-06-14 — Ken approved the review walk ("Looks good.").
+READY_TO_SEED = True  # FLIPPED 2026-06-23 — Ken approved the per-activity review walk
+# (Parts IV-VIII allocation: line C, the Part VI/VII loss-ratio split, the four activity-type
+# feed, the Part IX RED-defer). Prior flip 2026-06-14 (aggregate Part I-III v1, "Looks good.").
 
 
 FORM_JURISDICTION = "FED"
@@ -226,6 +228,27 @@ AUTHORITY_SOURCES: list[dict] = [
                     "GILTI. Include in MAGI any portfolio income and the overall gain from a PTP."
                 ),
                 "summary_text": "MAGI = AGI WITHOUT passive loss / RE-pro loss / taxable SS / IRA+501(c)(18) / ½ SE tax / §135 / §137 / §221 / §250. (NOT §199A.)",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Per-activity Parts IV-IX (2025)",
+                "location_reference": "i8582 (2025) + f8582.pdf Parts IV-IX",
+                "excerpt_text": (
+                    "Part IV (Rental Real Estate With Active Participation) and Part V (All Other Passive "
+                    "Activities): for each activity enter (a) current-year net income, (b) current-year net loss, "
+                    "(c) prior-year unallowed loss; combine for (d) overall gain or (e) overall loss. Totals -> "
+                    "Part I lines 1a/1b/1c (IV) and 2a/2b/2c (V). Part VI (use if Part II line 9 > 0): (a) each "
+                    "rental real estate loss, (b) ratio = each loss / total losses, (c) special allowance = ratio "
+                    "x line 9, (d) = column (a) - column (c). Part VII (Allocation of Unallowed Losses): (a) the "
+                    "unallowed losses [Part VI column (d) + Part V column (e)], (b) ratio = each / total, (c) "
+                    "unallowed loss = ratio x line C [line C = Part I line 3 minus Part II line 9]. Part VIII "
+                    "(Allowed Losses, single form): (a) net loss plus prior-year unallowed loss, (b) unallowed "
+                    "loss [Part VII column (c)], (c) allowed loss = column (a) - column (b). Part IX: activities "
+                    "with losses reported on two or more forms or schedules."
+                ),
+                "summary_text": ("Parts IV/V per-activity net (a-e); Part VI allocates line 9 by loss-ratio; Part "
+                                 "VII allocates line C (= line 3 loss - line 9) by loss-ratio; Part VIII allowed "
+                                 "= loss - unallowed; Part IX = losses on 2+ forms."),
                 "is_key_excerpt": True,
             },
         ],
@@ -457,7 +480,15 @@ F8582_IDENTITY = {
         "the prior-year-suspended fact (the per-activity Parts IV/V Worksheets are a "
         "follow-up). The $25,000 special allowance ($12,500 MFS-apart) phases out 50% "
         "of MAGI over $100,000 (zero at $150,000). Allowed loss → Schedule E line 22; "
-        "the remainder suspended (carryforward). Real estate professional = RED-deferred."
+        "the remainder suspended (carryforward). Real estate professional = RED-deferred. "
+        "AMENDED 2026-06-23 (per-activity Parts IV-VIII; Ken directive): each passive "
+        "activity nets its OWN columns (active rental -> Part IV; non-active rental + passive "
+        "K-1 + passive Sch C/F -> Part V); the $25k special allowance is allocated by "
+        "loss-ratio (Part VI), the remaining unallowed loss by loss-ratio (Part VII, basis = "
+        "line 3 loss - line 9), and each activity's allowed loss (Part VIII = its loss - its "
+        "unallowed) flows back to its own schedule; the per-activity unallowed is THAT "
+        "activity's carryforward. Part IX (a single activity's losses on 2+ forms / 28%-rate "
+        "/ section 1231 separate transaction) is RED-deferred (D_8582_MULTIFORM)."
     ),
 }
 
@@ -487,6 +518,8 @@ F8582_FACTS: list[dict] = [
      "data_type": "decimal", "sort_order": 11, "notes": "OUTPUT. min(line 4, 50%×($150k/$75k − MAGI) capped $25k/$12,500)."},
     {"fact_key": "f8582_total_allowed", "label": "Line 11 — total losses allowed",
      "data_type": "decimal", "sort_order": 12, "notes": "OUTPUT. line 9 + line 10 → Schedule E line 22 (rental RE share)."},
+    {"fact_key": "f8582_line_c", "label": "Line C - total unallowed loss (line 3 loss minus line 9)",
+     "data_type": "decimal", "sort_order": 14, "notes": "OUTPUT (per-activity amendment). The Part VII allocation basis: (Part I line 3 loss, positive) minus (Part II line 9). Sum of Part VII column (c) = line C = the total suspended."},
     {"fact_key": "f8582_suspended", "label": "Suspended passive loss (carried forward)",
      "data_type": "decimal", "sort_order": 13, "notes": "OUTPUT. net passive loss − total allowed → next-year carryover."},
     # ── Inputs (return-level facts) ──
@@ -545,6 +578,62 @@ F8582_RULES: list[dict] = [
                  "support this → D_8582_RE_PRO (RED, prepare manually)."),
      "inputs": ["f8582_real_estate_professional"], "outputs": [],
      "description": "Decision 3. RED-defer."},
+    # ── Per-activity amendment 2026-06-23 (Parts IV-VIII; Part IX RED) ──
+    {"rule_id": "R-8582-WS-NET", "title": "Parts IV/V — per-activity netting into Part I", "rule_type": "calculation",
+     "precedence": 7, "sort_order": 7,
+     "formula": ("Parts IV and V are FILED (2025 form). For EACH passive activity enter (a) current-year net "
+                 "income, (b) current-year net loss (positive), (c) prior-year unallowed loss (positive); overall "
+                 "= a - b - c -> (d) overall gain if >= 0 else (e) overall loss (positive). Part IV = rental real "
+                 "estate with active participation; Part V = ALL OTHER passive (non-active rental + passive K-1 + "
+                 "passive Sch C + passive Sch F). Part I 1a/1b/1c = sum of Part IV cols (a)/(b)/(c); 2a/2b/2c = "
+                 "sum of Part V cols; 1d = 1a-1b-1c; 2d = 2a-2b-2c; line 3 = 1d + 2d. The aggregate Part I is now "
+                 "the SUM of the per-activity columns (supersedes the single-bucket v1)."),
+     "inputs": [], "outputs": [],
+     "description": "Per-activity Parts IV/V feed Part I (the four activity types). Replaces the aggregate bucket."},
+    {"rule_id": "R-8582-ALLOC-VI", "title": "Part VI — allocate the special allowance by loss-ratio", "rule_type": "calculation",
+     "precedence": 8, "sort_order": 8,
+     "formula": ("Part VI (only when Part II line 9 > 0): for each ACTIVE-rental activity with an overall loss "
+                 "(Part IV col (e) > 0): col (a) = that loss; col (b) ratio = col(a)_i / sum(col(a)); col (c) "
+                 "special allowance = ratio x line 9; col (d) = col(a) - col(c) = remaining unallowed. Sum of "
+                 "ratios = 1.00; sum of col (c) = line 9. col (d) carries to Part VII col (a)."),
+     "inputs": ["f8582_special_allowance"], "outputs": [],
+     "description": "Section 469(i) special allowance allocated per active-rental loss activity (Part VI)."},
+    {"rule_id": "R-8582-ALLOC-VII", "title": "Part VII — allocate the unallowed loss by loss-ratio (line C)", "rule_type": "calculation",
+     "precedence": 9, "sort_order": 9,
+     "formula": ("line C = (Part I line 3 loss, as a positive amount) - (Part II line 9). Part VII pool col (a) = "
+                 "Part VI col (d) [active-rental remaining] + Part V col (e) [other-passive overall losses]; col "
+                 "(b) ratio = col(a)_i / sum(col(a)); col (c) unallowed loss = ratio x line C. Sum of ratios = "
+                 "1.00 -> sum of col (c) = line C (the total suspended). The pool basis can EXCEED line C when "
+                 "gain/income activities net down line 3 - that is correct; the ratio normalizes."),
+     "inputs": ["f8582_line_c"], "outputs": ["f8582_line_c"],
+     "description": "Allocation of the remaining unallowed loss across ALL loss activities (Part VII)."},
+    {"rule_id": "R-8582-ALLOWED-VIII", "title": "Part VIII — allowed loss per activity; report back", "rule_type": "calculation",
+     "precedence": 10, "sort_order": 10,
+     "formula": ("Part VIII (single-form activities): col (a) = activity net loss + prior-year unallowed loss "
+                 "(its total deduction); col (b) unallowed = Part VII col (c); col (c) allowed = col(a) - col(b). "
+                 "Each activity's allowed loss is reported on ITS OWN form/schedule: active/other rental -> "
+                 "Schedule E line 22 (-> line 26); passive K-1 -> Schedule E p2 line 28 col (g) (-> line 32/37 -> "
+                 "41); passive Sch C -> Schedule C / Schedule 1 line 3; passive Sch F -> Schedule F / Schedule 1 "
+                 "line 6. Conservation: sum of allowed = line 11 (= line 9 + line 10)."),
+     "inputs": [], "outputs": [],
+     "description": "Allowed loss per single-form activity (Part VIII), reported back to its schedule."},
+    {"rule_id": "R-8582-CARRYFWD", "title": "Per-activity suspended loss carries forward", "rule_type": "routing",
+     "precedence": 11, "sort_order": 11,
+     "formula": ("Each activity's unallowed loss (Part VII col (c) / Part VIII col (b)) is suspended and carried "
+                 "forward as THAT activity's prior-year unallowed loss next year (Part IV/V col (c)) - tracked "
+                 "PER ACTIVITY, not as a single aggregate. A fully taxable disposition of an entire interest "
+                 "(section 469(g)) releases that activity's suspended loss in full."),
+     "inputs": ["f8582_complete_disposition"], "outputs": [],
+     "description": "Section 469(b) per-activity carryforward; 469(g) disposition release."},
+    {"rule_id": "R-8582-MULTIFORM", "title": "Part IX (losses on 2+ forms) RED-deferred", "rule_type": "routing",
+     "precedence": 12, "sort_order": 12,
+     "formula": ("Part IX (a SINGLE passive activity with losses reported on two or more forms/schedules, or "
+                 "requiring 28%-rate / section 1231 separate-transaction identification) is NOT supported in v1 "
+                 "-> D_8582_MULTIFORM (RED, prepare manually). The common Part IX triggers (section 1231, "
+                 "28%-rate) are already RED-deferred upstream in the K-1 router, so no NEW silent gap. Parts "
+                 "IV-VIII handle single-form activities."),
+     "inputs": [], "outputs": [],
+     "description": "Part IX RED-defer (Ken 2026-06-23). No new silent gap; the 1231/28% triggers defer upstream."},
 ]
 
 F8582_LINES: list[dict] = [
@@ -565,6 +654,13 @@ F8582_LINES: list[dict] = [
     {"line_number": "9", "description": "9 Smaller of line 4 or line 8 — the special allowance", "line_type": "calculated"},
     {"line_number": "10", "description": "10 Add the income on lines 1a and 2a", "line_type": "calculated"},
     {"line_number": "11", "description": "11 Total losses allowed (add lines 9 and 10)", "line_type": "total"},
+    # ── Per-activity amendment 2026-06-23 (Parts IV-VIII descriptors + line C) ──
+    {"line_number": "C", "description": "Line C - line 3 loss minus line 9 (total unallowed; Part VII basis)", "line_type": "calculated"},
+    {"line_number": "P4", "description": "Part IV - rental RE (active participation), per-activity cols (a)-(e) -> Part I 1a/1b/1c", "line_type": "informational"},
+    {"line_number": "P5", "description": "Part V - all other passive, per-activity cols (a)-(e) -> Part I 2a/2b/2c", "line_type": "informational"},
+    {"line_number": "P6", "description": "Part VI - special-allowance allocation: (a) loss, (b) ratio, (c) ratio x line 9, (d) (a)-(c)", "line_type": "informational"},
+    {"line_number": "P7", "description": "Part VII - unallowed-loss allocation: (a) loss [VI(d)+V(e)], (b) ratio, (c) ratio x line C", "line_type": "informational"},
+    {"line_number": "P8", "description": "Part VIII - allowed loss per activity: (a) loss+prior, (b) unallowed [VII(c)], (c) allowed (a)-(b)", "line_type": "informational"},
 ]
 
 F8582_DIAGNOSTICS: list[dict] = [
@@ -603,6 +699,14 @@ F8582_DIAGNOSTICS: list[dict] = [
      "message": ("A fully taxable disposition of an entire passive activity releases that activity's prior-year "
                  "suspended losses in full (§469(g)) — they are deductible without the 8582 limitation."),
      "notes": "§469(g)."},
+    {"diagnostic_id": "D_8582_MULTIFORM", "title": "Passive losses on 2+ forms (Part IX) not supported", "severity": "error",
+     "condition": "a passive activity reports losses on two or more forms/schedules, OR a 28%-rate or section 1231 passive loss needs separate-transaction identification (Form 8582 Part IX)",
+     "message": ("Not supported - prepare manually: this passive activity has losses reported on two or more "
+                 "forms or schedules, or involves a 28%-rate or section 1231 transaction requiring separate "
+                 "identification (Form 8582 Part IX). The software allocates the passive loss only for "
+                 "single-form activities (Parts IV-VIII). Figure the Part IX per-form allocation manually. The "
+                 "section 1231 / 28%-rate K-1 items are already flagged upstream by the K-1 router."),
+     "notes": "Per-activity amendment 2026-06-23 (Ken). Part IX RED-defer; no new silent gap."},
 ]
 
 F8582_SCENARIOS: list[dict] = [
@@ -644,6 +748,50 @@ F8582_SCENARIOS: list[dict] = [
                 "active_participation": True, "mfs_lived_apart": False},
      "expected_outputs": {"f8582_special_allowance": 0, "f8582_suspended": 12000, "D_8582_MFS_TOGETHER": True},
      "notes": "MFS lived together → no special allowance (skip Part II); the 12,000 loss fully suspended; D_8582_MFS_TOGETHER warns."},
+    # ── Per-activity amendment 2026-06-23 (Parts IV-VIII allocation) ──
+    {"scenario_name": "8582-PA1 — two active rentals, phaseout splits by loss-ratio", "scenario_type": "normal", "sort_order": 8,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 120000,
+                "activities": [{"name": "Rental A", "bucket": "IV", "loss": 30000},
+                               {"name": "Rental B", "bucket": "IV", "loss": 10000}]},
+     "expected_outputs": {"f8582_special_allowance": 15000, "f8582_line_c": 25000,
+                          "f8582_total_allowed": 15000, "f8582_suspended": 25000,
+                          "per_activity": [{"name": "Rental A", "allowed": 11250, "suspended": 18750},
+                                           {"name": "Rental B", "allowed": 3750, "suspended": 6250}]},
+     "notes": ("line3=(40,000); line4=40,000; MAGI 120k -> line9=min(40k, 50%x(150k-120k)=15k, 25k cap)=15,000; "
+               "line C=40k-15k=25,000. Part VI ratios .75/.25 -> allowances 11,250/3,750. Part VII pool "
+               "[18,750/6,250]=25k -> unallowed 18,750/6,250. Part VIII allowed 30k-18,750=11,250 / 10k-6,250="
+               "3,750. Sum allowed=15,000=line 11; sum suspended=25,000=line C.")},
+    {"scenario_name": "8582-PA2 — active rental + passive K-1 + passive income (Part VII split)", "scenario_type": "normal", "sort_order": 9,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 90000,
+                "activities": [{"name": "Rental", "bucket": "IV", "loss": 20000},
+                               {"name": "K-1 LP", "bucket": "V", "loss": 10000},
+                               {"name": "K-1 Inc", "bucket": "V", "income": 5000}]},
+     "expected_outputs": {"f8582_special_allowance": 20000, "f8582_line_c": 5000,
+                          "f8582_total_allowed": 25000, "f8582_suspended": 5000,
+                          "per_activity": [{"name": "Rental", "allowed": 20000, "suspended": 0},
+                                           {"name": "K-1 LP", "allowed": 5000, "suspended": 5000}]},
+     "notes": ("line1d=(20,000); line2d=5,000-10,000=(5,000); line3=(25,000); line4=20,000; MAGI 90k -> line9="
+               "20,000 (full); line C=25k-20k=5,000. Part VI: rental gets all 20k -> remaining 0. Part VII pool "
+               "[0 + K-1 10,000] -> K-1 unallowed=5,000. Part VIII: rental allowed 20,000 (0 susp); K-1 allowed "
+               "10k-5k=5,000 (5,000 susp). +5,000 income reported in full. Sum allowed losses=25,000=line 11.")},
+    {"scenario_name": "8582-PA3 — other-passive only (no special allowance), gain offsets", "scenario_type": "edge_case", "sort_order": 10,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 200000,
+                "activities": [{"name": "PTP loss", "bucket": "V", "loss": 12000},
+                               {"name": "K-1 gain", "bucket": "V", "income": 4000}]},
+     "expected_outputs": {"f8582_special_allowance": 0, "f8582_line_c": 8000,
+                          "f8582_total_allowed": 4000, "f8582_suspended": 8000,
+                          "per_activity": [{"name": "PTP loss", "allowed": 4000, "suspended": 8000}]},
+     "notes": ("No active rental -> line1d=0; line2d=4,000-12,000=(8,000); line3=(8,000). line1d>=0 -> skip Part "
+               "II, line9=0. line C=8,000. Part VII pool [12,000] -> unallowed 8,000. Part VIII allowed 12k-8k="
+               "4,000 (8,000 susp); +4,000 income full. Sum allowed=4,000=line 11 (=line9 0 + line10 income "
+               "4,000); the special allowance never applies to non-active-participation passive losses.")},
+    {"scenario_name": "8582-PG1 — passive losses on 2+ forms -> Part IX RED", "scenario_type": "diagnostic", "sort_order": 11,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 100000,
+                "activities": [{"name": "K-1 mixed", "bucket": "V", "loss": 15000, "losses_on_multiple_forms": True}]},
+     "expected_outputs": {"D_8582_MULTIFORM": True},
+     "notes": ("A single activity reporting losses on 2+ forms/schedules (e.g. Sch E operating loss + a 4797 "
+               "loss) requires Part IX -> RED-deferred (D_8582_MULTIFORM), prepare manually. The 1231/28% K-1 "
+               "triggers are already RED-deferred upstream in the K-1 router.")},
 ]
 
 F8582_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -655,6 +803,19 @@ F8582_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8582-ALLOWED", "IRS_2025_F8582_INSTR", "primary", "Part III lines 10-11 (total allowed)"),
     ("R-8582-DISPOSITION", "IRC_469", "primary", "§469(g) disposition releases the suspended loss"),
     ("R-8582-RE-PRO", "IRC_469", "primary", "§469(c)(7) real-estate-professional exception"),
+    # ── Per-activity amendment 2026-06-23 (Parts IV-VIII; Part IX RED) ──
+    ("R-8582-WS-NET", "IRS_2025_F8582_INSTR", "primary", "Parts IV/V per-activity columns -> Part I 1a-2c"),
+    ("R-8582-WS-NET", "IRC_469", "secondary", "469(c)(2) rental passive per se; 469(d) per-activity loss"),
+    ("R-8582-ALLOC-VI", "IRC_469", "primary", "469(i) the $25,000 allowance allocated per activity"),
+    ("R-8582-ALLOC-VI", "IRS_2025_F8582_INSTR", "primary", "Part VI ratio allocation (col a/b/c/d)"),
+    ("R-8582-ALLOC-VII", "IRS_2025_F8582_INSTR", "primary", "Part VII line C unallowed-loss allocation"),
+    ("R-8582-ALLOC-VII", "IRC_469", "secondary", "469(b) the disallowed loss carryforward"),
+    ("R-8582-ALLOWED-VIII", "IRS_2025_F8582_INSTR", "primary", "Part VIII allowed loss + How To Report Allowed Losses"),
+    ("R-8582-ALLOWED-VIII", "IRC_469", "secondary", "469 per-activity allowed/unallowed split"),
+    ("R-8582-CARRYFWD", "IRC_469", "primary", "469(b) carryforward; 469(g) disposition release"),
+    ("R-8582-CARRYFWD", "IRS_2025_F8582_INSTR", "secondary", "per-activity prior-year unallowed (col c)"),
+    ("R-8582-MULTIFORM", "IRS_2025_F8582_INSTR", "primary", "Part IX losses on 2+ forms"),
+    ("R-8582-MULTIFORM", "IRC_469", "secondary", "469 per-activity loss character"),
 ]
 
 
@@ -700,6 +861,25 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"red_fires": True},
                     "blockers": ["real_estate_professional", "mfs_lived_together"]},
      "sort_order": 6},
+    # ── Per-activity amendment 2026-06-23 (Parts IV-VIII) ──
+    {"assertion_id": "FA-1040-8582-05", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "Per-activity allocation conserves (sum allowed = line 11; sum suspended = line C)",
+     "description": "Validates R-8582-ALLOC-VII / R-8582-ALLOWED-VIII. Bug it catches: a per-activity allowed/suspended split that doesn't sum to the form totals (a loss vanishing or double-allocated).",
+     "definition": {"kind": "reconciliation", "form": "FORM_8582",
+                    "formula": "sum(per_activity.allowed) == line_11; sum(per_activity.suspended) == line_C; line_C == line_3_loss - line_9"},
+     "sort_order": 7},
+    {"assertion_id": "FA-1040-8582-06", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Part VI/VII allocate by loss-ratio (8582-PA1 .75/.25 split)",
+     "description": "Validates R-8582-ALLOC-VI / R-8582-ALLOC-VII. Bug it catches: an even split or wrong basis — each activity's share must be its loss / total losses, times line 9 (Part VI) or line C (Part VII).",
+     "definition": {"kind": "formula_check", "form": "FORM_8582",
+                    "formula": "activity_unallowed_i == line_C * (activity_loss_i / sum(activity_loss)); activity_allowed_i == activity_gross_i - activity_unallowed_i"},
+     "sort_order": 8},
+    {"assertion_id": "FA-1040-8582-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Part IX (losses on 2+ forms) fires D_8582_MULTIFORM (RED)",
+     "description": "No silent gap: a passive activity with losses on 2+ forms, or a 28%-rate / section 1231 separate transaction, RED-defers (Part IX not supported in v1).",
+     "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"red_fires": True},
+                    "blockers": ["losses_on_multiple_forms"]},
+     "sort_order": 9},
 ]
 
 
@@ -714,14 +894,27 @@ FORMS: list[dict] = [
 class Command(BaseCommand):
     help = "Load the SCHEDULE_E (Part I) + FORM_8582 specs. Refuses until READY_TO_SEED=True."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--only", default=None,
+            help=("Seed only this form_number (e.g. FORM_8582). Scopes the FORMS loop + "
+                  "the flow assertions; shared sources/topics/form-links still upsert "
+                  "additively. Used by the 2026-06-23 per-activity amendment to avoid "
+                  "re-touching SCHEDULE_E (the K-1 router owns its page-2 spec)."))
+
     @transaction.atomic
     def handle(self, *args, **opts):
+        only = opts.get("only")
+        forms = [s for s in FORMS if (only is None or s["identity"]["form_number"] == only)]
+        if not forms:
+            raise CommandError(f"--only {only!r} matched no form in FORMS")
         self._guard_against_hollow_seed()
-        self.stdout.write(self.style.MIGRATE_HEADING("\nLoad SCHEDULE_E (Part I) + FORM_8582 specs\n"))
+        self.stdout.write(self.style.MIGRATE_HEADING(
+            f"\nLoad {' + '.join(s['identity']['form_number'] for s in forms)} spec(s)\n"))
         self._load_topics()
         sources = self._load_sources()
         self._load_new_excerpts_on_existing(sources)
-        for spec in FORMS:
+        for spec in forms:
             form = self._upsert_form(spec["identity"])
             self._upsert_facts(form, spec["facts"])
             rules = self._upsert_rules(form, spec["rules"])
@@ -730,7 +923,7 @@ class Command(BaseCommand):
             self._upsert_diagnostics(form, spec["diagnostics"])
             self._upsert_tests(form, spec["scenarios"])
         self._upsert_form_links(sources)
-        self._load_flow_assertions()
+        self._load_flow_assertions(only)
         self._report_totals()
 
     def _guard_against_hollow_seed(self):
@@ -853,11 +1046,13 @@ class Command(BaseCommand):
                     authority_source=source, form_code=form_code, link_type=link_type,
                     defaults={"note": f"{source_code} -> {form_code}"})
 
-    def _load_flow_assertions(self):
-        for a in FLOW_ASSERTIONS:
+    def _load_flow_assertions(self, only=None):
+        fas = [a for a in FLOW_ASSERTIONS
+               if only is None or a.get("definition", {}).get("form") == only]
+        for a in fas:
             a = dict(a)
             FlowAssertion.objects.update_or_create(assertion_id=a.pop("assertion_id"), defaults=a)
-        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions")
+        self.stdout.write(f"  {len(fas)} flow assertions" + (f" (scoped to {only})" if only else ""))
 
     def _report_totals(self):
         self.stdout.write("\n" + "=" * 60)

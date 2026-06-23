@@ -4,6 +4,38 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-23 — FORM 8582 PER-ACTIVITY (Parts IV-VIII) — AMENDED + SEEDED + EXPORTED ✅
+- **Ken APPROVED the review walk in-session ("Approve — flip & seed")** — the full §469 per-activity
+  allocation, extending the 2026-06-14 aggregate Part I-III v1 (tag `1040-schedule-e-8582-complete`).
+  **Closes the STATUS Tier-2 "Form 8582 fed by K-1 / Sch C-E-F" gap** (passive K-1/Sch-C/Sch-F losses were
+  RED-deferred by `d_k1_passive_loss`; this routes them through 8582's Part V "other passive" bucket).
+- **Verified against the actual 2025 f8582.pdf (3 pages, 205 widgets — Parts IV-IX are FILED, not
+  "keep for your records") + i8582 (2025), NOT memory.** Locked scope (AskUserQuestion): **Parts IV-VIII**
+  (Part IX = losses on 2+ forms / 28%-rate / §1231 RED-deferred — the triggers already defer upstream in
+  the K-1 router); **all four activity types feed Part V** (non-active rental + passive K-1 + passive
+  Sch C + passive Sch F).
+- `load_1040_schedule_e.py` amended ADDITIVELY (FORM_8582 only): **+6 rules** (R-8582-WS-NET / -ALLOC-VI /
+  -ALLOC-VII / -ALLOWED-VIII / -CARRYFWD / -MULTIFORM), **+1 fact** (`f8582_line_c`), **+6 lines**
+  (C, P4-P8 descriptors), **+1 diagnostic** (`D_8582_MULTIFORM` RED), **+4 scenarios** (PA1/PA2/PA3 worked
+  math + PG1 the RED), **+12 rule-links**, **+1 i8582 excerpt** (Parts IV-IX), **+3 FA** (FA-1040-8582-05/06/07).
+  FORM_8582 now **18 facts / 12 rules / 23 lines / 7 diag / 11 tests / 20 links / 9 FA** (was 17/6/17/6/7/8/6).
+- **Core mechanic (Ken-verified):** line C = (Part I line 3 loss) − (Part II line 9) = total unallowed;
+  Part VI allocates line 9 across active-rental losses by loss-ratio; Part VII allocates line C across the
+  pool [Part VI col(d) + Part V col(e)] by loss-ratio (Σ = line C); Part VIII allowed = activity loss −
+  its unallowed → its own schedule. Conservation: **Σ allowed = line 11 (= line 9 + line 10)**.
+- `check_schedule_e_8582_integrity.py` extended with an INDEPENDENT per-activity recompute (no shared
+  loader math) → **ALL CHECKS PASS** (PA1 .75/.25 split; PA2 income-offset; PA3 no-allowance + conservation).
+- **NEW loader `--only FORM_8582` option** → seeded SCOPED so SCHEDULE_E is untouched (protects the K-1
+  router's page-2 spec + the FA-1040-SCHE-01 line-41 repoint). Seed: FORM_8582 Updated (18/12/23/7/11/20,
+  7 FA scoped). **Deployed export verified HTTP 200** (`lookup/FORM_8582/export/`: 12 rules incl. the 6 new,
+  D_8582_MULTIFORM, PA1/PA2/PA3/PG1). Committed tts-tax-app canonical `server/specs/form_8582_spec.json`
+  (re-export) + **3 FA staged** in `flow_assertions_1040_sche_8582_pending.json`.
+- **NEXT (tts-tax-app build legs):** seed (per-activity prior-unallowed model field on RentalProperty/
+  ScheduleK1/ScheduleC/ScheduleF — migration) → compute (extend `compute_8582.py` per-activity + feed
+  Part V from K-1/C/F; allocate back; carryforward) → render (f8582 field map Parts IV-VIII) → input →
+  diagnostics (RETIRE `d_k1_passive_loss`; add D_8582_MULTIFORM) → assertions (merge the 3 FA) →
+  tag `1040-8582-per-activity-complete`.
+
 ## 2026-06-22 — FORM 4562 §179 PRIOR-YEAR CARRYOVER (Part I L10/12/13) — AMENDED + SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve & seed")** — the verified L10-L13 wording off the
   2025 Form 4562 PDF; the Line 11 **Individuals** business-income definition; R014/R015 carryover rules;
