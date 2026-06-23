@@ -4,6 +4,48 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-23 — FORM 8995-A (above-threshold QBI) — AUTHORED + SEEDED + EXPORTED ✅
+- **Ken APPROVED the review walk in-session ("Approve & seed")** — the next Tier-2 big-ticket
+  item after 8582 per-activity (Ken chose 8995-A over the Form 6251 AMT engine). The full
+  above-§199A-threshold QBI computation: W-2/UBIA limit, SSTB phase-in, aggregation, loss netting.
+- **Verified against the actual 2025 f8995a.pdf (read directly — Parts I-IV exact, 2 pages/111
+  widgets) + i8995a (12pp, Schedule A/B/C mechanics), NOT memory.** Locked scope (AskUserQuestion
+  2026-06-23): **Parts I-IV + Schedule A (SSTB applicable %) + Schedule B (FULL aggregation engine,
+  Ken's choice) + Schedule C (per-business loss netting)** = IN; **Schedule D (patron reduction L14
+  + DPAD §199A(g) L38)** = RED-deferred (D_8995A_001/002; ag/hort-coop patrons rare).
+- **NEW loader `load_1040_form_8995a.py`** RE-AUTHORS the thin hand-authored `8995A` draft (20
+  facts/6 rules/15 mismatched lines) into the real face: **21 facts / 11 rules / 51 lines /
+  7 diagnostics / 10 worked scenarios / 9 FA** (FA-1040-8995A-01..09). `_retire_stale_8995a`
+  dropped 43 stale draft rows on seed. Standalone loader (touches only 8995A + 1 new topic
+  `qbi_above_threshold` + 1 new source `IRS_2025_8995A_FORM` + 3 excerpts on existing
+  `IRS_2025_8995A_INSTR`); does NOT touch the simplified 8995 or anything else.
+- **Core mechanics (Ken-verified, W1-W7):** (W1) Schedule A applicable% = clamp((ceiling−TI)/range,
+  0,1) — the fraction RETAINED, reduces QBI/W-2/UBIA, stacks with the Part III phase-in;
+  (W2) Schedule C apportions the total QB loss (current + prior carryforward) pro-rata by QBI across
+  positive businesses, adjusted QBI ≤0 ⇒ that biz's W-2/UBIA = 0, net negative → line-6 carryforward;
+  (W3) Schedule B full aggregation — combine QBI/W-2/UBIA, ownership/factors PREPARER-ASSERTED,
+  none-SSTB ENFORCED (D_8995A_007 error); (W4) patron/DPAD RED-deferred; (W5) line-34 net cap gain =
+  qual div + Sch D min(15,16), IDENTICAL to simplified-8995 L12; (W6) phase-in range $50k/$100k MFJ
+  STATUTORY NON-INDEXED, ceiling = threshold + range (year-keyed via threshold); (W7) no public
+  fillable Schedule A/B/C PDF (irs.gov f8995a.pdf = 2-pp main form only) → schedules authored at the
+  COMPUTATIONAL level, exact PDF widget layout verified at the render leg.
+- `check_8995a_integrity.py` INDEPENDENT re-derivation (own constants, no shared math) → **ALL 10
+  SCENARIOS PASS** (T1 non-SSTB above ceiling/wage binds; T2 in-band phase-in relief 10k→15k;
+  T3 SSTB applicable% 50%; T4 SSTB above ceiling→$0; T5 loss netting 100k+(−40k)→60k; T6 income
+  limit binds; T7 REIT/PTP only; T8 aggregation 9k→20k; T9 patron RED; T10 TY2026 year-keying).
+  Constants cross-checked cell-by-cell + RS varchar(20) id-length guard + line-uniqueness + text pins.
+- **Deployed export verified HTTP 200** (`lookup/8995A/export/`: 21/11/51/7/10, all 11 rules + 7
+  diagnostics + lines 26/39/A-APPLPCT/SC-1C present). Committed tts-tax-app canonical
+  `server/specs/8995a_spec.json` + **9 FA staged** in `flow_assertions_1040_8995a_pending.json`
+  (active 1040 gate holds at **264** until the assertions build leg). RS commit `b1d7853` (pushed);
+  tts `d737e08` (pushed).
+- **NEXT (tts-tax-app build legs):** leg 1 seed (per-business `w2_wages`/`ubia` on ScheduleC/F + 
+  `w2_wages`/`ubia`/`is_sstb` on ScheduleK1 — NO such fields exist today; aggregation grouping model +
+  Schedule B eligibility facts; additive migration to the shared DB; f8995a manifest; 8995A form def
+  seed; serializer CRUD) → compute (`compute_8995a`, replace the D_8995_001 above-threshold blank) →
+  render (un-stub f8995a_2025.py + Schedules A/B/C) → input → diagnostics (narrow D_8995_001; add the
+  7 D_8995A_*) → assertions (merge 9 FA, gate 264→273, tag `1040-8995a-complete`).
+
 ## 2026-06-23 — FORM 8582 PER-ACTIVITY (Parts IV-VIII) — AMENDED + SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve — flip & seed")** — the full §469 per-activity
   allocation, extending the 2026-06-14 aggregate Part I-III v1 (tag `1040-schedule-e-8582-complete`).
