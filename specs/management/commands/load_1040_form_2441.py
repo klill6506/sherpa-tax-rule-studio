@@ -272,6 +272,12 @@ F2441_FACTS: list[dict] = [
     {"fact_key": "f2441_dcb_benefits", "label": "Line 12 — dependent care benefits (W-2 box 10)",
      "data_type": "decimal", "default_value": "0", "sort_order": 10,
      "notes": "DERIVED from W-2 box 10. Reduces the expense limit (Part III); excess is taxable -> 1040 line 1e."},
+    # ── Claim election (per Dependent; gates R-2441-QUALIFYING) ──
+    {"fact_key": "claims_dependent_care", "label": "Claim dependent care for this dependent",
+     "data_type": "boolean", "default_value": "false", "sort_order": 6,
+     "notes": ("Per-Dependent election (Dependent.claims_dependent_care). The authoritative claim gate for "
+               "R-2441-QUALIFYING: only claimed qualifying persons drive the credit. Amended 2026-06-24 (was "
+               "previously care_expenses-only).")},
     # ── Outputs ──
     {"fact_key": "f2441_qualifying_count", "label": "Number of qualifying persons (under 13 or disabled)",
      "data_type": "integer", "sort_order": 20, "notes": "OUTPUT. Count of Dependent rows with care_expenses + (under-13 DOB OR is_disabled)."},
@@ -290,10 +296,13 @@ F2441_FACTS: list[dict] = [
 F2441_RULES: list[dict] = [
     {"rule_id": "R-2441-QUALIFYING", "title": "Qualifying persons — under 13 or disabled", "rule_type": "routing",
      "precedence": 1, "sort_order": 1,
-     "formula": ("f2441_qualifying_count = count(Dependent where care_expenses > 0 AND (age < 13 at the time of "
-                 "care OR is_disabled)). No qualifying person -> no credit."),
-     "inputs": [], "outputs": ["f2441_qualifying_count"],
-     "description": "Decision 6. Reuse Dependent DOB + the is_disabled flag (+ care_expenses)."},
+     "formula": ("f2441_qualifying_count = count(Dependent where claims_dependent_care = true AND care_expenses > 0 "
+                 "AND (age < 13 at the time of care OR is_disabled)). The per-dependent claim flag is the "
+                 "authoritative election: a qualifying person who is not claimed computes no credit (D_2441_007 "
+                 "nudge). No qualifying claimed person -> no credit."),
+     "inputs": ["claims_dependent_care", "care_expenses"], "outputs": ["f2441_qualifying_count"],
+     "description": ("Decision 6 (amended 2026-06-24). Reuse Dependent DOB + the is_disabled flag (+ care_expenses), "
+                     "GATED by the claims_dependent_care election.")},
     {"rule_id": "R-2441-EXPENSE-CAP", "title": "Line 3 — qualified expenses capped ($3,000 / $6,000)", "rule_type": "calculation",
      "precedence": 2, "sort_order": 2,
      "formula": ("cap = 6000 if f2441_qualifying_count >= 2 else 3000; f2441_expenses_capped = min(sum care_expenses, "
@@ -381,6 +390,14 @@ F2441_DIAGNOSTICS: list[dict] = [
      "message": ("A full-time-student or disabled spouse is deemed to have earned income of $250 (one qualifying "
                  "person) or $500 (two or more) per month — verify the number of months entered."),
      "notes": "Decision 4."},
+    {"diagnostic_id": "D_2441_007", "title": "Qualifying dependent has care expenses but dependent care not claimed",
+     "severity": "info",
+     "condition": ("a Dependent is a qualifying person (under 13 OR permanently disabled) with care_expenses > 0 "
+                   "but claims_dependent_care is False"),
+     "message": ("A qualifying person for the Child and Dependent Care Credit (under 13 or permanently disabled) "
+                 "has care expenses entered but is not marked for dependent care, so no credit is computed for "
+                 "them. If you intend to claim the credit, check 'Dependent Care' on the dependent."),
+     "notes": "Decision 6 (amended 2026-06-24). No silent gap for the claim gate."},
 ]
 
 F2441_SCENARIOS: list[dict] = [

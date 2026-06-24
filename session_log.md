@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-24 — FORM_2441 — claims_dependent_care claim gate (amend; NOT re-seeded yet)
+- tts-tax-app quick-win (Ken chose "amend spec + gate compute"): the per-Dependent
+  `claims_dependent_care` checkbox is now the AUTHORITATIVE claim election for the §21
+  credit. Previously R-2441-QUALIFYING counted qualifying persons by `care_expenses > 0 +
+  (under-13 OR disabled)` only — a qualifying-but-unclaimed dependent computed a credit.
+- **Loader amended** (`specs/management/commands/load_1040_form_2441.py`): R-2441-QUALIFYING
+  formula/description/inputs now gate on `claims_dependent_care`; NEW `claims_dependent_care`
+  fact (boolean, sort 6); NEW diagnostic **D_2441_007** (info) — a qualifying dependent with
+  care expenses but not claimed → no credit computed (no silent gap). check_2441_integrity.py
+  unaffected (it recomputes the worksheet from `qualifying_count` as input; the gate is upstream).
+- **NOT re-seeded / re-exported** this session (no local RS DB run from the tts-tax-app session).
+  The canonical `form_2441_spec.json` in tts-tax-app was hand-amended to match the loader and is
+  green there (flow gate 282→283, FA-1040-2441-07; 2441 tests 36/36). **TODO next RS deploy:**
+  run `load_1040_form_2441` + `check_2441_integrity.py`, re-export `lookup/FORM_2441/export/`,
+  and diff against the tts-tax-app canonical spec to confirm zero drift.
+
 ## 2026-06-23 — FORM 6251 (Alternative Minimum Tax) — AUTHORED + SEEDED + EXPORTED ✅
 - Next Tier-2 unit after 8995-A (Ken chose the AMT engine). **No prior RS spec** —
   `lookup/6251/export/` returned 404 (a genuinely NEW form, not a re-author).
