@@ -158,8 +158,17 @@ from specs.models import (
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1–W6 above,
 # the verified constants both years, the cross-form flow map, the RED-defer
 # enumeration). Until then the command writes nothing.
+#
+# FLIPPED 2026-06-23 — Ken APPROVED the review walk in-session ("approve and seed"):
+# W1 AMTI base = regular taxable income + std-deduction/SALT add-back + senior-
+# deduction add-back, QBI retained (senior deduction disallowed for AMT); W2 the
+# 2026 OBBBA constants ($90,100/$140,200/$70,100 exemption; $500k/$1M phaseout @ 50%;
+# $244,500 breakpoint) blessed as drafted; W3 RED-defer scope (ISO/QSBS/NOL/estates/
+# exotic prefs/AMT-FTC) blessed; W4 Part III reuses the app QDCGT/SDTW; W5 line-10
+# regular tax refigured without Schedule J; W6 D_AMT_DEFER narrows on compute. Math
+# gate check_6251_integrity.py ALL PASS (constants both years + 10 scenarios re-derived).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"

@@ -4,7 +4,7 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-23 — FORM 6251 (Alternative Minimum Tax) — AUTHORED, NOT yet seeded ⏸️
+## 2026-06-23 — FORM 6251 (Alternative Minimum Tax) — AUTHORED + SEEDED + EXPORTED ✅
 - Next Tier-2 unit after 8995-A (Ken chose the AMT engine). **No prior RS spec** —
   `lookup/6251/export/` returned 404 (a genuinely NEW form, not a re-author).
 - **Scope LOCKED (Ken, AskUserQuestion): "common-case engine"** — v1 computes the SALT/
@@ -18,17 +18,20 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   SALT add-back + senior-deduction add-back; QBI retained. Constants both years: 2025
   exemption 88,100/137,000/68,500 @ phaseout 626,350/1,252,700 × 25%; **2026 OBBBA**
   90,100/140,200/70,100 @ **500,000/1,000,000 × 50%** (the phaseout reversion + rate doubling).
-- `load_1040_form_6251.py` authored (the `load_1040_form_8995a` template): **30 facts /
-  14 rules / 38 lines / 8 diagnostics (6 RED-defer D_6251_* + AMT-applies info + Part III
-  basis-diff warn) / 10 scenarios / 9 FA**. `READY_TO_SEED = False` — guard verified (zero DB
-  writes, "all populated"). `check_6251_integrity.py` math gate **ALL CHECKS PASS** — constants
-  (both years × 3 statuses) + helpers + all 10 scenarios re-derived independently (caught + fixed
-  4 scenario arithmetic errors). RS `b8d3333` (pushed).
-- W1-W6 `requires_human_review` walk items in the loader docstring (AMTI base [confirmed]; the
-  2026 OBBBA constants; RED-defer scope; Part III reuse; line-10 regular tax / Schedule-J
-  refigure; D_AMT_DEFER narrowing).
-- **Next: Ken's review walk → flip READY_TO_SEED → seed → export → canonical `6251_spec.json`
-  + 9 staged FA → the 6 build legs in tts-tax-app.**
+- `load_1040_form_6251.py` (the `load_1040_form_8995a` template): **25 facts / 14 rules /
+  38 lines / 8 diagnostics (6 RED-defer D_6251_* + AMT-applies info + Part III basis-diff warn) /
+  10 scenarios / 9 FA + 25 authority links**. `check_6251_integrity.py` math gate **ALL CHECKS
+  PASS** — constants (both years × 3 statuses) + helpers + all 10 scenarios re-derived
+  independently (caught + fixed 4 scenario arithmetic errors). RS `b8d3333` (author) + the flip.
+- **Ken APPROVED the review walk in-session ("approve and seed")** — W1-W6 blessed as drafted
+  (W1 AMTI base; W2 the 2026 OBBBA $90,100/$140,200/$70,100 + $500k/$1M @ 50%; W3 RED-defer scope;
+  W4 Part III reuse; W5 line-10 no-Schedule-J; W6 D_AMT_DEFER narrowing). FLIPPED `READY_TO_SEED`
+  → seeded (RS DB +1 form `6251`; 25/14/38/8/10/9 + 25 links + 1 topic + 6 sources) → deployed
+  export verified (`lookup/6251/export/` HTTP 200, counts + OBBBA $500k + all 8 D_6251_*) →
+  canonical `server/specs/6251_spec.json` committed + 9 FA staged in
+  `flow_assertions_1040_6251_pending.json`.
+- **Next (tts-tax-app): the 6 build legs (seed → compute → render → input → diagnostics →
+  assertions).**
 
 ## 2026-06-23 — FORM 8995-A (above-threshold QBI) — AUTHORED + SEEDED + EXPORTED ✅
 - **Ken APPROVED the review walk in-session ("Approve & seed")** — the next Tier-2 big-ticket
