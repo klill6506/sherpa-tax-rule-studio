@@ -4,6 +4,38 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-24 — FORM 8829 (Business Use of Home) — AUTHORED + SEEDED + EXPORTED ✅
+- NEW form after the quick-wins bundle (Ken chose Form 8829 home office, then "BROADER:
+  build the Schedule A split"). **No prior RS spec** — `lookup/8829/export/` → 404.
+- **Verified against the actual 2025 f8829.pdf (read directly) + i8829 (Rev. Mar 4 2026)
+  + IRC §280A(c)(5) + §168/Pub 946, NOT memory.** The actual-expense home-office engine:
+  Part I business % (area + daycare hours-of-use) → the §280A(c)(5) gross-income limitation
+  in 3 ordered tiers (deductible-anyway 9-14 → operating 16-27 → casualty+depreciation
+  29-33, each limited to the income remaining; depreciation last → carries over first) →
+  line 36 → Schedule C line 30; Part III 39-yr nonresidential mid-month SL depreciation
+  (Jan 2.461%…Dec 0.107% first year, 2.564% subsequent); Part IV carryover.
+- **Scope LOCKED (Ken, AskUserQuestion "Approve as drafted"):** v1 COMPUTES the RE-tax
+  SALT split (lines 11/17) reusing `compute_schedule_a.salt_line5e` (the OBBBA $40k cap +
+  $500k-MAGI 30% phasedown) incl. the >$500k circular MAGI↔home-office↔AGI iteration
+  (W4 = fixed-point loop). The MORTGAGE Pub-936 split (10/16) stays a preparer fact for
+  itemizers (W3 — matches Schedule A; the standard-deduction path is computed). RED-defers
+  line-35 → Form 4684 + the multi-business line-36 allocation (W5).
+- `load_1040_form_8829.py` (the `load_1040_form_6251` template): **47 facts / 13 rules /
+  44 lines / 8 diagnostics / 11 scenarios / 9 FA / 20 authority links / 4 sources** (+ ref
+  IRS_2025_1040_FORM). `check_8829_integrity.py` math gate **ALL CHECKS PASS** — the
+  depreciation table (12 months + subsequent) + daycare + SALT constants + helpers + all
+  11 scenarios re-derived independently (caught + fixed 2 self-authored scenario errors:
+  itemizer line 11/17 are col (a) pre-allocated, not col (b) × business %). RS `b933b6e`.
+- **Ken APPROVED the review walk in-session ("Approve as drafted")** — W1 §280A tier
+  ordering; W2 39-yr nonresidential mid-month depreciation; W3 itemizer-mortgage-split-as-
+  input; W4 the MAGI fixed-point loop; W5 casualty/4684; W6 constants reused from Sch A.
+  FLIPPED `READY_TO_SEED` → seeded (RS DB: Created 8829) → deployed export verified
+  (`lookup/8829/export/` HTTP 200; 47/13/44/8/11) → canonical `server/specs/8829_spec.json`
+  committed to tts-tax-app + 9 FA staged in `flow_assertions_1040_8829_pending.json`.
+- **Next (tts-tax-app): the 6 build legs (seed → compute → render → input → diagnostics →
+  assertions).** Build leg 1 = model fields (Form8829 per Schedule C) + migration + manifest
+  f8829 + download PDF + seed_8829 + serializer.
+
 ## 2026-06-24 — FORM_2441 — claims_dependent_care claim gate (amend; NOT re-seeded yet)
 - tts-tax-app quick-win (Ken chose "amend spec + gate compute"): the per-Dependent
   `claims_dependent_care` checkbox is now the AUTHORITATIVE claim election for the §21
