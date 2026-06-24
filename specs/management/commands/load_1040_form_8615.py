@@ -154,8 +154,20 @@ from specs.models import (
 # the §1(g) assembly + max(L16,L17); the preparer-asserted parent-data model;
 # the full-QDCGT / SDTW-RED-defer boundary; the Line 5 worksheet posture; the
 # L13 precision; the verified constants). Until then the command writes nothing.
+#
+# FLIPPED 2026-06-24 — Ken APPROVED the review walk in-session ("Approve"):
+# W1 the §1(g) assembly + max(L16,L17) greater-of floor → child's 1040 line 16
+# blessed; W2 parent data = preparer-asserted facts (no parent-return link in v1)
+# blessed; W3 full QDCGT reuse + RED-defer only §1250/28% SDTW (+ Sch J + Form
+# 8814) blessed; W4 the Line 5 worksheets — spec the allocation PRINCIPLE now,
+# transcribe the exact WS1/2/3 line math at the COMPUTE leg — APPROVED; W5 L13
+# precision = full-precision line 12b + round line 13 to the whole dollar —
+# APPROVED; W6 constants ($1,350 base / $2,700 line 2 + threshold, both 2025 +
+# 2026 from Rev. Proc. 2025-32; rate schedules / QDCGT breakpoints reused) blessed.
+# Math gate check_8615_integrity.py ALL CHECKS PASS (the §1(g) assembly +
+# constants + helpers re-derived; 8 scenarios).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
