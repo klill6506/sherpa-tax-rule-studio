@@ -4,6 +4,38 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-24 — FORM 8615 (Kiddie Tax §1(g)) — DRAFTED + GATE PASS — AWAITING KEN'S REVIEW WALK ⏳
+- NEW form (Ken chose it after 8829, from a Phase-0 finding that the whole SPRINT_SCOPE
+  NEXT-UP federal backlog is already built). **No prior RS spec** — `lookup/8615`,
+  `FORM_8615`, `1040_8615` all → 404.
+- **Verified against i8615 (2025) + f8615 (read directly) + IRC §1(g) + §63(c)(5)(A) +
+  §1(h); 2026 constants from Rev. Proc. 2025-32 §3.02/§3.18 (read the PDF directly), NOT
+  memory.** The kiddie tax: Part I net unearned income = min(unearned − $2,700, taxable
+  income); Part II tentative tax at the PARENT's rate (tax on net unearned + parent TI +
+  other children's net unearned − the parent's tax, allocated by L5 ÷ (L5+L7)); Part III
+  child's tax = LARGER of (parent-rate share + child-rate tax on the rest) vs (child-rate
+  tax on all) → child's 1040 line 16.
+- **Scope LOCKED (Ken, 2 AskUserQuestion decisions 2026-06-24):** (1) parent data =
+  preparer-asserted facts on the child's return (no parent-return link in v1); (2) cap-gains
+  = FULL QDCGT reuse (`compute_qdcgt_worksheet` + i8615 Line 5 worksheets, parent/child
+  `ordinary_tax_fn`), RED-defer ONLY §1250/28% SDTW (+ Schedule J + Form 8814 election).
+- **CONSTANTS verified:** §63(c)(5)(A) base = $1,350 BOTH 2025+2026 (unchanged) → line 2 /
+  threshold = $2,700 both years. Rate schedules / QDCGT breakpoints REUSE the existing
+  year-keyed constants (lines 9/15/17 tax-at-rate values are the reuse; the spec owns the
+  §1(g) assembly).
+- `load_1040_form_8615.py` = **30 facts / 11 rules / 18 lines / 7 diagnostics / 8 tests /
+  16 rule-links / 9 FA**. `check_8615_integrity.py` **ALL CHECKS PASS** (the §1(g) assembly
+  + constants + helpers re-derived independently; loader + gate share no math). Full source
+  brief: `tts-tax-app/server/specs/_8615_source_brief.md`.
+- **READY_TO_SEED = False** — the loader REFUSES to seed (zero DB writes) until Ken's
+  in-session review walk (W1 the §1(g) assembly + max(L16,L17); W2 the preparer-asserted
+  parent data; W3 the QDCGT-in/SDTW-out boundary; W4 the Line 5 worksheet posture [spec the
+  principle, transcribe the WS lines at compute]; W5 the L13 precision; W6 the constants).
+  **NEXT: Ken reviews → flip READY_TO_SEED → seed → deploy export → canonical
+  `8615_spec.json` + 9 staged FA.**
+
+---
+
 ## 2026-06-24 — FORM 8829 (Business Use of Home) — AUTHORED + SEEDED + EXPORTED ✅
 - NEW form after the quick-wins bundle (Ken chose Form 8829 home office, then "BROADER:
   build the Schedule A split"). **No prior RS spec** — `lookup/8829/export/` → 404.
