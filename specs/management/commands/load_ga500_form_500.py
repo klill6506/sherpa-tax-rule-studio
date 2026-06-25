@@ -182,9 +182,15 @@ FORM_ENTITY_TYPES = ["1040"]
 # ═══════════════════════════════════════════════════════════════════════════
 
 GA_TAX_RATE: dict[int, str] = {2025: "0.0519", 2026: "0.0499"}          # HB 111 / HB 463
-GA_STD_DED_MFJ: dict[int, int] = {2025: 24000, 2026: 24000}            # status B
-GA_STD_DED_OTHER: dict[int, int] = {2025: 12000, 2026: 12000}         # status A/C/D
+GA_STD_DED_MFJ: dict[int, int] = {2025: 24000, 2026: 30000}            # status B; HB 463 → $30,000 in 2026
+GA_STD_DED_OTHER: dict[int, int] = {2025: 12000, 2026: 15000}         # status A/C/D; HB 463 → $15,000 in 2026
 GA_DEPENDENT_EXEMPTION: dict[int, int] = {2025: 4000, 2026: 5000}     # HB 463 → $5,000 in 2026
+# HB 463 (Georgia Economic Growth and Tax Relief Act of 2026, signed 2026-05-11):
+# for taxable years beginning on/after 2026-01-01 the standard deduction rises to
+# $15,000 (single/MFS/HOH) / $30,000 (MFJ) and the dependent exemption to $5,000,
+# with annual step-ups (+$375/$750 std, +$125 dep) beginning 2027. Effective-year
+# CONFIRMED WITH KEN 2026-06-25 (sources conflicted: BIP Wealth/BDO = TY2026 vs
+# GBPI = TY2027; Ken chose TY2026 — verify vs the bill text when convenient).
 GA_RIE_62_64: dict[int, int] = {2025: 35000, 2026: 35000}            # age 62-64 or perm. disabled <62
 GA_RIE_65: dict[int, int] = {2025: 65000, 2026: 65000}              # age 65+
 GA_RIE_EARNED_CAP: dict[int, int] = {2025: 5000, 2026: 5000}        # RIE worksheet line 4
@@ -951,10 +957,10 @@ GA500_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 70000, "g_federal_dependent_care_credit": 1200},
      "expected_outputs": {"13": 58000, "15c": 58000, "16": 3010, "CC-3": 600, "20": 600, "22": 600, "23": 2410},
      "notes": "GA child-care = 50% × 1,200 = 600. Tax 58,000 × 5.19% = 3,010.20 → 3,010; balance 2,410."},
-    {"scenario_name": "GA500-T11 — TY2026 constants (rate 4.99%, dependent $5,000)", "scenario_type": "normal", "sort_order": 11,
+    {"scenario_name": "GA500-T11 — TY2026 constants (rate 4.99%, std $30k MFJ, dependent $5,000)", "scenario_type": "normal", "sort_order": 11,
      "inputs": {"tax_year": 2026, "g_residency_status": "full_year", "g_filing_status": "B", "g_num_dependents": 2, "g_federal_agi": 100000},
-     "expected_outputs": {"10": 100000, "11": 24000, "13": 76000, "14": 10000, "15a": 66000, "15c": 66000, "16": 3293},
-     "notes": "2026: dependent exemption 5,000 → 2 × 5,000 = 10,000; rate 4.99%. 66,000 × 4.99% = 3,293.40 → 3,293."},
+     "expected_outputs": {"10": 100000, "11": 30000, "13": 70000, "14": 10000, "15a": 60000, "15c": 60000, "16": 2994},
+     "notes": "2026 (HB 463): std deduction MFJ 30,000; dependent exemption 5,000 → 2 × 5,000 = 10,000; rate 4.99%. 70,000 − 10,000 = 60,000 × 4.99% = 2,994.00 → 2,994."},
     {"scenario_name": "GA500-T12 — taxable Social Security subtraction (2025)", "scenario_type": "normal", "sort_order": 12,
      "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 50000, "g_federal_taxable_ss": 10000},
      "expected_outputs": {"S1-8": 10000, "9": -10000, "10": 40000, "11": 12000, "13": 28000, "15c": 28000, "16": 1453},
