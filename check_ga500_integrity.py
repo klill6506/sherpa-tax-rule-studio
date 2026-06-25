@@ -228,6 +228,24 @@ def recompute(inp):
     l22 = min(credits, l16)
     out["22"] = l22
     out["23"] = max(Decimal(0), l16 - l22)
+
+    # — Payments → balance due / overpayment → amount due / refund —
+    l28 = sum((D(inp.get(k)) for k in (
+        "g_ga_withholding_wages_1099", "g_ga_withholding_other",
+        "g_estimated_payments", "g_refundable_credits_2b")), Decimal(0))
+    out["28"] = l28
+    out["29"] = max(Decimal(0), out["23"] - l28)   # balance due
+    out["30"] = max(Decimal(0), l28 - out["23"])   # overpayment
+    # Lines 31-44 reduce the refund / add to the amount due (per the 2025 face):
+    #   L45 (amount due)  = L29 + Σ(L32..L44)
+    #   L46 (refund)      = max(0, L30 − Σ(L31..L44))
+    applied = D(inp.get("g_amount_applied_next_year"))            # L31
+    checkoffs = D(inp.get("g_gift_contributions_total"))         # L32-41
+    penalties = (D(inp.get("g_uet_penalty"))                    # L42
+                 + D(inp.get("g_late_payment_penalty"))         # L43
+                 + D(inp.get("g_interest")))                    # L44
+    out["45"] = out["29"] + checkoffs + penalties
+    out["46"] = max(Decimal(0), out["30"] - applied - checkoffs - penalties)
     return out
 
 

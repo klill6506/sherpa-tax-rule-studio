@@ -48,10 +48,10 @@ prompts; the preparer keys the GA-vs-federal figure):
     lump-sum (L2), federal-NOL-carryover add-back (L4), Path2College 529 (L9,
     cap-checked), US-obligation interest (L10), other-state-credit inputs,
     Eligible-Itemizer credit (L19), Schedule 2 series-100 (L21), Schedule 2B
-    refundable (L27), gift check-offs (L32-43).
+    refundable (L27), gift check-offs (L32-41), penalties/interest (L42-44).
 
 RED-DEFERS (each its own "prepare manually" RED — no silent gap):
-  • Form 500 UET underpayment-penalty computation (L44) — D_GA500_010.
+  • Form 500 UET underpayment-penalty computation (L42) — D_GA500_010.
   • Schedule 4 Part III multi-year carryover APPLICATION across prior years when
     the prior-year GA returns are not in the system — the preparer asserts the
     carryforward amounts; Part I/II + the 80% current-year limit ARE computed.
@@ -72,7 +72,8 @@ tts-tax-app/server/specs/_ga500_source_brief.md.)
 Form 500 face: L8 federal AGI → L9 Sch1 net adj → L10 GA AGI → L11 std / L12c
 itemized → L13 → L14 dependents×exemption → L15a/b/c (NOL) → L16 tax (×rate) →
 L17 LIC / L18 other-state / L19 elig-itemizer / L20 IND-CR / L21 Sch2 → L22/23
-→ L24-28 payments → L29 due / L30 overpay → L46 refund.
+→ L24-28 payments → L29 due / L30 overpay → L31 applied / L32-41 gift check-offs /
+L42 UET / L43 late penalty / L44 interest → L45 amount due / L46 refund.
 
 CONSTANTS (year-keyed; cited):
   Flat rate            2025 5.19% (HB 111) / 2026 4.99% (HB 463)
@@ -275,7 +276,8 @@ AUTHORITY_SOURCES: list[dict] = [
                     "L17a-c Low Income Credit; L18 Other State(s) Tax Credit; L19 Eligible Itemizer "
                     "Credit; L20 IND-CR credits; L21 Schedule 2 credits; L22 total credits (≤ L16); "
                     "L23 balance; L24-28 withholding/estimated/IT-560/Sch 2B; L29 balance due; L30 "
-                    "overpayment; L46 refund."
+                    "overpayment; L31 applied-to-next-year; L32-41 gift check-offs; L42 UET; L43 late "
+                    "penalty; L44 interest; L45 amount due (L29 + L32-44); L46 refund (L30 − L31-44)."
                 ),
                 "summary_text": "Form 500 (2025) line-by-line face: federal-AGI start → Sch 1 adj → GA AGI → deduction → dependent exemption → NOL → flat tax → credits → payments → refund/due.",
                 "is_key_excerpt": True,
@@ -609,8 +611,10 @@ GA500_FACTS: list[dict] = [
     {"fact_key": "g_estimated_payments", "label": "Estimated tax paid for the year + Form IT-560 (L26)", "data_type": "decimal", "default_value": "0", "sort_order": 152, "notes": "Form 500 line 26."},
     {"fact_key": "g_refundable_credits_2b", "label": "Schedule 2B refundable tax credits (L27)", "data_type": "decimal", "default_value": "0", "sort_order": 153, "notes": "Form 500 line 27 (e-file). Direct-entry."},
     {"fact_key": "g_amount_applied_next_year", "label": "Amount applied to next year's estimated tax (L31)", "data_type": "decimal", "default_value": "0", "sort_order": 154, "notes": "Form 500 line 31 (reduces the refund)."},
-    {"fact_key": "g_gift_contributions_total", "label": "Charitable gift check-offs total (lines 32-43)", "data_type": "decimal", "default_value": "0", "sort_order": 155, "notes": "Sum of the voluntary contribution check-offs; reduces the refund / adds to the amount owed."},
-    {"fact_key": "g_uet_penalty", "label": "Form 500 UET estimated-tax penalty (L44) — direct", "data_type": "decimal", "default_value": "0", "sort_order": 156, "notes": "Form 500 line 44. v1 RED-defers the UET computation (D_GA500_010); preparer enters."},
+    {"fact_key": "g_gift_contributions_total", "label": "Charitable gift check-offs total (lines 32-41)", "data_type": "decimal", "default_value": "0", "sort_order": 155, "notes": "Sum of the 10 voluntary-contribution check-offs (Form 500 lines 32-41). On the form each fund is its own line (32-41); the line_map carries the 10 individual lines, and this total is the rule input. Reduces the refund / adds to the amount owed."},
+    {"fact_key": "g_uet_penalty", "label": "Form 500 UET estimated-tax penalty (L42) — direct", "data_type": "decimal", "default_value": "0", "sort_order": 156, "notes": "Form 500 line 42. v1 RED-defers the UET computation (D_GA500_010); preparer enters."},
+    {"fact_key": "g_late_payment_penalty", "label": "Penalty: late payment and/or late filing (L43) — direct", "data_type": "decimal", "default_value": "0", "sort_order": 157, "notes": "Form 500 line 43. Direct-entry."},
+    {"fact_key": "g_interest", "label": "Interest on unpaid tax (L44) — direct", "data_type": "decimal", "default_value": "0", "sort_order": 158, "notes": "Form 500 line 44. Direct-entry."},
 ]
 
 
@@ -709,12 +713,17 @@ GA500_RULES: list[dict] = [
      "inputs": ["g_ga_withholding_wages_1099", "g_ga_withholding_other", "g_estimated_payments", "g_refundable_credits_2b"], "outputs": ["24", "28", "29", "30"],
      "description": "Withholding + estimated + IT-560 + refundable credits → balance due or overpayment."},
 
-    {"rule_id": "R-GA500-REFUND", "title": "Line 46 — refund", "rule_type": "calculation", "precedence": 12, "sort_order": 19,
-     "formula": "Line 46 (refund) = line 30 − (amount applied to next year [L31] + gift check-offs [L32-43] + UET [L44] + penalty/interest [L45]).",
-     "inputs": ["g_amount_applied_next_year", "g_gift_contributions_total", "g_uet_penalty"], "outputs": ["46"],
-     "description": "The refund after voluntary contributions, applied amounts, and penalties."},
+    {"rule_id": "R-GA500-AMTDUE", "title": "Line 45 — amount due", "rule_type": "calculation", "precedence": 12, "sort_order": 19,
+     "formula": "Line 45 (amount due, if you owe) = line 29 (balance due) + the sum of lines 32 through 44 = L29 + gift check-offs [L32-41] + UET [L42] + late-payment penalty [L43] + interest [L44]. Per the 2025 Form 500 face: 'Add Lines 29, 32 through 44.'",
+     "inputs": ["g_gift_contributions_total", "g_uet_penalty", "g_late_payment_penalty", "g_interest"], "outputs": ["45"],
+     "description": "The total amount owed: balance due plus voluntary contributions and penalties/interest."},
 
-    {"rule_id": "R-GA500-DEPR", "title": "Depreciation / conformity decoupling (direct-entry boundary)", "rule_type": "validation", "precedence": 2, "sort_order": 20,
+    {"rule_id": "R-GA500-REFUND", "title": "Line 46 — refund", "rule_type": "calculation", "precedence": 13, "sort_order": 20,
+     "formula": "Line 46 (refund, if due) = max(0, line 30 (overpayment) − the sum of lines 31 through 44) = max(0, L30 − amount applied to next year [L31] − gift check-offs [L32-41] − UET [L42] − late-payment penalty [L43] − interest [L44]). Per the 2025 Form 500 face: 'Subtract the sum of Lines 31 thru 44 from Line 30.'",
+     "inputs": ["g_amount_applied_next_year", "g_gift_contributions_total", "g_uet_penalty", "g_late_payment_penalty", "g_interest"], "outputs": ["46"],
+     "description": "The refund after applied amounts, voluntary contributions, and penalties/interest."},
+
+    {"rule_id": "R-GA500-DEPR", "title": "Depreciation / conformity decoupling (direct-entry boundary)", "rule_type": "validation", "precedence": 2, "sort_order": 21,
      "formula": "GA conforms to the IRC as of 1/1/2025 and did NOT adopt OBBBA; §168(k) bonus is disallowed and GA uses its own §179 limit. The GA-vs-federal depreciation difference is entered on Schedule 1 L3 (add) / L11 (sub) as preparer direct-entry in v1 (the depreciation engine's Asset.state_* fields auto-populate later).",
      "inputs": ["g_add_depreciation", "g_sub_depreciation"], "outputs": ["S1-3", "S1-11"],
      "description": "v1 depreciation boundary (W1). No silent gap — the lines accept entry and D_GA500_008 reminds the preparer."},
@@ -762,8 +771,21 @@ GA500_LINES: list[dict] = [
     {"line_number": "29", "description": "Balance due (line 23 − line 28, if positive)", "line_type": "calculated"},
     {"line_number": "30", "description": "Overpayment (line 28 − line 23, if positive)", "line_type": "calculated"},
     {"line_number": "31", "description": "Amount to be credited to next year's estimated tax", "line_type": "input"},
-    {"line_number": "44", "description": "Form 500 UET (estimated tax penalty)", "line_type": "input"},
-    {"line_number": "46", "description": "Refund", "line_type": "calculated"},
+    {"line_number": "32", "description": "Georgia Wildlife Conservation Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "33", "description": "Georgia Fund for Children and Elderly (gift check-off)", "line_type": "input"},
+    {"line_number": "34", "description": "Georgia Cancer Research Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "35", "description": "Georgia Land Conservation Program (gift check-off)", "line_type": "input"},
+    {"line_number": "36", "description": "Georgia National Guard Foundation (gift check-off)", "line_type": "input"},
+    {"line_number": "37", "description": "Dog & Cat Sterilization Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "38", "description": "Saving the Cure Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "39", "description": "Realizing Educational Achievement Can Happen (REACH) Program (gift check-off)", "line_type": "input"},
+    {"line_number": "40", "description": "Public Safety Memorial Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "41", "description": "Disabled Veterans' Scholarship Fund (gift check-off)", "line_type": "input"},
+    {"line_number": "42", "description": "Form 500 UET (estimated tax penalty)", "line_type": "input"},
+    {"line_number": "43", "description": "Penalty: late payment and/or late filing", "line_type": "input"},
+    {"line_number": "44", "description": "Interest on unpaid tax", "line_type": "input"},
+    {"line_number": "45", "description": "Amount due (line 29 + the sum of lines 32 through 44)", "line_type": "calculated"},
+    {"line_number": "46", "description": "Refund (line 30 − the sum of lines 31 through 44)", "line_type": "calculated"},
 
     # — Schedule 1 —
     {"line_number": "S1-1", "description": "Sch 1 add: interest on non-Georgia municipal/state bonds", "line_type": "input"},
@@ -865,8 +887,8 @@ GA500_DIAGNOSTICS: list[dict] = [
      "message": "Not supported — prepare manually: the multi-year Georgia NOL carryover application (Schedule 4 Part III) requires the prior-year Georgia returns. Enter the available carryforward amounts directly; v1 computes Part I/II and the current-year 80% limit only.",
      "notes": "RED — no silent gap on the multi-year carryover application (W3)."},
     {"diagnostic_id": "D_GA500_010", "title": "Form 500 UET penalty — prepare manually", "severity": "error",
-     "condition": "an underpayment of estimated tax exists and a UET penalty (line 44) is indicated",
-     "message": "Not supported — prepare manually: the Form 500 UET estimated-tax underpayment penalty is not computed in v1. Enter the penalty on line 44 directly (or attach the 500 UET exception).",
+     "condition": "an underpayment of estimated tax exists and a UET penalty (line 42) is indicated",
+     "message": "Not supported — prepare manually: the Form 500 UET estimated-tax underpayment penalty is not computed in v1. Enter the penalty on line 42 directly (or attach the 500 UET exception).",
      "notes": "RED — no silent gap on the UET penalty."},
     {"diagnostic_id": "D_GA500_011", "title": "Part-year / nonresident — Schedule 3 in use", "severity": "info",
      "condition": "g_residency_status is part_year or nonresident",
@@ -937,6 +959,17 @@ GA500_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 50000, "g_federal_taxable_ss": 10000},
      "expected_outputs": {"S1-8": 10000, "9": -10000, "10": 40000, "11": 12000, "13": 28000, "15c": 28000, "16": 1453},
      "notes": "Taxable SS 10,000 subtracted. GA AGI 40,000 − 12,000 = 28,000 × 5.19% = 1,453.20 → 1,453."},
+    {"scenario_name": "GA500-T13 — overpayment → refund, with amount applied next year (2025)", "scenario_type": "normal", "sort_order": 13,
+     "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 60000,
+                "g_ga_withholding_wages_1099": 5000, "g_amount_applied_next_year": 500},
+     "expected_outputs": {"16": 2491, "23": 2491, "28": 5000, "29": 0, "30": 2509, "45": 0, "46": 2009},
+     "notes": "Tax 2,491; withholding 5,000 → overpayment 2,509. L46 refund = 2,509 − 500 applied = 2,009; no balance due so L45 = 0."},
+    {"scenario_name": "GA500-T14 — balance due → amount due with check-offs + penalties (2025)", "scenario_type": "edge_case", "sort_order": 14,
+     "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 60000,
+                "g_ga_withholding_wages_1099": 2000, "g_gift_contributions_total": 50,
+                "g_uet_penalty": 30, "g_late_payment_penalty": 10, "g_interest": 5},
+     "expected_outputs": {"16": 2491, "23": 2491, "28": 2000, "29": 491, "30": 0, "45": 586, "46": 0},
+     "notes": "Tax 2,491; withholding 2,000 → balance due 491. L45 amount due = 491 + 50 check-offs + (30+10+5) penalties/interest = 586; no overpayment so L46 = 0. UET=line 42, late=line 43, interest=line 44 (the 2025 form-face line numbers)."},
 ]
 
 
