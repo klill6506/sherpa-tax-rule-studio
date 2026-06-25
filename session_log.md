@@ -4,6 +4,41 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-25 — GA FORM 500 (Georgia Individual Income Tax) — DRAFTED + GATE PASS — AWAITING KEN'S REVIEW WALK ⏳
+- NEW form (Ken's direction after Form 8615 completion). **No prior RS spec** — `lookup/500`,
+  `GA_500`, `GA500` all → 404. The **FIRST STATE individual spec** (all prior specs federal).
+- **Verified against the GA-DOR 2025 Form 500 (Rev. 07/09/25) + 2025 IT-511 booklet (extracted
+  from the actual PDFs, read directly) + O.C.G.A. Title 48 Ch. 7 + HB 111 (TY2025 rate) + HB 463
+  "Georgia Economic Growth and Tax Relief Act of 2026" (TY2026), NOT memory.** Georgia Form 500:
+  federal AGI (1040 L11) → Schedule 1 GA additions/subtractions (the retirement income exclusion
+  is the center of gravity) → standard/itemized deduction → dependent exemption → GA NOL (Sch 4,
+  80% limit) → flat tax → credits → withholding → refund/due.
+- **v1 scope LOCKED (Ken, 4 AskUserQuestion decisions 2026-06-25 — MAXIMAL):** (1) resident **+
+  part-year/nonresident** (Schedule 3 proration); (2) **both** retirement exclusions (standard RIE
+  + military); (3) **compute Schedule 4 GA NOL** (Part I/II + 80% limit); (4) credits direct-entry
+  **+ compute the Low Income Credit + IND-CR 202 child-care** (50% of the federal §21). The
+  §168(k)/§179/OBBBA depreciation difference (Sch 1 L3/L11) = preparer DIRECT-ENTRY in v1 (GA
+  conforms to the IRC as of 1/1/2025, NOT OBBBA; engine integration later — W1). RED-defers the UET
+  penalty + the multi-year NOL carryover application.
+- **CONSTANTS verified:** rate 5.19% (2025, HB 111) / 4.99% (2026, HB 463); std ded $24,000 MFJ /
+  $12,000 else (no age-65/blind add-on, no personal exemption — HB 1437); dependent exemption
+  $4,000 (2025) / **$5,000 (2026, HB 463 eff. TY2026)**; retirement exclusion $35,000 (62-64/
+  disabled) / $65,000 (65+), ≤$5,000 earned; military $17,500 base → $35,000; LIC table
+  $26/$20/$14/$8/$5 by FAGI bracket (< $20,000). Std-ded + retirement-exclusion bumps start 2027.
+- `load_ga500_form_500.py` = **75 facts / 20 rules / 76 lines / 12 diagnostics / 12 tests / 21
+  rule-links / 12 FA / 4 sources** (+ ref IRS_2025_1040_FORM). The project's largest spec.
+  `check_ga500_integrity.py` **ALL CHECKS PASS** — constants (2 yrs) + helpers + the LIC table +
+  all 12 scenarios (the Form 500 assembly: Sch 1 / RIE std+military / deduction / Sch 3 / NOL 80% /
+  flat tax / LIC / child-care) re-derived independently; loader + gate share no math. Full source
+  brief: `tts-tax-app/server/specs/_ga500_source_brief.md`.
+- **READY_TO_SEED = False** — the loader REFUSES to seed (zero DB writes) until Ken's in-session
+  review walk (W1 the depreciation/conformity decoupling boundary; W2 the TY2026 HB 463 constants;
+  W3 the Schedule 4 NOL carryover scope; W4 the 12b SALT back-out; W5 the RIE classification +
+  taxable-SS sourcing; W6 the Schedule 3 PY/NR proration). **NEXT: Ken reviews → flip
+  READY_TO_SEED → seed → deploy export → canonical `500_spec.json` + 12 staged FA.**
+
+---
+
 ## 2026-06-24 — FORM 8615 (Kiddie Tax §1(g)) — DRAFTED + GATE PASS — AWAITING KEN'S REVIEW WALK ⏳
 - NEW form (Ken chose it after 8829, from a Phase-0 finding that the whole SPRINT_SCOPE
   NEXT-UP federal backlog is already built). **No prior RS spec** — `lookup/8615`,
