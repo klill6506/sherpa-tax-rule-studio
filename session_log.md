@@ -4,6 +4,25 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-25 — FORM 1040-X (Amended Returns) — AUTHORED (READY_TO_SEED=False) ⏸️
+- **NEW spec `load_1040_form_1040x.py`** (remote-safe spec+scaffold pass; the tax-law
+  delta-compute leg waits for Ken). Form 1040-X = a three-column A/B/C delta over a filed
+  1040: Column A = original/as-filed (from a frozen `AsFiledBaseline` snapshot, tts side),
+  Column C = correct (the amended 1040), Column B = net change (C − A); recompute subtotals
+  (3/5/8/11) + amended refund/owe (17-23) + Part II explanation.
+- **12 facts / 12 rules / 61 lines / 8 diagnostics / 2 scenarios / 6 FA.** Line set verified
+  against the ACTUAL Form 1040-X (Rev. December 2025) PDF — read directly from
+  tts/resources/irs_forms/2025/f1040x.pdf (widget dump + text), NOT memory. RED-defers NOL
+  carryback (D_1040X_001), GBC carryback (002), superseding (003), missing baseline (005),
+  blank explanation (004), other-credit cascades (008).
+- **`check_1040x_integrity.py`** — independent recompute (B=C−A + subtotals + refund/owe) re-
+  derives both scenarios + structural checks (no dup ids, rule_links resolve, expected_outputs
+  reference real lines, id≤20). **ALL CHECKS PASS.** The seed command correctly REFUSES
+  (`READY_TO_SEED=False`). W1-W6 review-walk items in the loader docstring for Ken.
+- **NOT seeded / NOT exported** — awaiting Ken's review (REVIEW_QUEUE.md). RS `4ba236c`.
+
+---
+
 ## 2026-06-25 (later) — GA FORM 500 — page-5 line-number fix + HB 463 TY2026 constants ✅
 - **Amended `load_ga500_form_500.py` + `check_ga500_integrity.py`** (the spec was WRONG on the
   page-5 line numbers, verified vs the actual GA-DOR 2025 Form 500 PDF page 5). Corrected to the
