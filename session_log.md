@@ -4,7 +4,7 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-06-25 — GA FORM 500 (Georgia Individual Income Tax) — DRAFTED + GATE PASS — AWAITING KEN'S REVIEW WALK ⏳
+## 2026-06-25 — GA FORM 500 (Georgia Individual Income Tax) — AUTHORED + SEEDED + EXPORTED ✅
 - NEW form (Ken's direction after Form 8615 completion). **No prior RS spec** — `lookup/500`,
   `GA_500`, `GA500` all → 404. The **FIRST STATE individual spec** (all prior specs federal).
 - **Verified against the GA-DOR 2025 Form 500 (Rev. 07/09/25) + 2025 IT-511 booklet (extracted
@@ -31,11 +31,14 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   all 12 scenarios (the Form 500 assembly: Sch 1 / RIE std+military / deduction / Sch 3 / NOL 80% /
   flat tax / LIC / child-care) re-derived independently; loader + gate share no math. Full source
   brief: `tts-tax-app/server/specs/_ga500_source_brief.md`.
-- **READY_TO_SEED = False** — the loader REFUSES to seed (zero DB writes) until Ken's in-session
-  review walk (W1 the depreciation/conformity decoupling boundary; W2 the TY2026 HB 463 constants;
-  W3 the Schedule 4 NOL carryover scope; W4 the 12b SALT back-out; W5 the RIE classification +
-  taxable-SS sourcing; W6 the Schedule 3 PY/NR proration). **NEXT: Ken reviews → flip
-  READY_TO_SEED → seed → deploy export → canonical `500_spec.json` + 12 staged FA.**
+- **READY_TO_SEED = True** — Ken **APPROVED the review walk in-session 2026-06-25** ("Approve as
+  drafted — seed + export"; W1-W6 all blessed). **SEEDED** (`manage.py load_ga500_form_500` →
+  Created 500; 75 facts / 20 rules / 21 authority links / 76 lines / 12 diagnostics / 12 tests /
+  12 FA / 5 sources). **EXPORTED** the canonical spec → `tts-tax-app/server/specs/500_spec.json`
+  (82 KB; facts 75 / rules 20 / line_map 76 / diagnostics 12 / tests 12) + the 12 staged
+  `flow_assertions_1040_ga500_pending.json` (FA-GA500-01..12). **NEXT: the tts-tax-app BUILD legs
+  (seed model/migration → compute → render → input → diagnostics → assertions) — GA 500 attaches
+  to the child 1040 via the `state_returns` FK (the GA-600S precedent).**
 
 ---
 

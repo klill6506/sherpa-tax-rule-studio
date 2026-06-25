@@ -153,8 +153,20 @@ from specs.models import (
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1–W6 above).
 # Until then the command writes nothing.
+#
+# FLIPPED 2026-06-25 — Ken APPROVED the review walk in-session ("Approve as
+# drafted — seed + export"): W1 the depreciation/conformity decoupling direct-
+# entry boundary (GA conforms to the IRC as of 1/1/2025, not OBBBA; §168(k)/§179
+# difference on Sch 1 L3/L11 = preparer direct-entry in v1) blessed; W2 the TY2026
+# HB 463 constants (rate 4.99%, dependent exemption $5,000 eff. 2026, std/RIE
+# unchanged for 2026) blessed; W3 the Schedule 4 NOL carryover scope (Part I/II +
+# 80% current-year limit computed; multi-year carryover application preparer-
+# asserted) blessed; W4 the 12b SALT back-out blessed; W5 the RIE classification
+# + taxable-SS sourcing blessed; W6 the Schedule 3 PY/NR proration blessed. Math
+# gate check_ga500_integrity.py ALL CHECKS PASS (constants + helpers + LIC table
+# + 12 scenarios re-derived independently).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "GA"
