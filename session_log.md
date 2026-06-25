@@ -4,6 +4,26 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-25 (later) — GA FORM 500 — page-5 line-number fix + HB 463 TY2026 constants ✅
+- **Amended `load_ga500_form_500.py` + `check_ga500_integrity.py`** (the spec was WRONG on the
+  page-5 line numbers, verified vs the actual GA-DOR 2025 Form 500 PDF page 5). Corrected to the
+  form face: **L42 = UET penalty, L43 = late-payment penalty, L44 = Interest, L45 = AMOUNT DUE
+  (= L29 + Σ lines 32-44), L46 = REFUND (= max(0, L30 − Σ lines 31-44))**; added the 10 gift
+  check-offs (L32-41) + late-penalty/interest facts. The prior spec mis-keyed UET as "44" and
+  never modeled L45. Extended `recompute()` to cover L28-46 + 2 new scenarios (T13 refund / T14
+  amount-due). Integrity gate ALL PASS (**14 scenarios**). RS `14e4410`.
+- **HB 463 TY2026 standard deduction corrected** (was still $12k/$24k for 2026): GA_STD_DED_MFJ
+  [2026] 24000→30000, GA_STD_DED_OTHER[2026] 12000→15000 (loader + integrity). Dependent
+  exemption $5,000 was already right. **Effective-year CONFIRMED WITH KEN** (sources conflicted:
+  BIP Wealth/BDO = TY2026 vs GBPI = TY2027; Ken chose TY2026 — verify vs the bill text later).
+  Scenario T11 recomputed (tax 2994). RS `fd9ebc9`.
+- **Re-seeded RS DB** (deleted a stale renamed-T11 orphan first; `manage.py shell`) → **re-exported
+  the canonical `tts/server/specs/500_spec.json`** (77 facts / 21 rules / 89 lines / 12 diag / 14
+  tests). Deployed export reflects it (same Supabase RS DB). Implemented on the tts side (seed/
+  compute/render/diagnostics); GA-500 tag `ga500-complete`.
+
+---
+
 ## 2026-06-25 — GA FORM 500 (Georgia Individual Income Tax) — AUTHORED + SEEDED + EXPORTED ✅
 - NEW form (Ken's direction after Form 8615 completion). **No prior RS spec** — `lookup/500`,
   `GA_500`, `GA500` all → 404. The **FIRST STATE individual spec** (all prior specs federal).
