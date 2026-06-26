@@ -4,6 +4,15 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-25 — FORM 1040-X (Amended Returns) — APPROVED + SEEDED + EXPORTED ✅
+- **Ken APPROVED the W1-W6 review walk in-session** (W1 amend-in-place + dedicated as-filed
+  baseline / W2 col-B = C−A / W3 refund-owe 17-23 / W4 confirm the deferrals — NOL/GBC
+  carrybacks + superseding + multi-form cascades RED-defer / W5 year / W6 Part II required).
+  Flipped `READY_TO_SEED=True` → seeded RS DB (12 facts/12 rules/61 lines/8 diag/2 tests/6 FA)
+  → exported canonical `tts/server/specs/1040x_spec.json`. Integrity gate ALL PASS. RS `957a9d6`.
+- tts compute leg built on the approved spec (compute_1040x + render_1040x + rules_1040x + 6
+  FA-1040X merged); full 1040-X suite 343 passed; **tag `1040x-complete`**.
+
 ## 2026-06-25 — FORM 1040-X (Amended Returns) — AUTHORED (READY_TO_SEED=False) ⏸️
 - **NEW spec `load_1040_form_1040x.py`** (remote-safe spec+scaffold pass; the tax-law
   delta-compute leg waits for Ken). Form 1040-X = a three-column A/B/C delta over a filed
