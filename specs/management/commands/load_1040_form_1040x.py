@@ -129,10 +129,19 @@ from specs.models import (
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1–W6 above).
-# Until then the command writes nothing. This is the remote-safe spec+scaffold
-# pass; the delta-compute leg waits for Ken's approval at the office.
+#
+# FLIPPED 2026-06-25 — Ken APPROVED the review walk in-session: W1 amend-in-place +
+# a dedicated as-filed baseline table (snapshot-copy, not a separate amended-return
+# clone) blessed; W2 the column-B delta semantics (B = C − A per column; line 5 col C
+# floored at -0-, line 8 at 0; no interest/penalty) blessed; W3 the refund/owe
+# arithmetic (lines 17-23 + the line-19<0 branch) blessed; W4 the v1 scope boundary
+# CONFIRMED (RED-defer NOL/GBC carrybacks, superseding, and multi-form cascades like
+# 8962 PTC re-reconciliation — EIC/CTC/tax auto-recompute on the 1040 and read into
+# column C, not a cascade) blessed; W5 year handling (pure structure + arithmetic,
+# reuse the amended 1040's own year rules) blessed; W6 the required Part II
+# explanation (error when blank) blessed. Math gate check_1040x_integrity.py ALL PASS.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"

@@ -163,9 +163,8 @@ for r in spec["rules"]:
         if fk.startswith("x_") and fk not in fact_keys:
             err(f"rule {r['rule_id']} references unknown fact {fk}")
 
-# READY_TO_SEED must still be False (this is the spec+scaffold pass)
-if m.READY_TO_SEED:
-    err("READY_TO_SEED is True — this pass must leave it False until Ken approves.")
+# READY_TO_SEED flipped True 2026-06-25 after Ken's W1-W6 review approval — the
+# spec is now seeded + the compute leg builds against it.
 
 
 # ── Report ──
@@ -178,4 +177,5 @@ print("\n1040-X INTEGRITY GATE: ALL CHECKS PASS")
 print(f"  {len(spec['scenarios'])} scenarios re-derived (delta B=C-A + subtotals "
       f"3/5/8/11 + refund/owe 17/19/20/21); structure clean "
       f"({len(spec['facts'])} facts / {len(spec['rules'])} rules / {len(spec['lines'])} lines / "
-      f"{len(spec['diagnostics'])} diagnostics / {len(m.FLOW_ASSERTIONS)} FA). READY_TO_SEED=False (correct).")
+      f"{len(spec['diagnostics'])} diagnostics / {len(m.FLOW_ASSERTIONS)} FA). "
+      f"READY_TO_SEED={m.READY_TO_SEED} (approved 2026-06-25).")
