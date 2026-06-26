@@ -52,7 +52,7 @@ TIER2 = Decimal("0.85")
 
 # v1 supported sets (Ken-confirmed 2026-06-11) — transcribed independently.
 SUPPORTED_CODES = set("1234789BDGHQSY")
-SUPPORTED_EXCEPTIONS = {f"{n:02d}" for n in range(1, 13)} | {"19"}
+SUPPORTED_EXCEPTIONS = {f"{n:02d}" for n in range(1, 24)} | {"99"}  # full i5329 catalog 01-23 + 99
 EARLY_CODES = set("1JS")
 
 
@@ -153,6 +153,74 @@ def f5329_generated(line2, docs):
     any_js = any(("J" in str(d.get("code", "")) or "S" in str(d.get("code", "")))
                  for d in docs)
     return (D(line2) > 0) or any_js or (len(docs) > 1)
+
+
+def _opt(i, key):
+    """Nullable account-value fact: absent -> None (no smaller-of cap)."""
+    v = i.get(key)
+    return None if v is None else D(v)
+
+
+def _excess_part(prior, addends, curr, value):
+    """Parts III-VIII excess-contribution chain. Returns (add, rem, total, tax).
+    rem = max(0, prior - Σaddends); total = rem + curr; tax = 6% of min(total, value)
+    (value None => no cap, tax on the full total — the conservative default)."""
+    add = sum((D(a) for a in addends), Decimal("0"))
+    rem = max(Decimal("0"), D(prior) - add)
+    total = rem + D(curr)
+    cap = total if value is None else min(total, value)
+    return add, rem, total, Decimal("0.06") * cap
+
+
+def f5329_full(i):
+    """Recompute every computed line of the FULL Form 5329 (Parts I-IX) +
+    schedule_2_line_8 (the all-parts sum, R-5329-12) from the direct facts."""
+    o = {}
+    # Part I
+    l1 = D(i.get("f5329_line1_early_in_income", 0))
+    l2 = D(i.get("f5329_line2_exception_amount", 0))
+    o["3"] = max(Decimal("0"), l1 - l2)
+    o["4"] = (Decimal("0.25") if i.get("f5329_simple_25pct") else Decimal("0.10")) * o["3"]
+    # Part II
+    o["7"] = max(Decimal("0"), D(i.get("f5329_line5_edu_able_dist", 0)) - D(i.get("f5329_line6_edu_able_not_subject", 0)))
+    o["8"] = Decimal("0.10") * o["7"]
+    # Part III (3 addends: L10/L11/L12)
+    a, r, t, tax = _excess_part(i.get("f5329_line9_tira_prior_excess", 0),
+                                [i.get("f5329_line10_tira_absorb", 0), i.get("f5329_line11_tira_dist", 0),
+                                 i.get("f5329_line12_tira_prior_excess_dist", 0)],
+                                i.get("f5329_line15_tira_curr_excess", 0), _opt(i, "f5329_tira_value"))
+    o["13"], o["14"], o["16"], o["17"] = a, r, t, tax
+    # Part IV
+    a, r, t, tax = _excess_part(i.get("f5329_line18_roth_prior_excess", 0),
+                                [i.get("f5329_line19_roth_absorb", 0), i.get("f5329_line20_roth_dist", 0)],
+                                i.get("f5329_line23_roth_curr_excess", 0), _opt(i, "f5329_roth_value"))
+    o["21"], o["22"], o["24"], o["25"] = a, r, t, tax
+    # Part V
+    a, r, t, tax = _excess_part(i.get("f5329_line26_coverdell_prior_excess", 0),
+                                [i.get("f5329_line27_coverdell_absorb", 0), i.get("f5329_line28_coverdell_dist", 0)],
+                                i.get("f5329_line31_coverdell_curr_excess", 0), _opt(i, "f5329_coverdell_value"))
+    o["29"], o["30"], o["32"], o["33"] = a, r, t, tax
+    # Part VI
+    a, r, t, tax = _excess_part(i.get("f5329_line34_msa_prior_excess", 0),
+                                [i.get("f5329_line35_msa_absorb", 0), i.get("f5329_line36_msa_dist", 0)],
+                                i.get("f5329_line39_msa_curr_excess", 0), _opt(i, "f5329_msa_value"))
+    o["37"], o["38"], o["40"], o["41"] = a, r, t, tax
+    # Part VII
+    a, r, t, tax = _excess_part(i.get("f5329_line42_hsa_prior_excess", 0),
+                                [i.get("f5329_line43_hsa_absorb", 0), i.get("f5329_line44_hsa_dist", 0)],
+                                i.get("f5329_line47_hsa_curr_excess", 0), _opt(i, "f5329_hsa_value"))
+    o["45"], o["46"], o["48"], o["49"] = a, r, t, tax
+    # Part VIII (no chain)
+    able_curr = D(i.get("f5329_line50_able_curr_excess", 0))
+    able_val = _opt(i, "f5329_able_value")
+    o["51"] = Decimal("0.06") * (able_curr if able_val is None else min(able_curr, able_val))
+    # Part IX (SECURE 2.0 10%/25%)
+    o["54a"] = Decimal("0.10") * max(Decimal("0"), D(i.get("f5329_line52a_rmd_window", 0)) - D(i.get("f5329_line53a_dist_window", 0)))
+    o["54b"] = Decimal("0.25") * max(Decimal("0"), D(i.get("f5329_line52b_rmd_other", 0)) - D(i.get("f5329_line53b_dist_other", 0)))
+    o["55"] = o["54a"] + o["54b"]
+    # Aggregate -> Schedule 2 line 8 (R-5329-12)
+    o["schedule_2_line_8"] = o["4"] + o["8"] + o["17"] + o["25"] + o["33"] + o["41"] + o["49"] + o["51"] + o["55"]
+    return o
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -291,19 +359,16 @@ for key in ("RET-5329-1", "RET-5329-2", "RET-5329-3"):
     if "D_RET_007_fires" in eo and eo["D_RET_007_fires"] != simple:
         err(f"{key}: D_RET_007 (SIMPLE 25%) expected {eo['D_RET_007_fires']} but recompute simple={simple}")
 
-# ── Form 5329 direct-fact scenarios ──
-for key in ("F5329-T1", "F5329-T2", "F5329-T3"):
+# ── Form 5329 direct-fact scenarios (FULL FORM, Parts I-IX) ──
+for key in ("F5329-T1", "F5329-T2", "F5329-T3", "F5329-T4", "F5329-T5",
+            "F5329-T6", "F5329-T7", "F5329-T8", "F5329-T9", "F5329-T10"):
     sc = s[key]
-    i = sc["inputs"]
-    eo = sc["expected_outputs"]
-    parts = f5329_part1(
-        i.get("f5329_line1_early_in_income", 0),
-        i.get("f5329_line2_exception_amount", 0),
-        i.get("f5329_simple_25pct", False),
-    )
-    check(f"{key} L3", parts["3"], eo["3"])
-    check(f"{key} L4", parts["4"], eo["4"])
-    check(f"{key} Sch2 L8", parts["4"], eo["schedule_2_line_8"])
+    o = f5329_full(sc["inputs"])
+    for out_key, want in sc["expected_outputs"].items():
+        if out_key not in o:
+            err(f"{key}: expected output '{out_key}' is not a recomputed line")
+        else:
+            check(f"{key} L{out_key}", o[out_key], want)
 
 # ── RED-gate fixtures actually trigger their condition ──
 g1 = s["RET-G1"]["inputs"]["r_docs"][0]
@@ -346,6 +411,19 @@ if mfs_branch == mfs_normal:
 if f5329_part1(10000, 0, simple=True)["4"] == f5329_part1(10000, 0, simple=False)["4"]:
     err("RET-5329-3: 25% and 10% produce the same line 4 — the SIMPLE-rate pin is dead")
 
+# 3b. The smaller-of cap is load-bearing: same excess, capped (value < excess) vs
+#     uncapped (value None) must produce DIFFERENT line-17 tax.
+_capped = f5329_full({"f5329_line15_tira_curr_excess": 2000, "f5329_tira_value": 1500})["17"]
+_uncapped = f5329_full({"f5329_line15_tira_curr_excess": 2000})["17"]
+if _capped == _uncapped:
+    err("F5329 Part III: the 12/31 smaller-of cap is not load-bearing (capped == uncapped)")
+
+# 3c. The Part IX SECURE 2.0 split is load-bearing: the 10% (window) and 25% (other)
+#     buckets must differ on the same shortfall.
+_pix = f5329_full({"f5329_line52a_rmd_window": 4000, "f5329_line52b_rmd_other": 4000})
+if _pix["54a"] == _pix["54b"]:
+    err("F5329 Part IX: the 10%/25% correction-window split is not load-bearing")
+
 # 4. The FA-1040-RET-06 constants_check matches this checker's independent values.
 fa06 = next((a for a in m.FLOW_ASSERTIONS if a["assertion_id"] == "FA-1040-RET-06"), None)
 if fa06:
@@ -387,7 +465,9 @@ print(f"Flow assertions: {len(m.FLOW_ASSERTIONS)}")
 print(f"Authority sources (new): {len(m.AUTHORITY_SOURCES)}; topics: {len(m.AUTHORITY_TOPICS)}; "
       f"new excerpts on existing: {len(m.NEW_EXCERPTS_ON_EXISTING)}")
 print("Independently recomputed: SS-1..5 (18-line worksheet), RET-T1..5 (aggregation), "
-      "RET-5329-1..3 + F5329-T1..3 (Part I), RET-G1..5 (RED-gate fixtures).")
+      "RET-5329-1..3 (doc-driven Part I) + F5329-T1..10 (FULL Form 5329 Parts I-IX: II edu/ABLE, "
+      "III-VIII excess 6% w/ smaller-of cap, IX SECURE 2.0 10%/25%, all-parts Sch 2 L8 sum), "
+      "RET-G1..5 (RED-gate fixtures).")
 
 if errors:
     print("\nFAILURES:")

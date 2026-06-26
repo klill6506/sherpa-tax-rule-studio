@@ -534,10 +534,13 @@ RET_FACTS: list[dict] = [
      "notes": ("RETURN LEVEL. SS Worksheet: MFS-lived-with-spouse skips lines 8-15 and taxes 85% from dollar one "
                "(line 16 = line 7 x 85%). MFS-lived-apart uses the single $25,000 base + checks 1040 line 6d.")},
     # ── 5329 linkage facts (return level; consumed by the 5329 form) ──
-    {"fact_key": "exception_number_5329", "label": "Form 5329 line 2: early-distribution exception number (01-12 or 19)",
+    {"fact_key": "exception_number_5329", "label": "Form 5329 line 2: early-distribution exception number (01-23 or 99)",
      "data_type": "string", "sort_order": 40,
-     "notes": ("RETURN LEVEL (per early-distribution document at the build leg). v1 supports 01-12 + 19; "
-               ">= 13 or '99' (multiple) -> D_RET_006 RED. Blank = no exception -> full 10%/25%.")},
+     "notes": ("RETURN LEVEL (per early-distribution document at the build leg). FULL CATALOG: 01-23 (i5329 "
+               "line-2 table, incl. SECURE 2.0 codes 20 terminal-illness / 22 domestic-abuse / 23 emergency-"
+               "expense) + 99 (more than one exception). An out-of-range entry -> D_RET_006 RED. Blank = no "
+               "exception -> full 10%/25%. Account-type applicability (01/06 not-IRA; 07/08/09 IRA-only) is "
+               "a tts-side diagnostic.")},
     {"fact_key": "exception_amount_5329", "label": "Form 5329 line 2: amount excluded under the exception", "data_type": "decimal",
      "default_value": "0", "sort_order": 41,
      "notes": "RETURN LEVEL. The portion of the early distribution covered by the exception number. <= line 1."},
@@ -706,12 +709,13 @@ RET_DIAGNOSTICS: list[dict] = [
                  "taxable Social Security. These interact circularly (the worksheets in Pub 590-A / Pub 915 must "
                  "be computed together); the values shown do not resolve the circular and must be verified."),
      "notes": "SPRINT_SCOPE Topic 5 DoD: IRA-deduction <-> taxable-SS circular RED."},
-    {"diagnostic_id": "D_RET_006", "title": "Unsupported Form 5329 exception number", "severity": "error",
-     "condition": "exception_number_5329 not in {01..12, 19} (incl. '99' multiple-exception)",
-     "message": ("Not supported — prepare Form 5329 manually: the early-distribution exception number is outside "
-                 "the supported set (01-12, 19). Numbers 13-23 and '99' (more than one exception) are not modeled; "
-                 "the 10%/25% additional tax is NOT computed for this distribution."),
-     "notes": "JUDGMENT 2. v1 exception set Ken-confirmed 2026-06-11."},
+    {"diagnostic_id": "D_RET_006", "title": "Invalid Form 5329 exception number", "severity": "error",
+     "condition": "exception_number_5329 is non-blank and not in {01..23, 99}",
+     "message": ("Invalid Form 5329 line-2 exception number. Enter a number from the i5329 table (01-23), or 99 if "
+                 "more than one exception applies. The current entry is not a recognized exception code."),
+     "notes": ("FULL CATALOG (2026-06-25): 01-23 + 99 are all supported (the preparer asserts the exclusion amount). "
+               "Was a >12 'unsupported' gap; now a validity guard on a garbage entry. Account-type applicability "
+               "(01/06 not-IRA; 07/08/09 IRA-only) is a separate tts-side diagnostic.")},
     {"diagnostic_id": "D_RET_007", "title": "SIMPLE-IRA first-2-years early distribution — 25% rate", "severity": "info",
      "condition": "any 1099-R doc has box-7 code S (or code 1 from a SIMPLE in the first 2 years)",
      "message": ("This early distribution is from a SIMPLE IRA within the first 2 years (code S) — the additional "
@@ -821,11 +825,11 @@ RET_SCENARIOS: list[dict] = [
      "inputs": {"filing_status": "single", "ssa_box5": 30000, "other_ws3_income": 30000, "ssa_lump_sum_prior_year": True},
      "expected_outputs": {"D_RET_004_fires": True},
      "notes": "Lump-Sum Election (Pub 915) unsupported; standard worksheet still shown."},
-    {"scenario_name": "RET-G5 — unsupported 5329 exception 13 -> RED (D_RET_006)",
+    {"scenario_name": "RET-G5 — invalid 5329 exception 25 -> RED (D_RET_006)",
      "scenario_type": "failure", "sort_order": 34,
-     "inputs": {"r_docs": [{"box1": 15000, "box2a": 15000, "code": "1", "ira": False}], "exception_number_5329": "13"},
+     "inputs": {"r_docs": [{"box1": 15000, "box2a": 15000, "code": "1", "ira": False}], "exception_number_5329": "25"},
      "expected_outputs": {"D_RET_006_fires": True},
-     "notes": "Exception 13 (§457) is outside the v1 supported set."},
+     "notes": "Exception 25 is outside the valid table (01-23/99) — a garbage entry. (Was '13', now a valid §457 code.)"},
 ]
 
 RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -850,60 +854,365 @@ RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
 
 F5329_IDENTITY = {
     "form_number": "5329",
-    "form_title": "Form 5329 — Additional Taxes on Qualified Plans (Part I, TY2025)",
+    "form_title": "Form 5329 — Additional Taxes on Qualified Plans (Including IRAs) and Other Tax-Favored Accounts (TY2025)",
     "notes": (
-        "Sprint Topic 5. REAL IRS FACE, Part I ONLY this sprint (the 10%/25% "
-        "additional tax on early distributions). Line 1 is fed cross-form by "
-        "1040_RETIREMENT R-RET-EARLY; line 4 -> Schedule 2 line 8. The form is "
-        "GENERATED only when an exception is claimed or a non-1 early code applies; "
-        "the pure code-1 full-amount case reports the 10% directly on Schedule 2 "
-        "line 8 (the i5329 shortcut). Parts II-VIII are out of scope (Coverdell/QTP/"
-        "HSA/excess-contribution/RMD additional taxes — not built)."
+        "FULL FORM — Parts I-IX (Ken chose the full build 2026-06-25). Every part's "
+        "additional tax flows to Schedule 2 (Form 1040) line 8 (the SUM L4+L8+L17+L25+"
+        "L33+L41+L49+L51+L55 via R-5329-12). Part I (early distributions, 10%/25%) line 1 "
+        "is fed cross-form by 1040_RETIREMENT R-RET-EARLY; the pure single-code-1 full-amount "
+        "case still reports the 10% directly on Sch 2 line 8 with NO form (i5329 shortcut, "
+        "R-5329-03). Parts III-VIII (excess contributions to Trad IRA / Roth IRA / Coverdell "
+        "ESA / Archer MSA / HSA / ABLE) are each 6% of the SMALLER of the total excess or the "
+        "12/31 account value, over a prior-year-carryforward chain. Part IX (excess accumulation "
+        "/ missed RMD) is the SECURE 2.0 split: 10% for shortfalls corrected in the window (54a), "
+        "25% otherwise (54b). v1 BOUNDARY: the FORM does the arithmetic; the preparer keys the "
+        "leaf inputs (excess amounts, prior-year carryforwards, absorption lines, distributions, "
+        "12/31 account values, RMD required/distributed). No contribution-limit / Roth-MAGI / "
+        "HSA-family-limit modeling (Pub 590 worksheet territory). DUAL taxpayer+spouse is a "
+        "tts-side instancing concern (a dedicated Form5329 model, owner enum) — this spec is "
+        "owner-agnostic (one logical form). Source: f5329.pdf + i5329.pdf, verified 2026-06-25 "
+        "(server/specs/_5329_full_source_brief.md)."
     ),
 }
 
 F5329_FACTS: list[dict] = [
+    # ── Part I — Additional Tax on Early Distributions (10% / 25% SIMPLE) ──
     {"fact_key": "f5329_line1_early_in_income", "label": "5329 line 1: early distributions includible in income",
      "data_type": "decimal", "default_value": "0", "sort_order": 1,
      "notes": "Cross-form feeder from 1040_RETIREMENT R-RET-EARLY (codes 1/J/S taxable, net of rollover)."},
     {"fact_key": "f5329_line2_exception_amount", "label": "5329 line 2: amount not subject to the additional tax",
      "data_type": "decimal", "default_value": "0", "sort_order": 2,
-     "notes": "= exception_amount_5329 (preparer, with the exception number). <= line 1. D_RET_006 polices the number."},
+     "notes": "= exception_amount_5329 (preparer, with the exception number 01-23/99). <= line 1. D_RET_006 polices the number."},
     {"fact_key": "f5329_simple_25pct", "label": "5329: distribution from a SIMPLE IRA in the first 2 years (25% rate)",
      "data_type": "boolean", "sort_order": 3,
      "notes": "Code S (or a SIMPLE-first-2-years code 1). Line 4 = 25% of line 3 instead of 10%. D_RET_007."},
+
+    # ── Part II — Education/ABLE account distributions (10%) ──
+    {"fact_key": "f5329_line5_edu_able_dist", "label": "5329 line 5: distributions in income from a Coverdell ESA, QTP, or ABLE account",
+     "data_type": "decimal", "default_value": "0", "sort_order": 5,
+     "notes": "Preparer. From Sch 1 line 8z (Coverdell/QTP) or line 8q (ABLE)."},
+    {"fact_key": "f5329_line6_edu_able_not_subject", "label": "5329 line 6: line-5 distributions NOT subject to the additional tax",
+     "data_type": "decimal", "default_value": "0", "sort_order": 6,
+     "notes": "Preparer (scholarship, death/disability of the beneficiary, etc. — i5329 Part II). <= line 5."},
+
+    # ── Part III — Excess Contributions to Traditional IRAs (6%) ──
+    {"fact_key": "f5329_line9_tira_prior_excess", "label": "5329 line 9: prior-year excess traditional-IRA contributions (2024 Form 5329 line 16)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 9, "notes": "Preparer carryforward."},
+    {"fact_key": "f5329_line10_tira_absorb", "label": "5329 line 10: traditional-IRA contribution room absorbing prior excess",
+     "data_type": "decimal", "default_value": "0", "sort_order": 10,
+     "notes": "Preparer. Unused current-year allowable contribution (i5329 worksheet); else -0-. We do NOT model the limit."},
+    {"fact_key": "f5329_line11_tira_dist", "label": "5329 line 11: 2025 traditional-IRA distributions included in income",
+     "data_type": "decimal", "default_value": "0", "sort_order": 11, "notes": "Preparer."},
+    {"fact_key": "f5329_line12_tira_prior_excess_dist", "label": "5329 line 12: 2025 distributions of prior-year excess traditional-IRA contributions",
+     "data_type": "decimal", "default_value": "0", "sort_order": 12, "notes": "Preparer."},
+    {"fact_key": "f5329_line15_tira_curr_excess", "label": "5329 line 15: excess traditional-IRA contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 15, "notes": "Preparer."},
+    {"fact_key": "f5329_tira_value", "label": "5329 line 17 cap: value of traditional IRAs on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 17,
+     "notes": "Preparer. NULLABLE — blank = no cap (tax on the full excess). D_5329_003 prompts entry when excess > 0."},
+
+    # ── Part IV — Excess Contributions to Roth IRAs (6%) ──
+    {"fact_key": "f5329_line18_roth_prior_excess", "label": "5329 line 18: prior-year excess Roth-IRA contributions (2024 Form 5329 line 24)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 18, "notes": "Preparer carryforward."},
+    {"fact_key": "f5329_line19_roth_absorb", "label": "5329 line 19: Roth-IRA contribution room absorbing prior excess",
+     "data_type": "decimal", "default_value": "0", "sort_order": 19, "notes": "Preparer; else -0-."},
+    {"fact_key": "f5329_line20_roth_dist", "label": "5329 line 20: 2025 distributions from Roth IRAs",
+     "data_type": "decimal", "default_value": "0", "sort_order": 20, "notes": "Preparer."},
+    {"fact_key": "f5329_line23_roth_curr_excess", "label": "5329 line 23: excess Roth-IRA contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 23, "notes": "Preparer."},
+    {"fact_key": "f5329_roth_value", "label": "5329 line 25 cap: value of Roth IRAs on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 25, "notes": "Preparer. NULLABLE — blank = no cap. D_5329_003."},
+
+    # ── Part V — Excess Contributions to Coverdell ESAs (6%) ──
+    {"fact_key": "f5329_line26_coverdell_prior_excess", "label": "5329 line 26: prior-year excess Coverdell ESA contributions (2024 Form 5329 line 32)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 26, "notes": "Preparer carryforward."},
+    {"fact_key": "f5329_line27_coverdell_absorb", "label": "5329 line 27: Coverdell contribution room absorbing prior excess",
+     "data_type": "decimal", "default_value": "0", "sort_order": 27, "notes": "Preparer; else -0-."},
+    {"fact_key": "f5329_line28_coverdell_dist", "label": "5329 line 28: 2025 distributions from Coverdell ESAs",
+     "data_type": "decimal", "default_value": "0", "sort_order": 28, "notes": "Preparer."},
+    {"fact_key": "f5329_line31_coverdell_curr_excess", "label": "5329 line 31: excess Coverdell ESA contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 31, "notes": "Preparer."},
+    {"fact_key": "f5329_coverdell_value", "label": "5329 line 33 cap: value of Coverdell ESAs on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 33, "notes": "Preparer. NULLABLE — blank = no cap. D_5329_003."},
+
+    # ── Part VI — Excess Contributions to Archer MSAs (6%) ──
+    {"fact_key": "f5329_line34_msa_prior_excess", "label": "5329 line 34: prior-year excess Archer MSA contributions (2024 Form 5329 line 40)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 34, "notes": "Preparer carryforward."},
+    {"fact_key": "f5329_line35_msa_absorb", "label": "5329 line 35: Archer MSA contribution room absorbing prior excess",
+     "data_type": "decimal", "default_value": "0", "sort_order": 35, "notes": "Preparer; else -0-."},
+    {"fact_key": "f5329_line36_msa_dist", "label": "5329 line 36: 2025 distributions from Archer MSAs (Form 8853 line 8)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 36, "notes": "Preparer (no 8853 auto-pull in v1)."},
+    {"fact_key": "f5329_line39_msa_curr_excess", "label": "5329 line 39: excess Archer MSA contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 39, "notes": "Preparer."},
+    {"fact_key": "f5329_msa_value", "label": "5329 line 41 cap: value of Archer MSAs on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 41, "notes": "Preparer. NULLABLE — blank = no cap. D_5329_003."},
+
+    # ── Part VII — Excess Contributions to HSAs (6%) ──
+    {"fact_key": "f5329_line42_hsa_prior_excess", "label": "5329 line 42: prior-year excess HSA contributions (2024 Form 5329 line 48)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 42, "notes": "Preparer carryforward."},
+    {"fact_key": "f5329_line43_hsa_absorb", "label": "5329 line 43: HSA contribution room absorbing prior excess",
+     "data_type": "decimal", "default_value": "0", "sort_order": 43, "notes": "Preparer; else -0-."},
+    {"fact_key": "f5329_line44_hsa_dist", "label": "5329 line 44: 2025 distributions from HSAs (Form 8889 line 16)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 44, "notes": "Preparer (no 8889 auto-pull in v1)."},
+    {"fact_key": "f5329_line47_hsa_curr_excess", "label": "5329 line 47: excess HSA contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 47, "notes": "Preparer."},
+    {"fact_key": "f5329_hsa_value", "label": "5329 line 49 cap: value of HSAs on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 49, "notes": "Preparer. NULLABLE — blank = no cap. D_5329_003."},
+
+    # ── Part VIII — Excess Contributions to ABLE Account (6%) ──
+    {"fact_key": "f5329_line50_able_curr_excess", "label": "5329 line 50: excess ABLE-account contributions for 2025",
+     "data_type": "decimal", "default_value": "0", "sort_order": 50, "notes": "Preparer (no prior-year carryforward chain on the form)."},
+    {"fact_key": "f5329_able_value", "label": "5329 line 51 cap: value of the ABLE account on 12/31/2025 (smaller-of cap)",
+     "data_type": "decimal", "sort_order": 51, "notes": "Preparer. NULLABLE — blank = no cap. D_5329_003."},
+
+    # ── Part IX — Excess Accumulation / missed RMD (SECURE 2.0: 10% window / 25% other) ──
+    {"fact_key": "f5329_line52a_rmd_window", "label": "5329 line 52a: 2025 RMD from plans corrected in the window",
+     "data_type": "decimal", "default_value": "0", "sort_order": 52,
+     "notes": "Preparer. RMD for plans where the full shortfall was distributed during the correction window (54a -> 10%)."},
+    {"fact_key": "f5329_line52b_rmd_other", "label": "5329 line 52b: 2025 RMD from all other plans",
+     "data_type": "decimal", "default_value": "0", "sort_order": 53,
+     "notes": "Preparer. RMD for all other plans (54b -> 25%)."},
+    {"fact_key": "f5329_line53a_dist_window", "label": "5329 line 53a: 2025 amount distributed from the window plans",
+     "data_type": "decimal", "default_value": "0", "sort_order": 54, "notes": "Preparer."},
+    {"fact_key": "f5329_line53b_dist_other", "label": "5329 line 53b: 2025 amount distributed from the other plans",
+     "data_type": "decimal", "default_value": "0", "sort_order": 55, "notes": "Preparer."},
 ]
 
 F5329_RULES: list[dict] = [
+    # ── Part I ──
     {"rule_id": "R-5329-01", "title": "Line 3 = line 1 - line 2 (amount subject to additional tax)",
      "rule_type": "calculation", "precedence": 1, "sort_order": 1,
      "formula": "L3 = max(0, f5329_line1_early_in_income - f5329_line2_exception_amount)",
      "inputs": ["f5329_line1_early_in_income", "f5329_line2_exception_amount"], "outputs": ["L3"],
      "description": "ONCE PER RETURN. Form 5329 Part I line 3 verbatim."},
-    {"rule_id": "R-5329-02", "title": "Line 4 = 10% (or 25% SIMPLE) of line 3 -> Schedule 2 line 8",
+    {"rule_id": "R-5329-02", "title": "Line 4 = 10% (or 25% SIMPLE) of line 3",
      "rule_type": "calculation", "precedence": 2, "sort_order": 2,
-     "formula": "L4 = (0.25 if f5329_simple_25pct else 0.10) x L3. Writes Schedule 2 line 8 (computed feeder).",
-     "inputs": ["f5329_simple_25pct"], "outputs": ["L4", "SCH_2.L8"],
-     "description": ("ONCE PER RETURN. Form 5329 Part I line 4 verbatim. Schedule 2 line 8 was Topic-2 "
-                     "direct-entry; it now becomes a computed feeder (override = the escape hatch).")},
+     "formula": "L4 = (0.25 if f5329_simple_25pct else 0.10) x L3.",
+     "inputs": ["f5329_simple_25pct"], "outputs": ["L4"],
+     "description": ("ONCE PER RETURN. Form 5329 Part I line 4 verbatim. Flows to Schedule 2 line 8 via "
+                     "R-5329-12 (the all-parts aggregate). FULL-FORM CHANGE: R-5329-02 no longer writes "
+                     "SCH_2.L8 directly — the aggregate rule does.")},
     {"rule_id": "R-5329-03", "title": "Form generation gate (direct-to-Schedule-2 shortcut)",
      "rule_type": "routing", "precedence": 0, "sort_order": 3,
-     "formula": ("GENERATE Form 5329 when: an exception amount is claimed (L2 > 0) OR any early code is J/S OR "
-                 "more than one 1099-R contributes. The pure single-code-1 full-amount case reports L4 directly "
-                 "on Schedule 2 line 8 with NO Form 5329 (i5329 shortcut)."),
+     "formula": ("GENERATE Form 5329 when ANY part has input: a Part I exception amount (L2 > 0) OR any early "
+                 "code is J/S OR more than one 1099-R contributes OR any of Parts II-IX produces tax. The pure "
+                 "single-code-1 full-amount Part-I-only case reports L4 directly on Schedule 2 line 8 with NO "
+                 "Form 5329 (i5329 shortcut)."),
      "inputs": ["f5329_line2_exception_amount", "f5329_simple_25pct"], "outputs": [],
-     "description": "ONCE PER RETURN. JUDGMENT 3 (Ken-confirmed). i5329 'Who Must File' shortcut verbatim."},
+     "description": "ONCE PER RETURN. JUDGMENT 3 (Ken-confirmed). i5329 'Who Must File' shortcut, widened to the full form."},
+
+    # ── Part II — Education/ABLE distributions (10%) ──
+    {"rule_id": "R-5329-04", "title": "Part II lines 7-8 (education/ABLE additional tax)",
+     "rule_type": "calculation", "precedence": 4, "sort_order": 4,
+     "formula": "L7 = max(0, L5 - L6); L8 = 0.10 x L7.",
+     "inputs": ["f5329_line5_edu_able_dist", "f5329_line6_edu_able_not_subject"], "outputs": ["L7", "L8"],
+     "description": "ONCE PER RETURN. Form 5329 Part II lines 7-8 verbatim (Coverdell/QTP/ABLE 10%)."},
+
+    # ── Part III — Traditional IRA excess (6%) ──
+    {"rule_id": "R-5329-05", "title": "Part III lines 13-17 (traditional-IRA excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 5, "sort_order": 5,
+     "formula": ("L13 = L10 + L11 + L12; L14 = max(0, L9 - L13); L16 = L14 + L15; "
+                 "L17 = 0.06 x min(L16, f5329_tira_value if not None else L16)."),
+     "inputs": ["f5329_line9_tira_prior_excess", "f5329_line10_tira_absorb", "f5329_line11_tira_dist",
+                "f5329_line12_tira_prior_excess_dist", "f5329_line15_tira_curr_excess", "f5329_tira_value"],
+     "outputs": ["L13", "L14", "L16", "L17"],
+     "description": "ONCE PER RETURN. Form 5329 Part III verbatim. 6% of the SMALLER of total excess or 12/31 value."},
+
+    # ── Part IV — Roth IRA excess (6%) ──
+    {"rule_id": "R-5329-06", "title": "Part IV lines 21-25 (Roth-IRA excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 6, "sort_order": 6,
+     "formula": ("L21 = L19 + L20; L22 = max(0, L18 - L21); L24 = L22 + L23; "
+                 "L25 = 0.06 x min(L24, f5329_roth_value if not None else L24)."),
+     "inputs": ["f5329_line18_roth_prior_excess", "f5329_line19_roth_absorb", "f5329_line20_roth_dist",
+                "f5329_line23_roth_curr_excess", "f5329_roth_value"],
+     "outputs": ["L21", "L22", "L24", "L25"],
+     "description": "ONCE PER RETURN. Form 5329 Part IV verbatim."},
+
+    # ── Part V — Coverdell ESA excess (6%) ──
+    {"rule_id": "R-5329-07", "title": "Part V lines 29-33 (Coverdell ESA excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 7, "sort_order": 7,
+     "formula": ("L29 = L27 + L28; L30 = max(0, L26 - L29); L32 = L30 + L31; "
+                 "L33 = 0.06 x min(L32, f5329_coverdell_value if not None else L32)."),
+     "inputs": ["f5329_line26_coverdell_prior_excess", "f5329_line27_coverdell_absorb", "f5329_line28_coverdell_dist",
+                "f5329_line31_coverdell_curr_excess", "f5329_coverdell_value"],
+     "outputs": ["L29", "L30", "L32", "L33"],
+     "description": "ONCE PER RETURN. Form 5329 Part V verbatim."},
+
+    # ── Part VI — Archer MSA excess (6%) ──
+    {"rule_id": "R-5329-08", "title": "Part VI lines 37-41 (Archer MSA excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 8, "sort_order": 8,
+     "formula": ("L37 = L35 + L36; L38 = max(0, L34 - L37); L40 = L38 + L39; "
+                 "L41 = 0.06 x min(L40, f5329_msa_value if not None else L40)."),
+     "inputs": ["f5329_line34_msa_prior_excess", "f5329_line35_msa_absorb", "f5329_line36_msa_dist",
+                "f5329_line39_msa_curr_excess", "f5329_msa_value"],
+     "outputs": ["L37", "L38", "L40", "L41"],
+     "description": "ONCE PER RETURN. Form 5329 Part VI verbatim."},
+
+    # ── Part VII — HSA excess (6%) ──
+    {"rule_id": "R-5329-09", "title": "Part VII lines 45-49 (HSA excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 9, "sort_order": 9,
+     "formula": ("L45 = L43 + L44; L46 = max(0, L42 - L45); L48 = L46 + L47; "
+                 "L49 = 0.06 x min(L48, f5329_hsa_value if not None else L48)."),
+     "inputs": ["f5329_line42_hsa_prior_excess", "f5329_line43_hsa_absorb", "f5329_line44_hsa_dist",
+                "f5329_line47_hsa_curr_excess", "f5329_hsa_value"],
+     "outputs": ["L45", "L46", "L48", "L49"],
+     "description": "ONCE PER RETURN. Form 5329 Part VII verbatim."},
+
+    # ── Part VIII — ABLE excess (6%) ──
+    {"rule_id": "R-5329-10", "title": "Part VIII line 51 (ABLE excess-contribution tax)",
+     "rule_type": "calculation", "precedence": 10, "sort_order": 10,
+     "formula": "L51 = 0.06 x min(L50, f5329_able_value if not None else L50).",
+     "inputs": ["f5329_line50_able_curr_excess", "f5329_able_value"], "outputs": ["L51"],
+     "description": "ONCE PER RETURN. Form 5329 Part VIII verbatim (no prior-year chain)."},
+
+    # ── Part IX — Excess accumulation / missed RMD (SECURE 2.0 10%/25%) ──
+    {"rule_id": "R-5329-11", "title": "Part IX lines 54a/54b/55 (excess accumulation additional tax)",
+     "rule_type": "calculation", "precedence": 11, "sort_order": 11,
+     "formula": ("L54a = 0.10 x max(0, L52a - L53a); L54b = 0.25 x max(0, L52b - L53b); L55 = L54a + L54b."),
+     "inputs": ["f5329_line52a_rmd_window", "f5329_line53a_dist_window",
+                "f5329_line52b_rmd_other", "f5329_line53b_dist_other"],
+     "outputs": ["L54a", "L54b", "L55"],
+     "description": ("ONCE PER RETURN. Form 5329 Part IX verbatim. SECURE 2.0 §302: 10% for shortfalls fully "
+                     "corrected in the window (54a), 25% otherwise (54b). The window determination is preparer-asserted.")},
+
+    # ── All-parts aggregate -> Schedule 2 line 8 ──
+    {"rule_id": "R-5329-12", "title": "Schedule 2 line 8 = sum of all parts' additional taxes",
+     "rule_type": "calculation", "precedence": 12, "sort_order": 12,
+     "formula": "SCH_2.L8 = L4 + L8 + L17 + L25 + L33 + L41 + L49 + L51 + L55.",
+     "inputs": [], "outputs": ["SCH_2.L8"],
+     "description": ("ONCE PER RETURN. Each part's additional tax includes on Schedule 2 (Form 1040) line 8. "
+                     "Computed feeder (Topic-2 direct-entry → computed; preparer override = the escape hatch). "
+                     "DUAL: the tts side sums BOTH the taxpayer's and the spouse's Form 5329 totals into one Sch 2 L8.")},
 ]
 
+_SCH2L8 = "Schedule 2 (Form 1040) line 8"
+
 F5329_LINES: list[dict] = [
+    # Part I — Early distributions
     {"line_number": "1", "description": "Early distributions includible in income", "line_type": "input",
      "source_rules": ["R-5329-01"], "sort_order": 1, "notes": "Cross-form feeder from 1040_RETIREMENT."},
     {"line_number": "2", "description": "Early distributions on line 1 not subject to the additional tax (exception number)",
-     "line_type": "input", "source_rules": ["R-5329-01"], "sort_order": 2, "notes": "Preparer enters amount + exception number 01-12/19."},
+     "line_type": "input", "source_rules": ["R-5329-01"], "sort_order": 2, "notes": "Preparer enters amount + exception number 01-23/99."},
     {"line_number": "3", "description": "Amount subject to additional tax (line 1 - line 2)", "line_type": "subtotal",
      "source_rules": ["R-5329-01"], "sort_order": 3},
-    {"line_number": "4", "description": "Additional tax: 10% (or 25% SIMPLE) of line 3 -> Schedule 2 line 8", "line_type": "total",
-     "source_rules": ["R-5329-02"], "destination_form": "Schedule 2 (Form 1040) line 8", "sort_order": 4},
+    {"line_number": "4", "description": "Additional tax: 10% (or 25% SIMPLE) of line 3", "line_type": "total",
+     "source_rules": ["R-5329-02"], "destination_form": _SCH2L8, "sort_order": 4},
+    # Part II — Education/ABLE distributions (10%)
+    {"line_number": "5", "description": "Distributions in income from a Coverdell ESA, a QTP, or an ABLE account", "line_type": "input",
+     "source_rules": ["R-5329-04"], "sort_order": 5},
+    {"line_number": "6", "description": "Distributions on line 5 not subject to the additional tax", "line_type": "input",
+     "source_rules": ["R-5329-04"], "sort_order": 6},
+    {"line_number": "7", "description": "Amount subject to additional tax (line 5 - line 6)", "line_type": "subtotal",
+     "source_rules": ["R-5329-04"], "sort_order": 7},
+    {"line_number": "8", "description": "Additional tax: 10% of line 7", "line_type": "total",
+     "source_rules": ["R-5329-04"], "destination_form": _SCH2L8, "sort_order": 8},
+    # Part III — Traditional IRA excess (6%)
+    {"line_number": "9", "description": "Prior-year excess traditional-IRA contributions (2024 Form 5329 line 16)", "line_type": "input",
+     "source_rules": ["R-5329-05"], "sort_order": 9},
+    {"line_number": "10", "description": "Traditional-IRA contribution room absorbing prior excess (else -0-)", "line_type": "input",
+     "source_rules": ["R-5329-05"], "sort_order": 10},
+    {"line_number": "11", "description": "2025 traditional-IRA distributions included in income", "line_type": "input",
+     "source_rules": ["R-5329-05"], "sort_order": 11},
+    {"line_number": "12", "description": "2025 distributions of prior-year excess traditional-IRA contributions", "line_type": "input",
+     "source_rules": ["R-5329-05"], "sort_order": 12},
+    {"line_number": "13", "description": "Add lines 10, 11, and 12", "line_type": "subtotal",
+     "source_rules": ["R-5329-05"], "sort_order": 13},
+    {"line_number": "14", "description": "Prior-year excess remaining (line 9 - line 13, not below 0)", "line_type": "subtotal",
+     "source_rules": ["R-5329-05"], "sort_order": 14},
+    {"line_number": "15", "description": "Excess traditional-IRA contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-05"], "sort_order": 15},
+    {"line_number": "16", "description": "Total excess contributions (line 14 + line 15)", "line_type": "subtotal",
+     "source_rules": ["R-5329-05"], "sort_order": 16},
+    {"line_number": "17", "description": "Additional tax: 6% of the smaller of line 16 or the 12/31 traditional-IRA value", "line_type": "total",
+     "source_rules": ["R-5329-05"], "destination_form": _SCH2L8, "sort_order": 17},
+    # Part IV — Roth IRA excess (6%)
+    {"line_number": "18", "description": "Prior-year excess Roth-IRA contributions (2024 Form 5329 line 24)", "line_type": "input",
+     "source_rules": ["R-5329-06"], "sort_order": 18},
+    {"line_number": "19", "description": "Roth-IRA contribution room absorbing prior excess (else -0-)", "line_type": "input",
+     "source_rules": ["R-5329-06"], "sort_order": 19},
+    {"line_number": "20", "description": "2025 distributions from Roth IRAs", "line_type": "input",
+     "source_rules": ["R-5329-06"], "sort_order": 20},
+    {"line_number": "21", "description": "Add lines 19 and 20", "line_type": "subtotal",
+     "source_rules": ["R-5329-06"], "sort_order": 21},
+    {"line_number": "22", "description": "Prior-year excess remaining (line 18 - line 21, not below 0)", "line_type": "subtotal",
+     "source_rules": ["R-5329-06"], "sort_order": 22},
+    {"line_number": "23", "description": "Excess Roth-IRA contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-06"], "sort_order": 23},
+    {"line_number": "24", "description": "Total excess contributions (line 22 + line 23)", "line_type": "subtotal",
+     "source_rules": ["R-5329-06"], "sort_order": 24},
+    {"line_number": "25", "description": "Additional tax: 6% of the smaller of line 24 or the 12/31 Roth-IRA value", "line_type": "total",
+     "source_rules": ["R-5329-06"], "destination_form": _SCH2L8, "sort_order": 25},
+    # Part V — Coverdell ESA excess (6%)
+    {"line_number": "26", "description": "Prior-year excess Coverdell ESA contributions (2024 Form 5329 line 32)", "line_type": "input",
+     "source_rules": ["R-5329-07"], "sort_order": 26},
+    {"line_number": "27", "description": "Coverdell contribution room absorbing prior excess (else -0-)", "line_type": "input",
+     "source_rules": ["R-5329-07"], "sort_order": 27},
+    {"line_number": "28", "description": "2025 distributions from Coverdell ESAs", "line_type": "input",
+     "source_rules": ["R-5329-07"], "sort_order": 28},
+    {"line_number": "29", "description": "Add lines 27 and 28", "line_type": "subtotal",
+     "source_rules": ["R-5329-07"], "sort_order": 29},
+    {"line_number": "30", "description": "Prior-year excess remaining (line 26 - line 29, not below 0)", "line_type": "subtotal",
+     "source_rules": ["R-5329-07"], "sort_order": 30},
+    {"line_number": "31", "description": "Excess Coverdell ESA contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-07"], "sort_order": 31},
+    {"line_number": "32", "description": "Total excess contributions (line 30 + line 31)", "line_type": "subtotal",
+     "source_rules": ["R-5329-07"], "sort_order": 32},
+    {"line_number": "33", "description": "Additional tax: 6% of the smaller of line 32 or the 12/31 Coverdell value", "line_type": "total",
+     "source_rules": ["R-5329-07"], "destination_form": _SCH2L8, "sort_order": 33},
+    # Part VI — Archer MSA excess (6%)
+    {"line_number": "34", "description": "Prior-year excess Archer MSA contributions (2024 Form 5329 line 40)", "line_type": "input",
+     "source_rules": ["R-5329-08"], "sort_order": 34},
+    {"line_number": "35", "description": "Archer MSA contribution room absorbing prior excess (else -0-)", "line_type": "input",
+     "source_rules": ["R-5329-08"], "sort_order": 35},
+    {"line_number": "36", "description": "2025 distributions from Archer MSAs (Form 8853 line 8)", "line_type": "input",
+     "source_rules": ["R-5329-08"], "sort_order": 36},
+    {"line_number": "37", "description": "Add lines 35 and 36", "line_type": "subtotal",
+     "source_rules": ["R-5329-08"], "sort_order": 37},
+    {"line_number": "38", "description": "Prior-year excess remaining (line 34 - line 37, not below 0)", "line_type": "subtotal",
+     "source_rules": ["R-5329-08"], "sort_order": 38},
+    {"line_number": "39", "description": "Excess Archer MSA contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-08"], "sort_order": 39},
+    {"line_number": "40", "description": "Total excess contributions (line 38 + line 39)", "line_type": "subtotal",
+     "source_rules": ["R-5329-08"], "sort_order": 40},
+    {"line_number": "41", "description": "Additional tax: 6% of the smaller of line 40 or the 12/31 Archer MSA value", "line_type": "total",
+     "source_rules": ["R-5329-08"], "destination_form": _SCH2L8, "sort_order": 41},
+    # Part VII — HSA excess (6%)
+    {"line_number": "42", "description": "Prior-year excess HSA contributions (2024 Form 5329 line 48)", "line_type": "input",
+     "source_rules": ["R-5329-09"], "sort_order": 42},
+    {"line_number": "43", "description": "HSA contribution room absorbing prior excess (else -0-)", "line_type": "input",
+     "source_rules": ["R-5329-09"], "sort_order": 43},
+    {"line_number": "44", "description": "2025 distributions from HSAs (Form 8889 line 16)", "line_type": "input",
+     "source_rules": ["R-5329-09"], "sort_order": 44},
+    {"line_number": "45", "description": "Add lines 43 and 44", "line_type": "subtotal",
+     "source_rules": ["R-5329-09"], "sort_order": 45},
+    {"line_number": "46", "description": "Prior-year excess remaining (line 42 - line 45, not below 0)", "line_type": "subtotal",
+     "source_rules": ["R-5329-09"], "sort_order": 46},
+    {"line_number": "47", "description": "Excess HSA contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-09"], "sort_order": 47},
+    {"line_number": "48", "description": "Total excess contributions (line 46 + line 47)", "line_type": "subtotal",
+     "source_rules": ["R-5329-09"], "sort_order": 48},
+    {"line_number": "49", "description": "Additional tax: 6% of the smaller of line 48 or the 12/31 HSA value", "line_type": "total",
+     "source_rules": ["R-5329-09"], "destination_form": _SCH2L8, "sort_order": 49},
+    # Part VIII — ABLE excess (6%)
+    {"line_number": "50", "description": "Excess ABLE-account contributions for 2025", "line_type": "input",
+     "source_rules": ["R-5329-10"], "sort_order": 50},
+    {"line_number": "51", "description": "Additional tax: 6% of the smaller of line 50 or the 12/31 ABLE value", "line_type": "total",
+     "source_rules": ["R-5329-10"], "destination_form": _SCH2L8, "sort_order": 51},
+    # Part IX — Excess accumulation / missed RMD (SECURE 2.0 10%/25%)
+    {"line_number": "52a", "description": "2025 RMD from plans corrected in the window", "line_type": "input",
+     "source_rules": ["R-5329-11"], "sort_order": 52},
+    {"line_number": "52b", "description": "2025 RMD from all other plans", "line_type": "input",
+     "source_rules": ["R-5329-11"], "sort_order": 53},
+    {"line_number": "53a", "description": "2025 amount distributed from the window plans", "line_type": "input",
+     "source_rules": ["R-5329-11"], "sort_order": 54},
+    {"line_number": "53b", "description": "2025 amount distributed from the other plans", "line_type": "input",
+     "source_rules": ["R-5329-11"], "sort_order": 55},
+    {"line_number": "54a", "description": "(line 52a - line 53a) x 10%, not below 0", "line_type": "subtotal",
+     "source_rules": ["R-5329-11"], "sort_order": 56},
+    {"line_number": "54b", "description": "(line 52b - line 53b) x 25%, not below 0", "line_type": "subtotal",
+     "source_rules": ["R-5329-11"], "sort_order": 57},
+    {"line_number": "55", "description": "Additional tax on excess accumulation (line 54a + line 54b)", "line_type": "total",
+     "source_rules": ["R-5329-11"], "destination_form": _SCH2L8, "sort_order": 58},
 ]
 
 F5329_DIAGNOSTICS: list[dict] = [
@@ -912,6 +1221,24 @@ F5329_DIAGNOSTICS: list[dict] = [
      "message": ("Form 5329 line 2 (exception amount) exceeds line 1 (early distributions). The excluded amount "
                  "cannot exceed the early distribution included in income."),
      "notes": "Keying guard on the Part I subtraction."},
+    {"diagnostic_id": "D_5329_002", "title": "Education/ABLE exclusion exceeds distributions", "severity": "error",
+     "condition": "f5329_line6_edu_able_not_subject > f5329_line5_edu_able_dist",
+     "message": ("Form 5329 line 6 (amount not subject to the additional tax) exceeds line 5 (Coverdell/QTP/ABLE "
+                 "distributions in income). The excluded amount cannot exceed the distribution."),
+     "notes": "Keying guard on the Part II subtraction."},
+    {"diagnostic_id": "D_5329_003", "title": "Excess contribution present but 12/31 account value not entered", "severity": "warning",
+     "condition": ("any excess-contribution part has total excess > 0 while its 12/31 account value "
+                   "(f5329_*_value) is blank — the 6% smaller-of cap cannot be applied"),
+     "message": ("An excess contribution is present but the 12/31 account value is blank, so the 6% additional tax "
+                 "is computed on the FULL excess (no smaller-of cap). Enter the account value on 12/31/2025 to apply "
+                 "the cap (Form 5329 Parts III-VIII)."),
+     "notes": "Conservative (higher-tax) default when the cap value is missing; tts diagnostic fires per affected part."},
+    {"diagnostic_id": "D_5329_004", "title": "Excess accumulation (missed RMD) — verify the correction-window split", "severity": "info",
+     "condition": "Part IX has an RMD shortfall (line 52a>53a or 52b>53b)",
+     "message": ("Form 5329 Part IX additional tax on excess accumulation applies. Verify the SECURE 2.0 split: 10% "
+                 "(line 54a) only for shortfalls fully corrected during the correction window; 25% (line 54b) "
+                 "otherwise. The window determination is preparer-asserted."),
+     "notes": "No-silent-gap nudge on the Part IX rate split."},
 ]
 
 F5329_SCENARIOS: list[dict] = [
@@ -930,13 +1257,70 @@ F5329_SCENARIOS: list[dict] = [
      "inputs": {"f5329_line1_early_in_income": 10000, "f5329_simple_25pct": True},
      "expected_outputs": {"3": 10000, "4": 2500, "schedule_2_line_8": 2500},
      "notes": "25% of 10,000 (SIMPLE first-2-years)."},
+    # Part II — education/ABLE (10%)
+    {"scenario_name": "F5329-T4 — Part II: line 5 5,000, line 6 2,000 -> line 8 = 300",
+     "scenario_type": "normal", "sort_order": 4,
+     "inputs": {"f5329_line5_edu_able_dist": 5000, "f5329_line6_edu_able_not_subject": 2000},
+     "expected_outputs": {"7": 3000, "8": 300, "schedule_2_line_8": 300},
+     "notes": "10% of (5,000 - 2,000)."},
+    # Part III — traditional IRA excess, value caps the base
+    {"scenario_name": "F5329-T5 — Part III: 2,000 excess, 12/31 value 1,500 -> line 17 = 90 (capped)",
+     "scenario_type": "edge", "sort_order": 5,
+     "inputs": {"f5329_line15_tira_curr_excess": 2000, "f5329_tira_value": 1500},
+     "expected_outputs": {"16": 2000, "17": 90, "schedule_2_line_8": 90},
+     "notes": "6% of the SMALLER of 2,000 excess or 1,500 value = 6% x 1,500."},
+    # Part III — value blank => no cap (conservative full-excess tax)
+    {"scenario_name": "F5329-T6 — Part III: 2,000 excess, value blank -> line 17 = 120 (no cap)",
+     "scenario_type": "edge", "sort_order": 6,
+     "inputs": {"f5329_line15_tira_curr_excess": 2000},
+     "expected_outputs": {"16": 2000, "17": 120, "schedule_2_line_8": 120},
+     "notes": "Blank 12/31 value => 6% of the full 2,000 excess. D_5329_003 warns."},
+    # Part IV — Roth carryforward chain absorbed partially
+    {"scenario_name": "F5329-T7 — Part IV: prior 3,000, absorb 1,000 + dist 500 -> line 24 1,500, line 25 = 90",
+     "scenario_type": "normal", "sort_order": 7,
+     "inputs": {"f5329_line18_roth_prior_excess": 3000, "f5329_line19_roth_absorb": 1000,
+                "f5329_line20_roth_dist": 500, "f5329_roth_value": 50000},
+     "expected_outputs": {"21": 1500, "22": 1500, "24": 1500, "25": 90, "schedule_2_line_8": 90},
+     "notes": "L22 = max(0, 3,000 - 1,500) = 1,500; value 50,000 doesn't cap; 6% x 1,500 = 90."},
+    # Part IX — 25% (not corrected in window)
+    {"scenario_name": "F5329-T8 — Part IX: RMD 4,000 other, distributed 1,000 -> line 55 = 750 (25%)",
+     "scenario_type": "normal", "sort_order": 8,
+     "inputs": {"f5329_line52b_rmd_other": 4000, "f5329_line53b_dist_other": 1000},
+     "expected_outputs": {"54b": 750, "55": 750, "schedule_2_line_8": 750},
+     "notes": "25% of (4,000 - 1,000) = 750. SECURE 2.0 standard rate."},
+    # Part IX — 10% (corrected in window) + a fully-corrected window bucket
+    {"scenario_name": "F5329-T9 — Part IX: window RMD 4,000 dist 1,000 (10%) + other fully corrected -> 300",
+     "scenario_type": "edge", "sort_order": 9,
+     "inputs": {"f5329_line52a_rmd_window": 4000, "f5329_line53a_dist_window": 1000,
+                "f5329_line52b_rmd_other": 2000, "f5329_line53b_dist_other": 2000},
+     "expected_outputs": {"54a": 300, "54b": 0, "55": 300, "schedule_2_line_8": 300},
+     "notes": "10% of (4,000-1,000)=300 window; other bucket fully corrected -> 0."},
+    # All-parts aggregate -> Schedule 2 line 8 is the SUM
+    {"scenario_name": "F5329-T10 — all parts: PI 2,000 + PII 300 + PIII 120 + PIX 750 -> Sch 2 L8 = 3,170",
+     "scenario_type": "edge", "sort_order": 10,
+     "inputs": {"f5329_line1_early_in_income": 20000,
+                "f5329_line5_edu_able_dist": 5000, "f5329_line6_edu_able_not_subject": 2000,
+                "f5329_line15_tira_curr_excess": 2000,
+                "f5329_line52b_rmd_other": 4000, "f5329_line53b_dist_other": 1000},
+     "expected_outputs": {"4": 2000, "8": 300, "17": 120, "55": 750, "schedule_2_line_8": 3170},
+     "notes": "Sch 2 L8 = L4 2,000 + L8 300 + L17 120 + L55 750 = 3,170 (R-5329-12 aggregate)."},
 ]
 
 F5329_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-5329-01", "IRS_2025_5329_FORM", "primary", "Part I line 3 verbatim (line 1 - line 2)"),
-    ("R-5329-02", "IRS_2025_5329_FORM", "primary", "Part I line 4: 10% (25% SIMPLE) -> Sch 2 line 8"),
+    ("R-5329-02", "IRS_2025_5329_FORM", "primary", "Part I line 4: 10% (25% SIMPLE)"),
     ("R-5329-02", "IRS_2025_5329_INSTR", "secondary", "SIMPLE 25% caution"),
     ("R-5329-03", "IRS_2025_5329_INSTR", "primary", "'Who Must File' direct-to-Schedule-2 shortcut"),
+    ("R-5329-04", "IRS_2025_5329_FORM", "primary", "Part II lines 5-8 verbatim (education/ABLE 10%)"),
+    ("R-5329-05", "IRS_2025_5329_FORM", "primary", "Part III lines 9-17 verbatim (traditional-IRA excess 6%)"),
+    ("R-5329-06", "IRS_2025_5329_FORM", "primary", "Part IV lines 18-25 verbatim (Roth-IRA excess 6%)"),
+    ("R-5329-07", "IRS_2025_5329_FORM", "primary", "Part V lines 26-33 verbatim (Coverdell ESA excess 6%)"),
+    ("R-5329-08", "IRS_2025_5329_FORM", "primary", "Part VI lines 34-41 verbatim (Archer MSA excess 6%)"),
+    ("R-5329-09", "IRS_2025_5329_FORM", "primary", "Part VII lines 42-49 verbatim (HSA excess 6%)"),
+    ("R-5329-10", "IRS_2025_5329_FORM", "primary", "Part VIII lines 50-51 verbatim (ABLE excess 6%)"),
+    ("R-5329-11", "IRS_2025_5329_FORM", "primary", "Part IX lines 52-55 verbatim (excess accumulation 10%/25%)"),
+    ("R-5329-11", "IRS_2025_5329_INSTR", "secondary", "SECURE 2.0 §302 correction-window split (Notice 2023-...)"),
+    ("R-5329-12", "IRS_2025_5329_FORM", "primary", "Each part's additional tax includes on Schedule 2 line 8"),
 ]
 
 

@@ -4,6 +4,28 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-25 — FORM 5329 FULL (Parts I–IX) — SPEC AUTHORED + INTEGRITY GREEN ⏳ (NOT seeded — awaiting Ken's review)
+- **Ken chose (tts AskUserQuestions): FULL Form 5329 (all Parts I–IX) + DUAL taxpayer/spouse.**
+  Expanded the `F5329_*` blocks IN PLACE in `load_1040_retirement.py` (the loader already owns
+  form_number "5329"; no 2nd loader — avoids double-ownership). Spec is **owner-agnostic** (one
+  logical form); DUAL is a tts-side model concern.
+- **5329 form now (was 3/3/4/1/3): facts 37 / rules 12 / lines 58 / diagnostics 4 / scenarios 10
+  / links 14.** Added Parts II (edu/ABLE 10%), III–VIII (excess contributions 6% of the smaller of
+  total-excess or 12/31 value, prior-year carryforward chain), IX (excess accumulation / missed RMD
+  — SECURE 2.0 10% window / 25% other). `R-5329-12` aggregates all parts → Schedule 2 line 8
+  (replacing the Part-I-only feeder). Widened the line-2 exception catalog **01–12+19 → 01–23+99**
+  (i5329 table, incl. SECURE 2.0 codes 20/22/23); `D_RET_006` flipped from ">12 unsupported" to a
+  validity guard (out of 01–23/99); `RET-G5` fixture exception 13→25 (13 is now valid §457).
+- **`check_retirement_integrity.py` extended** (`f5329_full` recomputes all 9 parts; F5329-T1..T10
+  scenarios incl. capped-vs-uncapped, the 10%/25% split, the all-parts Sch 2 L8 sum; +3 load-bearing
+  pins). **ALL CHECKS PASS.**
+- Verified line-by-line vs the real **f5329.pdf + i5329.pdf** (2026-06-25;
+  `tts/server/specs/_5329_full_source_brief.md`). Authority: IRC §§72(t)/4973/4974, SECURE 2.0 §302,
+  Notices 2024-02/2024-55.
+- **PENDING:** Ken's review walk → then re-seed the RS DB (run `load_1040_retirement`) → export
+  `5329_spec.json` → tts build legs. `READY_TO_SEED` is already True (retirement spec), so the gate
+  here is DISCIPLINE: do not run the loader until Ken approves the 5329 expansion.
+
 ## 2026-06-25 — FORM 1040-X (Amended Returns) — APPROVED + SEEDED + EXPORTED ✅
 - **Ken APPROVED the W1-W6 review walk in-session** (W1 amend-in-place + dedicated as-filed
   baseline / W2 col-B = C−A / W3 refund-owe 17-23 / W4 confirm the deferrals — NOL/GBC
