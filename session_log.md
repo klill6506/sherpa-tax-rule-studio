@@ -4,6 +4,33 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-26 — FORM 1116 (Foreign Tax Credit) — SPEC AUTHORED + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
+- **Ken chose (tts AskUserQuestions): FULL Form 1116, then "Tighter v1 — Passive-only".** New loader
+  `load_1040_form_1116.py` (form_number `FORM_1116`) + `check_1116_integrity.py` (independent re-typed
+  math gate, the 2210 precedent). RS endpoint was 404 (greenfield, locally authored).
+- **FORM_1116: facts 19 / rules 5 / lines 32 / diagnostics 8 / scenarios 10 / links 8 / 7 flow
+  assertions / 3 authority sources.** `check_1116_integrity.py` → **ALL CHECKS PASS** (T1 election 250 /
+  T2 MFJ 550 / T4 limit-binds 1361 cf 139 / T5 full-credit 1000 cf 0 / T8 L17<=0 → 0 cf 200).
+- **Two paths:** Path A — §904(j) election (all passive + payee-statement + foreign tax ≤ $300/$600 →
+  credit = min(foreign tax, regular tax) → Sch 3 L1, no carryover). Path B — full Passive §904
+  limitation (Part I L7 deduction apportionment → Part III L21 = L20 × L17/L18 → L24 = min(L14,L23) →
+  Part IV L35 → Sch 3 L1; carryforward = max(0, L14−L24)). L18 = 1040 line 15 + Sch 1-A line 37 (the
+  SENIOR deduction only — verified i1116). L20 = 1040 L16 + Sch 2 L1z.
+- **v1 RED-defers (8 diagnostics, no silent gap):** non-passive category, the above-exception QD
+  adjustment (foreign QD+gain ≥ $20k OR TI > threshold), Form 2555 reduction, carryover→Schedule B
+  (warn), TY2026 threshold re-verify (warn), election-over-ceiling.
+- Verified line-by-line vs the real **f1116.pdf (created 9/16/25) + i1116.pdf (Dec 23 2025)**
+  (`tts/server/specs/_1116_source_brief.md`). Authority: IRC §901/§904/§904(j), Reg §1.904(b)-1, Pub 514.
+- Constants: §904(j) $300/$600 (statutory); adj-exception TI $394,600 MFJ / $197,300 other (2025
+  verbatim; 2026 interim = §199A $403,500/$201,750, flagged D_1116_007); adj-exception gain ceiling
+  $20,000 (regulatory).
+- **Ken APPROVED the review walk (2026-06-26)** → flipped `READY_TO_SEED=True` → seeded the RS DB
+  (TaxForms 72, FlowAssertions 308, all rules cited) → exported `tts/server/specs/1116_spec.json`.
+- **NEXT (tts):** build the SEED leg (Form1116 model + migration + CRUD + f1116 PDF/manifest) →
+  compute → render → input → diagnostics → assertions. Target: Schedule 3 line 1 flips to computed.
+
+---
+
 ## 2026-06-25 — FORM 5329 FULL (Parts I–IX) — SPEC AUTHORED + INTEGRITY GREEN ⏳ (NOT seeded — awaiting Ken's review)
 - **Ken chose (tts AskUserQuestions): FULL Form 5329 (all Parts I–IX) + DUAL taxpayer/spouse.**
   Expanded the `F5329_*` blocks IN PLACE in `load_1040_retirement.py` (the loader already owns
