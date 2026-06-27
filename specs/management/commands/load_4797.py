@@ -68,12 +68,15 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # Gated until Ken's review walk (the recapture math + 1040 routing).
+READY_TO_SEED = True  # FLIPPED 2026-06-27 — Ken approved the review walk ("Approve — seed it").
 
 
 FORM_JURISDICTION = "FED"
 FORM_TAX_YEAR = 2025
-FORM_VERSION = 1
+# v2 = the row the export serves (lookup returns order_by('-version').first()). The RS DB had
+# TWO identical old-draft rows (v1 + v2); update v2 IN PLACE to the Broad-v1 content so the
+# export reflects it. The stale v1 draft is harmless legacy (never served).
+FORM_VERSION = 2
 FORM_ENTITY_TYPES = ["1120S", "1065", "1120", "1040"]  # SHARED — preserved (do not clobber).
 FORM_STATUS = "draft"
 

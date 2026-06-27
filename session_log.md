@@ -4,6 +4,41 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-27 — FORM 4797 (Sales of Business Property) — SPEC REWRITTEN + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
+- **Ken chose (tts AskUserQuestions): the full Form 4797, then "Broad v1"** (Parts I-IV, all five
+  recapture sections). REWROTE `load_4797.py` from the old "first form for validation" BaseCommand
+  draft to the modern pattern (module-level `compute_4797()` + `FORMS` + `FLOW_ASSERTIONS`), so
+  `check_4797_integrity.py` can re-type the math. SHARED form — form_number "4797", entity_types
+  ['1120S','1065','1120','1040'] PRESERVED.
+- **Form 4797 v2: facts 25 / rules 6 / lines 34 / diagnostics 7 / scenarios 12 / links 12 / 7 flow
+  assertions / 8 authority sources.** `check_4797_integrity.py` (independent re-typed recapture math)
+  → **ALL CHECKS PASS** (T1 §1245 all-ord 10000 / T2 excess→Sch D 20000 / T5 unrecap §1250 100000 /
+  T6 lookback L9 12000 L18b 38000 / T7 §1252 18000 / T8 §179 7000).
+- **Broad-v1 math:** §1245 L25b = min(gain, depr); §1250 L26g = applic% × min(gain, 26a add'l depr),
+  unrecaptured §1250 = min(gain, depr) − §1250-ord (→ Sch D worksheet, 25%, NOT a 4797 line); §1252/
+  1254/1255 = min(gain, section amount) (applic% preparer-entered); §1231 netting + §1231(c) 5-yr
+  lookback: L12 ord = min(L7,L8), L9 = max(0,L7−L8) → Schedule D line 11; Part IV §179/§280F L35 →
+  Schedule 1 line 4. Routing: L18b + Part IV → Sch 1 L4; L9 → Sch D L11; L18a → Sch A L16 (v1=0).
+- **Ken's 3 tax-law calls (approved in-session):** §1231 lookback = preparer-asserted fact (default 0);
+  §1250 26a additional depreciation = preparer-entered (default 0 = post-1986 SL); §179/§280F → Sch 1
+  L4 + SE-nuance INFO diag (auto SE add-back RED-deferred).
+- **v1 RED-defers (no silent gap):** Form 4684 casualty, Form 6252 installment, Form 8824 like-kind.
+- Verified Part III structure line-by-line vs the real **f4797.pdf (182 fields)** + i4797 (the field-map
+  COMMENTS were wrong: 25a/b=§1245, 26a-g=§1250, 27=§1252, 28=§1254, 29=§1255). Authority: IRC §1231/
+  1245/1250/1252/1254/1255 + §1(h)(1)(E) + §179(d)(10)/§280F(b)(2), i4797, Pub 544.
+- **SHARED-FORM SEEDING GOTCHA:** the export serves `order_by('-version').first()` = v2; the DB had TWO
+  identical old-draft rows (v1+v2). Set FORM_VERSION=2 to update the SERVED row. update_or_create left
+  the old draft's children (R001-R010 rules, prefix-less facts, D001-D005, lines 19/26/27, 6 old tests)
+  alongside the new → "uncited rules: 9". FIX: PURGED all v2 children then re-seeded clean → "all rules
+  cited". (Lesson: amending an existing draft form needs a child-purge, not just update_or_create.)
+- **Ken APPROVED the review walk (2026-06-27)** → flipped `READY_TO_SEED=True` → seeded RS DB (TaxForms
+  72, FlowAssertions 308→315) → exported `tts/server/specs/form_4797_spec.json` (v2).
+- **NEXT (tts):** build the 6 legs — COMPUTE (`compute_4797.py`, port of `m.compute_4797`, wired BEFORE
+  Schedule D netting; unrecaptured §1250 → the Topic-9 SDTW worksheet) → RENDER → DIAGNOSTICS → INPUT →
+  ASSERTIONS. Reuse the existing `Disposition` model (is_4797 flag) + `resolve_recapture_type`.
+
+---
+
 ## 2026-06-26 — FORM 1116 (Foreign Tax Credit) — SPEC AUTHORED + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
 - **Ken chose (tts AskUserQuestions): FULL Form 1116, then "Tighter v1 — Passive-only".** New loader
   `load_1040_form_1116.py` (form_number `FORM_1116`) + `check_1116_integrity.py` (independent re-typed
