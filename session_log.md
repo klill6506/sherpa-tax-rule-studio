@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-28 — FORM 4797 amended to CLOSE the 6252 RED-defer (tts Form 6252 compute leg)
+- During the tts-tax-app Form 6252 (Installment Sale Income) COMPUTE leg, **Ken chose "fully retire the
+  flag"** (close the 4797↔6252 RED-defer rather than keep `f4797_has_form_6252` as a manual escape hatch).
+- **`load_4797.py` amended** (byte-for-byte twin of the tts `compute_4797`): `compute_4797` now accepts
+  `installment_line4/10/15` feeds (§1231 → Part I line 4; ordinary → Part II line 10; ordinary recapture →
+  Part II line 15) and no longer RED-defers on `has_form_6252`. Removed the `F4797-G2` (6252 → RED-defer)
+  scenario; dropped `form_6252_installment` from FA-1040-4797-07's blocker list; marked the `D_4797_003`
+  diagnostic + `f4797_has_form_6252` fact RETIRED (now supported). 4684/8824 interplays still RED-defer.
+- **`check_4797_integrity.py` → ALL CHECKS PASS** (now 11 scenarios; the §1231 netting + 5-yr lookback +
+  §1245/1250/1252/1254/1255 recapture re-verified). The independent recompute was untouched (existing
+  scenarios pass no installment feeds → unchanged).
+- **NOT YET re-seeded to the RS Supabase / re-exported via the lookup endpoint** (the loader is the source of
+  truth and is integrity-verified; the canonical tts `form_4797_spec.json` was mirrored by hand to match —
+  F4797-G2 removed, D_4797_003 + fact retired-text). **Pending hygiene: re-seed `load_4797` + re-export on the
+  next RS deploy** so the deployed RS DB matches the amended loader. No other RS form touched.
+
 ## 2026-06-27 — FORM 4797 (Sales of Business Property) — SPEC REWRITTEN + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
 - **Ken chose (tts AskUserQuestions): the full Form 4797, then "Broad v1"** (Parts I-IV, all five
   recapture sections). REWROTE `load_4797.py` from the old "first form for validation" BaseCommand

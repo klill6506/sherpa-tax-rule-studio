@@ -37,8 +37,10 @@ ROUTING (4797 → 1040):
     "Unrecaptured Section 1250 Gain Worksheet" → the Schedule D Tax Worksheet (25% rate).
   Part IV L35 = §179/§280F recapture → Schedule 1 line 4 (Ken's call) + SE-nuance diagnostic.
 
+Form 6252 installment sales are now SUPPORTED — compute_6252 feeds the §1231 gain to line 4,
+  the ordinary gain to line 10, and the ordinary recapture to line 15 (closed 2026-06-28).
 v1 RED-defers (each a no-silent-gap diagnostic): Form 4684 casualty/theft interplay (L3/L14/
-  L18a/L33), Form 6252 installment (L4/L15), Form 8824 like-kind (L5/L16). The §1252/§1255
+  L18a/L33), Form 8824 like-kind (L5/L16). The §1252/§1255
   applicable percentages are preparer-entered (the IRS schedule documented), not encoded —
   consistent with the §1250-26a decision (no guessing on indexed/scheduled figures).
 
@@ -163,8 +165,12 @@ def compute_property(*, sales_price=0, cost_basis=0, expense_of_sale=0, deprecia
 
 def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_direct=0,
                  part4_section_179_recapture=0, part4_section_280f_recapture=0,
-                 # red-defer interplay flags
-                 has_form_4684=False, has_form_6252=False, has_form_8824=False,
+                 # Form 6252 installment-sale feeds (close the 4797 RED-defer): line 4
+                 # (§1231 gain → Part I netting), line 10 (ordinary "From Form 6252"),
+                 # line 15 (ordinary recapture). compute_6252 is the single source.
+                 installment_line4=0, installment_line10=0, installment_line15=0,
+                 # red-defer interplay flags (4684 casualty + 8824 like-kind still deferred)
+                 has_form_4684=False, has_form_8824=False,
                  **_ignored) -> dict:
     """Aggregate Form 4797 over its properties + return-level facts → the 1040 routing.
 
@@ -173,14 +179,14 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
       sch_d_line11     — Part I L9 (net §1231 LTCG after the 5-yr lookback)
       unrecaptured_1250 — Σ unrecaptured §1250 (→ Sch D Unrecaptured §1250 Gain Worksheet, 25%)
       sch_a_line16     — Part II L18a (income-producing-property loss; v1 = 0, RED-defer 4684)
-    Or {'red_defer': [...]} when an unsupported interplay (4684/6252/8824) is present."""
+    Or {'red_defer': [...]} when an unsupported interplay (4684/8824) is present. Form 6252
+    (installment sales) is now SUPPORTED via the installment_line4/10/15 feeds (closed
+    2026-06-28)."""
     properties = properties or []
 
     reasons = []
     if has_form_4684:
         reasons.append("form_4684_casualty")
-    if has_form_6252:
-        reasons.append("form_6252_installment")
     if has_form_8824:
         reasons.append("form_8824_like_kind")
     if reasons:
@@ -198,8 +204,9 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
     unrecaptured_1250 = sum((r["unrecaptured_1250"] for r in results), Decimal("0"))
 
     # ── Part I ──
+    l4 = _D(installment_line4)                       # Form 6252 §1231 installment gain → line 4
     l6 = part3_line32
-    l7 = part1_line2 + l6                            # L3/L4/L5 (4684/6252/8824) = 0 in v1
+    l7 = part1_line2 + l4 + l6                        # L3/L5 (4684/8824) = 0 in v1
 
     # ── §1231 5-year lookback (Part I L8 / Part II L9-L12) ──
     if l7 <= 0:                                      # net §1231 loss → ordinary (Part II L11)
@@ -215,9 +222,10 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
         l12 = recaptured
 
     # ── Part II ──
-    l10 = short_term_ordinary
+    l10 = short_term_ordinary + _D(installment_line10)   # + Form 6252 ordinary/≤1yr → line 10
     l13 = part3_line31
-    l17 = l10 + l11 + l12 + l13                      # L14/L15/L16 (4684/6252/8824) = 0 in v1
+    l15 = _D(installment_line15)                          # Form 6252 ordinary recapture → line 15
+    l17 = l10 + l11 + l12 + l13 + l15                     # L14/L16 (4684/8824) = 0 in v1
     l18a = Decimal("0")                              # income-producing-property loss (RED-defer)
     l18b = l17 - l18a                                # → Schedule 1 line 4
 
@@ -226,9 +234,9 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
         max(Decimal("0"), _D(part4_section_280f_recapture))
 
     sch1_line4 = l18b + part4                        # both ordinary "other income"
-    return {"l6": l6, "l7": l7, "l8": l8, "l9": l9, "l10": l10, "l11": l11, "l12": l12,
-            "l13": l13, "l17": l17, "l18a": l18a, "l18b": l18b, "l31": part3_line31,
-            "l32": part3_line32, "part4_recapture": part4,
+    return {"l4": l4, "l6": l6, "l7": l7, "l8": l8, "l9": l9, "l10": l10, "l11": l11,
+            "l12": l12, "l13": l13, "l15": l15, "l17": l17, "l18a": l18a, "l18b": l18b,
+            "l31": part3_line31, "l32": part3_line32, "part4_recapture": part4,
             "sch1_line4": sch1_line4, "sch_d_line11": l9,
             "unrecaptured_1250": unrecaptured_1250, "sch_a_line16": l18a}
 
@@ -496,8 +504,9 @@ P_IDENTITY = {
         "(L26, additional depreciation L26a preparer-entered, default 0), §1252 (L27), §1254 (L28), "
         "§1255 (L29) → L31 → Part II L13; excess L32 → Part I L6. Unrecaptured §1250 gain is NOT on "
         "4797 — exported to the Schedule D Unrecaptured §1250 Gain Worksheet (25%). Part IV §179/"
-        "§280F recapture L35 → Schedule 1 line 4 (+ SE-tax note). RED-defers (no silent gap): Form "
-        "4684 casualty, Form 6252 installment, Form 8824 like-kind. §1252/§1255 applicable "
+        "§280F recapture L35 → Schedule 1 line 4 (+ SE-tax note). Form 6252 installment sales feed "
+        "lines 4/10/15 (supported). RED-defers (no silent gap): Form "
+        "4684 casualty, Form 8824 like-kind. §1252/§1255 applicable "
         "percentages preparer-entered (not encoded)."
     ),
 }
@@ -550,9 +559,10 @@ P_FACTS: list[dict] = [
     {"fact_key": "f4797_has_form_4684", "label": "Casualty/theft of business property (Form 4684)?",
      "data_type": "boolean", "default_value": "false", "sort_order": 30,
      "notes": "→ 4797 L3/L14/L18a/L33 interplay not modeled (RED-defer)."},
-    {"fact_key": "f4797_has_form_6252", "label": "Installment sale (Form 6252)?",
+    {"fact_key": "f4797_has_form_6252", "label": "Installment sale (Form 6252)? (RETIRED — now supported)",
      "data_type": "boolean", "default_value": "false", "sort_order": 31,
-     "notes": "→ 4797 L4/L15 interplay not modeled (RED-defer)."},
+     "notes": "RETIRED 2026-06-28 — the 6252 interplay is now supported (compute_6252 feeds Form "
+              "4797 lines 4/10/15). Fact kept for the additive migration column; no longer RED-defers."},
     {"fact_key": "f4797_has_form_8824", "label": "Like-kind exchange (Form 8824)?",
      "data_type": "boolean", "default_value": "false", "sort_order": 32,
      "notes": "→ 4797 L5/L16 interplay not modeled (RED-defer)."},
@@ -673,12 +683,12 @@ P_DIAGNOSTICS: list[dict] = [
                  "interplay (lines 3, 14, 18a, and the Part III line 33 casualty split) is not modeled "
                  "in this version — prepare the 4684 ↔ 4797 flow manually."),
      "notes": "v1 RED-defer (no silent gap)."},
-    {"diagnostic_id": "D_4797_003", "title": "Installment sale (Form 6252) interplay not modeled", "severity": "error",
+    {"diagnostic_id": "D_4797_003", "title": "Installment sale (Form 6252) interplay — RETIRED (now supported)", "severity": "error",
      "condition": "has_form_6252",
-     "message": ("An installment sale (Form 6252) is indicated. The §1231/ordinary installment gain "
-                 "flows to Form 4797 lines 4 and 15 — not modeled in this version. Prepare the 6252 ↔ "
-                 "4797 flow manually."),
-     "notes": "v1 RED-defer."},
+     "message": ("RETIRED 2026-06-28 — the Form 6252 installment interplay is now supported: "
+                 "compute_6252 feeds the §1231 gain to Form 4797 line 4, the ordinary gain to line 10, "
+                 "and the ordinary recapture to line 15. This diagnostic no longer fires."),
+     "notes": "RETIRED 2026-06-28 — 6252 interplay closed. Deactivated in the tts diagnostics registry."},
     {"diagnostic_id": "D_4797_004", "title": "Like-kind exchange (Form 8824) interplay not modeled", "severity": "error",
      "condition": "has_form_8824",
      "message": ("A like-kind exchange (Form 8824) is indicated. The recognized gain/loss flows to Form "
@@ -770,10 +780,6 @@ P_SCENARIOS: list[dict] = [
                 "has_form_4684": True},
      "expected_outputs": {"D_4797_002": True},
      "notes": "Form 4684 present → RED-defer the 4684 ↔ 4797 interplay."},
-    {"scenario_name": "F4797-G2 — installment sale (Form 6252) → RED-defer", "scenario_type": "diagnostic", "sort_order": 11,
-     "inputs": {"properties": [], "has_form_6252": True},
-     "expected_outputs": {"D_4797_003": True},
-     "notes": "Form 6252 present → RED-defer."},
     {"scenario_name": "F4797-G3 — net §1231 gain, no lookback entered → warn", "scenario_type": "diagnostic", "sort_order": 12,
      "inputs": {"properties": [{"sales_price": 120000, "cost_basis": 100000, "depreciation_allowed": 30000,
                                 "holding_period_months": 60, "property_type": "1245"}],
@@ -840,10 +846,10 @@ FLOW_ASSERTIONS: list[dict] = [
                     "checks": [{"source_line": "35", "must_write_to": ["SCH_1.4"]}]},
      "sort_order": 6},
     {"assertion_id": "FA-1040-4797-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Gates — 4684 / 6252 / 8824 interplay RED-defers",
-     "description": "An unsupported interplay (casualty/installment/like-kind) fires a RED diagnostic and defers — never a silent wrong number.",
+     "title": "Gates — 4684 / 8824 interplay RED-defers (6252 now supported)",
+     "description": "An unsupported interplay (casualty/like-kind) fires a RED diagnostic and defers — never a silent wrong number. The Form 6252 installment interplay is now supported (feeds Form 4797 lines 4/10/15).",
      "definition": {"kind": "gating_check", "form": "4797", "expect": {"red_fires": True},
-                    "blockers": ["form_4684_casualty", "form_6252_installment", "form_8824_like_kind"]},
+                    "blockers": ["form_4684_casualty", "form_8824_like_kind"]},
      "sort_order": 7},
 ]
 
