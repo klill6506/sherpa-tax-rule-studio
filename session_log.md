@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-29 — 1040_RETIREMENT: SS LUMP-SUM amendment SEEDED + EXPORTED (Ken go-ahead) — unit complete in tts
+- Ken gave the in-session **"seed now, then build"** go-ahead. Ran `load_1040_retirement` against RS's own
+  Supabase (`ylqaejdqwuvwpglxnpgv`) — idempotent (`update_or_create`); 1040_RETIREMENT now 35 facts / 11 rules /
+  26 lines / 8 diagnostics / 20 scenarios / 15 links; FlowAssertions 333 total. DB totals: 74 forms / 1666 facts /
+  637 rules / 419 diagnostics. Both integrity gates still report "all rules have authority links."
+- Re-exported the deployed lookup endpoint (`/api/forms/lookup/1040_RETIREMENT/export/`) → overwrote the canonical
+  tts `server/specs/retirement_spec.json` (now carries the `lse_*` facts/rules/lines + D_RET_008 + the LSE-1/LSE-2
+  tests). Verified lse_ws2_21 / lse_ws4_21 / ss_lump_sum_election / R-RET-LSE-WS4 present.
+- tts side: re-seeded `1040_RETIREMENT` (added the lse_ws2_21/lse_ws4_21 pseudo-rows to the hardcoded
+  `seed_1040_retirement.py`) and built the RENDER + INPUT + DB-test legs. **tts unit COMPLETE — tag
+  `1040-ss-lumpsum-complete`.**
+- STILL OPEN (RS hygiene): re-seed `load_4797` on the next RS deploy (covers both the 6252 + 8824 amendments; the
+  deployed RS DB still has D_4797_003/004 active). The lump-sum amendment is now seeded; the 4797 one is not.
+
+---
+
 ## 2026-06-28 — 1040_RETIREMENT amendment: SS LUMP-SUM ELECTION (Pub 915 WS2+WS4) — SPEC + MATH GATE GREEN (seed pending Ken go-ahead)
 - **Retiree-hardening cluster, item 1 (D_RET_004).** Ken-directed (tts AskUserQuestion: chose D_RET_004 first +
   the EXPLICIT-TOGGLE election behavior, irrevocable-without-IRS-consent). Amended `load_1040_retirement.py`:
