@@ -4,6 +4,46 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-28 — FORM 8824 (Like-Kind Exchanges + §1043) — SPEC AUTHORED + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
+- **Ken chose (tts AskUserQuestion): "Full incl. Part IV + computed recapture"** — the WHOLE Form 8824.
+  New loader `load_8824.py` (form_number "8824", entity_types ['1040'], v1 — lookup was 404, brand-new
+  form) in the modern pattern (module-level `compute_8824()` + `FORMS` + `FLOW_ASSERTIONS`) +
+  `check_8824_integrity.py` (independent re-typed §1031 math).
+- **Form 8824 v1: facts 41 / rules 7 / lines 35 / diagnostics 10 / scenarios 11 / links 14 / 9 flow
+  assertions / 6 authority sources.** `check_8824_integrity.py` → **ALL CHECKS PASS** (independently
+  recomputed + cross-checked vs the loader AND the i8824 worked examples: Taylor §1245 L21 35000→4797
+  L16 / L22 5000→4797 L5; Finley §1250 L21 30000, 25a 131250 / 25b 43750; loss −20000 deferred; §1043
+  L37 130000; §1031(f) accel 60000). The gate caught one authored test-value error (T6 L19 50000→80000).
+- **Model:** Part III §1031 — §1.1031(d)-2 symmetric liability netting (computed from components),
+  L19 realized = L17−L18, L20 = max(0,min(L15,L19)), **COMPUTED** recapture L21 via §1245(b)(4)
+  (min(min(depr,L19), L20+(L16−fmv1245))) + §1250(d)(4) (min(addl, max(L20, addl−fmv1250))) → 4797
+  line 16; L22 → 4797 line 5 (business §1231 >1yr) / line 16 (ordinary) / Schedule D (capital);
+  L23=L21+L22, L24 deferred (a LOSS defers in full, never deducted), L25=(L18+L23)−L15 + 25a/b/c
+  proportional. Part II §1031(f) 2-year acceleration (prior-year L24 preparer-asserted). Part IV §1043
+  L32/L34/L35→4797 L10/L37/L38 (L35 recapture preparer-asserted per i8824 worksheet method).
+- **CLOSES the live Form 4797 D_4797_004 like-kind RED-defer** (L21→4797 L16, L22→4797 L5), same
+  pattern the 6252 unit used to retire the 4797↔6252 defer. (D_4797_004 closure = the tts COMPUTE/
+  DIAGNOSTICS leg follow-up.)
+- **v1 RED-defers (no silent gap):** multi-asset exchange (D_8824_007), §121 main-home combo
+  (D_8824_008), personal property (D_8824_009 — post-2017 §1031 is real-property only). 45/180-day
+  deferred-exchange deadline diagnostics (D_8824_001/002). **No year-keyed constants** (pure arithmetic
+  → TY2026 = TY2025 identical). OBBBA §1062 farmland-gain deferral (Form 1062) is a SEPARATE adjacent
+  form, NOT part of 8824 — flagged to Ken, not built.
+- LAW VERIFIED 2026-06-28 vs the actual **f8824.pdf (2025, both pages)** + **i8824.pdf (2025, 7 pages,
+  incl. the Taylor/Finley liability-netting + §1245(b)(4)/§1250(d)(4) recapture + 25a/b/c examples)** +
+  IRC §1031/§1031(f)/§1245(b)(4)/§1250(d)(4)/§1043 + Pub 544.
+- **Ken APPROVED the review walk (2026-06-28)** → flipped `READY_TO_SEED=True` → seeded RS DB (TaxForms
+  → 74, FlowAssertions → 332; "all rules cited") → exported `tts/server/specs/form_8824_spec.json` (v1)
+  + staged `flow_assertions_1040_8824_pending.json` (9 FA).
+- **NEXT (tts):** build the 6 legs — COMPUTE (`compute_8824.py`, port of `m.compute_8824`, wired so
+  L21→4797 L16 + L22→4797 L5 CLOSE D_4797_004) → RENDER (f8824 PDF already in resources/2025; add
+  manifest entry) → DIAGNOSTICS (`rules_8824.py` 10 D_8824_*) → INPUT → ASSERTIONS (9 FA → gate
+  347→356). Reuse the 6252/4797 cross-form-feed pattern.
+- **RS hygiene carryover (still open from 2026-06-28 6252 session):** `load_4797.py` amended +
+  integrity-verified but the deployed RS was NOT re-seeded/re-exported for the 4797 amendments — do that
+  on the next RS deploy alongside this 8824 seed (load_4797). (This 8824 seed DID write to the shared
+  RS Supabase, so the 8824 export endpoint is live.)
+
 ## 2026-06-28 — FORM 4797 amended to CLOSE the 6252 RED-defer (tts Form 6252 compute leg)
 - During the tts-tax-app Form 6252 (Installment Sale Income) COMPUTE leg, **Ken chose "fully retire the
   flag"** (close the 4797↔6252 RED-defer rather than keep `f4797_has_form_6252` as a manual escape hatch).
