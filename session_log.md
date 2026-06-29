@@ -44,6 +44,17 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   on the next RS deploy alongside this 8824 seed (load_4797). (This 8824 seed DID write to the shared
   RS Supabase, so the 8824 export endpoint is live.)
 
+### 2026-06-28 (later, tts 8824 COMPUTE leg) — load_4797.py AMENDED to CLOSE D_4797_004 (twin of the 6252 closure)
+- `load_4797.py` `compute_4797` now accepts `like_kind_line5/16/10` feeds (Form 8824: recognized §1231
+  gain → Part I line 5; ordinary recapture/gain → Part II line 16; §1043 ordinary → line 10) and no
+  longer RED-defers on `has_form_8824`. Marked `D_4797_004` + `f4797_has_form_8824` RETIRED (now
+  supported); dropped `form_8824_like_kind` from FA-1040-4797-07's blocker list (only `form_4684_casualty`
+  remains). `check_4797_integrity.py` → **ALL CHECKS PASS** (11 scenarios; the additive feed params don't
+  touch any existing scenario). 4684 casualty interplay still RED-defers.
+- **Pending re-seed now covers BOTH the 6252 AND 8824 4797 amendments** — re-run `load_4797` on the next
+  RS deploy (the deployed RS DB still has the old D_4797_003/004-active rows). The canonical tts
+  `form_4797_spec.json` was mirrored by hand (D_4797_004 + fact retired-text). No other RS form touched.
+
 ## 2026-06-28 — FORM 4797 amended to CLOSE the 6252 RED-defer (tts Form 6252 compute leg)
 - During the tts-tax-app Form 6252 (Installment Sale Income) COMPUTE leg, **Ken chose "fully retire the
   flag"** (close the 4797↔6252 RED-defer rather than keep `f4797_has_form_6252` as a manual escape hatch).
