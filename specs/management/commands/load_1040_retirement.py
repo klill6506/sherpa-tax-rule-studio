@@ -30,10 +30,19 @@ TOPIC SCOPE (SPRINT_SCOPE.md Topic 5 DoD — Ken-confirmed 2026-06-11):
       common exception codes 01-12 + 19 -> Sch 2 line 8); taxable Social
       Security worksheet (50%/85% tiers); flow assertions on 4a/4b, 5a/5b,
       6a/6b, Schedule 2 additions.
+  AMENDMENT 2026-06-28 (lump-sum SS election, D_RET_004) — Ken-directed retiree
+  hardening unit. The Pub 915 Lump-Sum Election (Worksheets 2 + 4) is now COMPUTED
+  (R-RET-LSE-WS2/WS4/ELECT), no longer RED-deferred. Explicit-toggle election
+  (ss_lump_sum_election; irrevocable without IRS consent). D_RET_004 repurposed to
+  the no-silent-gap "earlier-year data missing" guard; D_RET_008 surfaces the
+  WS1-vs-WS4 comparison. Source: Pub 915 (2025) verbatim (IRS_2025_PUB915), the
+  Terry Jackson worked example reconciles to the dollar (scenario LSE-1).
+
   OUT (RED "prepare manually", never silently computed):
       Simplified Method (box 2a blank / "taxable amount not determined" checked
-      with basis); Net Unrealized Appreciation (box 6); lump-sum SS election;
-      simultaneous IRA-deduction <-> taxable-SS circular; Roth basis tracking
+      with basis); Net Unrealized Appreciation (box 6); pre-1994 lump-sum years
+      (Worksheet 3 — RED, vanishingly rare); simultaneous IRA-deduction <->
+      taxable-SS circular (D_RET_005, the separate larger unit); Roth basis tracking
       (codes J/T with blank box 2a -> needs Form 8606); Form 4972 10-year
       option (code A); §1035 exchange (code 6); recharacterizations (N/R);
       uncommon codes (C/E/F/K/L/M/U/W); 5329 exception numbers >= 13 and "99".
@@ -110,6 +119,12 @@ from specs.models import (
 # Worksheet transcription + TY2026 §86/5329 constants confirmed non-indexed +
 # R-RET-CODE J-wording tightened). Math gate (check_retirement_integrity.py)
 # green before the flip.
+#
+# AMENDMENT 2026-06-28 (lump-sum SS election): the new R-RET-LSE-* rules + Pub 915
+# source + LSE-1/LSE-2 scenarios are math-gate-green (check_retirement_integrity.py).
+# Ken approved building this in-session (chose D_RET_004 first + the explicit-toggle
+# election behavior) and reviewed the Pub 915 verification (the Terry example
+# reconciles to the dollar). Seed the amendment only after the in-session go-ahead.
 READY_TO_SEED = True
 
 
@@ -271,6 +286,138 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "QCD code Y always pairs with 4, 7, or K; reduces 4b with the 'QCD' literal.",
                 "is_key_excerpt": False,
+            },
+        ],
+    },
+    {
+        "source_code": "IRS_2025_PUB915",
+        "source_type": "official_publication",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "2025 Publication 915 — Social Security and Equivalent Railroad Retirement Benefits",
+        "citation": "Pub 915 (2025), 'Lump-Sum Election' + Worksheets 1, 2, 4; p.11-19",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/pub/irs-pdf/p915.pdf",
+        "current_status": "active",
+        "is_substantive_authority": False,
+        "is_filing_authority": True,
+        "trust_score": 9.50,
+        "requires_human_review": True,
+        "notes": (
+            "AMENDMENT 2026-06-28 (lump-sum election unit, D_RET_004). Transcribed "
+            "verbatim from the fetched 2025 Pub 915 PDF (pymupdf dump, pages 10-19; "
+            "scratchpad p915_worksheets.txt). Worksheet 1 = the regular SS Benefits "
+            "Worksheet (already in this spec as R-RET-SS-01/02). Worksheet 2 (per "
+            "earlier year, post-1993) refigures that year's taxable benefits with the "
+            "lump-sum portion added, then subtracts the previously-reported taxable "
+            "benefits = the ADDITIONAL taxable benefits. Worksheet 4 re-runs the 2025 "
+            "worksheet with box 5 reduced by the pre-2025 lump sum, then adds the "
+            "Worksheet-2 additionals; if WS4 line 21 < WS1 line 19 the election lowers "
+            "taxable SS. requires_human_review=True for Ken's walk (the worked example "
+            "below reconciles to the dollar — verify the transcription)."
+        ),
+        "topics": ["social_security"],
+        "excerpts": [
+            {
+                "excerpt_label": "Lump-Sum Election — method (verbatim, p.11)",
+                "location_reference": "Pub 915 (2025), 'Lump-Sum Election', p.11",
+                "excerpt_text": (
+                    "Under the lump-sum election method, you refigure the taxable part of "
+                    "all your benefits for the earlier year (including the lump-sum payment) "
+                    "using that year's income. Then, you subtract any taxable benefits for "
+                    "that year that you previously reported. The remainder is the taxable "
+                    "part of the lump-sum payment. Add it to the taxable part of your "
+                    "benefits for 2025 (figured without the lump-sum payment for the earlier "
+                    "year). ... Will the lump-sum election method lower your taxable "
+                    "benefits? 1. Complete Worksheet 1. 2. Complete Worksheet 2 [post-1993] "
+                    "or 3 [pre-1994] for each earlier year. 3. Complete Worksheet 4. "
+                    "4. Compare line 19 of Worksheet 1 with line 21 of Worksheet 4. If the "
+                    "taxable benefits on Worksheet 4 are lower, you can elect to report the "
+                    "lower amount (check the box on Form 1040 line 6c; enter Worksheet 1 "
+                    "line 1 on 6a and Worksheet 4 line 21 on 6b)."
+                ),
+                "summary_text": (
+                    "Refigure earlier-year taxable benefits WITH the lump sum (WS2), subtract "
+                    "previously-reported, = additional taxable benefits; WS4 = 2025 benefits "
+                    "(net of pre-2025 lump sum) + Σ additionals; elect (check 6c) only if WS4 "
+                    "L21 < WS1 L19. Election is irrevocable without IRS consent."
+                ),
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Worksheet 2 — Additional Taxable Benefits, earlier year (verbatim, p.17)",
+                "location_reference": "Pub 915 (2025), Worksheet 2, p.17",
+                "excerpt_text": (
+                    "1. box 5 of all SSA/RRB-1099 for the earlier year, PLUS the lump-sum "
+                    "payment for the earlier year received after that year. 2. line 1 x 50%. "
+                    "3. AGI for the earlier year. 4. exclusions/adjustments for the earlier "
+                    "year. 5. tax-exempt interest for the earlier year. 6. add lines 2-5. "
+                    "7. taxable benefits previously reported for the earlier year. 8. line 6 "
+                    "- line 7. 9. $32,000 MFJ / $25,000 single/HOH/QSS/MFS-apart (MFS-with-"
+                    "spouse: skip 9-16, line 17 = 0.85 x line 8). 10. is line 8 > line 9? "
+                    "No -> line 21 = 0; Yes -> line 8 - line 9. 11. $12,000 MFJ / $9,000 "
+                    "other. 12. line 10 - line 11, not below 0. 13. smaller of line 10 or "
+                    "11. 14. line 13 x 50%. 15. smaller of line 2 or 14. 16. line 12 x 85%. "
+                    "17. line 15 + 16. 18. line 1 x 85%. 19. smaller of line 17 or 18 "
+                    "(refigured taxable benefits). 20. taxable benefits for the earlier year "
+                    "previously reported. 21. line 19 - line 20 (ADDITIONAL taxable benefits) "
+                    "-> Worksheet 4 line 20."
+                ),
+                "summary_text": (
+                    "Same 50%/85% tiers as WS1, but L1 = earlier-year benefits + lump sum, "
+                    "and L8 subtracts the previously-reported taxable benefits (which AGI "
+                    "already contains). L21 = refigured - previously-reported = additional."
+                ),
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Worksheet 4 — Taxable Benefits Under Lump-Sum Election (verbatim, p.18-19)",
+                "location_reference": "Pub 915 (2025), Worksheet 4, p.18-19",
+                "excerpt_text": (
+                    "1. box 5 of all 2025 SSA/RRB-1099 MINUS the lump-sum payment for years "
+                    "before 2025 (if <=0, line 19 = 0, go to 20). 2. line 1 x 50%. 3. "
+                    "Worksheet 1 line 3. 4. Worksheet 1 line 4. 5. Worksheet 1 line 5. 6. "
+                    "combine lines 2-5. 7. Worksheet 1 line 7. 8. line 6 - line 7. 9. "
+                    "Worksheet 1 line 9 (MFS-with-spouse: skip 9-16, line 17 = 0.85 x line "
+                    "8). 10. is line 8 > line 9? No -> line 19 = 0, go to 20; Yes -> line 8 "
+                    "- line 9. 11. Worksheet 1 line 11. 12. line 10 - 11, not below 0. 13. "
+                    "smaller of 10 or 11. 14. line 13 x 50%. 15. smaller of 2 or 14. 16. "
+                    "line 12 x 85%. 17. line 15 + 16. 18. line 1 x 85%. 19. smaller of 17 "
+                    "or 18. 20. total of Worksheet 2 line 21 (and Worksheet 3 line 14) for "
+                    "all earlier years. 21. line 19 + line 20 = taxable benefits under the "
+                    "lump-sum election method -> Form 1040 line 6b (if < Worksheet 1 line 19)."
+                ),
+                "summary_text": (
+                    "WS4 reuses WS1 lines 3/4/5/7/9/11 (the 2025 income context) but starts "
+                    "from box 5 reduced by the pre-2025 lump sum, then ADDS the Σ WS2 line-21 "
+                    "additionals. Final L21 -> 6b when it beats WS1 L19."
+                ),
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Worked example (Terry Jackson, single) — reconciles to the dollar",
+                "location_reference": "Pub 915 (2025), Example + filled-in Worksheet 4, p.11-14",
+                "excerpt_text": (
+                    "Terry (single) received in 2025 a $6,000 lump sum ($2,000 for 2024, "
+                    "$4,000 for 2025) + $5,000 regular = $11,000 box 5. 2025 other income "
+                    "$25,500; 2024 income $23,000. Worksheet 1 (regular, all $11,000): line "
+                    "19 = $3,000. Worksheet 2 (2024): L1 = 0 + 2,000 = 2,000; L6 = 1,000 + "
+                    "23,000 = 24,000; L8 = 24,000; L9 = 25,000 -> line 10 No -> line 21 = 0. "
+                    "Worksheet 4: L1 = 11,000 - 2,000 = 9,000; L2 = 4,500; L3 = 25,500; L6 = "
+                    "30,000; L8 = 30,000; L9 = 25,000; L10 = 5,000; L11 = 9,000; L12 = 0; "
+                    "L13 = 5,000; L14 = 2,500; L15 = 2,500; L16 = 0; L17 = 2,500; L18 = "
+                    "7,650; L19 = 2,500; L20 = 0; L21 = $2,500. Because $2,500 < $3,000, "
+                    "Terry elects, checks 6c, reports $11,000 on 6a and $2,500 on 6b."
+                ),
+                "summary_text": (
+                    "The whole method, end to end: election saves $500 of taxable SS. Used "
+                    "as the canonical test scenario (LSE-1) for the integrity gate and the "
+                    "tts pure compute tests."
+                ),
+                "is_key_excerpt": True,
             },
         ],
     },
@@ -533,6 +680,39 @@ RET_FACTS: list[dict] = [
      "sort_order": 32,
      "notes": ("RETURN LEVEL. SS Worksheet: MFS-lived-with-spouse skips lines 8-15 and taxes 85% from dollar one "
                "(line 16 = line 7 x 85%). MFS-lived-apart uses the single $25,000 base + checks 1040 line 6d.")},
+    # ── Lump-Sum Election facts (AMENDMENT 2026-06-28; Pub 915 Worksheets 2 + 4) ──
+    {"fact_key": "ss_lump_sum_election", "label": "Lump-sum election: report taxable SS under the Pub 915 lump-sum method",
+     "data_type": "boolean", "sort_order": 33,
+     "notes": ("RETURN LEVEL (Taxpayer toggle). EXPLICIT election (irrevocable without IRS consent — Ken 2026-06-28). "
+               "False -> regular Worksheet 1 governs line 6b. True -> apply Worksheet 4 line 21 to 6b + check 1040 "
+               "line 6c. The WS1-vs-WS4 comparison is always computed (D_RET_008)." )},
+    {"fact_key": "lse_earlier_year", "label": "Lump-sum: the earlier year a portion is attributable to",
+     "data_type": "string", "sort_order": 34,
+     "notes": "PER EARLIER YEAR (SocialSecurityLumpSum row). The year from SSA-1099 box 3 (post-1993 -> Worksheet 2)."},
+    {"fact_key": "lse_lump_sum_for_year", "label": "Lump-sum: amount of the 2025 lump-sum attributable to the earlier year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 35,
+     "notes": "PER EARLIER YEAR. WS2 line 1 second addend; Σ across rows = the 'pre-2025 lump sum' subtracted at WS4 line 1."},
+    {"fact_key": "lse_earlier_year_net_benefits", "label": "Lump-sum: SSA box 5 benefits actually received IN the earlier year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 36,
+     "notes": "PER EARLIER YEAR. WS2 line 1 first addend (benefits received in that year, excluding the lump sum)."},
+    {"fact_key": "lse_earlier_year_agi", "label": "Lump-sum: adjusted gross income for the earlier year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 37,
+     "notes": "PER EARLIER YEAR. WS2 line 3 (preparer-asserted from the earlier-year return). AGI already includes that year's taxable SS."},
+    {"fact_key": "lse_earlier_year_adjustments", "label": "Lump-sum: earlier-year exclusions/adjustments (8839/8815/2555/etc.)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 38,
+     "notes": "PER EARLIER YEAR. WS2 line 4 (usually 0)."},
+    {"fact_key": "lse_earlier_year_taxexempt", "label": "Lump-sum: tax-exempt interest received in the earlier year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 39,
+     "notes": "PER EARLIER YEAR. WS2 line 5."},
+    {"fact_key": "lse_earlier_year_prior_taxable_ss", "label": "Lump-sum: taxable SS benefits previously reported for the earlier year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 40,
+     "notes": "PER EARLIER YEAR. WS2 line 7 AND line 20 (the previously-reported taxable benefits; AGI in line 3 already contains it)."},
+    {"fact_key": "lse_earlier_year_mfj", "label": "Lump-sum: earlier-year filing status was married filing jointly",
+     "data_type": "boolean", "sort_order": 41,
+     "notes": "PER EARLIER YEAR. True -> WS2 base $32,000 / tier $12,000; else $25,000 / $9,000."},
+    {"fact_key": "lse_earlier_year_mfs_with_spouse", "label": "Lump-sum: earlier-year MFS and lived with spouse",
+     "data_type": "boolean", "sort_order": 42,
+     "notes": "PER EARLIER YEAR. True -> WS2 skips lines 9-16 (85% from dollar one), like the current-year MFS-with-spouse path."},
     # ── 5329 linkage facts (return level; consumed by the 5329 form) ──
     {"fact_key": "exception_number_5329", "label": "Form 5329 line 2: early-distribution exception number (01-23 or 99)",
      "data_type": "string", "sort_order": 40,
@@ -628,6 +808,53 @@ RET_RULES: list[dict] = [
      "formula": "taxable SS (6b) <= 85% of net benefits (WS17), and 6b <= WS1",
      "inputs": [], "outputs": [],
      "description": "ONCE PER RETURN. The 85% cap is algebraic (WS18 = min(WS16, WS17)) — wired as a flow assertion."},
+    # ── Lump-Sum Election (Pub 915 Worksheets 2 + 4) — AMENDMENT 2026-06-28 ──
+    {"rule_id": "R-RET-LSE-WS2", "title": "Worksheet 2 (per earlier year): ADDITIONAL taxable benefits from the lump sum",
+     "rule_type": "calculation", "precedence": 6, "sort_order": 13,
+     "formula": (
+         "PER EARLIER YEAR (post-1993). L1 = lse_earlier_year_net_benefits + lse_lump_sum_for_year. "
+         "IF L1 <= 0: L21 = 0. ELSE L2 = 0.5*L1; L6 = L2 + lse_earlier_year_agi + lse_earlier_year_adjustments "
+         "+ lse_earlier_year_taxexempt; L8 = L6 - lse_earlier_year_prior_taxable_ss. "
+         "base/tier = (32000/12000) if lse_earlier_year_mfj else (25000/9000). "
+         "IF lse_earlier_year_mfs_with_spouse: L19 = min(max(0,0.85*L8), 0.85*L1). "
+         "ELIF L8 <= base: L19 = 0. ELSE L10 = L8-base; L12 = max(0, L10-tier); L13 = min(L10,tier); "
+         "L14 = 0.5*L13; L15 = min(L2,L14); L16 = 0.85*L12; L17 = L15+L16; L18 = 0.85*L1; L19 = min(L17,L18). "
+         "L21 = L19 - lse_earlier_year_prior_taxable_ss (>= 0; refigured >= previously-reported)."),
+     "inputs": ["lse_earlier_year_net_benefits", "lse_lump_sum_for_year", "lse_earlier_year_agi",
+                "lse_earlier_year_adjustments", "lse_earlier_year_taxexempt", "lse_earlier_year_prior_taxable_ss",
+                "lse_earlier_year_mfj", "lse_earlier_year_mfs_with_spouse"],
+     "outputs": ["lse_ws2_21"],
+     "description": ("PER EARLIER YEAR. Pub 915 Worksheet 2 verbatim. Refigures the earlier year's taxable benefits "
+                     "WITH the lump-sum portion added (L1), subtracts the previously-reported taxable benefits "
+                     "(already inside AGI at L3, removed at L8) -> the additional taxable benefits (L21) -> WS4 L20. "
+                     "Same 50%/85% tier math as the regular worksheet.")},
+    {"rule_id": "R-RET-LSE-WS4", "title": "Worksheet 4: taxable benefits under the lump-sum election method",
+     "rule_type": "calculation", "precedence": 7, "sort_order": 14,
+     "formula": (
+         "L1 = ssa_box5_net_benefits - SUM(lse_lump_sum_for_year over rows) [the pre-2025 lump sum]. "
+         "IF L1 <= 0: L19 = 0. ELSE L2 = 0.5*L1; L6 = L2 + WS1.L3(ws_3) + WS1.L4(ws_4) + WS1.L5(0); "
+         "L8 = L6 - WS1.L7(ws_6). base = WS1.L9(ws_8); tier = WS1.L11(ws_10). "
+         "IF mfs_lived_with_spouse: L19 = min(max(0,0.85*L8), 0.85*L1). ELIF L8 <= base: L19 = 0. "
+         "ELSE L10 = L8-base; L12 = max(0,L10-tier); L13 = min(L10,tier); L14 = 0.5*L13; L15 = min(L2,L14); "
+         "L16 = 0.85*L12; L17 = L15+L16; L18 = 0.85*L1; L19 = min(L17,L18). "
+         "L20 = SUM(lse_ws2_21 over rows). L21 = L19 + L20 = taxable benefits under the election."),
+     "inputs": ["ssa_box5_net_benefits", "lse_lump_sum_for_year", "mfs_lived_with_spouse"],
+     "outputs": ["lse_ws4_21"],
+     "description": ("ONCE PER RETURN. Pub 915 Worksheet 4 verbatim. Reuses the regular worksheet's 2025 income "
+                     "context (WS1 lines 3/4/5/7/9/11 = the 1040_RETIREMENT ws_3/ws_4/0/ws_6/ws_8/ws_10) but starts "
+                     "from box 5 reduced by the pre-2025 lump sum, then ADDS the Σ Worksheet-2 additionals. WS1 line "
+                     "5 (Form 8839/2555/4563 exclusions) is folded to 0 here, matching R-RET-SS-01's ws_5.")},
+    {"rule_id": "R-RET-LSE-ELECT", "title": "Apply the lump-sum election to 1040 line 6b (explicit toggle) + box 6c",
+     "rule_type": "routing", "precedence": 8, "sort_order": 15,
+     "formula": (
+         "Always compute lse_ws4_21 (WS4) and ws_18 (WS1, the regular 6b) for the comparison (D_RET_008). "
+         "IF ss_lump_sum_election is True: 1040 line 6b = lse_ws4_21 AND check 1040 line 6c (lump-sum-election box). "
+         "ELSE 6b = ws_18 (regular). The preparer's explicit toggle governs (the election is irrevocable without "
+         "IRS consent — Ken 2026-06-28); a preparer override on 6b still wins over both."),
+     "inputs": ["ss_lump_sum_election"], "outputs": ["1040.L6b", "1040.L6c"],
+     "description": ("ONCE PER RETURN. JUDGMENT (Ken 2026-06-28): explicit-toggle election, NOT auto-apply. Runs "
+                     "AFTER R-RET-SS-02 (which wrote the regular 6b) and supersedes 6b only when the toggle is on. "
+                     "Checks the 6c box on the rendered 1040. D_RET_008 surfaces the WS1-vs-WS4 comparison + savings.")},
 ]
 
 RET_LINES: list[dict] = [
@@ -670,6 +897,14 @@ RET_LINES: list[dict] = [
     {"line_number": "ws_17", "description": "SS WS17 = 85% x WS1 (absolute cap)", "line_type": "calculated", "source_rules": ["R-RET-SS-02"], "sort_order": 26},
     {"line_number": "ws_18", "description": "SS WS18 = min(WS16, WS17) -> Form 1040 line 6b", "line_type": "total",
      "source_rules": ["R-RET-SS-02"], "destination_form": "Form 1040 line 6b", "sort_order": 27},
+    # Lump-Sum Election outputs (AMENDMENT 2026-06-28)
+    {"line_number": "lse_ws2_21", "description": "Pub 915 Worksheet 2 line 21: additional taxable benefits per earlier year",
+     "line_type": "calculated", "source_rules": ["R-RET-LSE-WS2"], "sort_order": 30,
+     "notes": "PER EARLIER YEAR; Σ -> Worksheet 4 line 20."},
+    {"line_number": "lse_ws4_21", "description": "Pub 915 Worksheet 4 line 21: taxable benefits under the lump-sum election",
+     "line_type": "total", "source_rules": ["R-RET-LSE-WS4", "R-RET-LSE-ELECT"],
+     "destination_form": "Form 1040 line 6b (when ss_lump_sum_election)", "sort_order": 31,
+     "notes": "When the election toggle is on, supersedes ws_18 on 1040 line 6b + checks line 6c."},
 ]
 
 RET_DIAGNOSTICS: list[dict] = [
@@ -695,13 +930,18 @@ RET_DIAGNOSTICS: list[dict] = [
                  "N/R=recharacterization, or a Roth code J/T with a blank box 2a needing Form 8606 basis). This "
                  "distribution is NOT computed."),
      "notes": "JUDGMENT 1. v1 supported set Ken-confirmed 2026-06-11."},
-    {"diagnostic_id": "D_RET_004", "title": "Social Security lump-sum election (prior-year benefit) — unsupported",
+    {"diagnostic_id": "D_RET_004", "title": "Social Security lump-sum election — earlier-year data missing",
      "severity": "error",
-     "condition": "ssa_lump_sum_prior_year is True",
-     "message": ("Not supported — prepare manually: the SSA-1099 includes a lump-sum payment for an earlier year. "
-                 "The Lump-Sum Election (Pub 915) can reduce the taxable amount and is not modeled; the standard "
-                 "worksheet result is shown but the election is NOT applied."),
-     "notes": "SPRINT_SCOPE Topic 5 DoD: lump-sum election RED."},
+     "condition": ("ssa_lump_sum_prior_year is True AND no complete SocialSecurityLumpSum row exists "
+                   "(no earlier-year row with lse_lump_sum_for_year > 0)"),
+     "message": ("A lump-sum Social Security payment for an earlier year is indicated, but the earlier-year data "
+                 "needed for the Pub 915 lump-sum election (the amount for each year, plus that year's AGI, "
+                 "tax-exempt interest, and previously-reported taxable benefits) is missing or incomplete. The "
+                 "election cannot be computed, so only the regular worksheet (all benefits taxed in 2025) is "
+                 "applied. Enter the earlier-year rows, or clear the lump-sum indicator."),
+     "notes": ("AMENDMENT 2026-06-28: was a blanket 'not supported' RED; the lump-sum election is now COMPUTED "
+               "(R-RET-LSE-WS2/WS4/ELECT). This RED is the no-silent-gap guard that the election data is present "
+               "when a lump sum is indicated — so we never quietly leave the election off for lack of inputs.")},
     {"diagnostic_id": "D_RET_005", "title": "IRA deduction with taxable Social Security — circular interaction",
      "severity": "error",
      "condition": "Schedule 1 line 20 (IRA deduction) > 0 AND ssa_box5_net_benefits > 0 AND 6b > 0",
@@ -721,6 +961,18 @@ RET_DIAGNOSTICS: list[dict] = [
      "message": ("This early distribution is from a SIMPLE IRA within the first 2 years (code S) — the additional "
                  "tax is 25%, not 10% (Form 5329 Part I caution). Verify the rate applied."),
      "notes": "Informational confirmation that the 25% branch engaged."},
+    {"diagnostic_id": "D_RET_008", "title": "Social Security lump-sum election — comparison result", "severity": "info",
+     "condition": "at least one complete SocialSecurityLumpSum row exists (the election is computable)",
+     "message": ("Lump-sum election comparison — regular method (Worksheet 1) taxable Social Security vs the "
+                 "Pub 915 lump-sum election method (Worksheet 4). The tts side fills the two amounts and adapts "
+                 "the wording: (a) election OFF and the election would lower taxable SS -> WARNING 'electing "
+                 "would lower taxable Social Security by $X; check the lump-sum election box to apply it'; "
+                 "(b) election ON and beneficial -> INFO 'election applied; it lowers taxable Social Security by "
+                 "$X'; (c) election ON but NOT beneficial -> WARNING 'the election does not lower taxable Social "
+                 "Security; the regular method is lower or equal — consider clearing the election'."),
+     "notes": ("AMENDMENT 2026-06-28: surfaces the WS1-vs-WS4 comparison + savings. Severity/message adapt on the "
+               "tts side (bridge-gated to the same compute_ss_lumpsum helper). Pub 915 'Will the lump-sum election "
+               "lower your taxable benefits?' decision step.")},
 ]
 
 RET_SCENARIOS: list[dict] = [
@@ -830,6 +1082,30 @@ RET_SCENARIOS: list[dict] = [
      "inputs": {"r_docs": [{"box1": 15000, "box2a": 15000, "code": "1", "ira": False}], "exception_number_5329": "25"},
      "expected_outputs": {"D_RET_006_fires": True},
      "notes": "Exception 25 is outside the valid table (01-23/99) — a garbage entry. (Was '13', now a valid §457 code.)"},
+    # ── Lump-Sum Election (Pub 915 Worksheets 2 + 4) — AMENDMENT 2026-06-28 ──
+    {"scenario_name": "LSE-1 — Pub 915 worked example (Terry Jackson): election 2,500 < regular 3,000",
+     "scenario_type": "normal", "sort_order": 40,
+     "inputs": {"filing_status": "single", "ssa_box5_2025": 11000, "ws1_other_income": 25500,
+                "ws1_taxexempt": 0, "ws1_adjustments": 0, "election": True,
+                "earlier_years": [
+                    {"year": 2024, "lump_for_year": 2000, "earlier_net_benefits": 0, "agi": 23000,
+                     "adjustments": 0, "taxexempt": 0, "prior_taxable_ss": 0, "mfj": False, "mfs_with_spouse": False}]},
+     "expected_outputs": {"ws1_line19": 3000, "ws2_21": [0], "ws4_line19": 2500, "ws4_line21": 2500,
+                          "elected_6b": 2500, "beneficial": True},
+     "notes": ("The canonical Pub 915 (2025) example, verbatim. 2024 WS2 = 0 (24,000 < 25,000 base -> line 10 No). "
+               "WS4 = 2,500 < WS1 3,000 -> election applied; saves 500 of taxable SS.")},
+    {"scenario_name": "LSE-2 — not beneficial: high earlier-year income makes WS4 (4,200) > WS1 (3,000)",
+     "scenario_type": "edge", "sort_order": 41,
+     "inputs": {"filing_status": "single", "ssa_box5_2025": 11000, "ws1_other_income": 25500,
+                "ws1_taxexempt": 0, "ws1_adjustments": 0, "election": False,
+                "earlier_years": [
+                    {"year": 2024, "lump_for_year": 2000, "earlier_net_benefits": 0, "agi": 80000,
+                     "adjustments": 0, "taxexempt": 0, "prior_taxable_ss": 0, "mfj": False, "mfs_with_spouse": False}]},
+     "expected_outputs": {"ws1_line19": 3000, "ws2_21": [1700], "ws4_line19": 2500, "ws4_line21": 4200,
+                          "elected_6b": 3000, "beneficial": False},
+     "notes": ("Same current-year facts as LSE-1 but 2024 AGI = 80,000 -> the 2,000 lump sum is 85% taxable in 2024 "
+               "(WS2 = 1,700). WS4 = 2,500 + 1,700 = 4,200 > WS1 3,000 -> NOT beneficial; election OFF keeps 3,000 "
+               "(D_RET_008 reports 'does not lower'). Proves the comparison branch is load-bearing.")},
 ]
 
 RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -845,6 +1121,9 @@ RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-RET-SS-01", "IRS_2025_1040_INSTR", "primary", "SS Benefits Worksheet lines 1-7 (verbatim p.31)"),
     ("R-RET-SS-02", "IRS_2025_1040_INSTR", "primary", "SS Benefits Worksheet lines 8-18 (verbatim p.31)"),
     ("R-RET-SS-VAL", "IRS_2025_1040_INSTR", "secondary", "85% cap = worksheet line 17 (derived)"),
+    ("R-RET-LSE-WS2", "IRS_2025_PUB915", "primary", "Pub 915 Worksheet 2 (additional taxable benefits, verbatim)"),
+    ("R-RET-LSE-WS4", "IRS_2025_PUB915", "primary", "Pub 915 Worksheet 4 (taxable benefits under election, verbatim)"),
+    ("R-RET-LSE-ELECT", "IRS_2025_PUB915", "primary", "Pub 915 'Lump-Sum Election' decision + 1040 line 6b/6c"),
 ]
 
 
@@ -1394,6 +1673,16 @@ FLOW_ASSERTIONS: list[dict] = [
                                  "ss_lump_sum", "ira_deduction_with_taxable_ss", "unsupported_5329_exception"],
                     "expect": {"result_blank": True, "red_fires": True}},
      "sort_order": 7},
+    {"assertion_id": "FA-1040-RET-08", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Lump-sum election: 6b = Worksheet 4 line 21 when elected (else regular ws_18)",
+     "description": ("Validates R-RET-LSE-WS2/WS4/ELECT. Bugs it catches: WS4 line 1 not reduced by the pre-2025 "
+                     "lump sum; the Σ Worksheet-2 additionals not added; the election applied without the explicit "
+                     "ss_lump_sum_election toggle; or 6b not superseding the regular worksheet result when elected."),
+     "definition": {"kind": "formula_check", "form": "1040_RETIREMENT",
+                    "formula": ("lse_ws4_21 == lse_ws4_19 + sum(lse_ws2_21) and "
+                                "(line_6b == lse_ws4_21 if ss_lump_sum_election else line_6b == ws_18)"),
+                    "must_write_to": {"form": "1040", "line": "6b"}},
+     "sort_order": 8},
 ]
 
 
@@ -1406,6 +1695,7 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRS_2025_1099R_INSTR", "1040_RETIREMENT", "governs"),
     ("IRS_2025_1040_INSTR", "1040_RETIREMENT", "governs"),
     ("IRS_2025_1040_FORM", "1040_RETIREMENT", "informs"),
+    ("IRS_2025_PUB915", "1040_RETIREMENT", "governs"),
     ("IRS_2025_5329_FORM", "5329", "governs"),
     ("IRS_2025_5329_INSTR", "5329", "governs"),
     ("IRS_2025_1099R_INSTR", "5329", "informs"),

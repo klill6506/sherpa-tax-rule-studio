@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-28 — 1040_RETIREMENT amendment: SS LUMP-SUM ELECTION (Pub 915 WS2+WS4) — SPEC + MATH GATE GREEN (seed pending Ken go-ahead)
+- **Retiree-hardening cluster, item 1 (D_RET_004).** Ken-directed (tts AskUserQuestion: chose D_RET_004 first +
+  the EXPLICIT-TOGGLE election behavior, irrevocable-without-IRS-consent). Amended `load_1040_retirement.py`:
+  the Pub 915 Lump-Sum Election is now COMPUTED, no longer the blanket RED-defer.
+- **Added to 1040_RETIREMENT:** new authority source `IRS_2025_PUB915` (verbatim Worksheets 1/2/4 + the
+  Terry Jackson worked example, `requires_human_review=True`); facts `ss_lump_sum_election` (toggle) + 9
+  `lse_*` per-earlier-year facts; rules `R-RET-LSE-WS2` / `R-RET-LSE-WS4` / `R-RET-LSE-ELECT`; lines
+  `lse_ws2_21` / `lse_ws4_21`; **D_RET_004 repurposed** (blanket RED → no-silent-gap "earlier-year data
+  missing" guard) + new **D_RET_008** (WS1-vs-WS4 comparison/savings, severity adapts tts-side); scenarios
+  LSE-1 (Terry, election 2,500 < regular 3,000 → beneficial) + LSE-2 (high earlier-year income → WS4 4,200 >
+  WS1 3,000 → not beneficial); `FA-1040-RET-08`.
+- **Counts now:** 1040_RETIREMENT 35 facts / 11 rules / 26 lines / 8 diagnostics / 20 scenarios / 15 links;
+  flow assertions 8. `check_retirement_integrity.py` extended with an INDEPENDENT WS2/WS4 transcription
+  (`_ss_tiers`/`ws2_additional`/`ws4_lse`) + LSE-1/LSE-2 checks + load-bearing benefit pins → **ALL CHECKS PASS**.
+- LAW VERIFIED 2026-06-28 vs the actual **Pub 915 (2025) PDF** (pages 10-19, pymupdf dump): Worksheets 1/2/4
+  + the Lump-Sum Election method + the filled-in Terry example (reconciles to the dollar).
+- **Method:** WS2 (per earlier year, post-1993) refigures that year's taxable benefits WITH the lump-sum
+  portion added (L1 = earlier-year box5 + lump-for-year), subtracts the previously-reported taxable benefits
+  (already inside AGI), → additional taxable benefits (L21). WS4 re-runs the 2025 worksheet with box5 reduced
+  by Σ(pre-2025 lump sums), then adds Σ WS2 L21. Elect (6b = WS4 L21, check 1040 box 6c) only when the toggle
+  is on; D_RET_008 surfaces whether it beats WS1. WS3 (pre-1994) RED-deferred (vanishingly rare).
+- **READY_TO_SEED stays True** (form already approved+seeded 2026-06-11). The new lump-sum content is NOT yet
+  seeded to the RS DB nor re-exported to `tts/server/specs/retirement_spec.json` — **pending Ken's in-session
+  seed go-ahead** (he approved the substance; this is the formal flip-equivalent for the amendment).
+- **NEXT (tts):** build the unit — `SocialSecurityLumpSum` model + `ss_lump_sum_election` on Taxpayer (migration)
+  → `compute_ss_lumpsum.py` (WS2/WS4, supersede 6b) → render statement + 1040 box 6c → input/serializer/CRUD/React
+  → `rules_retirement.py` D_RET_004 rewrite + D_RET_008 → flow assertion → tests (LSE-1/LSE-2). D_RET_005
+  (IRA-deduction↔SS circular) + D_8606_NO_YEAREND remain the other two cluster items.
+
+---
+
 ## 2026-06-28 — FORM 8824 (Like-Kind Exchanges + §1043) — SPEC AUTHORED + INTEGRITY GREEN + SEEDED ✅ (Ken approved)
 - **Ken chose (tts AskUserQuestion): "Full incl. Part IV + computed recapture"** — the WHOLE Form 8824.
   New loader `load_8824.py` (form_number "8824", entity_types ['1040'], v1 — lookup was 404, brand-new

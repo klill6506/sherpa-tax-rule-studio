@@ -223,6 +223,77 @@ def f5329_full(i):
     return o
 
 
+# ── Lump-Sum Election (Pub 915 Worksheets 2 + 4) — independent transcription ──
+# Carries its OWN copy of the worksheet logic + the §86 thresholds so a loader
+# transcription error can't also pass the checker (the bridge-gate discipline).
+
+def _ss_tiers(L1, L8, mfj, mfs_with_spouse):
+    """Shared 50%/85% tier block used by SS WS1/WS2/WS4 (lines 2 + 9-19 of the
+    Pub 915 worksheets). Given L1 (benefits for the calc) and L8 (provisional
+    excess over adjustments), returns the 'smaller of L17 or L18' result."""
+    L2 = TIER1 * D(L1)
+    base = Decimal("32000") if mfj else Decimal("25000")
+    tier = Decimal("12000") if mfj else Decimal("9000")
+    if mfs_with_spouse:
+        L17 = TIER2 * max(Decimal("0"), D(L8))
+        L18 = TIER2 * D(L1)
+        return min(L17, L18)
+    if D(L8) <= base:
+        return Decimal("0")
+    L10 = D(L8) - base
+    L12 = max(Decimal("0"), L10 - tier)
+    L13 = min(L10, tier)
+    L14 = TIER1 * L13
+    L15 = min(L2, L14)
+    L16 = TIER2 * L12
+    L17 = L15 + L16
+    L18 = TIER2 * D(L1)
+    return min(L17, L18)
+
+
+def ws2_additional(row):
+    """Pub 915 Worksheet 2: additional taxable benefits for one earlier year."""
+    L1 = D(row.get("earlier_net_benefits", 0)) + D(row.get("lump_for_year", 0))
+    if L1 <= 0:
+        return Decimal("0")
+    L6 = (TIER1 * L1) + D(row.get("agi", 0)) + D(row.get("adjustments", 0)) + D(row.get("taxexempt", 0))
+    prior = D(row.get("prior_taxable_ss", 0))
+    L8 = L6 - prior
+    mfj = bool(row.get("mfj", False))
+    mfs = bool(row.get("mfs_with_spouse", False))
+    # Worksheet 2 line 10 "No" (L8 <= base, non-MFS path) -> line 21 = 0 directly.
+    base = Decimal("32000") if mfj else Decimal("25000")
+    if not mfs and L8 <= base:
+        return Decimal("0")
+    L19 = _ss_tiers(L1, L8, mfj, mfs)
+    return max(Decimal("0"), L19 - prior)
+
+
+def ws1_line19(box5, ws1_other_income, ws1_taxexempt, ws1_adjustments, filing_status, mfs_with_spouse):
+    """Pub 915 Worksheet 1 line 19 (= the regular taxable SS). Reuses ss_worksheet."""
+    return ss_worksheet(box5, ws1_other_income, filing_status,
+                        mfs_with_spouse=mfs_with_spouse, ws4_taxexempt=ws1_taxexempt,
+                        ws6_adjustments=ws1_adjustments)["6b"]
+
+
+def ws4_lse(inp):
+    """Pub 915 Worksheet 4: taxable benefits under the lump-sum election method.
+    Returns {'19': WS4 L19, '21': WS4 L21 (the election total)}."""
+    lump_total = sum((D(r.get("lump_for_year", 0)) for r in inp["earlier_years"]), Decimal("0"))
+    mfj = inp["filing_status"] == "mfj"
+    mfs = bool(inp.get("mfs_lived_with_spouse", False))
+    L1 = D(inp["ssa_box5_2025"]) - lump_total
+    if L1 <= 0:
+        L19 = Decimal("0")
+    else:
+        # WS4 L6 = 0.5*L1 + WS1.L3(income) + WS1.L4(2a) + WS1.L5(excl=0); L8 = L6 - WS1.L7(adj).
+        L6 = (TIER1 * L1) + D(inp.get("ws1_other_income", 0)) + D(inp.get("ws1_taxexempt", 0))
+        L8 = L6 - D(inp.get("ws1_adjustments", 0))
+        L19 = _ss_tiers(L1, L8, mfj, mfs)
+    add_total = sum((ws2_additional(r) for r in inp["earlier_years"]), Decimal("0"))
+    return {"19": L19, "21": L19 + add_total}
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Structural checks (mirror check_intdiv_integrity.py)
 # ═══════════════════════════════════════════════════════════════════════════
@@ -369,6 +440,44 @@ for key in ("F5329-T1", "F5329-T2", "F5329-T3", "F5329-T4", "F5329-T5",
             err(f"{key}: expected output '{out_key}' is not a recomputed line")
         else:
             check(f"{key} L{out_key}", o[out_key], want)
+
+# ── Lump-Sum Election scenarios (LSE-1 Terry worked example, LSE-2 not-beneficial) ──
+for key in ("LSE-1", "LSE-2"):
+    sc = s[key]
+    i = sc["inputs"]
+    eo = sc["expected_outputs"]
+    fs = i["filing_status"]
+    mfs = i.get("mfs_lived_with_spouse", False)
+    w1 = ws1_line19(i["ssa_box5_2025"], i["ws1_other_income"], i["ws1_taxexempt"],
+                    i["ws1_adjustments"], fs, mfs)
+    w4 = ws4_lse(i)
+    if "ws1_line19" in eo:
+        check(f"{key} WS1 L19", w1, eo["ws1_line19"])
+    if "ws2_21" in eo:
+        got = [ws2_additional(r) for r in i["earlier_years"]]
+        for n, (g, w) in enumerate(zip(got, eo["ws2_21"])):
+            check(f"{key} WS2[{n}] L21", g, w)
+    if "ws4_line19" in eo:
+        check(f"{key} WS4 L19", w4["19"], eo["ws4_line19"])
+    if "ws4_line21" in eo:
+        check(f"{key} WS4 L21", w4["21"], eo["ws4_line21"])
+    beneficial = D(w4["21"]) < D(w1)
+    if "beneficial" in eo and beneficial != eo["beneficial"]:
+        err(f"{key}: beneficial recomputed {beneficial} != authored {eo['beneficial']}")
+    # elected 6b = WS4 L21 when the toggle is on, else the regular WS1 L19.
+    elected_6b = w4["21"] if i.get("election") else w1
+    if "elected_6b" in eo:
+        check(f"{key} elected 6b", elected_6b, eo["elected_6b"])
+
+# Load-bearing: the election BENEFIT must be real (LSE-1 lower, LSE-2 higher).
+_l1 = s["LSE-1"]["inputs"]
+if not (D(ws4_lse(_l1)["21"]) < D(ws1_line19(_l1["ssa_box5_2025"], _l1["ws1_other_income"],
+        _l1["ws1_taxexempt"], _l1["ws1_adjustments"], _l1["filing_status"], False))):
+    err("LSE-1: WS4 not lower than WS1 — the election benefit is not load-bearing")
+_l2 = s["LSE-2"]["inputs"]
+if not (D(ws4_lse(_l2)["21"]) > D(ws1_line19(_l2["ssa_box5_2025"], _l2["ws1_other_income"],
+        _l2["ws1_taxexempt"], _l2["ws1_adjustments"], _l2["filing_status"], False))):
+    err("LSE-2: WS4 not higher than WS1 — the not-beneficial branch is not load-bearing")
 
 # ── RED-gate fixtures actually trigger their condition ──
 g1 = s["RET-G1"]["inputs"]["r_docs"][0]
