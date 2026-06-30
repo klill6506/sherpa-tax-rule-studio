@@ -532,6 +532,81 @@ AUTHORITY_SOURCES: list[dict] = [
             },
         ],
     },
+    # ── AMENDMENT 2026-06-30: Medicare premium deductibility (Sch A / SEHI) ──
+    {
+        "source_code": "IRS_2025_PUB502",
+        "source_type": "official_instruction",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "2025 Publication 502 — Medical and Dental Expenses",
+        "citation": "Pub. 502 (2025), 'Medicare Part B' / 'Medicare Part D' / 'Medicare Part A'",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/publications/p502",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "is_filing_authority": False,
+        "trust_score": 9.50,
+        "requires_human_review": False,
+        "notes": "Medicare premium deductibility verified 2026-06-30 against the live Pub 502 text (Part B / Part D / voluntary Part A).",
+        "topics": ["retirement_income"],
+        "excerpts": [
+            {
+                "excerpt_label": "Medicare Part B / Part D / Part A premiums (verbatim)",
+                "location_reference": "Pub. 502 (2025), 'Medicare Part B' and 'Medicare Part D'",
+                "excerpt_text": (
+                    "Medicare Part B is a supplemental medical insurance. Premiums you pay "
+                    "for Medicare Part B are a medical expense. ... Medicare Part D is a "
+                    "voluntary prescription drug insurance program for persons with Medicare "
+                    "Part A or B. You can include as a medical expense premiums you pay for "
+                    "Medicare Part D. ... If you aren't covered under social security (or "
+                    "weren't a government employee who paid Medicare tax), you can voluntarily "
+                    "enroll in Medicare Part A. In this situation, you can include the premiums "
+                    "you paid for Medicare Part A as a medical expense."
+                ),
+                "summary_text": "Medicare Part B and Part D premiums are deductible Schedule A medical expenses (Part A only if voluntarily enrolled).",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
+        "source_code": "IRS_2025_F7206_INSTR",
+        "source_type": "official_instruction",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "2025 Instructions for Form 7206 — Self-Employed Health Insurance Deduction",
+        "citation": "Instructions for Form 7206 (2025), 'Purpose of Form' — Medicare premiums",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/instructions/i7206",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "is_filing_authority": True,
+        "trust_score": 9.50,
+        "requires_human_review": False,
+        "notes": "Medicare-as-SEHI verified 2026-06-30 against the live Form 7206 instructions.",
+        "topics": ["retirement_income"],
+        "excerpts": [
+            {
+                "excerpt_label": "Medicare premiums as self-employed health insurance (verbatim)",
+                "location_reference": "Instructions for Form 7206 (2025), 'Purpose of Form' — Additional information",
+                "excerpt_text": (
+                    "Medicare premiums you voluntarily pay to obtain insurance in your name "
+                    "that is similar to qualifying private health insurance can be used to "
+                    "figure the deduction. You can't include amounts for any month you were "
+                    "eligible to participate in a health plan subsidized by your employer or "
+                    "your spouse's employer. The deduction can't be more than your net profit "
+                    "from the business under which the insurance plan is established."
+                ),
+                "summary_text": "Medicare premiums qualify as the self-employed health insurance deduction (Form 7206 -> Sch 1 line 17), capped at net SE profit; not for months eligible for an employer plan.",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
 ]
 
 # Excerpts to add to the EXISTING 1040 instructions source.
@@ -713,6 +788,26 @@ RET_FACTS: list[dict] = [
     {"fact_key": "lse_earlier_year_mfs_with_spouse", "label": "Lump-sum: earlier-year MFS and lived with spouse",
      "data_type": "boolean", "sort_order": 42,
      "notes": "PER EARLIER YEAR. True -> WS2 skips lines 9-16 (85% from dollar one), like the current-year MFS-with-spouse path."},
+    # ── SSA-1099 withholding / Medicare / Railroad facts (AMENDMENT 2026-06-30) ──
+    {"fact_key": "ssa_fed_withheld", "label": "SSA-1099 box 6 / RRB-1099 box 10: federal income tax withheld",
+     "data_type": "decimal", "default_value": "0", "sort_order": 43,
+     "notes": ("RETURN LEVEL (taxpayer + spouse). Voluntary federal withholding on Social Security / Railroad "
+               "Retirement benefits -> 1040 line 25b (i1040 line 25b 'Form(s) 1099'); NOT 25a (W-2) or 25c.")},
+    {"fact_key": "ssa_medicare_premiums", "label": "Medicare premiums deducted from SSA/RRB benefits (Part B/C/D, Medigap)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 44,
+     "notes": ("RETURN LEVEL (taxpayer + spouse). Part B/D (and voluntarily-enrolled Part A, Part C/Medigap) are "
+               "deductible medical expenses (Pub 502). Routed per ssa_medicare_destination -> Schedule A line 1 "
+               "OR self-employed health insurance (Form 7206 -> Schedule 1 line 17).")},
+    {"fact_key": "ssa_medicare_destination", "label": "Where Medicare premiums are deducted: 'schedule_a' or 'sehi'",
+     "data_type": "string", "default_value": "schedule_a", "sort_order": 45,
+     "notes": ("RETURN LEVEL. 'schedule_a' (default) -> Sch A line 1 medical (Pub 502). 'sehi' -> self-employed "
+               "health insurance premium (Form 7206 -> Sch 1 line 17), capped at the single proprietor's net SE "
+               "profit; multiple businesses or Marketplace/PTC coverage -> D_RET_009 RED.")},
+    {"fact_key": "ssa_is_railroad", "label": "Benefits are Railroad Retirement (RRB-1099 SSEB, Tier 1)",
+     "data_type": "boolean", "sort_order": 46,
+     "notes": ("RETURN LEVEL. RRB-1099 SSEB (Social Security Equivalent Benefit, Tier 1) is taxed IDENTICALLY to "
+               "SSA-1099 social security -> pooled into box-5 net benefits / the same worksheet -> 6a/6b (Pub 915). "
+               "Label/metadata only (no separate math). NSSEB/Tier 2 (RRB-1099-R) = pension, OUT (Simplified Method).")},
     # ── 5329 linkage facts (return level; consumed by the 5329 form) ──
     {"fact_key": "exception_number_5329", "label": "Form 5329 line 2: early-distribution exception number (01-23 or 99)",
      "data_type": "string", "sort_order": 40,
@@ -773,6 +868,25 @@ RET_RULES: list[dict] = [
      "inputs": ["r_box4_fed_withheld"], "outputs": ["1040.L25b"],
      "description": ("ONCE PER RETURN. Extends spine R-PAY-02 again (Topic 3 added 1099-DIV box 4; this adds "
                      "1099-R box 4). Override stays for any still-unmodeled withholding source.")},
+    {"rule_id": "R-RET-25B-SS", "title": "1040 line 25b withholding roster EXTENDS to SSA-1099/RRB-1099 withholding",
+     "rule_type": "calculation", "precedence": 1, "sort_order": 6,
+     "formula": "L25b += ssa_fed_withheld (on top of the 1099-INT + 1099-DIV + 1099-R box-4 addends)",
+     "inputs": ["ssa_fed_withheld"], "outputs": ["1040.L25b"],
+     "description": ("ONCE PER RETURN. Extends the R-RET-25B roster once more: SSA-1099 box 6 and RRB-1099 box 10 "
+                     "voluntary federal withholding land on 1040 line 25b ('Form(s) 1099'). Was previously handled "
+                     "only by the manual 25b override (AMENDMENT 2026-06-30).")},
+    {"rule_id": "R-RET-MEDICARE", "title": "Medicare premiums -> Schedule A medical OR self-employed health insurance",
+     "rule_type": "routing", "precedence": 9, "sort_order": 7,
+     "formula": ("IF ssa_medicare_destination == 'sehi': add ssa_medicare_premiums to the self-employed health "
+                 "insurance premium total (Form 7206 line 1) for the single proprietor, capped at net SE profit "
+                 "-> Schedule 1 line 17. ELSE (default 'schedule_a'): add ssa_medicare_premiums to Schedule A "
+                 "line 1 medical expenses (before the 7.5% AGI floor) -> Schedule A line 4."),
+     "inputs": ["ssa_medicare_premiums", "ssa_medicare_destination"], "outputs": ["SCHEDULE_A.L1", "SCH_1.L17"],
+     "description": ("ONCE PER RETURN. Pub 502: Medicare Part B/D (+ voluntary Part A, Part C/Medigap) are "
+                     "deductible medical expenses. Form 7206: Medicare premiums qualify as self-employed health "
+                     "insurance for a self-employed taxpayer. v1 SEHI = a SINGLE proprietor, capped at that "
+                     "proprietor's net SE profit; multiple Sch C/F businesses or Marketplace/PTC coverage -> "
+                     "D_RET_009 RED (verify manually). AMENDMENT 2026-06-30.")},
     # ── Form 5329 early-distribution identification (feeds the 5329 form) ──
     {"rule_id": "R-RET-EARLY", "title": "Identify early-distribution amount feeding Form 5329 line 1",
      "rule_type": "calculation", "precedence": 2, "sort_order": 5,
@@ -973,6 +1087,16 @@ RET_DIAGNOSTICS: list[dict] = [
      "notes": ("AMENDMENT 2026-06-28: surfaces the WS1-vs-WS4 comparison + savings. Severity/message adapt on the "
                "tts side (bridge-gated to the same compute_ss_lumpsum helper). Pub 915 'Will the lump-sum election "
                "lower your taxable benefits?' decision step.")},
+    {"diagnostic_id": "D_RET_009", "title": "Medicare-as-SEHI with multiple businesses or Marketplace/PTC — verify manually",
+     "severity": "error",
+     "condition": ("ssa_medicare_destination == 'sehi' AND ssa_medicare_premiums > 0 AND (more than one Sch C/F "
+                   "proprietorship with net profit OR Marketplace/Form 8962 PTC coverage present)"),
+     "message": ("Not auto-computed — verify manually: Medicare premiums are routed to the self-employed health "
+                 "insurance deduction, but there are multiple self-employed businesses (premium allocation is a "
+                 "preparer choice) and/or Marketplace coverage with the Premium Tax Credit (the Pub 974 SEHI<->PTC "
+                 "iterative applies). The single-proprietor SEHI shortcut is not applied; figure the deduction by hand."),
+     "notes": ("AMENDMENT 2026-06-30. v1 boundary: SEHI Medicare = a single proprietor capped at net SE profit. "
+               "Multi-business apportionment + the Form 8962 PTC interaction (Pub 974) are out of v1.")},
 ]
 
 RET_SCENARIOS: list[dict] = [
@@ -1106,6 +1230,18 @@ RET_SCENARIOS: list[dict] = [
      "notes": ("Same current-year facts as LSE-1 but 2024 AGI = 80,000 -> the 2,000 lump sum is 85% taxable in 2024 "
                "(WS2 = 1,700). WS4 = 2,500 + 1,700 = 4,200 > WS1 3,000 -> NOT beneficial; election OFF keeps 3,000 "
                "(D_RET_008 reports 'does not lower'). Proves the comparison branch is load-bearing.")},
+    # ── SSA withholding / Medicare (AMENDMENT 2026-06-30) ──
+    {"scenario_name": "RET-WH-1 — SSA-1099 box 6 withholding 1,800 -> 1040 line 25b",
+     "scenario_type": "normal", "sort_order": 6,
+     "inputs": {"filing_status": "single", "ssa_box5": 24000, "other_ws3_income": 30000, "ssa_fed_withheld": 1800},
+     "expected_outputs": {"1040_line_25b": 1800},
+     "notes": "SSA/RRB voluntary withholding extends the 25b roster (alongside 1099-INT/DIV/R box 4)."},
+    {"scenario_name": "RET-MED-1 — Medicare premiums 2,400 -> Schedule A line 1 (default schedule_a)",
+     "scenario_type": "normal", "sort_order": 7,
+     "inputs": {"ssa_medicare_premiums": 2400, "ssa_medicare_destination": "schedule_a",
+                "scha_other_medical": 600, "agi": 40000},
+     "expected_outputs": {"schedule_a_line1": 3000, "schedule_a_line3": 3000, "schedule_a_line4": 0},
+     "notes": "Pub 502: Medicare Part B/D deductible. L1 = 600 + 2,400 = 3,000; floor 7.5% x 40,000 = 3,000; L4 = 0."},
 ]
 
 RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -1124,6 +1260,10 @@ RET_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-RET-LSE-WS2", "IRS_2025_PUB915", "primary", "Pub 915 Worksheet 2 (additional taxable benefits, verbatim)"),
     ("R-RET-LSE-WS4", "IRS_2025_PUB915", "primary", "Pub 915 Worksheet 4 (taxable benefits under election, verbatim)"),
     ("R-RET-LSE-ELECT", "IRS_2025_PUB915", "primary", "Pub 915 'Lump-Sum Election' decision + 1040 line 6b/6c"),
+    # ── AMENDMENT 2026-06-30 ──
+    ("R-RET-25B-SS", "IRS_2025_1040_INSTR", "primary", "Line 25b: federal withholding from Forms SSA-1099/RRB-1099"),
+    ("R-RET-MEDICARE", "IRS_2025_PUB502", "primary", "Medicare Part B/D premiums are deductible medical expenses"),
+    ("R-RET-MEDICARE", "IRS_2025_F7206_INSTR", "primary", "Medicare premiums qualify as self-employed health insurance"),
 ]
 
 
@@ -1683,6 +1823,23 @@ FLOW_ASSERTIONS: list[dict] = [
                                 "(line_6b == lse_ws4_21 if ss_lump_sum_election else line_6b == ws_18)"),
                     "must_write_to": {"form": "1040", "line": "6b"}},
      "sort_order": 8},
+    {"assertion_id": "FA-1040-RET-09", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "SSA-1099/RRB-1099 federal withholding extends the 1040 line 25b roster",
+     "description": ("Validates R-RET-25B-SS. Bug it catches: SSA/RRB box-6/box-10 withholding dropped from line "
+                     "25b (the same class as the 1099-R box-4 extension)."),
+     "definition": {"kind": "sum_check", "form": "1040_RETIREMENT", "output": "L25b_ssa_addend",
+                    "sum_of": ["ssa_fed_withheld"],
+                    "must_write_to": {"form": "1040", "line": "25b"}},
+     "sort_order": 9},
+    {"assertion_id": "FA-1040-RET-10", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Medicare premiums land on Schedule A line 1 (default destination)",
+     "description": ("Validates R-RET-MEDICARE (schedule_a path). Bug it catches: Medicare premiums not added to "
+                     "the Sch A medical total before the 7.5% floor, or routed nowhere."),
+     "definition": {"kind": "formula_check", "form": "1040_RETIREMENT",
+                    "formula": ("schedule_a_line1 includes ssa_medicare_premiums "
+                                "when ssa_medicare_destination == 'schedule_a'"),
+                    "must_write_to": {"form": "SCHEDULE_A", "line": "1"}},
+     "sort_order": 10},
 ]
 
 
@@ -1696,6 +1853,8 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRS_2025_1040_INSTR", "1040_RETIREMENT", "governs"),
     ("IRS_2025_1040_FORM", "1040_RETIREMENT", "informs"),
     ("IRS_2025_PUB915", "1040_RETIREMENT", "governs"),
+    ("IRS_2025_PUB502", "1040_RETIREMENT", "governs"),
+    ("IRS_2025_F7206_INSTR", "1040_RETIREMENT", "governs"),
     ("IRS_2025_5329_FORM", "5329", "governs"),
     ("IRS_2025_5329_INSTR", "5329", "governs"),
     ("IRS_2025_1099R_INSTR", "5329", "informs"),

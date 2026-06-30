@@ -4,6 +4,29 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-30 — 1040_RETIREMENT: SSA withholding / Medicare / Railroad amendment SEEDED + EXPORTED (Ken go-ahead)
+- Part of Ken's Bach-return UX batch (item 1). Ken greenlit the seed in-session. Amended `load_1040_retirement.py`:
+  **+4 facts** (`ssa_fed_withheld`→25b, `ssa_medicare_premiums`, `ssa_medicare_destination` schedule_a|sehi,
+  `ssa_is_railroad` RRB-1099 SSEB metadata), **+2 rules** (`R-RET-25B-SS` extends the 25b roster; `R-RET-MEDICARE`
+  routes Medicare → Sch A line 1 (Pub 502) OR SEHI Sch 1 L17 single-proprietor (Form 7206)), **+D_RET_009** RED
+  (Medicare-as-SEHI with multiple businesses or Marketplace/PTC → verify manually), **+2 scenarios** (RET-WH-1,
+  RET-MED-1), **+2 flow assertions** (FA-1040-RET-09/10), **+3 rule_links**, **+2 authority sources**
+  (`IRS_2025_PUB502`, `IRS_2025_F7206_INSTR`, both verbatim-verified 2026-06-30 against the live IRS text).
+- **LAW VERIFIED 2026-06-30** against primary IRS sources (NOT memory — a WebFetch summary first gave a WRONG
+  "Medicare not deductible" answer; re-fetched the actual pubs): i1040 line 25b (SSA-1099 box 6 / RRB-1099 box 10
+  → 25b); Pub 502 (Part B/D premiums ARE deductible medical; Part A if voluntarily enrolled); Form 7206 instr
+  (Medicare premiums qualify as SEHI, capped at net SE profit, not for employer-subsidized months); Pub 915
+  (RRB-1099 SSEB Tier 1 pools identically into box-5 → 6a/6b).
+- `check_retirement_integrity.py` → **ALL CHECKS PASS** (independent math intact; unique ids; all rules cited).
+  Counts: 1040_RETIREMENT 39 facts / 13 rules / 26 lines / 9 diagnostics / 22 scenarios / 18 links; FA 335 total.
+- Seeded RS Supabase (`ylqaejdqwuvwpglxnpgv`, idempotent) → re-exported `/api/forms/lookup/1040_RETIREMENT/export/`
+  → overwrote tts `server/specs/retirement_spec.json` (verified the 4 facts + 2 rules + D_RET_009 present).
+- **NEXT (tts build):** Taxpayer model fields (+migration) → compute (25b += SSA WH; Medicare → Sch A L1 / SEHI
+  single-proprietor) → render (SSA vs RRB worksheet label) → React SocialSecuritySection inputs + railroad
+  checkbox + Medicare destination select → `rules_retirement.py` D_RET_009 → 2 flow assertions → tests.
+
+---
+
 ## 2026-06-29 — 1040_RETIREMENT: SS LUMP-SUM amendment SEEDED + EXPORTED (Ken go-ahead) — unit complete in tts
 - Ken gave the in-session **"seed now, then build"** go-ahead. Ran `load_1040_retirement` against RS's own
   Supabase (`ylqaejdqwuvwpglxnpgv`) — idempotent (`update_or_create`); 1040_RETIREMENT now 35 facts / 11 rules /
