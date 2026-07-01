@@ -4,6 +4,40 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-01 — 1065_SE: Schedule K / K-1 line 14a Self-Employment (SECA) SEEDED + EXPORTED
+- New form `1065_SE` (entity_type 1065, TY2025, draft) authored from the LOCKED spec
+  `tts-tax-app/server/specs/1065_se_line14a_spec.md` (tax-law decisions locked by Ken 2026-07-01;
+  faithful translation only — no tax-law calls made here). New loader `load_1065_se.py`, mirrors the
+  `load_1040_schedule_k1.py` idiom (READY_TO_SEED guard + hollow-seed guard + single `@transaction.atomic`,
+  `update_or_create` throughout → idempotent, no partial writes; a first run tripped varchar(255) on the
+  case-law `citation`, shortened, re-ran clean).
+- **Governs:** Sch K line 14a + per-partner K-1 box 14 code A. The one modernization vs today's silent
+  compute: substitutes a per-partner functional-analysis `se_classification` (active/passive/undetermined)
+  for the IRS SE Worksheet's mechanical "limited partner" label at lines 3b/4b (post-*Soroban* an *active*
+  limited partner is not a "limited partner, as such" under §1402(a)(13)). Entity 14a derived BOTTOM-UP =
+  Σ per-partner box 14a (replaces the independent `K14a = K1 + K4c`). SE base itself OUT OF SCOPE (§14).
+- **Authored:** 7 authority sources (IRC §1402 / §702 / §707(c); Treas. Reg. §1.1402(a)-1 & -4; the
+  limited-partner case line Renkemeyer/Soroban I+II/Denham/contra-Sirius; IRS i1065 2025 SE Worksheet p.45)
+  + 1 topic; 11 facts; **9 rules** (R-SE-CLASS, -DSHARE, -GPSVC, -GPCAP, -DEFAULT, -RENTAL, -PORT, -LOSS,
+  -14A-ENT) with **18 RuleAuthorityLinks (all rules cited)**; 2 lines (`K14a`, `14a`); **3 diagnostics**
+  (D_SE_UNDET error, D_SE_GPCHAR warning, D_SE_RECON error); **10 tests** (T1–T10, expected 14a locked);
+  **3 flow assertions** (RECON-14A + INV-CHAR active; **FLOW-14A-SE seeded status=disabled** = future/inactive).
+- **CFR/USC text READ DIRECTLY and quoted VERBATIM 2026-07-01** (Cornell LII mirror; eCFR geo-blocked
+  automated fetch): Reg §1.1402(a)-1(a)(2) & (b) [note (a)(2) says "section 702(a)(9)" — the reg's own
+  pre-renumbering cross-ref, quoted as-is], Reg §1.1402(a)-4(a), IRC §1402(a)/(a)(1)/(a)(2)/(a)(3)/(a)(13),
+  §707(c), §702(a)(8)/(b). Case-law group carries the "verified 2026-07-01 / re-verify each season" note
+  (`requires_human_review=True`; developing circuit split, Soroban 2nd Cir. / Denham 1st Cir. appeals pending).
+- Seeded RS Supabase (`update_or_create`; **TaxForms 75→76, FlowAssertions 338→341**). Ran dev server →
+  `GET /api/forms/lookup/1065_SE/export/` returns HTTP 200 → wrote **`1065_se_spec.json`** (38 KB, repo root):
+  9 rules / 3 diagnostics / 10 tests / 7 authority_sources / 2 lines, all rules cited. Active-assertions
+  export (`?entity_type=1065`) correctly excludes the disabled FLOW-14A-SE.
+- **DoD met; STOPPED as instructed.** The tts `seed_*` loader + `compute_self_employment` rewrite are a
+  SEPARATE tts-tax-app session, gated on this export being fetchable (do NOT touch tts compute here).
+  Coupled follow-up (spec §4b/§14): the SE-base sub-spec (i1065 worksheet 1a–3a Form-4797/rental
+  adjustments) is coupled with the 4797 §1245-vs-§1250 recapture verification.
+
+---
+
 ## 2026-07-01 — SCHEDULE_A: line 5a state-income-tax auto-aggregation amendment SEEDED + EXPORTED (Ken go-ahead)
 - Ken's UX/bug batch item "state withholding → Schedule A". Ken chose (tts AskUserQuestion) the FULL scope
   (withholding + estimates + prior-year taxes + prior-year extensions, with payment DATES) AND the full RS
