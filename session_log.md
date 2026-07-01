@@ -4,6 +4,28 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-01 — FORM_1116: §904(j) de minimis AUTO-election amendment SEEDED + EXPORTED (Ken go-ahead)
+- Ken's UX/bug batch item "foreign-tax de minimis (§904(j))". Ken chose (tts AskUserQuestion) auto-apply +
+  opt-out AND the full RS round-trip (the diagnostics are spec-governed). `load_1040_form_1116.py` amended:
+  - **+1 fact** `f1116_deminimis_optout` (boolean, return-level opt-out; stored on tts `Taxpayer`, NOT on a
+    Form 1116 row — the auto-path must work with no Form 1116 engaged).
+  - **`R-1116-ELECT` reworded** — the §904(j) election now applies AUTOMATICALLY when the only foreign tax is
+    from 1099-INT/1099-DIV (passive + payee-statement by definition), total ≤ $300/$600, no full Form 1116
+    engaged, and not opted out (else the existing manual `elect_simplified`). Same math: min(foreign tax,
+    regular tax) → Sch 3 L1, no carryover.
+  - **`D_1116_001` reworded** ('available / check the box' → 'applied automatically'); stays info.
+  - **+1 diagnostic** `D_1116_009` (warning) — over-ceiling nudge: 1099 foreign tax > ceiling with no Form 1116
+    engaged → the credit is unclaimed; file the full Form 1116 or deduct on Sch A. Closes a silent gap.
+    App-layer condition (reads the 1099 aggregate + no-Form-1116-row) → no pure compute_1116 scenario.
+- **Math UNCHANGED** — the §904(j) conditions were re-verified verbatim vs i1116 + 26 USC §904(j) (no new law).
+  `check_1116_integrity.py` ALL CHECKS PASS (facts 19→20, diagnostics 8→9, rules 5, all scenarios recompute to
+  the dollar). Seeded RS Supabase (`ylqaejdqwuvwpglxnpgv`, idempotent, `update_or_create`) → re-exported
+  `/api/forms/lookup/FORM_1116/export/` → overwrote tts `server/specs/1116_spec.json` (semantic diff: ONLY the
+  opt-out fact + D_1116_009 added, D_1116_001 message + R-1116-ELECT text changed; zero drift). tts DiagnosticRule
+  rows re-seed on the next Render deploy (build.sh idempotent seed_rules).
+
+---
+
 ## 2026-06-30 — Default-to-No due-diligence questions: D_1040_017 + D_SCHB_001 severity amendment SEEDED + EXPORTED (Ken go-ahead)
 - Part of Ken's UX/bug batch. Ken chose the "proper RS round-trip now" path (tts AskUserQuestion) after CC
   flagged that the tts code change touched spec-governed diagnostics. Two loaders amended:

@@ -403,7 +403,10 @@ P_IDENTITY = {
         "1040 line 15 + Sch 1-A line 37 (senior deduction); L20 = 1040 line 16 + Sch 2 line 1z. v1 "
         "computes only the adjustment-exception case (TI ≤ $394,600/$197,300 AND foreign QD+gain < "
         "$20,000); the above-exception QD adjustment + non-passive category + every exotic provision "
-        "RED-defer (requires_human_review)."
+        "RED-defer (requires_human_review). AMENDED 2026-07-01 (Ken-approved): Path A now applies "
+        "AUTOMATICALLY when the only foreign tax is from 1099-INT/1099-DIV ≤ $300/$600 and no full Form "
+        "1116 is engaged (opt-out via f1116_deminimis_optout); D_1116_001 → 'auto-applied'; new D_1116_009 "
+        "nudges when the 1099 foreign tax is over the ceiling with no Form 1116 engaged (closes a silent gap)."
     ),
 }
 
@@ -415,6 +418,14 @@ P_FACTS: list[dict] = [
     {"fact_key": "f1116_category", "label": "Category of income (v1: passive)",
      "data_type": "string", "default_value": "passive", "sort_order": 2,
      "notes": "Non-passive → RED-defer (D_1116_003)."},
+    {"fact_key": "f1116_deminimis_optout", "label": "Opt out of the automatic §904(j) de minimis credit?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 3,
+     "notes": ("When the ONLY creditable foreign tax is from 1099-INT/1099-DIV (passive + payee-statement "
+               "by definition), the total ≤ $300/$600, and no full Form 1116 is engaged, the §904(j) credit "
+               "is applied AUTOMATICALLY (min(foreign tax, regular tax) → Sch 3 line 1, no carryover). Set "
+               "this to opt out — the preparer then handles foreign tax manually (full Form 1116 or a "
+               "Schedule A deduction). A return-level election, not a Form 1116 row field (the auto-path "
+               "must work with no Form 1116 engaged).")},
     # ── Part I inputs ──
     {"fact_key": "f1116_foreign_source_income", "label": "Gross foreign source income (line 1a)",
      "data_type": "decimal", "default_value": "0", "sort_order": 10,
@@ -458,14 +469,19 @@ P_FACTS: list[dict] = [
 ]
 
 P_RULES: list[dict] = [
-    {"rule_id": "R-1116-ELECT", "title": "§904(j) election — credit without Form 1116", "rule_type": "calculation",
+    {"rule_id": "R-1116-ELECT", "title": "§904(j) election — credit without Form 1116 (auto-applied)", "rule_type": "calculation",
      "precedence": 1, "sort_order": 1,
-     "formula": ("if elect_simplified and foreign_tax_total ≤ ceiling ($300; $600 MFJ/QSS): credit = "
-                 "min(foreign_tax_total, regular_tax) → Schedule 3 line 1, no carryover. If over the "
-                 "ceiling → the election is invalid (D_1116_002) and the full Form 1116 is required."),
-     "inputs": ["f1116_elect_simplified", "f1116_additional_foreign_tax"],
+     "formula": ("The §904(j) de minimis election applies AUTOMATICALLY when the only creditable foreign tax "
+                 "is from 1099-INT/1099-DIV (passive category + payee-statement by definition), the total ≤ "
+                 "ceiling ($300; $600 MFJ/QSS), no full Form 1116 is engaged, and the preparer has NOT opted "
+                 "out (f1116_deminimis_optout) — OR when the preparer explicitly checks elect_simplified on an "
+                 "engaged Form 1116. Either way: credit = min(foreign_tax_total, regular_tax) → Schedule 3 "
+                 "line 1, no carryover. If an engaged Form 1116 elects but foreign tax > ceiling → invalid "
+                 "(D_1116_002). If the 1099 foreign tax > ceiling with no Form 1116 engaged → NOT auto-applied; "
+                 "nudge to file the full Form 1116 (D_1116_009)."),
+     "inputs": ["f1116_elect_simplified", "f1116_deminimis_optout", "f1116_additional_foreign_tax"],
      "outputs": ["f1116_line35"],
-     "description": "§904(j). All passive + payee-statement + foreign tax ≤ $300/$600."},
+     "description": "§904(j). All passive + payee-statement + foreign tax ≤ $300/$600 → auto-applied unless opted out."},
     {"rule_id": "R-1116-PART1", "title": "Part I — foreign-source taxable income (L1a-L7)", "rule_type": "calculation",
      "precedence": 2, "sort_order": 2,
      "formula": ("L3c = L3a + L3b; L3f = L3d/L3e (4 dp); L3g = round(L3c × L3f); L6 = L2 + L3g + L4a + "
@@ -533,12 +549,14 @@ P_LINES: list[dict] = [
 ]
 
 P_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_1116_001", "title": "§904(j) election available (foreign tax ≤ $300/$600)", "severity": "info",
-     "condition": "all-passive + payee-statement + total foreign tax ≤ ceiling",
-     "message": ("The foreign tax is within the §904(j) ceiling ($300; $600 MFJ) and is all passive "
-                 "income from 1099/K-1 statements — you may claim the credit WITHOUT filing Form 1116 "
-                 "(it goes straight to Schedule 3 line 1, but no carryover is allowed)."),
-     "notes": "§904(j). The common mutual-fund-dividend case."},
+    {"diagnostic_id": "D_1116_001", "title": "§904(j) de minimis credit applied automatically", "severity": "info",
+     "condition": "foreign tax from 1099s ≤ ceiling, all passive, no full Form 1116 engaged, not opted out",
+     "message": ("The de minimis foreign tax from your 1099s is within the §904(j) ceiling ($300; $600 MFJ) "
+                 "and is all passive income from payee statements, so the foreign tax credit is claimed "
+                 "AUTOMATICALLY on Schedule 3 line 1 (the smaller of the foreign tax or your regular tax) — "
+                 "no Form 1116 is filed and no carryover is allowed. Open the Foreign Tax Credit tab to opt "
+                 "out or to file the full Form 1116 instead."),
+     "notes": "§904(j). Auto-applied (the common mutual-fund-dividend case). Opt-out = f1116_deminimis_optout."},
     {"diagnostic_id": "D_1116_002", "title": "§904(j) election claimed but foreign tax exceeds the ceiling", "severity": "error",
      "condition": "elect_simplified AND foreign tax > $300 ($600 MFJ)",
      "message": ("The §904(j) election was claimed but the total creditable foreign tax exceeds $300 "
@@ -583,6 +601,15 @@ P_DIAGNOSTICS: list[dict] = [
                  "foreign tax (line 14 − line 24) carries back 1 year and forward 10 years. Track it for "
                  "next year (Schedule B)."),
      "notes": "§904(c)."},
+    {"diagnostic_id": "D_1116_009", "title": "Foreign tax over the §904(j) ceiling — no Form 1116 engaged", "severity": "warning",
+     "condition": "foreign tax from 1099s > ceiling ($300/$600) AND no Form 1116 engaged",
+     "message": ("The foreign tax from your 1099s exceeds the §904(j) de minimis ceiling ($300; $600 MFJ), so "
+                 "the credit is NOT applied automatically, and no Form 1116 is engaged — the foreign tax "
+                 "credit is currently unclaimed. Open the Foreign Tax Credit tab to file the full Form 1116 "
+                 "(passive category) and claim it, or take the foreign tax as a Schedule A deduction."),
+     "notes": ("Closes the silent gap: >ceiling foreign tax with no Form 1116 would otherwise yield no credit "
+               "and no nudge. App-layer condition (reads the 1099 aggregate + no-Form-1116-row); no pure "
+               "compute_1116 scenario.")},
 ]
 
 P_SCENARIOS: list[dict] = [
