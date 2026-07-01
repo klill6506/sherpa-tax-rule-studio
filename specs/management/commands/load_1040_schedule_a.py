@@ -256,12 +256,54 @@ AUTHORITY_SOURCES: list[dict] = [
             },
         ],
     },
+    {
+        "source_code": "IRS_2025_SCHA_INSTR",
+        "source_type": "official_instructions",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "2025 Instructions for Schedule A (Form 1040)",
+        "citation": "2025 Instructions for Schedule A, 'Line 5a — State and Local Income Taxes'",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/instructions/i1040sca",
+        "current_status": "active",
+        "is_substantive_authority": False,
+        "is_filing_authority": True,
+        "trust_score": 9.40,
+        "requires_human_review": False,
+        "notes": "Governs what belongs on line 5a — the state-income-tax auto-aggregation (R-SCHA-5A-STATE). Fetched + quoted verbatim 2026-07-01.",
+        "topics": ["itemized_deductions"],
+        "excerpts": [
+            {
+                "excerpt_label": "Line 5a — what to include (state/local income taxes)",
+                "location_reference": "2025 Instructions for Schedule A, Line 5a",
+                "excerpt_text": (
+                    "State and local income taxes withheld from your salary during 2025. Your Form(s) W-2 will show "
+                    "these amounts. Forms W-2G, 1099-G, 1099-R, 1099-MISC, and 1099-NEC may also show state and local "
+                    "income taxes withheld. State and local income taxes paid in 2025 for a prior year, such as taxes "
+                    "paid with your 2024 state or local income tax return. State and local estimated tax payments made "
+                    "during 2025, including any part of a prior year refund that you chose to have credited to your "
+                    "2025 state or local income taxes. Mandatory contributions you made to the California, New Jersey, "
+                    "or New York Nonoccupational Disability Benefit Fund; Rhode Island Temporary Disability Benefit "
+                    "Fund; or Washington State Supplemental Workmen's Compensation Fund. Mandatory contributions to "
+                    "state family leave programs. Don't include: state or local income tax refund or credit you expect "
+                    "to receive for 2025, or a refund of (or credit for) prior year state and local income taxes you "
+                    "actually received in 2025."
+                ),
+                "summary_text": "5a = state/local income tax WITHHELD (W-2/W-2G/1099-G/R/MISC/NEC) + estimates paid in year (incl. prior-year refund credited) + prior-year tax paid in year + mandatory SDI/UI/family-leave; NOT refunds expected/received.",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
 ]
 
 NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = []
 
 AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRS_2025_SCHA_FORM", "SCHEDULE_A", "governs"),
+    ("IRS_2025_SCHA_INSTR", "SCHEDULE_A", "governs"),
     ("IRS_PUB526_2025", "SCHEDULE_A", "informs"),
     ("OBBBA_2025_SCHA", "SCHEDULE_A", "informs"),
 ]
@@ -284,7 +326,12 @@ SCHA_IDENTITY = {
         "SALT (phasedown), interest (+2026 PMI), charitable (Pub 526 60/50/30% "
         "buckets + carryover + 2026 floor), gambling. Preparer facts / RED-defers: "
         "the Form 4684 casualty result, the Pub 936 mortgage debt-limit haircut, "
-        "the charitable 20%/special-election tail, the §68 haircut."
+        "the charitable 20%/special-election tail, the §68 haircut. "
+        "2026-07-01 (Ken's UX/bug queue): line 5a now AUTO-TOTALS state/local income tax "
+        "= withholding across the return's documents (W-2 box 17, 1099-R/INT/DIV, 1099-G, "
+        "W-2G) + dated estimated / prior-year / extension payments paid in the tax year "
+        "(YELLOW), preparer overrides GREEN; suppressed when general sales taxes are "
+        "elected (R-SCHA-5A-STATE, D_SCHA_010/011)."
     ),
 }
 
@@ -347,6 +394,29 @@ SCHA_FACTS: list[dict] = [
      "data_type": "decimal", "sort_order": 44, "notes": "OUTPUT. min(gambling pct x losses, winnings) + other."},
     {"fact_key": "scha_line17", "label": "Line 17 — total itemized deductions → 1040 line 12",
      "data_type": "decimal", "sort_order": 45, "notes": "OUTPUT. 4 + 7 + 10 + 14 + 15 + 16 → Form 1040 line 12."},
+    # ── Line 5a state-income-tax auto-aggregation (2026-07-01 — Ken's UX/bug queue) ──
+    # Line 5a defaults to the return's state/local income tax (withholding + dated
+    # payments) instead of a hand-keyed total (TaxWise parity). i1040 Sch A Line 5a.
+    {"fact_key": "scha_state_income_tax_withheld", "label": "Line 5a source — state/local income tax WITHHELD (documents)",
+     "data_type": "decimal", "sort_order": 46,
+     "notes": ("OUTPUT (derived, YELLOW). Σ state/local income tax withheld across the return's documents: "
+               "W-2 box 17, 1099-R box 14, 1099-INT, 1099-DIV, 1099-G box 11, W-2G box 15 (i1040 Sch A Line 5a). "
+               "Withholding is in-year by the document's tax year (no date filter needed).")},
+    {"fact_key": "scha_state_estimated_payments", "label": "Line 5a source — state/local ESTIMATED payments (paid in year)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 47,
+     "notes": ("INPUT (aggregate of the StateIncomeTaxPayment child rows, kind=estimate, YELLOW). State/local "
+               "estimated tax PAID during the tax year, incl. a prior-year refund credited to this year's "
+               "estimates. §164 cash-basis: a Q4 estimate paid in January is next year's, not this year's.")},
+    {"fact_key": "scha_state_prioryear_tax_paid", "label": "Line 5a source — prior-year state/local tax + extension paid this year",
+     "data_type": "decimal", "default_value": "0", "sort_order": 48,
+     "notes": ("INPUT (aggregate of StateIncomeTaxPayment child rows, kind in {prior_year_balance, "
+               "prior_year_extension, other}, YELLOW). State/local income tax paid THIS year for a prior year "
+               "(balance due with the prior-year return, a prior-year extension payment). Excludes penalties/interest.")},
+    {"fact_key": "scha_line5a_state_income_total", "label": "Line 5a — auto-total of state/local income tax (withholding + payments)",
+     "data_type": "decimal", "sort_order": 49,
+     "notes": ("OUTPUT (derived, YELLOW). = withheld + estimated + prior-year paid. The DEFAULT for line 5a when "
+               "general sales taxes are NOT elected and the preparer has not overridden 5a (a direct entry > 0 "
+               "wins, GREEN). scha_salt_income_or_sales remains the final line-5a value on the form.")},
 ]
 
 SCHA_RULES: list[dict] = [
@@ -355,8 +425,24 @@ SCHA_RULES: list[dict] = [
      "formula": "line3 = round(0.075 * AGI); line4 = max(0, scha_medical_expenses - line3).",
      "inputs": ["scha_medical_expenses"], "outputs": [],
      "description": "§213 7.5% floor, permanent (both years)."},
+    {"rule_id": "R-SCHA-5A-STATE", "title": "Line 5a — auto-total state/local income tax (withholding + estimates + prior-year paid)",
+     "rule_type": "calculation", "precedence": 2, "sort_order": 2,
+     "formula": ("scha_state_income_tax_withheld = Σ state/local income tax withheld across documents (W-2 box 17 "
+                 "[W2StateEntry rows; else the legacy flat field when a W-2 has no state rows], 1099-R box 14, "
+                 "1099-INT, 1099-DIV, 1099-G box 11, W-2G box 15). scha_state_estimated_payments = Σ "
+                 "StateIncomeTaxPayment(kind=estimate) with date_paid in the tax year. scha_state_prioryear_tax_paid "
+                 "= Σ StateIncomeTaxPayment(kind in {prior_year_balance, prior_year_extension, other}) with date_paid "
+                 "in the tax year. scha_line5a_state_income_total = withheld + estimated + prior-year. Line 5a "
+                 "DEFAULTS to scha_line5a_state_income_total (YELLOW) UNLESS scha_use_sales_tax (then 5a = the "
+                 "preparer's general-sales-tax figure in scha_salt_income_or_sales) OR scha_salt_income_or_sales > 0 "
+                 "is a direct-entry override (GREEN wins). §164: deductible in the year PAID."),
+     "inputs": ["scha_state_estimated_payments", "scha_state_prioryear_tax_paid", "scha_use_sales_tax", "scha_salt_income_or_sales"],
+     "outputs": ["scha_state_income_tax_withheld", "scha_line5a_state_income_total"],
+     "description": ("2026-07-01 (Ken's UX/bug queue). Auto-fills line 5a from the return's state withholding + dated "
+                     "estimated/prior-year/extension payments (TaxWise parity); the preparer overrides GREEN. i1040 "
+                     "Sch A Line 5a. Runs BEFORE R-SCHA-SALT — it feeds line 5d.")},
     {"rule_id": "R-SCHA-SALT", "title": "Lines 5-7 — SALT cap + OBBBA phasedown", "rule_type": "calculation",
-     "precedence": 2, "sort_order": 2,
+     "precedence": 3, "sort_order": 3,
      "formula": ("line5d = 5a + 5b + 5c; cap = max(floor, SALT[year].cap - 0.30 * max(0, MAGI - threshold)) "
                  "(MFS halves cap/threshold/floor); scha_line5e = min(line5d, cap); line7 = 5e + 6. MAGI = "
                  "AGI + §911/§931/§933."),
@@ -364,7 +450,7 @@ SCHA_RULES: list[dict] = [
      "outputs": ["scha_line5e", "scha_magi_for_salt"],
      "description": "Decision 2. Year-keyed: 2025 $40k/$500k, 2026 $40,400/$505k; 30% rate; $10k floor."},
     {"rule_id": "R-SCHA-INTEREST", "title": "Lines 8-10 — mortgage interest (+ 2026 PMI)", "rule_type": "calculation",
-     "precedence": 3, "sort_order": 3,
+     "precedence": 4, "sort_order": 4,
      "formula": ("line8e = 8a + 8b + 8c (+ 8d in 2026); 2026 PMI (8d) = scha_mortgage_insurance_premiums x "
                  "(1 - 0.10 x ceil(max(0, AGI - 100000)/1000)), floored at 0 (gone at AGI >= 110000; MFS $500 "
                  "increments); 2025 8d = 0. line10 = 8e + 9."),
@@ -373,7 +459,7 @@ SCHA_RULES: list[dict] = [
      "outputs": [],
      "description": "Decisions 3/4. Debt-limit haircut = preparer fact (D_SCHA_003); PMI computed 2026 only."},
     {"rule_id": "R-SCHA-CHARITABLE", "title": "Lines 11-14 — Pub 526 bucket limits + carryover + 2026 floor",
-     "rule_type": "calculation", "precedence": 4, "sort_order": 4,
+     "rule_type": "calculation", "precedence": 5, "sort_order": 5,
      "formula": ("Apply AGI buckets, higher-% first: cash<=60% AGI; FMV-non-cash<=50% AGI; capgain-to-50org<="
                  "30% AGI; overall ceiling 60% AGI (cash) within 50% for the rest. Allowed = the within-limit "
                  "sum + carryover-in (subject to the same ceiling); over-limit -> scha_charitable_carryover_out "
@@ -382,18 +468,18 @@ SCHA_RULES: list[dict] = [
      "outputs": ["scha_line14", "scha_charitable_carryover_out"],
      "description": "Decision 5 (Ken: full worksheet). The 20% private-foundation-capgain + special-50% election tail is RED-deferred (D_SCHA_007)."},
     {"rule_id": "R-SCHA-OTHER", "title": "Line 16 — gambling (§165(d), 2026 90%) + other", "rule_type": "calculation",
-     "precedence": 5, "sort_order": 5,
+     "precedence": 6, "sort_order": 6,
      "formula": ("gambling_allowed = min(GAMBLING_LOSS_PCT[year] * scha_gambling_losses, scha_gambling_winnings); "
                  "scha_line16 = gambling_allowed + scha_other_itemized. pct = 1.00 (2025) / 0.90 (2026)."),
      "inputs": ["scha_gambling_losses", "scha_gambling_winnings", "scha_other_itemized"], "outputs": ["scha_line16"],
      "description": "Decision 7. Misc-2% permanently suspended (out)."},
     {"rule_id": "R-SCHA-TOTAL", "title": "Line 17 — total itemized -> 1040 line 12", "rule_type": "calculation",
-     "precedence": 6, "sort_order": 6,
+     "precedence": 7, "sort_order": 7,
      "formula": "scha_line17 = line4 + line7 + line10 + scha_line14 + scha_casualty_loss + scha_line16 -> Form 1040 line 12.",
      "inputs": [], "outputs": ["scha_line17"],
      "description": "Decision 9. The engine takes the larger of standard vs line 17."},
     {"rule_id": "R-SCHA-68-DEFER", "title": "2026 §68 overall 35% limitation — RED-defer", "rule_type": "routing",
-     "precedence": 7, "sort_order": 7,
+     "precedence": 8, "sort_order": 8,
      "formula": ("2026 AND 37%-bracket return -> the 2/37 overall itemized-benefit reduction on 1040 line 12 is "
                  "NOT computed (D_SCHA_001). Schedule A line 17 is correct; the 1040-level haircut is a "
                  "follow-up."),
@@ -480,6 +566,19 @@ SCHA_DIAGNOSTICS: list[dict] = [
      "message": ("Gambling losses are deductible only up to winnings, and for 2026 only up to 90% of losses "
                  "(the disallowed 10% does not carry over). Line 16 reflects the limit."),
      "notes": "Decision 7; the 90% is 2026-only OBBBA."},
+    {"diagnostic_id": "D_SCHA_010", "title": "Line 5a state income tax auto-totaled from documents + payments", "severity": "info",
+     "condition": "NOT scha_use_sales_tax AND scha_salt_income_or_sales is blank/0 AND (withheld + estimated + prior-year) > 0",
+     "message": ("Line 5a (state/local income tax) was auto-totaled from this return: state income tax withheld "
+                 "(W-2/1099s) + estimated payments + prior-year tax paid this year. Verify it's complete — add any "
+                 "estimated, prior-year, or extension payments not entered — or type line 5a to override. Mandatory "
+                 "state SDI/UI/family-leave contributions (CA/NJ/NY/etc.) are not auto-included; add them if applicable."),
+     "notes": "2026-07-01. Transparency nudge for the YELLOW auto-fill (no silent auto-fill). i1040 Sch A Line 5a."},
+    {"diagnostic_id": "D_SCHA_011", "title": "State tax payment dated outside the tax year — excluded from line 5a", "severity": "info",
+     "condition": "a StateIncomeTaxPayment has date_paid before Jan 1 or after Dec 31 of the tax year",
+     "message": ("One or more state tax payments have a payment date outside this tax year and are excluded from "
+                 "line 5a — state/local income tax is deductible in the year PAID (§164). A 4th-quarter estimate "
+                 "paid in January belongs on next year's Schedule A."),
+     "notes": "2026-07-01. No-silent-gap on the §164 date filter."},
 ]
 
 SCHA_SCENARIOS: list[dict] = [
@@ -537,9 +636,38 @@ SCHA_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2026, "filing_status": "single", "taxable_income": 700000},
      "expected_outputs": {"D_SCHA_001": True},
      "notes": "2026 37%-bracket return -> the overall 35% limitation is not computed (D_SCHA_001)."},
+    {"scenario_name": "SCHA-T12 — line 5a withholding-only auto-total", "scenario_type": "normal", "sort_order": 13,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "state_withholding": 3500, "state_payments": []},
+     "expected_outputs": {"scha_line5a_state_income_total": 3500},
+     "notes": "W-2 box 17 + 1099-R box 14 = 3,500; no estimates/prior-year; line 5a auto = 3,500 (YELLOW)."},
+    {"scenario_name": "SCHA-T13 — line 5a withholding + in-year estimates + prior-year balance", "scenario_type": "normal", "sort_order": 14,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "state_withholding": 4000,
+                "state_payments": [{"amount": 1500, "date_paid": "2025-06-15", "kind": "estimate"},
+                                   {"amount": 1500, "date_paid": "2025-09-15", "kind": "estimate"},
+                                   {"amount": 900, "date_paid": "2025-04-15", "kind": "prior_year_balance"}]},
+     "expected_outputs": {"scha_line5a_state_income_total": 7900},
+     "notes": "4,000 WH + 3,000 estimates + 900 prior-year balance = 7,900 (all paid in 2025)."},
+    {"scenario_name": "SCHA-T14 — 4th-quarter estimate paid in January is excluded (date filter)", "scenario_type": "normal", "sort_order": 15,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "state_withholding": 2000,
+                "state_payments": [{"amount": 1000, "date_paid": "2025-09-15", "kind": "estimate"},
+                                   {"amount": 1000, "date_paid": "2026-01-12", "kind": "estimate"}]},
+     "expected_outputs": {"scha_line5a_state_income_total": 3000, "D_SCHA_011": True},
+     "notes": "2,000 WH + 1,000 (paid 9/15/2025); the 1,000 paid 1/12/2026 is next year's (excluded). 5a = 3,000."},
+    {"scenario_name": "SCHA-T15 — direct 5a entry overrides the auto-total (GREEN)", "scenario_type": "normal", "sort_order": 16,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "state_withholding": 3500,
+                "scha_salt_income_or_sales": 4200},
+     "expected_outputs": {"line_5a_final": 4200},
+     "notes": "Preparer typed 4,200 (GREEN) → wins over the 3,500 auto-total."},
+    {"scenario_name": "SCHA-T16 — general sales tax elected suppresses the income-tax auto-total", "scenario_type": "normal", "sort_order": 17,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "state_withholding": 3500,
+                "scha_use_sales_tax": True, "scha_salt_income_or_sales": 2800},
+     "expected_outputs": {"line_5a_final": 2800},
+     "notes": "Sales-tax box checked → 5a = the 2,800 sales-tax figure; the 3,500 income-tax auto-total is not used."},
 ]
 
 SCHA_RULE_LINKS: list[tuple[str, str, str, str]] = [
+    ("R-SCHA-5A-STATE", "IRS_2025_SCHA_INSTR", "primary", "Line 5a: what state/local income tax to include (withholding + estimates + prior-year paid)"),
+    ("R-SCHA-5A-STATE", "IRS_2025_SCHA_FORM", "secondary", "Line 5a on the form face"),
     ("R-SCHA-MEDICAL", "IRS_2025_SCHA_FORM", "primary", "Lines 1-4: the 7.5% medical floor"),
     ("R-SCHA-SALT", "IRS_2025_SCHA_FORM", "primary", "Lines 5-7: the SALT line structure"),
     ("R-SCHA-SALT", "OBBBA_2025_SCHA", "primary", "The SALT cap + 30% phasedown (year-keyed)"),
@@ -599,6 +727,23 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "SCHEDULE_A", "expect": {"red_fires": True},
                     "blockers": ["section_68_2026", "casualty_4684", "mortgage_debt_limit", "charitable_tail"]},
      "sort_order": 6},
+    {"assertion_id": "FA-1040-SCHA-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Line 5a auto-total = Σ state withholding + Σ in-year state payments",
+     "description": ("Validates R-SCHA-5A-STATE. Bug it catches: a document's state withholding missed, a payment "
+                     "dated outside the tax year wrongly included, or the components not summed into 5a."),
+     "definition": {"kind": "formula_check", "form": "SCHEDULE_A",
+                    "formula": ("scha_line5a_state_income_total == scha_state_income_tax_withheld + "
+                                "scha_state_estimated_payments + scha_state_prioryear_tax_paid; payments filtered to "
+                                "date_paid within the tax year")},
+     "sort_order": 7},
+    {"assertion_id": "FA-1040-SCHA-08", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Line 5a: a direct entry or the sales-tax election overrides the auto-total",
+     "description": ("Validates R-SCHA-5A-STATE routing. Bug it catches: the YELLOW auto-total clobbering a GREEN "
+                     "direct entry, or the income-tax total still used on 5a when general sales taxes are elected."),
+     "definition": {"kind": "gating_check", "form": "SCHEDULE_A",
+                    "checks": [{"when": "scha_salt_income_or_sales > 0", "line_5a": "equals scha_salt_income_or_sales"},
+                               {"when": "scha_use_sales_tax", "line_5a": "equals scha_salt_income_or_sales (sales-tax figure); auto-total not applied"}]},
+     "sort_order": 8},
 ]
 
 

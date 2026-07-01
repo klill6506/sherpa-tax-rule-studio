@@ -91,6 +91,33 @@ def ind_pmi(agi, premiums, year, fs):
     return max(0, premiums * (1 - reduction))
 
 
+def _in_tax_year(date_str, year):
+    """A state payment counts on line 5a only if PAID within the tax year (§164);
+    the date_paid YEAR is the whole test (date_str = 'YYYY-MM-DD')."""
+    return str(date_str)[:4] == str(year)
+
+
+def ind_line5a_total(inp):
+    """The YELLOW auto-total: Σ state withholding (docs) + Σ estimated/prior-year
+    payments whose date_paid falls in the tax year."""
+    year = inp.get("tax_year", 2025)
+    wh = inp.get("state_withholding", 0)
+    pays = inp.get("state_payments", []) or []
+    in_year = sum(p["amount"] for p in pays if _in_tax_year(p["date_paid"], year))
+    return wh + in_year
+
+
+def ind_line5a_final(inp):
+    """The value that lands on line 5a: sales-tax election → the preparer's sales
+    figure; else a direct entry > 0 (GREEN) wins; else the auto-total (YELLOW)."""
+    if inp.get("scha_use_sales_tax"):
+        return inp.get("scha_salt_income_or_sales", 0)
+    override = inp.get("scha_salt_income_or_sales", 0)
+    if override and override > 0:
+        return override
+    return ind_line5a_total(inp)
+
+
 # ── 1. Loader constants vs the independent transcription ──
 for year in (2025, 2026):
     for k in ("cap", "cap_mfs", "threshold", "threshold_mfs", "floor", "floor_mfs"):
@@ -116,7 +143,8 @@ for (l5d, magi, fs, yr) in [(50000, 600000, "single", 2025), (50000, 550000, "si
         err(f"_salt_cap({l5d},{magi},{fs},{yr}) = {m._salt_cap(l5d, magi, fs, yr)} != {ind_salt(l5d, magi, fs, yr)}")
 
 # ── 2. Scenarios — independent recompute ──
-DIAG_KEYS = {"D_SCHA_001", "D_SCHA_004", "D_SCHA_005", "D_SCHA_006", "D_SCHA_009"}
+DIAG_KEYS = {"D_SCHA_001", "D_SCHA_004", "D_SCHA_005", "D_SCHA_006", "D_SCHA_009",
+             "D_SCHA_010", "D_SCHA_011"}
 for s in m.SCHA_SCENARIOS:
     name = s["scenario_name"].split(" ")[0]
     inp, exp = s["inputs"], s["expected_outputs"]
@@ -143,6 +171,10 @@ for s in m.SCHA_SCENARIOS:
                               + inp.get("scha_other_itemized", 0))
     if "line_8d" in exp:
         got["line_8d"] = ind_pmi(inp.get("agi", 0), inp.get("scha_mortgage_insurance_premiums", 0), year, fs)
+    if "scha_line5a_state_income_total" in exp:
+        got["scha_line5a_state_income_total"] = ind_line5a_total(inp)
+    if "line_5a_final" in exp:
+        got["line_5a_final"] = ind_line5a_final(inp)
 
     for k, want in exp.items():
         if k in DIAG_KEYS:

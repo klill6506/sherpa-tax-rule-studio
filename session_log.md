@@ -4,6 +4,42 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-01 — SCHEDULE_A: line 5a state-income-tax auto-aggregation amendment SEEDED + EXPORTED (Ken go-ahead)
+- Ken's UX/bug batch item "state withholding → Schedule A". Ken chose (tts AskUserQuestion) the FULL scope
+  (withholding + estimates + prior-year taxes + prior-year extensions, with payment DATES) AND the full RS
+  round-trip. Line 5a was a single hand-keyed fact (`scha_salt_income_or_sales`); it now AUTO-TOTALS the
+  return's state/local income tax. `load_1040_schedule_a.py` amended:
+  - **+4 facts** — `scha_state_income_tax_withheld` (derived Σ doc withholding, YELLOW),
+    `scha_state_estimated_payments` + `scha_state_prioryear_tax_paid` (aggregates of a new tts
+    `StateIncomeTaxPayment` child table, filtered to date_paid in the tax year),
+    `scha_line5a_state_income_total` (the YELLOW auto-total = withheld + estimated + prior-year).
+  - **+1 rule** `R-SCHA-5A-STATE` (precedence 2, BEFORE R-SCHA-SALT — it feeds line 5d). Line 5a DEFAULTS to
+    the auto-total (YELLOW) unless general sales taxes are elected (`scha_use_sales_tax` → the sales figure)
+    or `scha_salt_income_or_sales > 0` is a direct override (GREEN wins). §164 cash-basis: deductible in the
+    year PAID (a Q4 estimate paid in January is next year's). Existing rules 2-7 precedence-bumped to 3-8
+    (ordering metadata only; no logic drift — confirmed by field-level diff).
+  - **+2 diagnostics** — `D_SCHA_010` (info, transparency: 5a auto-totaled from W/E/P; verify complete; note
+    that mandatory CA/NJ/NY SDI/UI/family-leave contributions are NOT auto-included), `D_SCHA_011` (info,
+    no-silent-gap: a payment dated outside the tax year is excluded from 5a).
+  - **+5 scenarios** SCHA-T12..T16 (withholding-only; WH+estimates+prior-year; Jan-paid Q4 excluded;
+    direct-entry override GREEN; sales-tax election suppresses). **+2 flow assertions** FA-1040-SCHA-07/08.
+  - **+1 authority** `IRS_2025_SCHA_INSTR` — the 2025 Instructions for Schedule A "Line 5a" text, fetched +
+    quoted VERBATIM 2026-07-01 (withholding from W-2/W-2G/1099-G/R/MISC/NEC; prior-year tax paid this year;
+    estimates incl. a prior-year refund credited forward; mandatory SDI/UI/family-leave; NOT refunds). Linked
+    to R-SCHA-5A-STATE (primary) + the form face (secondary).
+- **Math is a sum + a §164 date filter — no new numeric constants.** `check_schedule_a_integrity.py` extended
+  (independent `ind_line5a_total` / `ind_line5a_final` recompute; D_SCHA_010/011 in DIAG_KEYS) → ALL CHECKS
+  PASS (facts 26→30, rules 7→8, diags 9→11, scenarios 12→17, links 10→12, FA 6→8). Seeded RS Supabase
+  (`ylqaejdqwuvwpglxnpgv`, idempotent `update_or_create`; FlowAssertions 336→338, TaxForms 74, all rules
+  cited) → re-exported `/api/forms/lookup/SCHEDULE_A/export/` → overwrote tts `server/specs/schedule_a_spec.json`
+  (semantic diff: ONLY the 4 facts + 1 rule + 2 diags + 5 tests added, 6 precedence bumps; zero content drift).
+- **tts build (compute/model/render/input/diagnostics/tests) is the next leg** — the `StateIncomeTaxPayment`
+  child model + the withholding aggregation (W2StateEntry rows, else the legacy flat field; 1099-R/INT/DIV,
+  1099-G, W-2G) → line 5a. Federal payment-date capture for Form 2210 UET is a SEPARATE next unit (Ken's
+  sequencing choice).
+
+---
+
 ## 2026-07-01 — FORM_8606: Roth basis tracker (year-over-year line 22/24) amendment SEEDED + EXPORTED (Ken go-ahead)
 - Ken's UX/bug batch item "Roth basis tracker — year-over-year Roth contribution basis (8606 Part III only
   captures at distribution)". Ken chose (tts AskUserQuestion) contribution+conversion cumulative scope AND the
