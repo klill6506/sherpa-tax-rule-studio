@@ -4,6 +4,33 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-01 — FORM_8606: Roth basis tracker (year-over-year line 22/24) amendment SEEDED + EXPORTED (Ken go-ahead)
+- Ken's UX/bug batch item "Roth basis tracker — year-over-year Roth contribution basis (8606 Part III only
+  captures at distribution)". Ken chose (tts AskUserQuestion) contribution+conversion cumulative scope AND the
+  full RS round-trip (compute_8606 is spec-governed). `load_1040_8606.py` amended:
+  - **+1 fact** `f8606_roth_cy_contributions` (decimal) — current-year regular Roth contributions. NOT an 8606
+    line: a regular Roth contribution needs no 8606, so it's recorded on the per-owner Roth basis tracker
+    (tts `RothIRABasis`) and the proforma roll adds it to next year's line-22 basis.
+  - **+1 routing rule** `R-8606-ROTHTRACK` — line 22 (contribution basis) + line 24 (conversion basis) are
+    SOURCED from the per-owner tracker (opening carryforward, YELLOW), overridable direct-entry (GREEN). The
+    year-over-year roll is stated exactly: a distribution recovers contribution basis FIRST tax-free, so
+    next line 22 = max(0, l22 − l21) + cy_contributions (l21 = roth_dist − homebuyer); next line 24 =
+    max(0, l24 − max(0, l21 − l22)) + this year's conversions (line 8). Cited IRC_408A (§408A(d)(4)) +
+    i8606 Part III.
+  - **+1 diagnostic** `D_8606_ROTHNOBASIS` (warning) — nonqualified Roth distribution present with zero
+    recorded contribution+conversion basis → the whole distribution is taxed as earnings (line 25c); nudge to
+    enter the cumulative basis / use the tracker. Closes a silent over-taxation gap. + scenario F-G2.
+- **Part III math UNCHANGED** — §408A(d)(4) ordering was already verified/cited; the tracker is a records-keeping
+  carryforward, not new law. The roll formula was hand-verified against two worked examples (full + partial basis
+  recovery). `check_8606_integrity.py` ALL CHECKS PASS (facts 16→17, rules 4→5, diags 6→7, scenarios 8→9,
+  links 6→8; the §408(d) pro-rata + §408A ordering still re-type to the dollar). Seeded RS Supabase
+  (`ylqaejdqwuvwpglxnpgv`, idempotent `update_or_create`) → re-exported `/api/forms/lookup/FORM_8606/export/` →
+  overwrote tts `server/specs/8606_spec.json` (semantic diff: ONLY the 4 additive items; zero drift on existing
+  content). +1 flow assertion `FA-1040-8606-07` (in the FlowAssertion table, 336 total; not in the form export —
+  wired tts-side in flow_assertions_1040.json). tts DiagnosticRule rows re-seed on the next Render deploy.
+
+---
+
 ## 2026-07-01 — FORM_1116: §904(j) de minimis AUTO-election amendment SEEDED + EXPORTED (Ken go-ahead)
 - Ken's UX/bug batch item "foreign-tax de minimis (§904(j))". Ken chose (tts AskUserQuestion) auto-apply +
   opt-out AND the full RS round-trip (the diagnostics are spec-governed). `load_1040_form_1116.py` amended:

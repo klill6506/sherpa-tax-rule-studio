@@ -302,6 +302,13 @@ F_FACTS: list[dict] = [
      "data_type": "decimal", "default_value": "0", "sort_order": 11, "notes": "Historical conversions/rollovers."},
     {"fact_key": "f8606_age_50_plus", "label": "Age 50+ (the $8,000 contribution limit)?",
      "data_type": "boolean", "default_value": "false", "sort_order": 12, "notes": "D_8606_OVERCONTRIB threshold."},
+    # ── Roth basis tracker (year-over-year; feeds line 22/24) ──
+    {"fact_key": "f8606_roth_cy_contributions", "label": "Current-year regular Roth IRA contributions (basis tracker)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 13,
+     "notes": ("Roth basis tracker field (NOT a current-year 8606 line). A regular Roth contribution does not "
+               "require an 8606, so it is recorded on the per-owner Roth basis tracker; the proforma roll adds it "
+               "to next year's line-22 contribution basis so Part III (§408A(d)(4)) is correct when a "
+               "distribution later occurs.")},
     # ── Outputs ──
     {"fact_key": "f8606_line14", "label": "Basis carryforward to 2026 (line 14)",
      "data_type": "decimal", "sort_order": 30, "notes": "OUTPUT."},
@@ -343,6 +350,19 @@ F_RULES: list[dict] = [
                  "4a still sums); the Simplified Method precedent."),
      "inputs": ["f8606_line15c", "f8606_line18", "f8606_line25c"], "outputs": [],
      "description": "The 1099-R coupling (Ken Decision 3)."},
+    {"rule_id": "R-8606-ROTHTRACK", "title": "Roth basis tracker — sources line 22/24 + the year-over-year roll",
+     "rule_type": "routing", "precedence": 5, "sort_order": 5,
+     "formula": ("Line 22 (Roth contribution basis) and line 24 (Roth conversion basis) are SOURCED from the "
+                 "per-owner Roth IRA basis tracker (the opening carryforward account — YELLOW), overridable by "
+                 "direct entry (GREEN). Year-over-year roll (proforma producer): a distribution recovers "
+                 "contribution basis FIRST, tax-free, so next-year line 22 = max(0, line 22 − line 21) + "
+                 "current-year Roth contributions (f8606_roth_cy_contributions), where line 21 = roth_distributions "
+                 "− homebuyer; next-year line 24 = max(0, line 24 − max(0, line 21 − line 22)) + this year's "
+                 "conversions (line 8). Regular Roth contributions need no 8606, so the tracker is the only home "
+                 "that keeps Part III (§408A(d)(4) ordering) correct across no-distribution years."),
+     "inputs": ["f8606_roth_cy_contributions", "f8606_conversions", "f8606_roth_distributions", "f8606_roth_homebuyer"],
+     "outputs": ["f8606_roth_contribution_basis", "f8606_roth_conversion_basis"],
+     "description": "The Roth basis tracker feeder + proforma roll (records-keeping for the §408A(d)(4) ordering)."},
 ]
 
 F_LINES: list[dict] = [
@@ -406,6 +426,13 @@ F_DIAGNOSTICS: list[dict] = [
      "message": ("This 2026 return uses the 2025 IRA contribution limit ($7,000 / $8,000), which is INTERIM "
                  "until the 2026 figure publishes (~Dec 2026). Re-verify the limit."),
      "notes": "Re-pin the 2026 limit."},
+    {"diagnostic_id": "D_8606_ROTHNOBASIS", "title": "Nonqualified Roth distribution with no recorded Roth basis", "severity": "warning",
+     "condition": "f8606_roth_distributions > 0 AND f8606_roth_contribution_basis == 0 AND f8606_roth_conversion_basis == 0",
+     "message": ("A nonqualified Roth IRA distribution is present but no Roth contribution or conversion basis is "
+                 "recorded. Under §408A(d)(4) regular contributions come out first, tax-free — with a blank basis "
+                 "the entire distribution is taxed as earnings (line 25c). Enter the cumulative Roth basis, or use "
+                 "the Roth basis tracker, so the ordering is correct."),
+     "notes": "No silent gap — a blank Roth basis over-taxes the distribution."},
 ]
 
 F_SCENARIOS: list[dict] = [
@@ -441,6 +468,10 @@ F_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2025, "nondeduct": 9000, "age_50_plus": False},
      "expected_outputs": {"D_8606_OVERCONTRIB": True},
      "notes": "9000 > 7000 (under 50) → D_8606_OVERCONTRIB."},
+    {"scenario_name": "F-G2 — Roth distribution, no basis → D_8606_ROTHNOBASIS", "scenario_type": "diagnostic", "sort_order": 9,
+     "inputs": {"tax_year": 2025, "roth_distributions": 5000, "roth_contribution_basis": 0, "roth_conversion_basis": 0},
+     "expected_outputs": {"D_8606_ROTHNOBASIS": True},
+     "notes": "A nonqualified Roth distribution with zero recorded basis → the whole 5,000 is taxable earnings (line 25c) + the no-basis warning."},
 ]
 
 F_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -450,6 +481,8 @@ F_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8606-PART2", "IRS_2025_F8606_INSTR", "secondary", "Part II lines 16-18"),
     ("R-8606-PART3", "IRC_408A", "primary", "§408A(d)(4) the distribution ordering"),
     ("R-8606-4B", "IRS_2025_F8606_INSTR", "primary", "The taxable amounts → 1040 line 4b"),
+    ("R-8606-ROTHTRACK", "IRC_408A", "primary", "§408A(d)(4) the ordering the tracker keeps correct"),
+    ("R-8606-ROTHTRACK", "IRS_2025_F8606_INSTR", "secondary", "Part III basis lines 22/24"),
 ]
 
 
@@ -494,6 +527,12 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "FORM_8606", "expect": {"red_fires": True},
                     "blockers": ["over_contribution", "missing_year_end"]},
      "sort_order": 6},
+    {"assertion_id": "FA-1040-8606-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Roth basis tracker sources line 22/24 + rolls forward",
+     "description": "Validates R-8606-ROTHTRACK. Bug it catches: the per-owner Roth basis tracker not sourcing line 22 (contribution basis) / line 24 (conversion basis), so a nonqualified Roth distribution is mis-taxed under §408A(d)(4); or the year-over-year roll not carrying opening basis less the distribution recovery plus current-year contributions.",
+     "definition": {"kind": "flow_assertion", "form": "FORM_8606",
+                    "checks": [{"source_line": "roth_basis_tracker", "must_write_to": ["FORM_8606.l22", "FORM_8606.l24"]}]},
+     "sort_order": 7},
 ]
 
 

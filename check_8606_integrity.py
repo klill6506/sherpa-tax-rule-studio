@@ -77,7 +77,7 @@ check("part_iii earnings", m.part_iii(20000, 0, 15000, 3000), Decimal("2000"))
 
 # ── 2. Scenarios — independent recompute ──
 DIAG_KEYS = {"D_8606_OVERCONTRIB", "D_8606_NO_YEAREND", "D_8606_BACKDOOR",
-             "D_8606_SUPERSEDE", "D_8606_PART3", "D_8606_TY2026"}
+             "D_8606_SUPERSEDE", "D_8606_PART3", "D_8606_TY2026", "D_8606_ROTHNOBASIS"}
 spec = m.FORMS[0]
 for s in spec["scenarios"]:
     name = s["scenario_name"].split(" ")[0]
