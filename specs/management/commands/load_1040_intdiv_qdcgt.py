@@ -1243,8 +1243,10 @@ SCHB_RULES: list[dict] = [
                  "7b countries required when Q2 = Yes; line 8 must be ANSWERED."),
      "inputs": ["foreign_account_yes", "fbar_required_yes", "foreign_countries_list", "foreign_trust_yes"],
      "outputs": [],
-     "description": ("ONCE PER RETURN. Face verbatim gate (a)/(b)/(c). Unanswered = NULL (three-state "
-                     "booleans, digital-asset convention) — the face never guesses. D_SCHB_001/002/003.")},
+     "description": ("ONCE PER RETURN. Face verbatim gate (a)/(b)/(c). AMENDED 2026-06-30 (Ken): an "
+                     "unanswered 7a-1 (foreign account) or line 8 (foreign trust) now DEFAULTS to No on "
+                     "the face — D_SCHB_001 (info) reminds the preparer to confirm. Question 2 / 7b still "
+                     "require an answer only once 7a-1 = Yes (D_SCHB_002/003). D_SCHB_001/002/003.")},
     {"rule_id": "R-SB-06", "title": "Listing conventions: seller-financed first + buyer SSN; brokerage firm-name rows",
      "rule_type": "classification", "precedence": 0, "sort_order": 6,
      "formula": ("seller-financed entries list FIRST with buyer name/address/SSN (face + i1040sb; $50 penalty "
@@ -1282,11 +1284,13 @@ SCHB_LINES: list[dict] = [
 ]
 
 SCHB_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_SCHB_001", "title": "Part III required but question 7a-1 unanswered", "severity": "error",
-     "condition": "part_iii_required AND foreign_account_yes is NULL",
-     "message": ("Schedule B Part III is required (over $1,500 of interest/dividends, or foreign "
-                 "account/trust) — answer question 7a (foreign financial account Yes/No)."),
-     "notes": "R-SB-05. Also fires for an unanswered line 8 under the same gate."},
+    {"diagnostic_id": "D_SCHB_001", "title": "Part III foreign question defaulting to No", "severity": "info",
+     "condition": "part_iii_required AND (foreign_account_yes is NULL OR foreign_trust_yes is NULL)",
+     "message": ("Schedule B Part III is required — a foreign due-diligence question (7a foreign account "
+                 "or 8 foreign trust) is unanswered and defaulting to No. Confirm before filing."),
+     "notes": "R-SB-05. AMENDED 2026-06-30 (Ken): unanswered 7a-1 / line 8 now DEFAULT to No on the face "
+              "(the face prints No) with this INFO reminder, instead of an ERROR block. Now explicitly "
+              "covers both 7a-1 and line 8 under the Part III gate (the code previously only checked 7a-1)."},
     {"diagnostic_id": "D_SCHB_002", "title": "7a question 1 = Yes but question 2 unanswered", "severity": "error",
      "condition": "foreign_account_yes is True AND fbar_required_yes is NULL",
      "message": ("You answered Yes to a foreign financial account — answer 7a question 2 (FinCEN Form 114 "

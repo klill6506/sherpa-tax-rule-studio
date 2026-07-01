@@ -1760,12 +1760,15 @@ FORM_DIAGNOSTICS: list[dict] = [
      "condition": "estimated_tax_penalty > 0 AND L34 > 0",
      "message": "Estimated tax penalty entered on a refund return — verify the offset treatment manually (Form 2210 not built).",
      "notes": "§6654 penalty can apply even when a refund is due."},
-    {"diagnostic_id": "D_1040_017", "title": "Digital-asset question unanswered", "severity": "warning",
+    {"diagnostic_id": "D_1040_017", "title": "Digital-asset question defaulting to No", "severity": "info",
      "condition": "digital_assets_answer is None",
-     "message": "The digital-asset question has not been answered — every return must answer Yes or No (2025 Form 1040 header).",
-     "notes": "Completeness check on the required header question (fact digital_assets_answer, "
+     "message": "The digital-asset question is defaulting to No — confirm the answer (Yes or No) on the Taxpayer Info tab before filing (2025 Form 1040 header).",
+     "notes": "Completeness reminder on the required header question (fact digital_assets_answer, "
               "widgets c1_10 Yes/No). No compute effect. Added 2026-06-10 per Ken's approval "
-              "(REVIEW_QUEUE digital-asset item); the answer renders via the header map."},
+              "(REVIEW_QUEUE digital-asset item); the answer renders via the header map. AMENDED "
+              "2026-06-30 (Ken): unanswered now DEFAULTS to No — the header prints the No box and this "
+              "drops from WARNING to an INFO reminder to confirm. No is a valid answer so the required "
+              "question is still answered; matches TaxWise/Lacerte pre-defaulting the common answer."},
 ]
 
 

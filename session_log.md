@@ -4,6 +4,29 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-06-30 — Default-to-No due-diligence questions: D_1040_017 + D_SCHB_001 severity amendment SEEDED + EXPORTED (Ken go-ahead)
+- Part of Ken's UX/bug batch. Ken chose the "proper RS round-trip now" path (tts AskUserQuestion) after CC
+  flagged that the tts code change touched spec-governed diagnostics. Two loaders amended:
+  - **`load_1040_spine.py`** — `D_1040_017` (digital-asset question) severity **warning → info**, retitled
+    "defaulting to No", message reworded to the confirm-nudge. Unanswered now DEFAULTS to No on the header
+    (the No box prints); No is a valid answer so the required question is still answered (matches TaxWise/Lacerte).
+  - **`load_1040_intdiv_qdcgt.py`** — `D_SCHB_001` severity **error → info**, condition widened to
+    `part_iii_required AND (foreign_account_yes is NULL OR foreign_trust_yes is NULL)` so it now covers BOTH
+    7a-1 (foreign account) AND line 8 (foreign trust) — the note always said it should, but the tts code only
+    checked 7a-1 (fixed tts-side too). `R-SB-05` description updated: "the face never guesses" → "unanswered
+    7a-1 / line 8 DEFAULT to No; D_SCHB_001 (info) reminds to confirm."
+- **Both integrity gates GREEN** (`check_spine_integrity.py` all clean, no dup/uncited; `check_intdiv_integrity.py`
+  ALL CHECKS PASS — counts unchanged: spine 44 rules/91 facts/16 diags/32 scenarios; SCH_B 5/6/7/6). No new
+  facts/rules/lines/diagnostics — pure severity/message/condition edits on existing entries.
+- Seeded RS Supabase (`ylqaejdqwuvwpglxnpgv`, idempotent) → re-exported `/api/forms/lookup/1040/export/` +
+  `/api/forms/lookup/SCH_B/export/` → overwrote tts `server/specs/1040_spine_spec.json` + `sch_b_spec.json`
+  (semantic diff verified: ONLY the two diagnostics + R-SB-05 description changed, zero drift).
+- tts side: render defaults (digital-asset + 7a-1/8 null → No box), UI default-No YELLOW selects, `rules_1040.py`
+  / `rules_schb.py` severities synced, tests updated. tts DiagnosticRule rows re-seed on the next Render deploy
+  (build.sh idempotent seed_rules) — standard for any diagnostic change.
+
+---
+
 ## 2026-06-30 — 1040_RETIREMENT: SSA withholding / Medicare / Railroad amendment SEEDED + EXPORTED (Ken go-ahead)
 - Part of Ken's Bach-return UX batch (item 1). Ken greenlit the seed in-session. Amended `load_1040_retirement.py`:
   **+4 facts** (`ssa_fed_withheld`→25b, `ssa_medicare_premiums`, `ssa_medicare_destination` schedule_a|sehi,
