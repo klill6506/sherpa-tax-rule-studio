@@ -4,6 +4,41 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 (MeF track, ATS Scenario 13) — NEW FORM_8911 spec AUTHORED + SEEDED + EXPORTED
+- **Trigger:** ATS Scenario 13 (Birch) is the next smallest-first scenario unit (Ken's 2026-07-02
+  ruling); its tax-law form (8911 + Schedule A) had no RS spec (lookup 404 — the process gate).
+  The SEASON_PLAN appendix-4 **OBBBA sunset check ran at this spec leg as required**: §30C(i) as
+  amended by P.L. 119-21, fetched VERBATIM (law.cornell.edu + i8911 Rev. 12-2025) — "This section
+  shall not apply to any property placed in service after June 30, 2026." → **TY2025 fully live,
+  TY2026 HALF-YEAR live (Jan–Jun installs), TY2027+ dead. NOT zero TY2026 value — no S13 re-rule.**
+- **Ken approved in-session** (AskUserQuestion, all four judgment items): (1) the line-6b ORDERING
+  reading — the verbatim instruction sums Sch 3 "lines 2 through 5, and 7 (reduced by 6a/6b/6k)";
+  line 7 literally includes 8911's own 6j → encoded as "all Part-I credits ordered before 8911,
+  never its own 6j"; (2) census tract = PREPARER ASSERTION v1 (GEOID 11-digit format validated,
+  Appendix A/B NOT adjudicated; unanswered → D_8911_001 RED + excluded, answered No → quiet stop);
+  (3) business path computes on the face but RED-defers to the unbuilt Form 3800 (D_8911_004,
+  line 3 + K-1 line 2 never land on Sch 3); (4) the T1 enacted-law pins — the IRS ATS-13 answer
+  key used the PRE-OBBBA 30,000 MFJ std deduction (tax 162/credit 162); enacted law (31,500) →
+  tax 11/credit 11; the engine follows enacted law, ATS acceptance is schema + business rules.
+- **`load_1040_form_8911.py` (NEW):** 16 facts (per-property Sch A rows + return-level K-1) /
+  5 rules (R-8911-QUALIFY window+claim-year+tract, -SCHA-PERS 30%/$1,000-per-item, -SCHA-BUS
+  6%-30%PWA/$100,000 + §179 backout + 1/29/2023 auto-Yes, -TAXLIM L5-L9 with TMT-figured-always
+  = FORM_6251 line 9, -SCH3-6J min(L4,L9) + excess LOST) / 35 lines (form + "A-" prefixed Sch A) /
+  6 diagnostics / 10 HAND-COMPUTED scenarios (Birch enacted-law exact; $1,000 cap; TMT bite;
+  **6/30↔7/1/2026 boundary pair**; tract No vs UNANSWERED; business RED; mixed-use 6%; 6b
+  exact-fit; claim-year trap) / 4 loader-homed FA-1040-8911-01..04. Sources: NEW USC_26_30C +
+  IRS_2025_8911_INSTR + IRS_2025_8911_FORM, all key passages verbatim, requires_human_review set.
+- **Gate:** NEW `check_8911_integrity.py` — independent re-typed constants + full per-scenario
+  recompute + the varchar(20) id guards — **ALL CHECKS PASS** (pre- and post-flip).
+- **Seeded RS Supabase** (FORM_8911 created; TaxForms 77, FlowAssertions 370 rows). **Deployed
+  export verified id-level** (5/6/10/35/16 exact, all ids match). **FA drift check: RS 1040 export
+  348 vs tts gate file 344 — delta EXACTLY FA-1040-8911-01..04, zero other drift** either
+  direction. Canonical `8911_spec.json` exported to tts `server/specs/`.
+- tts build (RefuelingProperty list model, compute_8911, input tab, AcroForm render, FA merge,
+  then the Scenario-13 mapper: IRS6251 + IRS8911 + IRS8911ScheduleA) follows in tts-tax-app.
+
+---
+
 ## 2026-07-02 (MeF track, later) — R-8959-ENGAGE amendment: Who-Must-File engage gate SEEDED + EXPORTED
 - **Trigger:** ATS Scenario 5's W-2 (box 5 = 31,232 / box 6 = 453, a whole-dollar-rounded 452.86)
   made compute put $0.14 on 1040 line 25c — the code's 'line 22 > 0 engages' arm (never in the
