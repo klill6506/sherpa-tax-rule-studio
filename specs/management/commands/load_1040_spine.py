@@ -914,9 +914,10 @@ FORM_FACTS: list[dict] = [
     {"fact_key": "spouse_dob", "label": "Spouse date of birth (MFJ/MFS/QSS)", "data_type": "date",
      "sort_order": 9, "notes": "Return-level. Drives the spouse 12d aged box."},
     {"fact_key": "taxpayer_blind", "label": "Taxpayer is blind (12d)", "data_type": "boolean",
-     "sort_order": 10, "notes": "Return-level. NEW model field needed in tts-tax-app (no blind flag exists today)."},
+     "sort_order": 10, "notes": "Return-level. Model field `Taxpayer.taxpayer_blind` (built with the spine; "
+                                "stale 'no blind flag exists' note corrected 2026-07-02)."},
     {"fact_key": "spouse_blind", "label": "Spouse is blind (12d)", "data_type": "boolean",
-     "sort_order": 11, "notes": "Return-level. NEW model field needed in tts-tax-app."},
+     "sort_order": 11, "notes": "Return-level. Model field `Taxpayer.spouse_blind`."},
     {"fact_key": "taxpayer_claimed_as_dependent", "label": "Someone can claim you as a dependent (12a)",
      "data_type": "boolean", "sort_order": 12,
      "notes": "Return-level. Routes the standard deduction to the dependent worksheet (Table 8)."},
@@ -1112,6 +1113,17 @@ FORM_FACTS: list[dict] = [
      "notes": "Calculated: max(0, 33 - 24)."},
     {"fact_key": "amount_owed", "label": "Amount you owe (37)", "data_type": "decimal", "sort_order": 128,
      "notes": "Calculated: max(0, 24 - 33) + line 38 penalty (per instructions)."},
+    # ── Appended 2026-07-02 (MeF ATS Scenario 5) — header checkboxes the e-file
+    #    XML carries (IRS1040.xsd PECFPrimaryInd/PECFSpouseInd). Stored, no compute
+    #    effect (the nra_spouse_election pattern). Belongs with the sort 1-15 header
+    #    block; appended at the tail to keep the amendment additive.
+    {"fact_key": "pecf_primary", "label": "Presidential Election Campaign — you (header checkbox)",
+     "data_type": "boolean", "sort_order": 130,
+     "notes": "Return-level. $3 designation; never changes tax or refund (per the face). "
+              "Stored; no compute effect. E-file: IRS1040 PECFPrimaryInd."},
+    {"fact_key": "pecf_spouse", "label": "Presidential Election Campaign — spouse (header checkbox)",
+     "data_type": "boolean", "sort_order": 131,
+     "notes": "Return-level (MFJ). Stored; no compute effect. E-file: IRS1040 PECFSpouseInd."},
 ]
 
 

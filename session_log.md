@@ -4,6 +4,31 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 (MeF track) — SCH_8812 ACTC opt-out amendment + spine PECF facts SEEDED + EXPORTED
+- **Trigger:** MeF ATS Scenario 5 (Bobby Barker) checks the 2025 Form 1040 line-28 box — official
+  face verbatim: "Additional child tax credit (ACTC) from Schedule 8812. If you do not want to
+  claim the ACTC, check here" (e-file `DoNotClaimACTCInd`, 2025v5.4). compute_8812 had no election.
+- **Ken approved in-session** (AskUserQuestion): skip-Part-II-A-entirely semantics (16a–27 zero,
+  1040 line 28 = 0; CTC/ODC line 14 → line 19 NEVER touched).
+- **`load_1040_ctc.py`:** +fact `actc_opt_out` (return-level election, default false); R017
+  formula/inputs gain `AND NOT actc_opt_out`; +D014 (info transparency — elected with QCs
+  present); +TS19 (HAND-COMPUTED: HOH, 2 QC, tax 500 → L_14 500 kept, forfeits the 3,400 ACTC);
+  +FA-1040-CTC-13 (`conditional_zero`, trigger actc_opt_out — loader-homed, no export drift);
+  +verbatim line-28 excerpt on the EXISTING `IRS_2025_1040_FORM` source (LOOKUP-attach, never
+  update_or_create over a shared source row) + R017 link. Docstring counts refreshed.
+- **`load_1040_spine.py`:** +facts `pecf_primary` / `pecf_spouse` (Presidential Election Campaign
+  header boxes — stored, no compute effect; e-file `PECFPrimaryInd`/`PECFSpouseInd`). The
+  lived-apart (`mfs_hoh_lived_apart_last_6_months`) and main-home-US (`us_home_more_than_half_year`)
+  facts ALREADY existed. Fixed the stale "no blind flag exists in tts" notes (model has both).
+- **Seeded RS Supabase** (both loaders; RuleAuthorityLinks 975→971 wobble = the known 1040-stub
+  supersession cycle between the two loaders, both link-gates green). **Deployed export verified:**
+  SCH_8812 39 facts / 13 diagnostics / 19 tests, R017 amended, TS19 exact; FA export 344 = tts
+  gate 343 + exactly FA-1040-CTC-13, zero other drift either direction. Canonical
+  `sch_8812_spec.json` + `1040_spine_spec.json` re-exported to tts same sitting.
+- tts build (model field, compute gate, input, render, FA merge) follows in tts-tax-app.
+
+---
+
 ## 2026-07-02 (later) — GA-500 W7 amendment: HB 463 tips/overtime exclusions SEEDED + EXPORTED
 - **Ken approved in-session** (AskUserQuestion ×2: the four scope forks — full unit / per-taxpayer
   cap / assertion+auto-feed / dedicated S1-12a-12b sub-lines — then the seed go-ahead after the

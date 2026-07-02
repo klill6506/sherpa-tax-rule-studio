@@ -10,8 +10,15 @@ Creates:
   - 2 new excerpts on the existing IRS_2025_1040_INSTR source
   - 2 new TaxForm records:
       1040  (stub — only Line 11 / Line 19 / Line 28 modeled)
-      SCH_8812 (full — all 27 lines, ~30 facts, 30 rules, 12 diagnostics, 17 tests)
-  - 13 FlowAssertion records (FA-1040-CTC-01 through 12 + TI-1040-CTC-A)
+      SCH_8812 (full — all 27 lines, ~30 facts, 30 rules, 13 diagnostics, 19 tests)
+  - 14 FlowAssertion records (FA-1040-CTC-01 through 13 + TI-1040-CTC-A)
+
+Amended 2026-07-02 (MeF ATS Scenario 5 surfaced the gap): ACTC opt-out election —
+the 2025 Form 1040 line 28 face adds "If you do not want to claim the ACTC, check
+here" (e-file IRS1040 DoNotClaimACTCInd, 2025v5.4). New fact `actc_opt_out`, R017
+gains the NOT-opt-out gate (zeroes Part II-A + 1040 line 28; CTC/ODC line 19
+untouched), D014 transparency info, TS19, FA-1040-CTC-13, verbatim line-28 face
+excerpt on the existing IRS_2025_1040_FORM source.
 
 Idempotent: uses update_or_create throughout. Safe to re-run.
 """
@@ -660,7 +667,26 @@ NEW_EXCERPTS_FOR_EXISTING_1040_INSTR = [
 ]
 
 
-EXISTING_SOURCES = ["IRS_2025_1040_INSTR"]
+# Excerpt to ADD to the existing IRS_2025_1040_FORM source (created by the EIC
+# loader; LOOKUP only — never update_or_create over a shared source row).
+NEW_EXCERPTS_FOR_EXISTING_1040_FORM = [
+    {
+        "excerpt_label": "Line 28 — ACTC opt-out checkbox (2025 face)",
+        "location_reference": "2025 Form 1040 (official f1040.pdf), page 2, line 28",
+        "excerpt_text": (
+            "Additional child tax credit (ACTC) from Schedule 8812. If you do not want "
+            "to claim the ACTC, check here"
+        ),
+        "summary_text": (
+            "The 2025 face adds an explicit election NOT to claim the ACTC (line 28 "
+            "checkbox; e-file DoNotClaimACTCInd)."
+        ),
+        "is_key_excerpt": True,
+    },
+]
+
+
+EXISTING_SOURCES = ["IRS_2025_1040_INSTR", "IRS_2025_1040_FORM"]
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -740,6 +766,18 @@ class Command(BaseCommand):
                 authority_source=instr_1040, excerpt_label=exc["excerpt_label"], defaults=exc,
             )
         self.stdout.write(f"  {len(NEW_EXCERPTS_FOR_EXISTING_1040_INSTR)} new excerpts on IRS_2025_1040_INSTR")
+
+        form_1040 = sources.get("IRS_2025_1040_FORM")
+        if not form_1040:
+            self.stdout.write(self.style.WARNING(
+                "IRS_2025_1040_FORM not found — cannot add the line-28 opt-out excerpt"))
+            return
+        for exc in NEW_EXCERPTS_FOR_EXISTING_1040_FORM:
+            exc = dict(exc)
+            AuthorityExcerpt.objects.update_or_create(
+                authority_source=form_1040, excerpt_label=exc["excerpt_label"], defaults=exc,
+            )
+        self.stdout.write(f"  {len(NEW_EXCERPTS_FOR_EXISTING_1040_FORM)} new excerpts on IRS_2025_1040_FORM")
 
     # ─────────────────────────────────────────────────────────────────────────
     # Helpers (identical pattern to load_1120s_complete.py)
@@ -1046,6 +1084,15 @@ class Command(BaseCommand):
             {"fact_key": "actc_part_iib_triggered", "label": "Part II-B alternate ACTC triggered?",
              "data_type": "boolean", "sort_order": 65,
              "notes": "Calculated. True if count_qc >= 3 AND L_20 < L_17."},
+            {"fact_key": "actc_opt_out",
+             "label": "Do not claim the ACTC (2025 Form 1040 line 28 checkbox)?",
+             "data_type": "boolean", "default_value": "false", "sort_order": 66,
+             "notes": "Return-level ELECTION, not an eligibility test: 2025 Form 1040 "
+                      "line 28 — 'If you do not want to claim the ACTC, check here.' "
+                      "Zeroes the refundable ACTC only (Part II-A skipped, 1040 line 28 "
+                      "= 0); CTC/ODC Line 14 → 1040 line 19 unaffected. E-file: IRS1040 "
+                      "DoNotClaimACTCInd (2025v5.4). PATH-Act refund timing is the usual "
+                      "reason to elect. Added 2026-07-02 (ATS Scenario 5)."},
         ])
 
     # ──────────────────────────────────────
@@ -1202,12 +1249,16 @@ class Command(BaseCommand):
              "precedence": 14, "sort_order": 17,
              "formula": (
                  "actc_eligible = (L_12 > 0 AND NOT files_form_2555 "
-                 "AND return_ssn_eligible_for_ctc_actc AND count_qualifying_children > 0)"
+                 "AND return_ssn_eligible_for_ctc_actc AND count_qualifying_children > 0 "
+                 "AND NOT actc_opt_out)"
              ),
              "inputs": ["L_12", "files_form_2555", "return_ssn_eligible_for_ctc_actc",
-                        "count_qualifying_children"],
+                        "count_qualifying_children", "actc_opt_out"],
              "outputs": ["actc_eligible"],
-             "description": "Iteration semantics: ONCE PER RETURN. Form 2555 caution + return SSN gate + QC required."},
+             "description": "Iteration semantics: ONCE PER RETURN. Form 2555 caution + return "
+                            "SSN gate + QC required + the line-28 opt-out election (2025 Form "
+                            "1040 face; amended 2026-07-02). Opt-out skips Part II-A entirely "
+                            "(L_16a..L_27 = 0) and never touches L_14 (CTC/ODC)."},
             {"rule_id": "R018", "title": "ACTC overflow (Line 16a)", "rule_type": "calculation",
              "precedence": 15, "sort_order": 18,
              "formula": "L_16a = max(0, L_12 - L_14) if actc_eligible else 0",
@@ -1367,6 +1418,7 @@ class Command(BaseCommand):
             ("R017", "IRC_24", "primary", "§24(d) — refundable portion availability"),
             ("R017", "IRS_2025_8812_FORM", "primary", "Sch 8812 Part II-A caution (Form 2555)"),
             ("R017", "IRS_2025_8812_INSTR", "primary", "Sch 8812 Instructions E9 — Form 2555 disqualifies"),
+            ("R017", "IRS_2025_1040_FORM", "primary", "Line 28 opt-out checkbox (2025 face)"),
             # R018 — ACTC overflow
             ("R018", "IRS_2025_8812_FORM", "primary", "Sch 8812 Line 16a"),
             # R019 — ACTC per-child cap
@@ -1600,6 +1652,18 @@ class Command(BaseCommand):
                  "taxpayers; verify MAGI inputs if unexpected."
              ),
              "notes": "Suppresses D003. Cites: IRS_2025_8812_FORM.E4."},
+            {"diagnostic_id": "D014", "title": "ACTC opt-out elected — line 28 intentionally zero",
+             "severity": "info",
+             "condition": "RETURN: actc_opt_out AND count_qualifying_children > 0",
+             "message": (
+                 "The 'do not claim the ACTC' election (2025 Form 1040 line 28 checkbox) is set: "
+                 "Schedule 8812 Part II-A is skipped and Form 1040 line 28 is 0, even though the "
+                 "return has qualifying children. The nonrefundable CTC/ODC on line 19 is NOT "
+                 "affected. Uncheck the election on the Schedule 8812 tab to claim the refundable "
+                 "portion."
+             ),
+             "notes": "Transparency for the R017 opt-out gate. Cites: IRS_2025_1040_FORM line-28 "
+                      "excerpt. Added 2026-07-02 (ATS Scenario 5)."},
         ])
 
     # ──────────────────────────────────────
@@ -1783,6 +1847,24 @@ class Command(BaseCommand):
                  "dependent care, retirement savings contributions) are specced. Diagnostic D009 fires when "
                  "claims_credits_requiring_worksheet_b = True; full test cases will land when supporting "
                  "credit forms are modeled."
+             )},
+            {"scenario_name": "TS19 — opt-out: 2 QC, low tax → CTC kept, ACTC electively zero",
+             "scenario_type": "edge", "sort_order": 19,
+             "inputs": {"filing_status": "HOH", "taxpayer_has_valid_ssn": True,
+                        "agi_line_11": 30000, "earned_income_for_actc": 30000,
+                        "tax_before_ctc": 500, "schedule_3_pre_ctc_credits_total": 0,
+                        "count_qualifying_children": 2, "count_other_dependents": 0,
+                        "actc_opt_out": True},
+             "expected_outputs": {"L_8": 4400, "L_11": 0, "L_12": 4400, "L_13": 500,
+                                   "L_14": 500, "actc_eligible": False,
+                                   "L_16a": 0, "L_27": 0,
+                                   "1040.L_19": 500, "1040.L_28": 0, "D014_fires": True},
+             "notes": (
+                 "Validates the amended R017 (line-28 opt-out election). WITHOUT the election this "
+                 "return pays ACTC: L_16a = 3,900, L_16b = 3,400, L_17 = 3,400, L_19 = 27,500, "
+                 "L_20 = 4,125, L_27 = min(3,400, 4,125) = 3,400. The checked box forfeits that "
+                 "$3,400 refundable portion; the $500 nonrefundable CTC on 1040 line 19 is kept. "
+                 "Hand-computed 2026-07-02."
              )},
         ])
 
@@ -1984,6 +2066,23 @@ class Command(BaseCommand):
                  "params": {"flags": ["dep_qualifies_ctc", "dep_qualifies_odc"]},
              },
              "sort_order": 13},
+            {"assertion_id": "FA-1040-CTC-13",
+             "title": "ACTC opt-out (1040 line 28 checkbox) zeroes ACTC but never CTC/ODC",
+             "description": (
+                 "Validates the amended R017: actc_opt_out gates actc_eligible so Part II-A "
+                 "(L_16a..L_27) zeroes and 1040 line 28 = 0, while L_14 (CTC/ODC → 1040 line 19) "
+                 "is untouched. Bug it catches: the election zeroing the nonrefundable credit "
+                 "too, or being silently ignored (ACTC paid despite the checked box). Maps to "
+                 "TS19. Added 2026-07-02 (ATS Scenario 5 / DoNotClaimACTCInd)."
+             ),
+             "assertion_type": "flow_assertion", "entity_types": ["1040"],
+             "definition": {
+                 "kind": "conditional_zero", "form": "SCH_8812",
+                 "trigger": "actc_opt_out",
+                 "zeroes": ["L_16a", "L_27", "1040.L_28"],
+                 "never_zeroes": ["L_14", "1040.L_19"],
+             },
+             "sort_order": 14},
         ]
         for a in assertions:
             FlowAssertion.objects.update_or_create(
