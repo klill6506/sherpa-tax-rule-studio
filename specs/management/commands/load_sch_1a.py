@@ -1506,56 +1506,93 @@ TEST_SCENARIOS: list[dict] = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 FLOW_ASSERTIONS: list[dict] = [
-    {"assertion_id": "FA-1040-SCH1A-01", "assertion_type": "reconciliation", "entity_types": ["1040"],
-     "title": "Total (L38) = tips + overtime + QPVLI + senior",
-     "description": "Validates R-TOT-01. L38 = L13 + L21 + L30 + L37.",
-     "definition": {"kind": "sum_check", "form": "SCH_1A", "output": "L38", "sum_of": ["L13", "L21", "L30", "L37"]},
+    {"assertion_id": "FA-SCH1A-01", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "SCH_1A line 38 must equal Form 1040 line 13b",
+     "description": "Cross-form flow. Validates R-TOT-01. Bug it catches: senior deduction computed but never written to the 1040.",
+     "definition": {"form": "SCH_1A", "kind": "cross_form_flow"},
      "sort_order": 1},
-    {"assertion_id": "FA-1040-SCH1A-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "L38 flows to Form 1040 line 13b (1040-NR 13c), below-the-line",
-     "description": ("Validates R-TOT-01 cross-form flow. L38 lands on Form 1040/1040-SR line 13b "
-                     "(1040-NR line 13c) and reduces taxable income, NOT AGI; allowed whether or not itemizing."),
-     "definition": {"kind": "cross_form_flow",
-                    "flows": [{"from": "SCH_1A.L38", "to": "1040.L13b"}, {"from": "SCH_1A.L38", "to": "1040NR.L13c"}],
-                    "treatment": "below_the_line_reduces_taxable_income_not_agi"},
+    {"assertion_id": "FA-SCH1A-02", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "SCH_1A line 38 == line 13 + line 21 + line 30 + line 37",
+     "description": "Part VI reconciliation. Validates R-TOT-01 internal sum. Bug it catches: Parts II-IV stubs leak non-zero values; line 37 not added.",
+     "definition": {"form": "SCH_1A", "kind": "sum_check"},
      "sort_order": 2},
-    {"assertion_id": "FA-1040-SCH1A-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Tips phaseout rounds the $1,000 excess DOWN, ×$100",
-     "description": "Validates R-TIPS-06. L11 = floor(L10/1000); L12 = L11×$100.",
-     "definition": {"kind": "rounding_check", "form": "SCH_1A", "line": "L11", "behavior": "floor_to_1000",
-                    "multiplier": 100, "reduction_line": "L12"},
+    {"assertion_id": "FA-SCH1A-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Form 1040 line 14 formula must include 13b",
+     "description": "Cross-form flow check. Validates that the 1040 deductions subtotal includes the senior deduction. Bug it catches: 13b orphaned (computed but never propagated into taxable income).",
+     "definition": {"form": "SCH_1A", "kind": "formula_check"},
      "sort_order": 3},
-    {"assertion_id": "FA-1040-SCH1A-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Overtime phaseout rounds the $1,000 excess DOWN, ×$100",
-     "description": "Validates R-OT-05. L19 = floor(L18/1000); L20 = L19×$100.",
-     "definition": {"kind": "rounding_check", "form": "SCH_1A", "line": "L19", "behavior": "floor_to_1000",
-                    "multiplier": 100, "reduction_line": "L20"},
+    {"assertion_id": "FA-SCH1A-04", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "0 <= senior_deduction <= 12000; per_person <= 6000",
+     "description": "Universal bound. Bug it catches: phaseout sign-flip; double-application of per-person amount.",
+     "definition": {"form": "SCH_1A", "kind": "invariant"},
      "sort_order": 4},
-    {"assertion_id": "FA-1040-SCH1A-05", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Car loan phaseout rounds the $1,000 excess UP, ×$200 (opposite of II/III)",
-     "description": "Validates R-CAR-05. L28 = ceil(L27/1000); L29 = L28×$200.",
-     "definition": {"kind": "rounding_check", "form": "SCH_1A", "line": "L28", "behavior": "ceiling_to_1000",
-                    "multiplier": 200, "reduction_line": "L29"},
+    {"assertion_id": "FA-SCH1A-05", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "senior_deduction == 0 at/above elimination point (175K single / 250K MFJ)",
+     "description": "Phaseout elimination invariant. Bug it catches: phaseout cap missing \u2014 deduction goes negative or stays positive past elimination.",
+     "definition": {"form": "SCH_1A", "kind": "elimination_check"},
      "sort_order": 5},
+    {"assertion_id": "FA-SCH1A-06", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "spouse_amount (line 36b) == 0 whenever filing_status != MFJ",
+     "description": "MFJ gate. Validates R-SEN-07 filing-status precondition. Bug it catches: single/HOH/MFS filer accidentally getting 2x deduction.",
+     "definition": {"form": "SCH_1A", "kind": "mfj_gate_check"},
+     "sort_order": 6},
+    {"assertion_id": "FA-SCH1A-TIPS-01", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Tips deduction (line 13) capped at $25,000 (line 7)",
+     "description": "Validates the per-return cap. Bug it catches: cap removed or applied per-spouse.",
+     "definition": {"form": "SCH_1A", "kind": "tips_cap_check"},
+     "sort_order": 7},
+    {"assertion_id": "FA-SCH1A-TIPS-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Tips phaseout rounds DOWN (vs Schedule 8812 which rounds UP)",
+     "description": "Validates ROUND_DOWN behavior on line 11. Bug it catches: ceil/floor confusion between Schedule 8812 and Schedule 1-A.",
+     "definition": {"form": "SCH_1A", "kind": "tips_rounding_check"},
+     "sort_order": 8},
+    {"assertion_id": "FA-SCH1A-TIPS-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Tips ineligible filers (no valid SSN, not attesting, MFS) get $0",
+     "description": "Validates the eligibility gates. Bug it catches: gate skipped \u2014 disqualified filer still gets deduction.",
+     "definition": {"form": "SCH_1A", "kind": "tips_eligibility_gates"},
+     "sort_order": 9},
+    {"assertion_id": "FA-SCH1A-TIPS-04", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "Tips deduction (L_13) contributes to Part VI total (L_38)",
+     "description": "Validates the Part VI sum picks up Part II output (not just Part V). Bug it catches: L_38 = L_37 (only senior) when tips claimed.",
+     "definition": {"form": "SCH_1A", "kind": "tips_in_part_vi_sum"},
+     "sort_order": 10},
+    {"assertion_id": "FA-SCH1A-OT-01", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Overtime deduction (line 21) capped at line 15 ($12,500 / $25,000 MFJ)",
+     "description": "Validates the Part III cap, which DOUBLES for MFJ (unlike the flat tips cap). Bug it catches: cap removed, wrong cap, or MFJ doubling dropped.",
+     "definition": {"form": "SCH_1A", "kind": "overtime_cap_check"},
+     "sort_order": 11},
+    {"assertion_id": "FA-SCH1A-OT-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Overtime phaseout rounds DOWN (line 19)",
+     "description": "Validates ROUND_DOWN on line 19 (divide by $1,000, decrease to next lower whole number). Bug it catches: ceil/floor confusion vs Schedule 8812 (which rounds UP).",
+     "definition": {"form": "SCH_1A", "kind": "overtime_rounding_check"},
+     "sort_order": 12},
+    {"assertion_id": "FA-SCH1A-OT-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Overtime ineligible filers (no valid SSN, MFS) get $0",
+     "description": "Validates the Part III eligibility gates: valid SSN required, MFS short-circuits to 0. Note overtime has NO occupation/SSTB attestation (unlike tips). Bug it catches: gate skipped.",
+     "definition": {"form": "SCH_1A", "kind": "overtime_eligibility_gates"},
+     "sort_order": 13},
+    {"assertion_id": "FA-SCH1A-OT-04", "assertion_type": "reconciliation", "entity_types": ["1040"],
+     "title": "Overtime deduction (L_21) contributes to Part VI total (L_38)",
+     "description": "Validates the Part VI sum picks up Part III output sourced from compute (not the old stub FormFieldValue read). Bug it catches: L_38 ignores L_21, or L_21 still read from the seeded stub.",
+     "definition": {"form": "SCH_1A", "kind": "overtime_in_part_vi_sum"},
+     "sort_order": 14},
+    # Legacy-id records 05/06/07 are RETAINED — the canonical tts gate file
+    # still carries them (only 01..04 were superseded/renamed).
+    {"assertion_id": "FA-1040-SCH1A-05", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Car loan phaseout rounds the $1,000 excess UP, x$200 (opposite of II/III)",
+     "description": "Validates R-CAR-05. L28 = ceil(L27/1000); L29 = L28 x $200. Bug it catches: copying the tips/overtime floor x$100 mechanics into Part IV \u2014 OBBBA sibling provisions do NOT share rounding.",
+     "definition": {"form": "SCH_1A", "kind": "rounding_check", "line": "L28", "behavior": "ceiling_to_1000", "multiplier": 200, "reduction_line": "L29"},
+     "sort_order": 15},
     {"assertion_id": "FA-1040-SCH1A-06", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Senior phaseout is continuous 6% (no rounding); one phaseout, per qualifying spouse",
-     "description": ("Validates R-SEN-03/04/05/06/07. L34 = L33×0.06 (no rounding); L35 = max(0, 6000 − L34) "
-                     "computed once; L37 = L36a + L36b claimed per qualifying spouse."),
-     "definition": {"kind": "formula_check", "form": "SCH_1A",
-                    "formula": "L34 == L33 * 0.06 (continuous) AND L35 == max(0, 6000 - L34) AND L37 == L36a + L36b",
-                    "no_rounding": True, "per_qualifying_spouse": True},
-     "sort_order": 6},
+     "description": "Validates R-SEN-03/04/05/06/07. L34 = L33 x 0.06 with NO bracket rounding; L35 computed once; L37 = L36a + L36b claimed per qualifying spouse. Bug it catches: bracket rounding sneaking into the senior phaseout, or the phaseout computed per-spouse.",
+     "definition": {"form": "SCH_1A", "kind": "formula_check", "formula": "L34 == L33 * 0.06 (continuous) AND L35 == max(0, 6000 - L34) AND L37 == L36a + L36b", "no_rounding": True, "per_qualifying_spouse": True},
+     "sort_order": 16},
     {"assertion_id": "FA-1040-SCH1A-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Parts II/III/IV are cap-first, then phaseout",
-     "description": ("Validates ordering for tips/overtime/car-loan: the cap (L7/L15/L24) is applied BEFORE "
-                     "the MAGI phaseout reduction is subtracted."),
-     "definition": {"kind": "ordering_check", "form": "SCH_1A",
-                    "sequence": [
-                        {"part": "II", "cap_line": "L7", "then_phaseout_line": "L12", "result_line": "L13"},
-                        {"part": "III", "cap_line": "L15", "then_phaseout_line": "L20", "result_line": "L21"},
-                        {"part": "IV", "cap_line": "L24", "then_phaseout_line": "L29", "result_line": "L30"},
-                    ]},
-     "sort_order": 7},
+     "description": "Validates ordering for tips/overtime/car-loan: the cap (L7/L15/L24) is applied BEFORE the MAGI phaseout reduction is subtracted. Bug it catches: phaseout applied to the uncapped amount (overstates the deduction for high earners over the cap).",
+     "definition": {"form": "SCH_1A", "kind": "ordering_check", "sequence": [{"part": "II", "cap_line": "L7", "then_phaseout_line": "L12", "result_line": "L13"}, {"part": "III", "cap_line": "L15", "then_phaseout_line": "L20", "result_line": "L21"}, {"part": "IV", "cap_line": "L24", "then_phaseout_line": "L29", "result_line": "L30"}]},
+     "sort_order": 17},
 ]
 
 
@@ -1824,11 +1861,33 @@ class Command(BaseCommand):
     # ─────────────────────────────────────────────────────────────────────────
 
     def _load_flow_assertions(self):
+        # The original FA-1040-SCH1A-* ids were superseded by the canonical
+        # FA-SCH1A-* set (the tts flow_assertions_1040.json gate file is
+        # canonical — REVIEW_QUEUE 2026-07-01, resolved 2026-07-02). Disable,
+        # don't delete: the export serves status="active" only, and the old
+        # rows stay auditable in admin.
+        # Only 01..04 were superseded by the renamed FA-SCH1A-* scheme; the
+        # canonical file still carries the legacy-id 05/06/07 (kept in
+        # FLOW_ASSERTIONS above).
+        superseded = (
+            "FA-1040-SCH1A-01", "FA-1040-SCH1A-02",
+            "FA-1040-SCH1A-03", "FA-1040-SCH1A-04",
+        )
+        stale = FlowAssertion.objects.filter(
+            assertion_id__in=superseded
+        ).exclude(status="disabled").update(status="disabled")
+        if stale:
+            self.stdout.write(f"  {stale} superseded FA-1040-SCH1A-01..04 disabled")
         for a in FLOW_ASSERTIONS:
             a = dict(a)
             FlowAssertion.objects.update_or_create(
                 assertion_id=a.pop("assertion_id"), defaults=a,
             )
+        # Everything this block owns is by definition active canon — undoes
+        # any stray manual/blanket disable.
+        FlowAssertion.objects.filter(
+            assertion_id__in=[a["assertion_id"] for a in FLOW_ASSERTIONS]
+        ).exclude(status="active").update(status="active")
         self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions")
 
     # ─────────────────────────────────────────────────────────────────────────

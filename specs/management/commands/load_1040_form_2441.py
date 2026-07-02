@@ -492,6 +492,11 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "FORM_2441", "expect": {"red_fires": True},
                     "blockers": ["no_earned_income", "interim_2026"]},
      "sort_order": 6},
+    {"assertion_id": "FA-1040-2441-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Dependent-care claim flag gates the qualifying count",
+     "description": "R-2441-QUALIFYING (amended 2026-06-24): claims_dependent_care is the authoritative election \u2014 only claimed \u00a721 qualifying persons drive the credit; a qualifying-but-unclaimed dependent computes $0 and fires the info nudge D_2441_007 (no silent gap). Bug it catches: an unclaimed qualifying dependent silently generating a credit.",
+     "definition": {"kind": "gating_check", "form": "FORM_2441", "expect": {"claim_flag_gates_credit": True, "red_fires": True}, "blockers": ["qualifying_but_unclaimed"]},
+     "sort_order": 7},
 ]
 
 

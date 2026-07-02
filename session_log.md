@@ -4,6 +4,27 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 — FA drift resolved: RS DB re-synced to the tts canonical gate (export 341 = file 341)
+- REVIEW_QUEUE 2026-07-01 item; **Ken chose "re-seed RS now; tts file stays canonical"** (in-session).
+- **Root cause:** the 21 missing assertions never had loader homes. FA-1040-2441-07 and the six
+  FA-1040-5329-* existed ONLY in the tts gate file (merged there during their units); load_sch_1a.py
+  still carried the pre-rename FA-1040-SCH1A-01..07 block. The tts canonical set = the 14 renamed
+  FA-SCH1A-* PLUS the retained legacy-id 05/06/07; only 01..04 were superseded.
+- **Changes (transcription was MECHANICAL — scripted from the canonical JSON, no re-authoring; all
+  21 were already Ken-approved via their tts units):**
+  - `load_sch_1a.py` — FLOW_ASSERTIONS block replaced with the canonical 17 (14 FA-SCH1A-* +
+    legacy 05/06/07 verbatim); the seed now DISABLES the superseded 01..04 (the export serves
+    status="active" only; rows stay auditable) and forces-active everything the block owns.
+  - `load_1040_form_2441.py` — +FA-1040-2441-07 (sort 7).
+  - **NEW `load_1040_5329.py`** — FA-only loader (six FA-1040-5329-*); documents the boundary:
+    no 5329 form spec is authored in RS yet — that remains open work with its own future
+    READY_TO_SEED review.
+- Seeded RS Supabase (FlowAssertions rows 342→363 incl. disabled); deployed
+  `/api/flow-assertions/export/?entity_type=1040` verified by id-level diff: **341 = 341, zero
+  drift both directions.** Routine re-exports are clean again. tts gate file untouched.
+
+---
+
 ## 2026-07-01 — FORM_2210: dated §6654 accrual amendment SEEDED + EXPORTED
 - **Ken chose scope option 1 in-session ("build as designed", tts
   `server/specs/2210_dated_penalty_design.md`)** — that approval covers this amendment + seed
