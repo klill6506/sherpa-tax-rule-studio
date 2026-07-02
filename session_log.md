@@ -27,8 +27,14 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   Deployed export fetched → canonical **tts `server/specs/2210_spec.json` replaced** (semantic
   diff = exactly ~R-2210-REG, +t2210_payments_dated, +P-T7/P-T8; diagnostics/lines/authorities
   untouched).
-- tts legs (FederalEstimatedPayment model → compute → input → render → tests) proceed in the same
-  tts session.
+- **Same-session follow-ups:** (`9f94b7b`) +diag **D_2210_DATED** (dated-vs-line-26 reconciliation
+  warning) + P-G2 scenario + creditable-kind conventions in the fact notes → re-seeded (10 scenarios,
+  6 diagnostics) + re-exported. (`0b72b6f`) the tts FA-03 gate caught my pure function blending the
+  form's TWO allocations — fixed: FACE line 25 = per-column DATE-WINDOW netting (+overpay carry);
+  PENALTY = the earliest-first date-cured worksheet; FA-03 reworded to state both; gate ALL PASS,
+  re-seeded (FA text only).
+- tts legs shipped same session — tag `1040-2210-dated-payments-complete` (6 DB pipeline tests green,
+  incl. the dated-late-Q4 = 4.00 hand-computed pin).
 
 ---
 
