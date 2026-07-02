@@ -122,6 +122,16 @@ W6. PART-YEAR / NONRESIDENT proration. Ratio = GA AGI ÷ federal AGI (bounded
     0-100%, special zero/negative rules), applied to deductions+exemptions; the
     RIE earned & unearned portions are prorated SEPARATELY by GA-source ratio.
     CONFIRM the Schedule 3 mechanics.
+W7. TIPS/OVERTIME EXCLUSIONS (2026-07-02 amendment, HB 463 §48-7-27(a)(16)/(17),
+    TY2026-TY2028, self-repealing 12/31/2028). Two judgment calls Ken made
+    2026-07-02 in-session (AskUserQuestion), both preparer-reviewable:
+    (a) the $1,750 cap applies PER TAXPAYER on MFJ (statutory "received by" the
+    employee/individual; DOR guidance pending — re-verify at the 2026 IT-511);
+    (b) overtime's extra GA test ("full-time employee paid by an hourly wage" —
+    narrower than IRC §225) = a per-owner PREPARER ASSERTION; unasserted → NO
+    exclusion (penalty-safe) + D_GA500_013 nudge. Bases are the RAW federal
+    qualified amounts (GA has NO income phaseout; never the post-phaseout
+    federal deduction); OT is W-2 employee comp only (never 1099).
 
 ═══════════════════════════════════════════════════════════════════════════
 SAFETY GUARD — READY_TO_SEED stays False until Ken approves the review walk
@@ -189,8 +199,16 @@ GA_DEPENDENT_EXEMPTION: dict[int, int] = {2025: 4000, 2026: 5000}     # HB 463 �
 # for taxable years beginning on/after 2026-01-01 the standard deduction rises to
 # $15,000 (single/MFS/HOH) / $30,000 (MFJ) and the dependent exemption to $5,000,
 # with annual step-ups (+$375/$750 std, +$125 dep) beginning 2027. Effective-year
-# CONFIRMED WITH KEN 2026-06-25 (sources conflicted: BIP Wealth/BDO = TY2026 vs
-# GBPI = TY2027; Ken chose TY2026 — verify vs the bill text when convenient).
+# STATUTE-VERIFIED 2026-07-02 against the enacted HB 463/AP text (legis.ga.gov
+# doc 249080), Part V §5-1: "applicable to all taxable years beginning on or
+# after January 1, 2026." The 2027 step-ups are CONDITIONAL on OPB revenue
+# determinations (¶(1.1)) — never pre-code TY2027 amounts.
+# HB 463 also created two NEW subtractions, §48-7-27(a)(16) qualified overtime /
+# (a)(17) cash tips — each capped $1,750, TY2026-TY2028 only (both paragraphs
+# self-repeal 12/31/2028 per their (E) clauses).
+GA_TIPS_OT_CAP: int = 1750                # per category; per TAXPAYER (W7 — Ken 2026-07-02)
+GA_TIPS_OT_FIRST_YEAR: int = 2026         # "taxable years beginning on or after January 1, 2026"
+GA_TIPS_OT_LAST_YEAR: int = 2028          # "shall stand repealed and reserved on December 31, 2028"
 GA_RIE_62_64: dict[int, int] = {2025: 35000, 2026: 35000}            # age 62-64 or perm. disabled <62
 GA_RIE_65: dict[int, int] = {2025: 65000, 2026: 65000}              # age 65+
 GA_RIE_EARNED_CAP: dict[int, int] = {2025: 5000, 2026: 5000}        # RIE worksheet line 4
@@ -241,6 +259,16 @@ def ga_lic_credit_for(fagi: int) -> int:
     for ceiling, credit in GA_LIC_TABLE:
         if fagi <= ceiling:
             return credit
+    return 0
+
+
+def ga_tips_ot_cap_for(year: int) -> int:
+    """The HB 463 tips/overtime per-taxpayer cap — $1,750 inside the
+    TY2026-TY2028 window, 0 outside (the (16)(E)/(17)(E) self-repeals).
+    An explicit window, NOT a latest-year fallback: a TY2029 return must
+    compute ZERO exclusion, not inherit $1,750."""
+    if GA_TIPS_OT_FIRST_YEAR <= year <= GA_TIPS_OT_LAST_YEAR:
+        return GA_TIPS_OT_CAP
     return 0
 
 
@@ -473,26 +501,98 @@ AUTHORITY_SOURCES: list[dict] = [
         "source_type": "statute",
         "source_rank": "primary_official",
         "jurisdiction_code": "GA",
-        "title": "Georgia HB 463 — Georgia Economic Growth and Tax Relief Act of 2026",
-        "citation": "Ga. HB 463 (2026), signed May 2026",
+        "title": "Georgia HB 463 — Georgia Economic Growth and Tax Relief Act of 2026 (AS PASSED)",
+        "citation": "Ga. HB 463/AP (2025-26 sess.), signed 2026-05-11; legis.ga.gov doc 249080",
         "issuer": "Georgia General Assembly",
-        "official_url": "https://www.legis.ga.gov/legislation/70350",
+        "official_url": "https://www.legis.ga.gov/api/legislation/document/20252026/249080",
         "current_status": "active",
         "is_substantive_authority": True,
-        "trust_score": 9.0,
+        "trust_score": 10.0,
         "topics": ["georgia_income_tax"],
         "excerpts": [
+            # CORRECTED 2026-07-02: the prior excerpt (a secondary-source summary)
+            # WRONGLY said the std-deduction increase starts 2027. The enacted /AP
+            # text puts it at TY2026; only the retirement-exclusion increase and
+            # the annual step-ups are 2027. Verbatim quotes below.
             {
-                "excerpt_label": "HB 463 — TY2026 rate + dependent exemption",
+                "excerpt_label": "HB 463/AP — effective date (Part V, Section 5-1) — VERBATIM",
                 "excerpt_text": (
-                    "Lowers the Georgia individual income tax rate from 5.19% to 4.99% beginning January "
-                    "1, 2026 (then −0.125 percentage points annually toward 3.99%). Increases the "
-                    "dependent exemption from $4,000 to $5,000 effective for taxable years beginning "
-                    "January 1, 2026 (then +$125 annually beginning 2027 toward $6,000). The standard "
-                    "deduction increase ($15,000/$30,000) and the retirement-exclusion increase "
-                    "($70,000) take effect beginning 2027 (NOT 2026)."
+                    "This Act shall become effective upon its approval by the Governor or upon its "
+                    "becoming law without such approval and shall be applicable to all taxable years "
+                    "beginning on or after January 1, 2026."
                 ),
-                "summary_text": "HB 463: TY2026 rate 4.99%, dependent exemption $5,000; std deduction + retirement exclusion unchanged for 2026.",
+                "summary_text": "The whole Act — rate 4.99%, std ded $30k/$15k, dep exemption $5k, tips/OT exclusions — applies from TY2026.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "HB 463/AP — rate / std deduction / dependent exemption (VERBATIM, strike-and-insert)",
+                "excerpt_text": (
+                    "§48-7-20(a.1)(1): 'the tax imposed pursuant to subsection (a) of this Code section "
+                    "shall be [5.19 percent struck] 4.99 percent for taxable years beginning on or after "
+                    "January 1, [2025 struck] 2026; provided, however, that such rate shall be reduced by "
+                    "[0.10 struck] 0.125 percent annually beginning on January 1, [2026 struck] 2027, "
+                    "until the rate reaches [4.99 percent, struck] 3.99 percent'. §48-7-27(a)(1)(B): "
+                    "'(i) In the case of a married couple filing a joint return, [$24,000.00 struck] "
+                    "$30,000.00; provided, however, that such deduction shall be increased by $750.00 "
+                    "annually beginning on January 1, 2027, until such deduction reaches $36,000.00 … "
+                    "(ii) In the case of a single taxpayer, head of household, or married taxpayer filing "
+                    "a separate return, [$12,000.00 struck] $15,000.00; … increased by $375.00 annually "
+                    "beginning on January 1, 2027, until such deduction reaches $18,000.00'. "
+                    "§48-7-26(b): 'a personal exemption in the amount of [$4,000.00 struck] $5,000.00 for "
+                    "each dependent … increased by $125.00 annually beginning on January 1, 2027, until "
+                    "such deduction reaches $6,000.00'. ALL step-ups are subject to the ¶(1.1) delay "
+                    "triggers (OPB revenue determinations each December 1)."
+                ),
+                "summary_text": "TY2026: rate 4.99%, std $30,000/$15,000, dependent exemption $5,000. Step-ups begin 2027 and are revenue-conditional.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§48-7-27(a)(16) qualified overtime exclusion — VERBATIM",
+                "excerpt_text": (
+                    "(16)(A) For all taxable years beginning on or after January 1, 2026, and ending on "
+                    "December 31, 2028, any amount of qualified overtime compensation, as such term is "
+                    "defined in Section 225 of the Internal Revenue Code, up to $1,750.00 received by a "
+                    "full-time employee paid by an hourly wage. (B) Notwithstanding subparagraph (A) of "
+                    "this paragraph, for employers governed by the federal National Railway Labor Act, "
+                    "the exemption provided in this paragraph shall apply to hourly component overtime "
+                    "compensation as defined in applicable collective bargaining agreements. … "
+                    "(E) This paragraph shall stand repealed and reserved on December 31, 2028;"
+                ),
+                "summary_text": "GA overtime exclusion: IRC §225 definition, ≤$1,750, full-time hourly employees (+ RLA carve-in), TY2026-2028.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§48-7-27(a)(17) cash tips exclusion — VERBATIM",
+                "excerpt_text": (
+                    "(17)(A) For all taxable years beginning on or after January 1, 2026, any amount up "
+                    "to $1,750.00 received in cash tips. … (D) As used in this paragraph, the term: (i) "
+                    "'Cash tips' means cash received by an individual in an occupation that customarily "
+                    "and regularly receives tips, including tips received from customers that are paid in "
+                    "cash or charged and, in the case of an employee, tips received under any tip-sharing "
+                    "arrangement, but only if such amount is paid voluntarily without any consequence in "
+                    "the event of nonpayment, is not the subject of negotiation, and is determined by the "
+                    "payor. (ii) 'Occupation that customarily and regularly receives tips' means any "
+                    "occupation which has been designated as such and given a Treasury Tipped Occupation "
+                    "Code as set forth in the Federal Register by the secretary of the treasury of the "
+                    "United States. Occupations excluded under Section 63 of the Internal Revenue Code "
+                    "shall also be excluded for purposes of this paragraph. (E) This paragraph shall "
+                    "stand repealed and reserved on December 31, 2028."
+                ),
+                "summary_text": "GA cash-tips exclusion: ≤$1,750, voluntary non-negotiated tips (cash or charged) in a Treasury Tipped-Occupation-Code occupation, TY2026-2028.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§48-7-27(a)(5)(A)(xiii)-(xiv) retirement exclusion timing — VERBATIM",
+                "excerpt_text": (
+                    "(xiii) For taxable years beginning on or after January 1, 2012, and ending on or "
+                    "before December 31, 2026, retirement income from any source not to exceed an "
+                    "exclusion amount of $35,000.00 … or an amount of $65,000.00 for each taxpayer "
+                    "meeting the eligibility requirement set forth in division (iii) of subparagraph (D) "
+                    "of this paragraph; and (xiv) For taxable years beginning on or after January 1, "
+                    "2027, retirement income from any source not to exceed an exclusion amount of "
+                    "$35,000.00 … or an amount of $70,000.00 …"
+                ),
+                "summary_text": "RIE stays $35k/$65k through TY2026; the 65+ tier rises to $70,000 from TY2027 (62-64 stays $35k).",
                 "is_key_excerpt": True,
             },
         ],
@@ -545,6 +645,14 @@ GA500_FACTS: list[dict] = [
     {"fact_key": "g_sub_us_obligation_interest", "label": "Sch 1 sub: interest on U.S. obligations (L10)", "data_type": "decimal", "default_value": "0", "sort_order": 41, "notes": "Schedule 1 line 10 (reduced by related interest expense; FNMA/GNMA/FHLMC/repo NOT eligible). Direct-entry."},
     {"fact_key": "g_sub_depreciation", "label": "Sch 1 sub: depreciation difference (GA depreciation) (L11)", "data_type": "decimal", "default_value": "0", "sort_order": 42, "notes": "Schedule 1 line 11. v1 DIRECT-ENTRY (W1)."},
     {"fact_key": "g_sub_other", "label": "Sch 1 sub: other adjustments (L12)", "data_type": "decimal", "default_value": "0", "sort_order": 43, "notes": "Schedule 1 line 12 catch-all. Direct-entry."},
+
+    # — Schedule 1 subtractions: HB 463 tips/overtime exclusions (TY2026-2028) —
+    {"fact_key": "g_sub_tips_tp", "label": "TP qualified cash tips — GA exclusion base (L12a)", "data_type": "decimal", "default_value": "0", "sort_order": 44, "notes": "§48-7-27(a)(17). The taxpayer's RAW qualified cash tips (voluntary, Treasury Tipped-Occupation-Code occupation — the same test as federal §224). Federal-pulled (W-2 box 7 by owner + non-W-2 qualified tips, gated on the federal tipped-occupation attestation), preparer-editable. NEVER the post-phaseout federal deduction — GA has no phaseout. The rule caps at $1,750."},
+    {"fact_key": "g_sub_tips_sp", "label": "Spouse qualified cash tips — GA exclusion base (L12a)", "data_type": "decimal", "default_value": "0", "sort_order": 45, "notes": "Spouse mirror of g_sub_tips_tp. Per-taxpayer cap (W7)."},
+    {"fact_key": "g_ot_fthourly_tp", "label": "TP is a full-time employee paid by an hourly wage (GA OT gate)", "data_type": "boolean", "default_value": "false", "sort_order": 46, "notes": "§48-7-27(a)(16)(A)'s extra test on top of IRC §225 — a PREPARER ASSERTION (W7). Unasserted → no exclusion (penalty-safe) + D_GA500_013."},
+    {"fact_key": "g_ot_fthourly_sp", "label": "Spouse is a full-time employee paid by an hourly wage (GA OT gate)", "data_type": "boolean", "default_value": "false", "sort_order": 47, "notes": "Spouse mirror of g_ot_fthourly_tp."},
+    {"fact_key": "g_sub_ot_tp", "label": "TP qualified overtime compensation — GA exclusion base (L12b)", "data_type": "decimal", "default_value": "0", "sort_order": 48, "notes": "§48-7-27(a)(16). IRC §225 qualified overtime (the FLSA premium portion) from W-2 EMPLOYEE compensation only — 1099 amounts never qualify ('received by a full-time employee'). Federal-pulled RAW amount (no phaseout), preparer-editable. The rule caps at $1,750 and gates on g_ot_fthourly_tp."},
+    {"fact_key": "g_sub_ot_sp", "label": "Spouse qualified overtime compensation — GA exclusion base (L12b)", "data_type": "decimal", "default_value": "0", "sort_order": 49, "notes": "Spouse mirror of g_sub_ot_tp."},
 
     # — RIE: taxpayer —
     {"fact_key": "g_tp_rie_applies", "label": "Taxpayer qualifies for the retirement income exclusion", "data_type": "boolean", "default_value": "false", "sort_order": 50, "notes": "Age 62-64, or 65+, or <62 and permanently disabled. DOB required (date of disability if disability)."},
@@ -640,9 +748,9 @@ GA500_RULES: list[dict] = [
      "description": "The GA computation starts from federal AGI. Sourced from the child 1040's persisted line 11."},
 
     {"rule_id": "R-GA500-L9-S1", "title": "Line 9 — Schedule 1 net adjustments", "rule_type": "calculation", "precedence": 2, "sort_order": 3,
-     "formula": "Line 9 = Schedule 1 line 14 = (Σ additions L1-L5) − (Σ subtractions L7-L12). May be negative.",
-     "inputs": ["g_add_non_ga_muni_interest", "g_add_lump_sum", "g_add_depreciation", "g_add_federal_nol", "g_add_other", "g_sub_path2college", "g_sub_us_obligation_interest", "g_sub_depreciation", "g_sub_other"], "outputs": ["9", "S1-6", "S1-13", "S1-14"],
-     "description": "Schedule 1 additions less subtractions. The RIE (L7) and taxable SS (L8) subtractions are computed by R-GA500-RIE / R-GA500-MIL / R-GA500-SS; depreciation L3/L11 are direct-entry (W1)."},
+     "formula": "Line 9 = Schedule 1 line 14 = (Σ additions L1-L5) − (Σ subtractions L7-L12b, incl. the computed tips L12a and overtime L12b exclusions). May be negative.",
+     "inputs": ["g_add_non_ga_muni_interest", "g_add_lump_sum", "g_add_depreciation", "g_add_federal_nol", "g_add_other", "g_sub_path2college", "g_sub_us_obligation_interest", "g_sub_depreciation", "g_sub_other", "g_sub_tips_tp", "g_sub_tips_sp", "g_sub_ot_tp", "g_sub_ot_sp"], "outputs": ["9", "S1-6", "S1-13", "S1-14"],
+     "description": "Schedule 1 additions less subtractions. The RIE (L7) and taxable SS (L8) subtractions are computed by R-GA500-RIE / R-GA500-MIL / R-GA500-SS; the tips/overtime exclusions (L12a/L12b) by R-GA500-TIPS / R-GA500-OT; depreciation L3/L11 are direct-entry (W1)."},
 
     {"rule_id": "R-GA500-SS", "title": "Schedule 1 line 8 — taxable Social Security subtraction", "rule_type": "calculation", "precedence": 2, "sort_order": 4,
      "formula": "Schedule 1 line 8 = federal taxable Social Security (1040 line 6b) + Railroad Retirement Tier 1/2. Fully subtracted (GA does not tax Social Security / RR retirement).",
@@ -733,6 +841,16 @@ GA500_RULES: list[dict] = [
      "formula": "GA conforms to the IRC as of 1/1/2025 and did NOT adopt OBBBA; §168(k) bonus is disallowed and GA uses its own §179 limit. The GA-vs-federal depreciation difference is entered on Schedule 1 L3 (add) / L11 (sub) as preparer direct-entry in v1 (the depreciation engine's Asset.state_* fields auto-populate later).",
      "inputs": ["g_add_depreciation", "g_sub_depreciation"], "outputs": ["S1-3", "S1-11"],
      "description": "v1 depreciation boundary (W1). No silent gap — the lines accept entry and D_GA500_008 reminds the preparer."},
+
+    {"rule_id": "R-GA500-TIPS", "title": "Schedule 1 line 12a — cash tips exclusion (HB 463)", "rule_type": "calculation", "precedence": 2, "sort_order": 22,
+     "formula": "For taxable years 2026-2028 ONLY (0 outside — §48-7-27(a)(17)(E) self-repeals 12/31/2028): Line 12a = min(TP qualified cash tips, $1,750) + min(spouse qualified cash tips, $1,750). The cap applies PER TAXPAYER (W7 — 'any amount up to $1,750.00 received in cash tips', received by the individual; DOR guidance pending). 'Cash tips' = voluntary, non-negotiated, payor-determined amounts (cash or charged, incl. tip-sharing) in a Treasury Tipped-Occupation-Code occupation — the SAME occupation test as federal §224, so the base is the RAW per-owner federal qualified-tips amount, never the post-phaseout federal deduction (GA has no phaseout).",
+     "inputs": ["g_sub_tips_tp", "g_sub_tips_sp"], "outputs": ["S1-12a"],
+     "description": "The HB 463 cash-tips exclusion (§48-7-27(a)(17)), TY2026-2028. Feeds the Schedule 1 subtraction subtotal (S1-13) → line 9. W7."},
+
+    {"rule_id": "R-GA500-OT", "title": "Schedule 1 line 12b — qualified overtime exclusion (HB 463)", "rule_type": "calculation", "precedence": 2, "sort_order": 23,
+     "formula": "For taxable years 2026-2028 ONLY (0 outside — §48-7-27(a)(16)(E) self-repeals 12/31/2028): Line 12b = (g_ot_fthourly_tp ? min(TP qualified overtime, $1,750) : 0) + (g_ot_fthourly_sp ? min(spouse qualified overtime, $1,750) : 0). 'Qualified overtime compensation' = the IRC §225 definition (the FLSA premium portion), from W-2 EMPLOYEE compensation only — 1099 amounts never qualify ('received by a full-time employee'). Georgia's extra 'full-time employee paid by an hourly wage' test is a per-owner PREPARER ASSERTION (W7); unasserted → NO exclusion (penalty-safe default) + D_GA500_013. Per-taxpayer cap; RAW federal amounts (no phaseout). RLA employees: the assertion covers the (16)(B) collective-bargaining carve-in.",
+     "inputs": ["g_ot_fthourly_tp", "g_ot_fthourly_sp", "g_sub_ot_tp", "g_sub_ot_sp"], "outputs": ["S1-12b"],
+     "description": "The HB 463 qualified-overtime exclusion (§48-7-27(a)(16)), TY2026-2028, gated on the full-time-hourly preparer assertion. Feeds S1-13 → line 9. W7."},
 ]
 
 
@@ -806,7 +924,9 @@ GA500_LINES: list[dict] = [
     {"line_number": "S1-10", "description": "Sch 1 sub: interest on U.S. obligations", "line_type": "input"},
     {"line_number": "S1-11", "description": "Sch 1 sub: depreciation difference (GA depreciation)", "line_type": "input"},
     {"line_number": "S1-12", "description": "Sch 1 sub: other adjustments", "line_type": "input"},
-    {"line_number": "S1-13", "description": "Sch 1 total subtractions (sum of L7-L12)", "line_type": "subtotal"},
+    {"line_number": "S1-12a", "description": "Sch 1 sub: cash tips exclusion — ≤$1,750/taxpayer, TY2026-2028 (HB 463 §48-7-27(a)(17))", "line_type": "calculated"},
+    {"line_number": "S1-12b", "description": "Sch 1 sub: qualified overtime exclusion — ≤$1,750/taxpayer, full-time hourly, TY2026-2028 (HB 463 §48-7-27(a)(16))", "line_type": "calculated"},
+    {"line_number": "S1-13", "description": "Sch 1 total subtractions (sum of L7-L12b)", "line_type": "subtotal"},
     {"line_number": "S1-14", "description": "Sch 1 net adjustments (L6 − L13) → Form 500 line 9", "line_type": "total"},
 
     # — RIE worksheet (Sch 1 p2) —
@@ -904,6 +1024,18 @@ GA500_DIAGNOSTICS: list[dict] = [
      "condition": "the sum of credits (lines 17-21) exceeds line 16",
      "message": "Total nonrefundable credits used (lines 17-21) cannot exceed the tax on line 16. The credit used has been capped at the tax.",
      "notes": "Warning — the line 22 cap engaged."},
+    {"diagnostic_id": "D_GA500_013", "title": "GA overtime exclusion available — full-time-hourly assertion needed", "severity": "warning",
+     "condition": "tax year in 2026-2028 AND an owner's qualified overtime base (g_sub_ot_*) > 0 AND that owner's g_ot_fthourly_* is False",
+     "message": "Qualified overtime compensation is present, but the Georgia overtime exclusion (up to $1,750, HB 463) was NOT applied because the 'full-time employee paid by an hourly wage' assertion is unchecked. If the worker qualifies, check the assertion on the GA Schedule 1 tab; otherwise no action is needed.",
+     "notes": "Warning — the penalty-safe default (no exclusion until asserted) must never be a silent missed benefit. W7."},
+    {"diagnostic_id": "D_GA500_014", "title": "W-2 tips present — GA tips exclusion may be available", "severity": "warning",
+     "condition": "tax year in 2026-2028 AND W-2 social security tips (box 7) exist on the federal return AND the GA tips exclusion base (g_sub_tips_*) is 0 for that owner (federal tipped-occupation attestation unanswered)",
+     "message": "W-2 tips are present but no Georgia cash-tips exclusion (up to $1,750, HB 463) was applied — the tipped-occupation eligibility attestation on the federal Schedule 1-A tips section is unanswered. If the occupation has a Treasury Tipped Occupation Code, attest it there (the GA base auto-fills); otherwise no action is needed.",
+     "notes": "Warning — surfaces the GA benefit that rides the federal §224 occupation attestation. W7."},
+    {"diagnostic_id": "D_GA500_015", "title": "Tips/overtime exclusion outside TY2026-2028 — not applicable", "severity": "error",
+     "condition": "tax year NOT in 2026-2028 AND any of g_sub_tips_* / g_sub_ot_* > 0",
+     "message": "The HB 463 cash-tips and qualified-overtime exclusions apply to taxable years 2026 through 2028 only (both paragraphs self-repeal December 31, 2028). The entered amounts were NOT subtracted — remove them or verify the tax year.",
+     "notes": "Error — contradictory input outside the statutory window; the compute correctly zeroes the lines, the preparer must clear the entry."},
 ]
 
 
@@ -976,6 +1108,26 @@ GA500_SCENARIOS: list[dict] = [
                 "g_uet_penalty": 30, "g_late_payment_penalty": 10, "g_interest": 5},
      "expected_outputs": {"16": 2491, "23": 2491, "28": 2000, "29": 491, "30": 0, "45": 586, "46": 0},
      "notes": "Tax 2,491; withholding 2,000 → balance due 491. L45 amount due = 491 + 50 check-offs + (30+10+5) penalties/interest = 586; no overpayment so L46 = 0. UET=line 42, late=line 43, interest=line 44 (the 2025 form-face line numbers)."},
+    {"scenario_name": "GA500-T15 — tips + overtime both spouses, per-taxpayer caps bind (2026 MFJ)", "scenario_type": "normal", "sort_order": 15,
+     "inputs": {"tax_year": 2026, "g_residency_status": "full_year", "g_filing_status": "B", "g_num_dependents": 0, "g_federal_agi": 120000,
+                "g_sub_tips_tp": 5000, "g_sub_tips_sp": 2000, "g_ot_fthourly_tp": True, "g_sub_ot_tp": 4000, "g_ot_fthourly_sp": True, "g_sub_ot_sp": 1000},
+     "expected_outputs": {"S1-12a": 3500, "S1-12b": 2750, "S1-13": 6250, "S1-14": -6250, "9": -6250, "10": 113750, "11": 30000, "13": 83750, "15c": 83750, "16": 4179},
+     "notes": "HAND-COMPUTED. 12a = min(5000,1750)+min(2000,1750) = 1750+1750 = 3,500 (PER-TAXPAYER cap — a per-return cap would give 1,750). 12b = min(4000,1750)+min(1000,1750) = 1750+1000 = 2,750. 120,000 − 6,250 = 113,750 − 30,000 std = 83,750 × 4.99% = 4,179.125 → 4,179."},
+    {"scenario_name": "GA500-T16 — overtime present but full-time-hourly NOT asserted → no exclusion (2026)", "scenario_type": "edge_case", "sort_order": 16,
+     "inputs": {"tax_year": 2026, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 60000,
+                "g_sub_ot_tp": 3000, "g_ot_fthourly_tp": False},
+     "expected_outputs": {"S1-12a": 0, "S1-12b": 0, "9": 0, "10": 60000, "11": 15000, "13": 45000, "15c": 45000, "16": 2246},
+     "notes": "HAND-COMPUTED. The penalty-safe default: OT base 3,000 present but the assertion is False → 12b = 0 (D_GA500_013 fires). 60,000 − 15,000 (single std 2026) = 45,000 × 4.99% = 2,245.50 → 2,246 (half-up)."},
+    {"scenario_name": "GA500-T17 — tips/OT entered on a TY2025 return → zero (year gate)", "scenario_type": "edge_case", "sort_order": 17,
+     "inputs": {"tax_year": 2025, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 60000,
+                "g_sub_tips_tp": 1500, "g_ot_fthourly_tp": True, "g_sub_ot_tp": 1200},
+     "expected_outputs": {"S1-12a": 0, "S1-12b": 0, "9": 0, "10": 60000, "11": 12000, "13": 48000, "15c": 48000, "16": 2491},
+     "notes": "HAND-COMPUTED. Outside the TY2026-2028 window both lines compute 0 (D_GA500_015 fires on the contradictory input). Identical to T1: 48,000 × 5.19% = 2,491.20 → 2,491."},
+    {"scenario_name": "GA500-T18 — under-cap tips + overtime pass through raw (2026 single)", "scenario_type": "normal", "sort_order": 18,
+     "inputs": {"tax_year": 2026, "g_residency_status": "full_year", "g_filing_status": "A", "g_num_dependents": 0, "g_federal_agi": 50000,
+                "g_sub_tips_tp": 900, "g_ot_fthourly_tp": True, "g_sub_ot_tp": 600},
+     "expected_outputs": {"S1-12a": 900, "S1-12b": 600, "S1-13": 1500, "9": -1500, "10": 48500, "11": 15000, "13": 33500, "15c": 33500, "16": 1672},
+     "notes": "HAND-COMPUTED. Under-cap amounts pass through unclipped: 900 + 600 = 1,500. 50,000 − 1,500 = 48,500 − 15,000 = 33,500 × 4.99% = 1,671.65 → 1,672."},
 ]
 
 
@@ -1005,6 +1157,10 @@ GA500_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-GA500-CC", "GA_2025_FORM_500", "primary", "IND-CR 202 child & dependent care credit"),
     ("R-GA500-CC", "GA_OCGA_48_7", "primary", "§48-7-29.10 child & dependent care credit (50%)"),
     ("R-GA500-DEPR", "GA_2025_IT511", "primary", "GA conformity (IRC 1/1/2025, no OBBBA, §168(k) disallowance)"),
+    ("R-GA500-TIPS", "GA_HB463_2026", "primary", "§48-7-27(a)(17) cash tips exclusion — verbatim /AP text"),
+    ("R-GA500-TIPS", "GA_OCGA_48_7", "supporting", "Codified home: §48-7-27(a) subtraction list"),
+    ("R-GA500-OT", "GA_HB463_2026", "primary", "§48-7-27(a)(16) qualified overtime exclusion — verbatim /AP text"),
+    ("R-GA500-OT", "GA_OCGA_48_7", "supporting", "Codified home: §48-7-27(a) subtraction list"),
 ]
 
 
@@ -1049,6 +1205,12 @@ FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-GA500-12", "assertion_type": "table_invariant", "entity_types": ["1040"], "sort_order": 12,
      "title": "No silent gap — depreciation / UET / NOL-carryover RED-defers", "description": "Validates the v1 boundaries: the §168(k)/§179 depreciation difference (D_GA500_008), the UET penalty (D_GA500_010), and the multi-year NOL carryover (D_GA500_009) are flagged for manual entry, never silently computed wrong.",
      "definition": {"kind": "table_invariant", "form": "500", "rule": "depreciation_and_uet_and_nol_carryover_are_flagged_not_silent"}},
+    {"assertion_id": "FA-GA500-13", "assertion_type": "flow_assertion", "entity_types": ["1040"], "sort_order": 13,
+     "title": "Tips/overtime exclusions → Schedule 1 subtractions → line 9", "description": "Validates R-GA500-TIPS / R-GA500-OT. The computed HB 463 exclusions (S1-12a cash tips, S1-12b qualified overtime) flow into the Schedule 1 subtraction subtotal (S1-13) and thus Form 500 line 9.",
+     "definition": {"kind": "flow_assertion", "form": "500", "source_line": "S1-12a", "must_write_to": ["500.S1-13"], "companion_source_line": "S1-12b"}},
+    {"assertion_id": "FA-GA500-14", "assertion_type": "reconciliation", "entity_types": ["1040"], "sort_order": 14,
+     "title": "HB 463 tips/OT constants + gates pinned", "description": "Pins the §48-7-27(a)(16)/(17) mechanics: $1,750 cap per category PER TAXPAYER (W7), window TY2026-TY2028 with ZERO outside (self-repeal 12/31/2028 — never a latest-year fallback), the overtime full-time-hourly preparer-assertion gate (unasserted → 0), and the W-2-employee-only overtime source.",
+     "definition": {"kind": "reconciliation", "form": "500", "constants": {"tips_ot_cap": 1750, "tips_ot_first_year": 2026, "tips_ot_last_year": 2028, "cap_grain": "per_taxpayer", "ot_gate": "ft_hourly_assertion", "ot_source": "w2_only"}}},
 ]
 
 
@@ -1075,7 +1237,12 @@ FORMS: list[dict] = [
                 "RED-defers the UET penalty + the multi-year NOL carryover application. Attaches to the "
                 "child 1040 via the state_returns relation (the GA-600S precedent). Constants verified "
                 "vs the GA-DOR 2025 Form 500 + IT-511 PDFs + HB 111 + HB 463 (TY2026). Full source "
-                "brief: tts-tax-app/server/specs/_ga500_source_brief.md."
+                "brief: tts-tax-app/server/specs/_ga500_source_brief.md. AMENDED 2026-07-02 (W7): the "
+                "HB 463 §48-7-27(a)(16)/(17) tips + overtime exclusions (TY2026-2028, $1,750/taxpayer, "
+                "OT gated on the full-time-hourly preparer assertion) — rules R-GA500-TIPS/R-GA500-OT, "
+                "lines S1-12a/S1-12b, diagnostics D_GA500_013-015, scenarios T15-T18, FA-GA500-13/14; "
+                "the HB 463 authority excerpts replaced with VERBATIM enacted /AP text (the prior "
+                "summary excerpt wrongly dated the std-deduction increase 2027)."
             ),
         },
         "facts": GA500_FACTS,
@@ -1183,6 +1350,15 @@ class Command(BaseCommand):
                     AuthoritySourceTopic.objects.get_or_create(
                         authority_source=source, authority_topic=topic,
                     )
+        # 2026-07-02 amendment cleanup: the superseded HB 463 summary excerpt
+        # (it WRONGLY dated the std-deduction increase 2027) is replaced by the
+        # verbatim /AP excerpts under new labels — excerpts key on (source,
+        # label), so the stale row must be removed explicitly or the wrong
+        # text stays live and citable.
+        AuthorityExcerpt.objects.filter(
+            authority_source__source_code="GA_HB463_2026",
+            excerpt_label="HB 463 — TY2026 rate + dependent exemption",
+        ).delete()
         for code in EXISTING_SOURCES_TO_REFERENCE:
             src = AuthoritySource.objects.filter(source_code=code).first()
             if src:

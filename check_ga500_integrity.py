@@ -58,6 +58,12 @@ IND_SALT = {2025: 10000, 2026: 10000}
 IND_SALT_MFS = {2025: 5000, 2026: 5000}
 IND_NOL_PCT = Decimal("0.80")
 IND_LIC_TABLE = [(5999, 26), (7999, 20), (9999, 14), (14999, 8), (19999, 5)]
+# HB 463 §48-7-27(a)(16)/(17) — re-typed from the enacted /AP text (doc 249080):
+# "up to $1,750.00", "taxable years beginning on or after January 1, 2026",
+# "shall stand repealed and reserved on December 31, 2028". Per-taxpayer cap (W7).
+IND_TIPS_OT_CAP = 1750
+IND_TIPS_OT_FIRST = 2026
+IND_TIPS_OT_LAST = 2028
 
 
 def ind_std(year, fs):
@@ -131,9 +137,20 @@ def recompute(inp):
 
     additions = sum(D(inp.get(k)) for k in (
         "g_add_non_ga_muni_interest", "g_add_lump_sum", "g_add_depreciation", "g_add_federal_nol", "g_add_other"))
-    subtractions = s1_7 + ss + sum(D(inp.get(k)) for k in (
+
+    # — HB 463 tips/overtime exclusions (S1-12a/12b) — window-gated, per-taxpayer cap —
+    to_cap = D(IND_TIPS_OT_CAP) if IND_TIPS_OT_FIRST <= year <= IND_TIPS_OT_LAST else Decimal(0)
+    tips_excl = min(D(inp.get("g_sub_tips_tp")), to_cap) + min(D(inp.get("g_sub_tips_sp")), to_cap)
+    ot_excl = (min(D(inp.get("g_sub_ot_tp")), to_cap) if inp.get("g_ot_fthourly_tp") else Decimal(0)) + (
+        min(D(inp.get("g_sub_ot_sp")), to_cap) if inp.get("g_ot_fthourly_sp") else Decimal(0))
+    out["S1-12a"] = tips_excl
+    out["S1-12b"] = ot_excl
+
+    subtractions = s1_7 + ss + tips_excl + ot_excl + sum(D(inp.get(k)) for k in (
         "g_sub_path2college", "g_sub_us_obligation_interest", "g_sub_depreciation", "g_sub_other"))
     net_adj = additions - subtractions
+    out["S1-13"] = subtractions
+    out["S1-14"] = net_adj
 
     dep_exemption = D(IND_DEP[year])
     num_deps = D(inp.get("g_num_dependents"))
@@ -282,6 +299,14 @@ for yr in (2025, 2026, 2099):
 for fagi, want in [(5000, 26), (7000, 20), (9000, 14), (12000, 8), (18000, 5), (25000, 0)]:
     if m.ga_lic_credit_for(fagi) != want:
         err(f"ga_lic_credit_for({fagi}) = {m.ga_lic_credit_for(fagi)} != {want}")
+
+# — HB 463 tips/OT cap: constants + the explicit-window helper (0 outside, NO fallback) —
+check("GA_TIPS_OT_CAP", m.GA_TIPS_OT_CAP, IND_TIPS_OT_CAP)
+check("GA_TIPS_OT_FIRST_YEAR", m.GA_TIPS_OT_FIRST_YEAR, IND_TIPS_OT_FIRST)
+check("GA_TIPS_OT_LAST_YEAR", m.GA_TIPS_OT_LAST_YEAR, IND_TIPS_OT_LAST)
+for yr, want in [(2025, 0), (2026, 1750), (2027, 1750), (2028, 1750), (2029, 0), (2099, 0)]:
+    if m.ga_tips_ot_cap_for(yr) != want:
+        err(f"ga_tips_ot_cap_for({yr}) = {m.ga_tips_ot_cap_for(yr)} != {want}")
 
 # ── 3. Scenarios — independent recompute ──
 spec = m.FORMS[0]

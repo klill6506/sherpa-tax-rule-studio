@@ -4,6 +4,36 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 (later) — GA-500 W7 amendment: HB 463 tips/overtime exclusions SEEDED + EXPORTED
+- **Ken approved in-session** (AskUserQuestion ×2: the four scope forks — full unit / per-taxpayer
+  cap / assertion+auto-feed / dedicated S1-12a-12b sub-lines — then the seed go-ahead after the
+  review-packet walk).
+- **The law:** enacted HB 463/AP (signed 2026-05-11; legis.ga.gov doc 249080) §48-7-27(a)(16)
+  qualified overtime / (a)(17) cash tips — each ≤$1,750, TY2026-2028, both self-repeal 12/31/2028.
+  Verbatim text fetched + quoted (the tts-side statute verification earlier the same day).
+- **Loader `load_ga500_form_500.py`:** +6 facts (per-owner tips/OT bases + FT-hourly assertions),
+  +rules R-GA500-TIPS / R-GA500-OT (window-gated, PER-TAXPAYER cap, OT assertion gate, W-2-only
+  OT source, RAW federal bases — GA has no phaseout), R-GA500-L9-S1 amended (subs run L7-L12b),
+  +lines S1-12a/S1-12b, +diagnostics D_GA500_013 (OT-unasserted nudge) / 014 (tips-attestation
+  nudge) / 015 (out-of-window error), +scenarios GA500-T15..T18 (HAND-COMPUTED: per-taxpayer caps
+  3,500/2,750 → tax 4,179; unasserted-OT zero → 2,246; TY2025 year gate → 2,491; under-cap
+  passthrough → 1,672), +FA-GA500-13/14, +4 rule-authority links, W7 walk item documented.
+- **HB 463 authority CORRECTED:** the prior summary excerpt WRONGLY dated the std-deduction
+  increase 2027; replaced with 5 VERBATIM /AP excerpts (effective date §5-1, strike-and-insert
+  rate/std/dep text, both exclusion paragraphs, RIE (xiii)/(xiv) timing); the seed deletes the
+  stale excerpt row by its old label (excerpts key on source+label). Source citation/trust
+  updated (doc 249080, 10.0).
+- **Gate:** `check_ga500_integrity.py` extended (independent re-typing: window helper, per-owner
+  caps, S1-13/14 now emitted) — **ALL CHECKS PASS** (constants + helpers + LIC + 18 scenarios).
+- **Seeded RS Supabase:** form 500 now 83 facts / 23 rules / 91 lines / 15 diagnostics / 18
+  scenarios / 14 FA. Deployed export re-fetched → canonical tts `server/specs/500_spec.json`
+  replaced; id-level drift check: only R-GA500-L9-S1 (intended) + two rules' embedded authority
+  metadata (the corrected source row) changed — zero content drift otherwise. FA-GA500-13/14
+  merged into the tts gate file (341→343 assertions; gate 363→365) — loader homes exist HERE, so
+  no export drift (the fa-needs-rs-loader-home rule).
+
+---
+
 ## 2026-07-02 — FA drift resolved: RS DB re-synced to the tts canonical gate (export 341 = file 341)
 - REVIEW_QUEUE 2026-07-01 item; **Ken chose "re-seed RS now; tts file stays canonical"** (in-session).
 - **Root cause:** the 21 missing assertions never had loader homes. FA-1040-2441-07 and the six
