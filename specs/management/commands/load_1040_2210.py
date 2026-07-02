@@ -188,22 +188,42 @@ def regular_penalty(installments, withholding, est_payments, payments_dated=None
     chargeable days. With payments exactly on the due dates this reproduces
     the prior fixed-day formula (P-T1..T6 pin that equivalence).
 
-    Returns the per-installment underpayments AS OF each due date (the Form
-    2210 line-25 face value — a later catch-up payment stops the accrual but
-    does not erase the underpayment that existed at the due date) + the
-    total penalty."""
+    Returns the FACE per-column underpayments (Part III Section A: payments
+    netted per column by date window — (a) ≤4/15, (b) 4/16–6/15, (c)
+    6/16–9/15, (d) 9/16–1/15 — with an overpayment carry-forward; identical
+    to the pre-amendment quarterly model when payments sit on the due dates)
+    + the total penalty (the Penalty Worksheet's earliest-first, date-cured
+    allocation — the two are the form's own split)."""
     if payments_dated:
         payments = [(_as_date(d), _D(a)) for d, a in payments_dated]
     else:
         payments = [(DUE_DATES[i], _D(est_payments[i])) for i in range(4)]
     wh_q = _D(withholding) / Decimal("4")
+
+    # FACE: per-column window netting + overpayment carry-forward.
+    window_paid = [Decimal("0")] * 4
+    for paid_on, amount in payments:
+        for i in range(4):
+            if paid_on <= DUE_DATES[i]:
+                window_paid[i] += _D(amount)
+                break  # a payment after 1/15 belongs to no column
+    underpayments, overpay = [], Decimal("0")
+    for i in range(4):
+        avail = wh_q + window_paid[i] + overpay
+        req = _D(installments[i])
+        if avail >= req:
+            underpayments.append(Decimal("0"))
+            overpay = avail - req
+        else:
+            underpayments.append(req - avail)
+            overpay = Decimal("0")
+
+    # PENALTY: earliest-first, date-cured accrual.
     events = sorted(
         [(DUE_DATES[i], wh_q) for i in range(4) if wh_q > 0] + payments,
         key=lambda e: e[0],
     )
-
     remaining = [_D(x) for x in installments]
-    applied_on_time = [Decimal("0")] * 4  # applied by the installment's due date
     penalty = Decimal("0")
     for paid_on, amount in events:
         amount = _D(amount)
@@ -215,16 +235,10 @@ def regular_penalty(installments, withholding, est_payments, payments_dated=None
             applied = min(amount, remaining[i])
             remaining[i] -= applied
             amount -= applied
-            if paid_on <= DUE_DATES[i]:
-                applied_on_time[i] += applied
             penalty += _chunk_penalty(DUE_DATES[i], paid_on, applied)
     for i in range(4):
         if remaining[i] > 0:
             penalty += _chunk_penalty(DUE_DATES[i], CAP_DATE, remaining[i])
-    underpayments = [
-        max(Decimal("0"), _D(installments[i]) - applied_on_time[i])
-        for i in range(4)
-    ]
     return {"underpayments": underpayments, "penalty": _D(_r0(penalty))}
 
 
@@ -593,10 +607,10 @@ FLOW_ASSERTIONS: list[dict] = [
                     "formula": "penalty = Σ chunks: amount × (days@7/365×0.07 + days@6/365×0.06); days run from the installment due date to min(date cured, 2026-04-15); with due-date payments this equals Σ underpayment_i × (DAYS_7[i]/365×0.07 + DAYS_6[i]/365×0.06)"},
      "sort_order": 2},
     {"assertion_id": "FA-1040-2210-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Payments (withholding/4 on the due dates + estimates) apply earliest-first",
-     "description": "Validates R-2210-REG. Bug it catches: withholding not spread on the due dates, payments not applied to the earliest underpaid installment, or the overpayment carry-forward missing.",
+     "title": "Face columns net by date window; the penalty applies payments earliest-first",
+     "description": "Validates R-2210-REG. Bug it catches: withholding not spread on the due dates, the face-column window netting or overpayment carry-forward missing, or penalty payments not applied to the earliest underpaid installment.",
      "definition": {"kind": "formula_check", "form": "FORM_2210",
-                    "formula": "each payment applies to the EARLIEST still-underpaid installment (date order); underpayment_at_due_i = max(0, installment_i − payments applied on or before due_i)"},
+                    "formula": "FACE column underpayment_i = max(0, installment_i − (withholding/4 + payments in the column's date window + prior-column overpayment)); the PENALTY worksheet separately applies every payment to the EARLIEST still-underpaid installment in date order"},
      "sort_order": 3},
     {"assertion_id": "FA-1040-2210-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "The penalty → 1040 line 38",
