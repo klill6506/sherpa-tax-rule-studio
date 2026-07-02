@@ -559,6 +559,56 @@ AUTHORITY_SOURCES: list[dict] = [
         ],
     },
     {
+        "source_code": "IRS_2025_8959_INSTR",
+        "source_type": "official_instructions",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "2025 Instructions for Form 8959",
+        "citation": "Instructions for Form 8959 (2025); Cat. 53784D; rev. Aug 7, 2025",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/pub/irs-pdf/i8959.pdf",
+        "current_status": "active",
+        "is_substantive_authority": False,
+        "is_filing_authority": True,
+        "trust_score": 9.50,
+        "requires_human_review": False,
+        "notes": "Fetched + transcribed 2026-07-02 for the R-8959-ENGAGE amendment "
+                 "(ATS Scenario 5 surfaced the rounding-artifact mis-engage).",
+        "topics": ["additional_medicare_tax"],
+        "excerpts": [
+            {
+                "excerpt_label": "Who Must File (verbatim) — the four engage conditions",
+                "location_reference": "2025 Instructions for Form 8959, Who Must File",
+                "excerpt_text": (
+                    "You must file Form 8959 if one or more of the following applies to "
+                    "you. • Your Medicare wages and tips on any single Form W-2 (box 5) "
+                    "are greater than $200,000. • Your RRTA compensation on any single "
+                    "Form W-2 (box 14) is greater than $200,000. • Your total Medicare "
+                    "wages and tips plus your self-employment income, if any, and your "
+                    "spouse's Medicare wages and tips and self-employment income, if "
+                    "married filing jointly, are greater than the threshold amount for "
+                    "your filing status in the Threshold Amounts for Additional Medicare "
+                    "Tax chart. • Your total RRTA compensation and tips (Form W-2, box "
+                    "14) and your spouse's RRTA compensation and tips, if married filing "
+                    "jointly, are greater than the threshold amount for your filing "
+                    "status in the Threshold Amounts for Additional Medicare Tax chart."
+                ),
+                "summary_text": (
+                    "Four engage conditions ONLY: single-W-2 box 5 > $200,000 FLAT (the "
+                    "employer-withholding case); single-W-2 RRTA > $200,000; total wages"
+                    "+SE > filing-status threshold; total RRTA > threshold. 'You had "
+                    "Additional Medicare Tax withheld' is NOT a standalone condition — "
+                    "a box-6 excess over 1.45% alone (e.g. whole-dollar rounding) does "
+                    "not require the form."
+                ),
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
         "source_code": "IRS_TOPIC751_SE",
         "source_type": "official_publication",
         "source_rank": "primary_official",
@@ -1381,6 +1431,10 @@ F8959_FACTS: list[dict] = [
      "notes": "RETURN LEVEL. RRTA -> RED-defer; v1 = 0."},
     {"fact_key": "amt_filing_status", "label": "Filing status (selects the threshold)", "data_type": "string", "sort_order": 8,
      "notes": "RETURN LEVEL. mfj|mfs|single|hoh|qss. Selects ADDL_MEDICARE_THRESHOLDS (single/hoh/qss -> 'other')."},
+    {"fact_key": "amt_max_single_w2_medicare_wages", "label": "Largest single W-2 Medicare wages (box 5)", "data_type": "decimal", "default_value": "0", "sort_order": 9,
+     "notes": "RETURN LEVEL, calculated = max(W-2 box 5) over the return's W-2s. Drives the i8959 "
+              "Who-Must-File bullet 1 engage arm: any SINGLE W-2 box 5 > $200,000 FLAT (regardless "
+              "of filing status) — the employer-withholding case. Added 2026-07-02 (ATS Scenario 5)."},
     # ── Outputs ──
     {"fact_key": "addl_medicare_tax_l18", "label": "Line 18 — total Additional Medicare Tax (output -> Schedule 2 line 11)", "data_type": "decimal", "sort_order": 20,
      "notes": "OUTPUT. = line 7 + line 13 + line 17. Feeds Schedule 2 line 11 (computed feeder)."},
@@ -1396,11 +1450,20 @@ F8959_FACTS: list[dict] = [
 ]
 
 F8959_RULES: list[dict] = [
-    {"rule_id": "R-8959-ENGAGE", "title": "Engage gate — compute only when wages/SE exceed the threshold", "rule_type": "routing", "precedence": 0, "sort_order": 1,
-     "formula": "8959 engages iff line 4 (Medicare wages) > threshold OR (line 8 SE income + line 4) > threshold. Else line 11 (Sch 2) untouched.",
-     "inputs": ["amt_medicare_wages_l1", "amt_se_income_l8", "amt_filing_status", "addl_medicare_threshold"], "outputs": [],
+    {"rule_id": "R-8959-ENGAGE", "title": "Engage gate — the i8959 Who-Must-File conditions", "rule_type": "routing", "precedence": 0, "sort_order": 1,
+     "formula": ("8959 engages iff (a) amt_max_single_w2_medicare_wages > 200000 [i8959 Who-Must-File "
+                 "bullet 1 — $200,000 FLAT per single W-2, regardless of filing status; the "
+                 "employer-withholding case] OR (b) line 4 (Medicare wages) > threshold OR (c) "
+                 "(line 8 SE income + line 4) > threshold. Else Sch 2 line 11 + the 1040 25c roster "
+                 "untouched."),
+     "inputs": ["amt_medicare_wages_l1", "amt_se_income_l8", "amt_filing_status", "addl_medicare_threshold",
+                "amt_max_single_w2_medicare_wages"], "outputs": [],
      "description": ("RETURN LEVEL. The EIC engage-gate precedent: no Form 8959 / Schedule 2 line 11 entry on "
-                     "ordinary returns under the threshold (D_8959_001 explains when it engages).")},
+                     "ordinary returns under the threshold (D_8959_001 explains when it engages). AMENDED "
+                     "2026-07-02 (ATS Scenario 5): added the bullet-1 single-W-2 arm; the code's former "
+                     "'line 22 > 0 engages' arm is REMOVED — it had no Who-Must-File basis and mis-engaged "
+                     "on W-2 box-6 whole-dollar rounding artifacts (a 14-cent excess put $0.14 on 1040 "
+                     "line 25c). RRTA bullets 2/4 stay RED-deferred via D_8959_002.")},
     {"rule_id": "R-8959-L4-L7", "title": "Part I lines 4/6/7 — Additional Medicare on wages", "rule_type": "calculation", "precedence": 1, "sort_order": 2,
      "formula": "L4 = L1 + L2 + L3; L6 = max(0, L4 - threshold); L7 = L6 x 0.9%.",
      "inputs": ["addl_medicare_rate", "addl_medicare_threshold"], "outputs": ["4", "6", "7"],
@@ -1466,11 +1529,13 @@ F8959_DIAGNOSTICS: list[dict] = [
                  "23 RRTA withholding) manually."),
      "notes": "RED-defer Part III RRTA (brief standing RED-defer)."},
     {"diagnostic_id": "D_8959_003", "title": "Additional Medicare withholding reconciled to Form 1040 line 25c", "severity": "info",
-     "condition": "line 19 (Medicare tax withheld) > line 21 (1.45% x Medicare wages)",
+     "condition": "form_8959_engaged AND line 19 (Medicare tax withheld) > line 21 (1.45% x Medicare wages)",
      "message": ("Your employer withheld Additional Medicare Tax (Medicare withholding in W-2 box 6 exceeds 1.45% "
                  "of your Medicare wages). That extra amount (line 24) is added with your federal income tax "
                  "withholding on Form 1040 line 25c."),
-     "notes": "Part V reconciliation -> 1040 line 25c. Informational."},
+     "notes": "Part V reconciliation -> 1040 line 25c. Informational. AMENDED 2026-07-02: gated on the "
+              "engage rule — a non-engaged return's box-6 excess (whole-dollar rounding) is NOT Additional "
+              "Medicare withholding and produces no 25c entry (8959-T7)."},
     {"diagnostic_id": "D_8959_004", "title": "Self-employment threshold reduced by Medicare wages", "severity": "info",
      "condition": "line 4 (Medicare wages) > 0 AND line 8 (SE income) > 0",
      "message": ("Because you have both Medicare wages and self-employment income, the Additional Medicare Tax "
@@ -1501,10 +1566,32 @@ F8959_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2025, "filing_status": "single", "amt_medicare_wages_l1": 250000, "amt_medicare_withheld_l19": 4025},
      "expected_outputs": {"line_21": 3625.00, "line_22": 400.00, "line_24": 400.00},
      "notes": "L21=250,000 x 1.45%=3,625; box 6 withheld 4,025 -> L22=400 extra Additional Medicare withholding -> 1040 L25c."},
+    {"scenario_name": "8959-T6 — MFJ, ONE 210k W-2 under the 250k threshold -> engages via bullet 1; $90 -> 25c", "scenario_type": "edge", "sort_order": 6,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "amt_medicare_wages_l1": 210000,
+                "amt_max_single_w2_medicare_wages": 210000, "amt_se_income_l8": 0,
+                "amt_medicare_withheld_l19": 3135},
+     "expected_outputs": {"form_8959_engaged": True, "line_6": 0, "line_7": 0, "line_18": 0,
+                          "line_21": 3045.00, "line_22": 90.00, "line_24": 90.00},
+     "notes": ("HAND-COMPUTED 2026-07-02. The case the pre-amendment gate missed: one W-2 box 5 = "
+               "210,000 > 200,000 (bullet 1) but total 210,000 < the 250,000 MFJ threshold -> NO "
+               "Additional Medicare Tax due (L18 = 0), yet the employer legally withheld 0.9% x "
+               "10,000 = 90 (box 6 = 210,000 x 1.45% + 90 = 3,135). Form 8959 MUST file to route "
+               "the 90 to 1040 line 25c (L21 = 3,045; L22 = L24 = 90).")},
+    {"scenario_name": "8959-T7 — box-6 whole-dollar rounding artifact -> NOT engaged, 25c untouched", "scenario_type": "edge", "sort_order": 7,
+     "inputs": {"tax_year": 2025, "filing_status": "hoh", "amt_medicare_wages_l1": 31232,
+                "amt_max_single_w2_medicare_wages": 31232, "amt_se_income_l8": 0,
+                "amt_medicare_withheld_l19": 453},
+     "expected_outputs": {"form_8959_engaged": False},
+     "notes": ("HAND-COMPUTED 2026-07-02 — the ATS Scenario 5 regression pin. Box 6 = 453 vs "
+               "31,232 x 1.45% = 452.86: a 14-cent whole-dollar-reporting artifact, NOT Additional "
+               "Medicare withholding (no single W-2 over 200,000; total under the HOH 200,000 "
+               "threshold). The form does not engage; 1040 line 25c carries NO 8959 amount; "
+               "D_8959_003 stays quiet (engage-gated).")},
 ]
 
 F8959_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8959-ENGAGE", "IRS_2025_8959_FORM", "primary", "Threshold engage gate"),
+    ("R-8959-ENGAGE", "IRS_2025_8959_INSTR", "primary", "Who Must File (verbatim) — the four engage conditions"),
     ("R-8959-L4-L7", "IRS_2025_8959_FORM", "primary", "Part I lines 4-7"),
     ("R-8959-L11-L13", "IRS_2025_8959_FORM", "primary", "Part II lines 8-13 (threshold reduced by wages)"),
     ("R-8959-L18", "IRS_2025_8959_FORM", "primary", "Line 18 -> Schedule 2 line 11"),

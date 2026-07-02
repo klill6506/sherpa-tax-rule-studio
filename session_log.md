@@ -4,6 +4,32 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 (MeF track, later) — R-8959-ENGAGE amendment: Who-Must-File engage gate SEEDED + EXPORTED
+- **Trigger:** ATS Scenario 5's W-2 (box 5 = 31,232 / box 6 = 453, a whole-dollar-rounded 452.86)
+  made compute put $0.14 on 1040 line 25c — the code's 'line 22 > 0 engages' arm (never in the
+  spec) treats ANY box-6 excess as Additional Medicare withholding. The 2025 i8959 Who Must File
+  (fetched + quoted VERBATIM, rev. Aug 7 2025) lists FOUR conditions only; a box-6 excess is not
+  one — and both spec and code MISSED bullet 1 (any SINGLE W-2 box 5 > $200,000 FLAT — the
+  employer-withholding case, e.g. one 210k W-2 on an MFJ return under the 250k threshold).
+- **Ken approved in-session** (AskUserQuestion): bullet-1 arm added, line-22 arm removed,
+  D_8959_003 engage-gated.
+- **`load_1040_schedule_c.py`:** +fact `amt_max_single_w2_medicare_wages`; R-8959-ENGAGE formula =
+  the three Who-Must-File arms (RRTA bullets stay RED-deferred); D_8959_003 condition gains
+  `form_8959_engaged`; +scenarios 8959-T6 (HAND-COMPUTED: MFJ one 210k W-2 → engages via bullet 1,
+  L21 3,045 / L22 = L24 = 90 → 25c; L18 = 0) and 8959-T7 (the Scenario-5 rounding artifact →
+  NOT engaged, 25c untouched, D_8959_003 quiet); +NEW source `IRS_2025_8959_INSTR` with the
+  verbatim Who-Must-File excerpt + R-8959-ENGAGE link.
+- **Gate:** `check_topic8_integrity.py` extended (amt_8959 gained the max-single-W2 engage arm +
+  T6/T7 re-derivation blocks) — **ALL CHECKS PASS**.
+- **Seeded RS Supabase**; deployed 8959 export verified (only the intended deltas); SIBLING exports
+  (SCHEDULE_C / SCHEDULE_SE / 8995) id-diffed vs their tts canonical files — **zero sibling drift**
+  (the sibling-spec re-export lesson). Canonical tts `8959_spec.json` replaced.
+- tts: `form_8959_engaged` reshaped (max_single_w2 arm, line-22 arm gone) + `max_single_w2_box5`
+  shared helper (compute + all three D_8959_* diagnostics — bridge-gate); tests updated (trip-wire
+  5→7, engage-gate cases). ATS Scenario 5 re-probe: 22/22 pinned lines match, 25d = 1,754 exactly.
+
+---
+
 ## 2026-07-02 (MeF track) — SCH_8812 ACTC opt-out amendment + spine PECF facts SEEDED + EXPORTED
 - **Trigger:** MeF ATS Scenario 5 (Bobby Barker) checks the 2025 Form 1040 line-28 box — official
   face verbatim: "Additional child tax credit (ACTC) from Schedule 8812. If you do not want to

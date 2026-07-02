@@ -149,8 +149,12 @@ def qbi_8995(qbi=0, taxable_before=0, net_cap_gain=0, reit_ptp=0,
             "11": l11, "12": l12, "13": l13, "14": l14, "15": l15}
 
 
-def amt_8959(medicare_wages=0, se_income=0, year=2025, status="single", withheld=0):
-    """Form 8959 Parts I/II/V -> dict. Threshold reduced by Medicare wages in Part II."""
+def amt_8959(medicare_wages=0, se_income=0, year=2025, status="single", withheld=0,
+             max_single_w2=0):
+    """Form 8959 Parts I/II/V -> dict. Threshold reduced by Medicare wages in Part II.
+    Engage = the i8959 Who-Must-File conditions (amended 2026-07-02): any SINGLE W-2
+    box 5 > $200,000 FLAT, or total wages (or wages+SE) over the filing-status
+    threshold. A box-6 excess alone never engages (the rounding-artifact rule)."""
     thr = D(IND_ADDL_MED_THRESHOLDS[status_key(status)])
     l4 = D(medicare_wages)
     l6 = max(Decimal("0"), l4 - thr)
@@ -164,7 +168,8 @@ def amt_8959(medicare_wages=0, se_income=0, year=2025, status="single", withheld
     l21 = cents(l20 * IND_REG_MED_RATE)
     l22 = max(Decimal("0"), D(withheld) - l21)
     l24 = cents(l22)                          # L23 RRTA = 0 in v1
-    engaged = (l4 + l8) > thr
+    engaged = (D(max_single_w2) > Decimal("200000")   # bullet 1 — per-W-2 FLAT
+               or l4 > thr or (l4 + l8) > thr)
     return {"4": l4, "6": l6, "7": l7, "8": l8, "11": l11, "12": l12, "13": l13,
             "18": l18, "21": l21, "22": l22, "24": l24, "engaged": engaged}
 
@@ -421,6 +426,32 @@ i, o = i_of("8959-T5"), o_of("8959-T5")
 r = amt_8959(medicare_wages=i["amt_medicare_wages_l1"], year=i["tax_year"], status=i["filing_status"], withheld=i["amt_medicare_withheld_l19"])
 check("8959-T5 L21", r["21"], o["line_21"]); check("8959-T5 L22", r["22"], o["line_22"]); check("8959-T5 L24", r["24"], o["line_24"])
 
+# T6 — the bullet-1 arm: ONE 210k W-2 under the MFJ threshold engages, $90 -> 25c.
+i, o = i_of("8959-T6"), o_of("8959-T6")
+r = amt_8959(medicare_wages=i["amt_medicare_wages_l1"], se_income=i["amt_se_income_l8"],
+             year=i["tax_year"], status=i["filing_status"],
+             withheld=i["amt_medicare_withheld_l19"],
+             max_single_w2=i["amt_max_single_w2_medicare_wages"])
+for ln in ("6", "7", "18", "21", "22", "24"):
+    check(f"8959-T6 L{ln}", r[ln], o[f"line_{ln}"])
+if not r["engaged"]:
+    err("8959-T6: single-W-2 bullet-1 arm failed to engage (210,000 > 200,000 FLAT)")
+if o["form_8959_engaged"] is not True:
+    err("8959-T6: fixture must expect form_8959_engaged True")
+
+# T7 — the ATS Scenario 5 regression pin: rounding artifact never engages.
+i, o = i_of("8959-T7"), o_of("8959-T7")
+r = amt_8959(medicare_wages=i["amt_medicare_wages_l1"], se_income=i["amt_se_income_l8"],
+             year=i["tax_year"], status=i["filing_status"],
+             withheld=i["amt_medicare_withheld_l19"],
+             max_single_w2=i["amt_max_single_w2_medicare_wages"])
+if r["engaged"]:
+    err("8959-T7: box-6 rounding artifact engaged the form (the pre-amendment bug)")
+if r["22"] <= Decimal("0"):
+    err("8959-T7: fixture must carry a nonzero box-6 excess (the artifact being tested)")
+if o["form_8959_engaged"] is not False:
+    err("8959-T7: fixture must expect form_8959_engaged False")
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Load-bearing checks on the flow-assertion constants_checks
@@ -479,8 +510,9 @@ print(f"Authority sources (new): {len(m.AUTHORITY_SOURCES)}; topics: {len(m.AUTH
       f"new excerpts on existing: {len(m.NEW_EXCERPTS_ON_EXISTING)}")
 print("Independently recomputed: SC-T1..T7 (gross profit / COGS / simplified home office / loss), "
       "SE-T1..T5 (92.35% / SS cap / Medicare / $400 floor / 1/2-SE; both years), 8995-T1..T7 (QBI "
-      "reduction / income limitation / REIT-PTP / above-threshold gate / year-keying), 8959-T1..T5 "
-      "(wages / SE threshold-reduced-by-wages / shared threshold / engage gate / withholding); "
+      "reduction / income limitation / REIT-PTP / above-threshold gate / year-keying), 8959-T1..T7 "
+      "(wages / SE threshold-reduced-by-wages / shared threshold / engage gate / withholding / "
+      "single-W-2 bullet-1 arm / rounding-artifact non-engage); "
       "loader constants cross-checked vs an independent transcription.")
 
 if errors:
