@@ -152,7 +152,8 @@ if ind_days(IND_DUE[0], IND_DUE[0]) != (0, 0):
     err("ind_days(due, due) != (0, 0)")
 
 # ── 2. Scenarios — independent recompute ──
-DIAG_KEYS = {"D_2210_NO_PENALTY", "D_2210_PRIOR_YEAR", "D_2210_110", "D_2210_AI", "D_2210_TY2026"}
+DIAG_KEYS = {"D_2210_NO_PENALTY", "D_2210_PRIOR_YEAR", "D_2210_110", "D_2210_AI",
+             "D_2210_TY2026", "D_2210_DATED"}
 spec = m.FORMS[0]
 for s in spec["scenarios"]:
     name = s["scenario_name"].split(" ")[0]
@@ -160,6 +161,11 @@ for s in spec["scenarios"]:
     if any(k in DIAG_KEYS for k in exp):
         if exp.get("D_2210_NO_PENALTY") and (D(inp.get("current_tax", 0)) - D(inp.get("withholding", 0))) >= 1000:
             err(f"{name}: D_2210_NO_PENALTY expected but line 7 >= 1000")
+        if exp.get("D_2210_DATED"):
+            dated_total = sum((D(a) for _, a in inp.get("payments_dated", [])), D(0))
+            flat_total = sum((D(x) for x in inp.get("est_payments", [0, 0, 0, 0])), D(0))
+            if dated_total == flat_total:
+                err(f"{name}: D_2210_DATED expected but dated total == flat line-26 total")
         continue
     got = ind_compute(**{k: v for k, v in inp.items() if k != "tax_year"})
     # cross-check the loader helper too

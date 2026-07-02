@@ -399,7 +399,10 @@ P_FACTS: list[dict] = [
      "data_type": "boolean", "default_value": "false", "sort_order": 9,
      "notes": ("Marker: dated (amount, date_paid) payment rows exist (tts FederalEstimatedPayment). When "
                "present they REPLACE the flat quarter buckets; each payment applies earliest-first and "
-               "stops that underpayment's accrual on its date (R-2210-REG).")},
+               "stops that underpayment's accrual on its date (R-2210-REG). §6654-creditable kinds only: "
+               "estimate + prior_year_applied (the 1040 line-26 set; an overpayment applied is treated as "
+               "paid 4/15 — the i2210 convention; extension/other rows are recorded, never credited). A "
+               "dated total that differs from the flat line-26 buckets fires D_2210_DATED.")},
     {"fact_key": "t2210_ai_tax_q1", "label": "Schedule AI — annualized tax, period 1 (Jan-Mar)",
      "data_type": "decimal", "default_value": "0", "sort_order": 5, "notes": "Preparer-computed (v1)."},
     {"fact_key": "t2210_ai_tax_q2", "label": "Schedule AI — annualized tax, period 2 (Jan-May)",
@@ -484,6 +487,17 @@ P_DIAGNOSTICS: list[dict] = [
                  "tax is entered by the preparer — verify each period's tax (including any QDCGT / AMT) before "
                  "relying on the installment amounts."),
      "notes": "v1 simplification (requires_human_review)."},
+    {"diagnostic_id": "D_2210_DATED", "title": "Dated payments don't reconcile with 1040 line 26", "severity": "warning",
+     "condition": ("dated FederalEstimatedPayment rows exist AND their §6654-creditable total (estimate + "
+                   "prior_year_applied) != the flat est_payment_q1..q4 + PY-applied total that feeds 1040 "
+                   "line 26"),
+     "message": ("Dated federal estimated payments are entered, but their total (estimates + prior-year "
+                 "overpayment applied) does not equal the flat quarterly amounts on 1040 line 26. The Form "
+                 "2210 penalty uses the DATED payments; line 26 uses the flat amounts — reconcile them so "
+                 "the return's payments and the penalty computation tell the same story."),
+     "notes": ("No silent gap: line 26 stays on the flat quarter buckets (spine R-PAY-04, out of this "
+               "unit's scope); the penalty uses the dated rows when present. A divergence is preparer "
+               "error, not a computable choice.")},
     {"diagnostic_id": "D_2210_TY2026", "title": "TY2026 — re-verify the §6621 rates", "severity": "warning",
      "condition": "tax_year == 2026 AND a penalty is computed",
      "message": ("This 2026 return uses the 2025-period §6621 rates (7%/6%), which are INTERIM for a 2026 "
@@ -543,6 +557,13 @@ P_SCENARIOS: list[dict] = [
      "inputs": {"tax_year": 2025, "current_tax": 10000, "withholding": 9500},
      "expected_outputs": {"D_2210_NO_PENALTY": True},
      "notes": "line 7 < 1,000 → D_2210_NO_PENALTY."},
+    {"scenario_name": "P-G2 — dated payments diverge from line 26", "scenario_type": "diagnostic", "sort_order": 10,
+     "inputs": {"tax_year": 2025, "current_tax": 12000, "withholding": 0, "prior_year_tax": 10000,
+                "prior_year_agi": 100000, "est_payments": [0, 0, 0, 0],
+                "payments_dated": [["2025-04-15", 2500]]},
+     "expected_outputs": {"D_2210_DATED": True},
+     "notes": ("Dated creditable total 2,500 != the flat line-26 buckets (0) → D_2210_DATED. The penalty "
+               "itself uses the dated rows.")},
 ]
 
 P_RULE_LINKS: list[tuple[str, str, str, str]] = [
