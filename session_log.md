@@ -4,6 +4,34 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-01 — FORM_2210: dated §6654 accrual amendment SEEDED + EXPORTED
+- **Ken chose scope option 1 in-session ("build as designed", tts
+  `server/specs/2210_dated_penalty_design.md`)** — that approval covers this amendment + seed
+  (the form's READY_TO_SEED was already True from the 2026-06-15 review walk).
+- **The change:** R-2210-REG reworded from the fixed due-date→4/15/2026 day count (DAYS_7/DAYS_6
+  arrays) to the i2210 Penalty Worksheet rule its own authority excerpt already stated verbatim —
+  each payment applies to the EARLIEST still-underpaid installment and the underpayment accrues
+  from its due date to the date cured, capped 4/15/2026 (7%→6% split at 3/31/2026). Withholding
+  stays ¼-spread ON the due dates (§6654(g) default; the actual-date election remains deferred).
+  Loader pure functions rewritten to the unified dated algorithm (`days_at_rates` + earliest-first
+  event loop; `underpayments` = the at-due-date face-25 values); `compute_2210` gained
+  `payments_dated`. NEW fact `t2210_payments_dated`; NEW scenarios **P-T7 (mid-year lump, 217)** /
+  **P-T8 (Q4 paid 1/25/2026, 5)** — both HAND-COMPUTED; P-T1..T6 unchanged (due-date payments
+  reproduce the old numbers exactly — the backward-compat pin). FA-02/03 reworded; NEW
+  **FA-1040-2210-07** (dated payments stop accrual on the date paid).
+- **`check_2210_integrity.py` extended** — its independent transcription now re-types the dated
+  algorithm (event loop + its own day counter) + pins the DAYS_7/DAYS_6 equivalence at the cap and
+  the zero-days-on-time boundary. **ALL CHECKS PASS** (11 facts / 3 rules / 11 lines / 5 diags /
+  9 scenarios / 5 links / 7 FAs).
+- Seeded RS Supabase (`update_or_create`; TaxForms 76 unchanged, **FlowAssertions 341→342**).
+  Deployed export fetched → canonical **tts `server/specs/2210_spec.json` replaced** (semantic
+  diff = exactly ~R-2210-REG, +t2210_payments_dated, +P-T7/P-T8; diagnostics/lines/authorities
+  untouched).
+- tts legs (FederalEstimatedPayment model → compute → input → render → tests) proceed in the same
+  tts session.
+
+---
+
 ## 2026-07-01 — 1065_SE: Schedule K / K-1 line 14a Self-Employment (SECA) SEEDED + EXPORTED
 - New form `1065_SE` (entity_type 1065, TY2025, draft) authored from the LOCKED spec
   `tts-tax-app/server/specs/1065_se_line14a_spec.md` (tax-law decisions locked by Ken 2026-07-01;

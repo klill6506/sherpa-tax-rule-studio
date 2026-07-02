@@ -6,16 +6,29 @@ facts. The §6654 penalty → 1040 line 38.
 
 Part I — required annual payment = min(90% current tax, 100%/110% prior tax); no
 penalty if (current tax − withholding) < $1,000. Regular Method — per-period
-required installment (l9/4 or the Schedule AI amount) vs the period payments
-(withholding spread 1/4 + estimated payments); the penalty on each period's
-underpayment accrues to 4/15/2026 at the §6621 rate (7% through 3/31/2026, 6% for
-4/1-4/15/2026). Schedule AI — annualized installments (factors 4/2.4/1.5/1,
-applicable % 22.5/45/67.5/90, smaller-of the regular installment).
+required installment (l9/4 or the Schedule AI amount) vs payments; every payment
+(a dated estimate, or a legacy quarter bucket dated on its due date) applies to
+the EARLIEST underpaid installment, and each underpaid amount accrues from its
+installment due date to the date it is cured, capped at 4/15/2026, at the §6621
+rate (7% through 3/31/2026, 6% for 4/1-4/15/2026). Schedule AI — annualized
+installments (factors 4/2.4/1.5/1, applicable % 22.5/45/67.5/90, smaller-of the
+regular installment).
 
 LAW VERIFIED 2026-06-15 (brief tts-tax-app server/specs/_2210_source_brief.md):
   $1,000 de-minimis; 90% / 100% / 110% (110% when prior AGI > $150,000 [$75,000
   MFS]); §6621 underpayment rate 7% (2025 + Q1 2026) / 6% (Q2 2026); four periods
   due 4/15, 6/15, 9/15/2025, 1/15/2026.
+
+DATED AMENDMENT 2026-07-01 (Ken scope option 1 — build as designed,
+tts-tax-app server/specs/2210_dated_penalty_design.md): the penalty formula now
+accrues each underpayment to the DATE CURED (earliest-first application per the
+i2210 Penalty Worksheet — "the number of days it remains unpaid (from the
+installment due date to the date paid, or April 15, 2026)", excerpt
+IRS_2025_F2210_INSTR already on this form) instead of always charging the fixed
+due-date→4/15/2026 day count. With payments on the due dates the unified
+algorithm reproduces the prior numbers exactly (P-T1..T6 unchanged); dated
+payments add the effect (P-T7/P-T8). Withholding stays ¼-spread ON the due dates
+(§6654(g) default; the actual-date withholding election remains deferred).
 
 v1 NOTE (requires_human_review): Schedule AI takes the per-period annualized TAX as
 a preparer input (t2210_ai_tax_q*) — the full per-period QDCGT/AMT bracket
@@ -48,6 +61,8 @@ from specs.models import (
 
 
 READY_TO_SEED = True  # FLIPPED 2026-06-15 — Ken approved the review walk ("Approved — seed it, include render").
+# 2026-07-01: the dated-accrual amendment rides the same approval — Ken chose scope
+# option 1 ("build as designed") for the federal-payment-dates unit in-session.
 
 
 FORM_JURISDICTION = "FED"
@@ -73,7 +88,16 @@ AI_FACTOR = [4.0, 2.4, 1.5, 1.0]
 AI_PCT = [0.225, 0.45, 0.675, 0.90]
 
 
+from datetime import date  # noqa: E402
 from decimal import ROUND_HALF_UP, Decimal  # noqa: E402
+
+# Dated accrual (2026-07-01 amendment): the four installment due dates, the
+# 7%→6% rate boundary, and the accrual cap. DAYS_7/DAYS_6 above are the
+# derived due-date→cap day counts (days_at_rates(due, CAP) reproduces them —
+# the integrity gate pins that equivalence).
+DUE_DATES = [date(2025, 4, 15), date(2025, 6, 15), date(2025, 9, 15), date(2026, 1, 15)]
+R7_END = date(2026, 3, 31)         # last calendar day at 7%
+CAP_DATE = date(2026, 4, 15)       # accrual stops here (i2210: "or April 15, 2026")
 
 
 def _D(x):
@@ -128,37 +152,96 @@ def ai_installments(ai_tax, reg_installments) -> list[Decimal]:
     return out
 
 
-def regular_penalty(installments, withholding, est_payments) -> dict:
-    """The penalty: apply payments (withholding spread 1/4 + estimates) per period with
-    overpayment carry-forward; each period's underpayment accrues to 4/15/2026 at the
-    §6621 factor. Returns the per-period underpayments + the total penalty."""
+def _as_date(d) -> date:
+    """Scenario JSON carries ISO strings; the pure functions accept both."""
+    if isinstance(d, date):
+        return d
+    return date.fromisoformat(str(d))
+
+
+def days_at_rates(due: date, end: date) -> tuple[int, int]:
+    """Chargeable days for an underpayment due `due` and cured `end` (already
+    capped at CAP_DATE by the caller): (days at 7%, days at 6%). Simple date
+    subtraction — the convention that makes days_at_rates(due, CAP_DATE)
+    reproduce DAYS_7[i]/DAYS_6[i] exactly."""
+    if end <= due:
+        return 0, 0
+    d7 = max(0, (min(end, R7_END) - due).days)
+    d6 = max(0, (min(end, CAP_DATE) - max(due, R7_END)).days)
+    return d7, d6
+
+
+def _chunk_penalty(due: date, cure: date, amount: Decimal) -> Decimal:
+    d7, d6 = days_at_rates(due, min(cure, CAP_DATE))
+    return amount * (Decimal(d7) / Decimal("365") * _D(RATE_7)
+                     + Decimal(d6) / Decimal("365") * _D(RATE_6))
+
+
+def regular_penalty(installments, withholding, est_payments, payments_dated=None) -> dict:
+    """The §6621 penalty, unified dated algorithm (i2210 Penalty Worksheet):
+    withholding is treated as paid ¼ ON each due date (§6654(g) default);
+    every payment — a dated (date, amount) pair, or a legacy quarter bucket
+    dated on its due date — applies to the EARLIEST still-underpaid
+    installment; each underpaid amount accrues from its installment due date
+    to the date it is cured, capped at 4/15/2026 (7% through 3/31/2026, 6%
+    for 4/1–4/15/2026). A payment on or before the due date cures with zero
+    chargeable days. With payments exactly on the due dates this reproduces
+    the prior fixed-day formula (P-T1..T6 pin that equivalence).
+
+    Returns the per-installment underpayments AS OF each due date (the Form
+    2210 line-25 face value — a later catch-up payment stops the accrual but
+    does not erase the underpayment that existed at the due date) + the
+    total penalty."""
+    if payments_dated:
+        payments = [(_as_date(d), _D(a)) for d, a in payments_dated]
+    else:
+        payments = [(DUE_DATES[i], _D(est_payments[i])) for i in range(4)]
     wh_q = _D(withholding) / Decimal("4")
-    underpayments, overpay, penalty = [], Decimal("0"), Decimal("0")
+    events = sorted(
+        [(DUE_DATES[i], wh_q) for i in range(4) if wh_q > 0] + payments,
+        key=lambda e: e[0],
+    )
+
+    remaining = [_D(x) for x in installments]
+    applied_on_time = [Decimal("0")] * 4  # applied by the installment's due date
+    penalty = Decimal("0")
+    for paid_on, amount in events:
+        amount = _D(amount)
+        for i in range(4):
+            if amount <= 0:
+                break
+            if remaining[i] <= 0:
+                continue
+            applied = min(amount, remaining[i])
+            remaining[i] -= applied
+            amount -= applied
+            if paid_on <= DUE_DATES[i]:
+                applied_on_time[i] += applied
+            penalty += _chunk_penalty(DUE_DATES[i], paid_on, applied)
     for i in range(4):
-        avail = wh_q + _D(est_payments[i]) + overpay
-        req = _D(installments[i])
-        if avail >= req:
-            under = Decimal("0")
-            overpay = avail - req
-        else:
-            under = req - avail
-            overpay = Decimal("0")
-        underpayments.append(under)
-        penalty += under * penalty_factor(i)
+        if remaining[i] > 0:
+            penalty += _chunk_penalty(DUE_DATES[i], CAP_DATE, remaining[i])
+    underpayments = [
+        max(Decimal("0"), _D(installments[i]) - applied_on_time[i])
+        for i in range(4)
+    ]
     return {"underpayments": underpayments, "penalty": _D(_r0(penalty))}
 
 
 def compute_2210(current_tax=0, other_taxes=0, refundable_credits=0, withholding=0,
                  prior_year_tax=0, prior_year_agi=0, filing_status="single", prior_full_year=True,
-                 est_payments=(0, 0, 0, 0), use_annualized=False, ai_tax=(0, 0, 0, 0)) -> dict:
-    """The full §6654 chain. Returns l9 (required annual payment) + the penalty → 1040 line 38."""
+                 est_payments=(0, 0, 0, 0), use_annualized=False, ai_tax=(0, 0, 0, 0),
+                 payments_dated=None) -> dict:
+    """The full §6654 chain. Returns l9 (required annual payment) + the penalty → 1040 line 38.
+    `payments_dated` — [(date|ISO string, amount), ...] — REPLACES the quarter
+    buckets when present (the tts FederalEstimatedPayment rows)."""
     p1 = required_annual_payment(current_tax, other_taxes, refundable_credits, withholding,
                                  prior_year_tax, prior_year_agi, filing_status, prior_full_year)
     if not p1["penalty_possible"]:
         return {"l9": p1["l9"], "penalty": Decimal("0"), "no_penalty": True}
     reg = regular_installments(p1["l9"])
     installments = ai_installments(ai_tax, reg) if use_annualized else reg
-    pen = regular_penalty(installments, withholding, est_payments)
+    pen = regular_penalty(installments, withholding, est_payments, payments_dated)
     return {"l9": p1["l9"], "penalty": pen["penalty"], "underpayments": pen["underpayments"],
             "no_penalty": pen["penalty"] <= 0}
 
@@ -312,6 +395,11 @@ P_FACTS: list[dict] = [
     # ── Schedule AI ──
     {"fact_key": "t2210_use_annualized", "label": "Use the annualized income method (Schedule AI)?",
      "data_type": "boolean", "default_value": "false", "sort_order": 4, "notes": "Uneven income."},
+    {"fact_key": "t2210_payments_dated", "label": "Dated federal estimated payments entered?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 9,
+     "notes": ("Marker: dated (amount, date_paid) payment rows exist (tts FederalEstimatedPayment). When "
+               "present they REPLACE the flat quarter buckets; each payment applies earliest-first and "
+               "stops that underpayment's accrual on its date (R-2210-REG).")},
     {"fact_key": "t2210_ai_tax_q1", "label": "Schedule AI — annualized tax, period 1 (Jan-Mar)",
      "data_type": "decimal", "default_value": "0", "sort_order": 5, "notes": "Preparer-computed (v1)."},
     {"fact_key": "t2210_ai_tax_q2", "label": "Schedule AI — annualized tax, period 2 (Jan-May)",
@@ -336,14 +424,19 @@ P_RULES: list[dict] = [
      "inputs": ["t2210_prior_year_tax", "t2210_prior_year_agi", "t2210_prior_full_year"],
      "outputs": ["t2210_line9"],
      "description": "§6654(d). The safe harbors."},
-    {"rule_id": "R-2210-REG", "title": "Regular Method — the per-period underpayment + §6621 penalty", "rule_type": "calculation",
+    {"rule_id": "R-2210-REG", "title": "Regular Method — dated underpayment accrual + §6621 penalty", "rule_type": "calculation",
      "precedence": 2, "sort_order": 2,
-     "formula": ("required installment = l9/4 (or the Schedule AI amount); per period, payments = "
-                 "withholding/4 + estimated payment (+ overpayment carry-forward); underpayment = installment "
-                 "− payments; penalty += underpayment × (DAYS_7[i]/365 × 7% + DAYS_6[i]/365 × 6%); → 1040 "
-                 "line 38. DAYS_7 = [350,289,197,75], DAYS_6 = [15,15,15,15] (to 4/15/2026)."),
-     "inputs": ["t2210_use_annualized"], "outputs": ["t2210_penalty"],
-     "description": "The §6621 penalty (7% to 3/31/2026, 6% to 4/15/2026)."},
+     "formula": ("required installment = l9/4 (or the Schedule AI amount); withholding is treated as paid "
+                 "1/4 ON each due date (§6654(g) default); every payment — a dated estimate, or a legacy "
+                 "quarter bucket dated on its due date — applies to the EARLIEST still-underpaid "
+                 "installment; each underpaid amount accrues from its installment due date to the date it "
+                 "is cured, capped at 4/15/2026: penalty += amount × (days@7%/365 × 7% + days@6%/365 × "
+                 "6%), 7% through 3/31/2026, 6% for 4/1-4/15/2026; → 1040 line 38. Due dates 4/15/2025, "
+                 "6/15/2025, 9/15/2025, 1/15/2026. With payments on the due dates this equals the prior "
+                 "fixed-day formula (DAYS_7 = [350,289,197,75], DAYS_6 = [15,15,15,15])."),
+     "inputs": ["t2210_use_annualized", "t2210_payments_dated"], "outputs": ["t2210_penalty"],
+     "description": ("The §6621 penalty accrues per day from the installment due date to the date paid "
+                     "(i2210 Penalty Worksheet, earliest-first; 7% to 3/31/2026, 6% to 4/15/2026).")},
     {"rule_id": "R-2210-AI", "title": "Schedule AI — annualized installments", "rule_type": "calculation",
      "precedence": 3, "sort_order": 3,
      "formula": ("annualized installment[i] = max(0, ai_tax[i] × AI_PCT[i] − Σ prior); AI_PCT = "
@@ -429,7 +522,24 @@ P_SCENARIOS: list[dict] = [
                 "prior_year_agi": 100000, "est_payments": [2500, 2500, 0, 0]},
      "expected_outputs": {"t2210_penalty": 143},
      "notes": "periods 1-2 paid; periods 3-4 underpaid 2,500 each → 2,500 × (0.040247 + 0.016849) = 143."},
-    {"scenario_name": "P-G1 — no penalty diagnostic", "scenario_type": "diagnostic", "sort_order": 7,
+    {"scenario_name": "P-T7 — dated mid-year lump cures earliest-first", "scenario_type": "edge_case", "sort_order": 7,
+     "inputs": {"tax_year": 2025, "current_tax": 12000, "withholding": 0, "prior_year_tax": 10000,
+                "prior_year_agi": 100000, "payments_dated": [["2025-08-01", 5000]]},
+     "expected_outputs": {"t2210_line9": 10000, "t2210_penalty": 217},
+     "notes": ("HAND-COMPUTED: installments 2,500 due 4/15/6/15/9/15/25+1/15/26. The 8/1/2025 lump cures "
+               "installment 1 after 108 days (2,500×108/365×7% = 51.78) and installment 2 after 47 days "
+               "(22.53); installments 3-4 stay unpaid to the cap (100.62 + 42.12). Total 217.05 → 217. "
+               "The OLD fixed-day formula could not credit the mid-year cure.")},
+    {"scenario_name": "P-T8 — Q4 estimate paid 10 days late", "scenario_type": "edge_case", "sort_order": 8,
+     "inputs": {"tax_year": 2025, "current_tax": 12000, "withholding": 0, "prior_year_tax": 10000,
+                "prior_year_agi": 100000,
+                "payments_dated": [["2025-04-15", 2500], ["2025-06-15", 2500], ["2025-09-15", 2500],
+                                    ["2026-01-25", 2500]]},
+     "expected_outputs": {"t2210_line9": 10000, "t2210_penalty": 5},
+     "notes": ("HAND-COMPUTED: installments 1-3 cured on their due dates (0 days). Installment 4 (due "
+               "1/15/2026) cured 1/25/2026 → 10 days @ 7%: 2,500×10/365×7% = 4.79 → 5. The OLD flat "
+               "q4 bucket assumed on-time payment → 0 (the understatement this amendment fixes).")},
+    {"scenario_name": "P-G1 — no penalty diagnostic", "scenario_type": "diagnostic", "sort_order": 9,
      "inputs": {"tax_year": 2025, "current_tax": 10000, "withholding": 9500},
      "expected_outputs": {"D_2210_NO_PENALTY": True},
      "notes": "line 7 < 1,000 → D_2210_NO_PENALTY."},
@@ -456,16 +566,16 @@ FLOW_ASSERTIONS: list[dict] = [
                     "formula": "l9 = min(0.90×current, prior×(1.10 if AGI>150k else 1.0)); l7<1000 → no penalty"},
      "sort_order": 1},
     {"assertion_id": "FA-1040-2210-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Regular Method — the §6621 penalty (7%/6% rate periods)",
-     "description": "Validates R-2210-REG. Bug it catches: the wrong rate, the rate-period day split, or the per-period underpayment.",
+     "title": "Regular Method — the §6621 penalty (7%/6% rate periods, dated accrual)",
+     "description": "Validates R-2210-REG. Bug it catches: the wrong rate, the rate-period day split at 3/31/2026, or accrual not stopping at min(date cured, 4/15/2026).",
      "definition": {"kind": "formula_check", "form": "FORM_2210",
-                    "formula": "penalty = Σ underpayment_i × (DAYS_7[i]/365×0.07 + DAYS_6[i]/365×0.06)"},
+                    "formula": "penalty = Σ chunks: amount × (days@7/365×0.07 + days@6/365×0.06); days run from the installment due date to min(date cured, 2026-04-15); with due-date payments this equals Σ underpayment_i × (DAYS_7[i]/365×0.07 + DAYS_6[i]/365×0.06)"},
      "sort_order": 2},
     {"assertion_id": "FA-1040-2210-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Payments (withholding/4 + estimates) cure the underpayment per period",
-     "description": "Validates R-2210-REG. Bug it catches: withholding not spread evenly, estimates not applied per period, or the overpayment carry-forward missing.",
+     "title": "Payments (withholding/4 on the due dates + estimates) apply earliest-first",
+     "description": "Validates R-2210-REG. Bug it catches: withholding not spread on the due dates, payments not applied to the earliest underpaid installment, or the overpayment carry-forward missing.",
      "definition": {"kind": "formula_check", "form": "FORM_2210",
-                    "formula": "underpayment_i = max(0, installment_i − (withholding/4 + est_i + carryover))"},
+                    "formula": "each payment applies to the EARLIEST still-underpaid installment (date order); underpayment_at_due_i = max(0, installment_i − payments applied on or before due_i)"},
      "sort_order": 3},
     {"assertion_id": "FA-1040-2210-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "The penalty → 1040 line 38",
@@ -485,6 +595,15 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "FORM_2210", "expect": {"red_fires": True},
                     "blockers": ["de_minimis", "safe_harbor"]},
      "sort_order": 6},
+    {"assertion_id": "FA-1040-2210-07", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Dated payments stop accrual on the date paid (earliest-first)",
+     "description": ("Validates the 2026-07-01 dated amendment to R-2210-REG. Bug it catches: a dated "
+                     "payment not curing the earliest underpayment, accrual continuing past the payment "
+                     "date, or a late payment silently treated as on time (P-T7 lump=217, P-T8 late Q4=5, "
+                     "P-T6 due-date buckets unchanged=143)."),
+     "definition": {"kind": "formula_check", "form": "FORM_2210",
+                    "formula": "for each dated payment: apply to the earliest still-underpaid installment; chunk penalty = amount × days(due → min(paid, 2026-04-15)) split 7%/6% at 2026-03-31; paid ≤ due → 0 days"},
+     "sort_order": 7},
 ]
 
 

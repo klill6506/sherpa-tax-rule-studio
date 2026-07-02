@@ -4,11 +4,16 @@ Run:  poetry run python check_2210_integrity.py
 
 Independently recomputes every scenario from its OWN transcription of the §6654
 required annual payment (min(90% current, 100/110% prior)), the $1,000 de-minimis,
-and the §6621 regular-method penalty (the 7%/6% rate-period day factors) + Schedule
-AI. The loader and this gate share NO math.
+and the §6621 regular-method penalty — the DATED accrual (2026-07-01 amendment:
+each payment applies to the earliest still-underpaid installment and stops that
+amount's accrual on the date paid, capped 4/15/2026; 7% through 3/31/2026 then
+6%) + Schedule AI. Also pins the day-count equivalence: the dated day counter at
+the cap reproduces the legacy DAYS_7/DAYS_6 arrays. The loader and this gate
+share NO math.
 """
 import os
 import sys
+from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 
 import django
@@ -42,15 +47,33 @@ def r0(x):
 IND_DAYS7 = [350, 289, 197, 75]
 IND_DAYS6 = [15, 15, 15, 15]
 IND_AI_PCT = [Decimal("0.225"), Decimal("0.45"), Decimal("0.675"), Decimal("0.90")]
+IND_DUE = [date(2025, 4, 15), date(2025, 6, 15), date(2025, 9, 15), date(2026, 1, 15)]
+IND_R7_END = date(2026, 3, 31)
+IND_CAP = date(2026, 4, 15)
 
 
 def ind_factor(i):
     return D(IND_DAYS7[i]) / 365 * Decimal("0.07") + D(IND_DAYS6[i]) / 365 * Decimal("0.06")
 
 
+def ind_days(due, end):
+    """Independent day counter: (days@7%, days@6%) for an underpayment due
+    `due` cured `end` (capped by the caller). Simple date subtraction."""
+    if end <= due:
+        return 0, 0
+    d7 = max(0, (min(end, IND_R7_END) - due).days)
+    d6 = max(0, (min(end, IND_CAP) - max(due, IND_R7_END)).days)
+    return d7, d6
+
+
+def ind_chunk(due, cure, amount):
+    d7, d6 = ind_days(due, min(cure, IND_CAP))
+    return D(amount) * (D(d7) / 365 * Decimal("0.07") + D(d6) / 365 * Decimal("0.06"))
+
+
 def ind_compute(current_tax=0, other_taxes=0, refundable_credits=0, withholding=0, prior_year_tax=0,
                 prior_year_agi=0, filing_status="single", prior_full_year=True, est_payments=(0, 0, 0, 0),
-                use_annualized=False, ai_tax=(0, 0, 0, 0)):
+                use_annualized=False, ai_tax=(0, 0, 0, 0), payments_dated=None):
     l4 = D(current_tax) + D(other_taxes) - D(refundable_credits)
     l5 = D(r0(l4 * Decimal("0.90")))
     l7 = l4 - D(withholding)
@@ -71,15 +94,33 @@ def ind_compute(current_tax=0, other_taxes=0, refundable_credits=0, withholding=
         installments = inst
     else:
         installments = reg
+    # Dated accrual, independently re-typed: payment events in date order
+    # (withholding 1/4 ON each due date + dated payments, or the quarter
+    # buckets dated on their due dates); each applies earliest-first; chunks
+    # accrue due -> min(cured, cap); leftovers accrue due -> cap.
+    if payments_dated:
+        pays = [(date.fromisoformat(str(dd)), D(a)) for dd, a in payments_dated]
+    else:
+        pays = [(IND_DUE[i], D(est_payments[i])) for i in range(4)]
     wh_q = D(withholding) / 4
-    overpay, penalty = Decimal("0"), Decimal("0")
+    events = sorted([(IND_DUE[i], wh_q) for i in range(4) if wh_q > 0] + pays,
+                    key=lambda e: e[0])
+    remaining = [D(x) for x in installments]
+    penalty = Decimal("0")
+    for paid_on, amt in events:
+        amt = D(amt)
+        for i in range(4):
+            if amt <= 0:
+                break
+            if remaining[i] <= 0:
+                continue
+            take = min(amt, remaining[i])
+            remaining[i] -= take
+            amt -= take
+            penalty += ind_chunk(IND_DUE[i], paid_on, take)
     for i in range(4):
-        avail = wh_q + D(est_payments[i]) + overpay
-        if avail >= installments[i]:
-            under = Decimal("0"); overpay = avail - installments[i]
-        else:
-            under = installments[i] - avail; overpay = Decimal("0")
-        penalty += under * ind_factor(i)
+        if remaining[i] > 0:
+            penalty += ind_chunk(IND_DUE[i], IND_CAP, remaining[i])
     return {"l9": l9, "penalty": D(r0(penalty))}
 
 
@@ -91,6 +132,24 @@ for i in range(4):
     check(f"DAYS_7[{i}]", m.DAYS_7[i], IND_DAYS7[i])
     check(f"AI_PCT[{i}]", m.AI_PCT[i], IND_AI_PCT[i])
     check(f"penalty_factor({i})", m.penalty_factor(i), ind_factor(i))
+    # Dated amendment: due dates match, and the day counter at the cap
+    # reproduces the legacy fixed-day arrays (both loaders AND this gate's
+    # independent counter).
+    if m.DUE_DATES[i] != IND_DUE[i]:
+        err(f"DUE_DATES[{i}]: {m.DUE_DATES[i]} != {IND_DUE[i]}")
+    check(f"days_at_rates({i}, cap).d7 (loader)", m.days_at_rates(m.DUE_DATES[i], m.CAP_DATE)[0], IND_DAYS7[i])
+    check(f"days_at_rates({i}, cap).d6 (loader)", m.days_at_rates(m.DUE_DATES[i], m.CAP_DATE)[1], IND_DAYS6[i])
+    check(f"ind_days({i}, cap).d7", ind_days(IND_DUE[i], IND_CAP)[0], IND_DAYS7[i])
+    check(f"ind_days({i}, cap).d6", ind_days(IND_DUE[i], IND_CAP)[1], IND_DAYS6[i])
+if m.R7_END != IND_R7_END:
+    err(f"R7_END: {m.R7_END} != {IND_R7_END}")
+if m.CAP_DATE != IND_CAP:
+    err(f"CAP_DATE: {m.CAP_DATE} != {IND_CAP}")
+# A payment on/before the due date must accrue zero days (both transcriptions).
+if m.days_at_rates(m.DUE_DATES[0], m.DUE_DATES[0]) != (0, 0):
+    err("loader days_at_rates(due, due) != (0, 0)")
+if ind_days(IND_DUE[0], IND_DUE[0]) != (0, 0):
+    err("ind_days(due, due) != (0, 0)")
 
 # ── 2. Scenarios — independent recompute ──
 DIAG_KEYS = {"D_2210_NO_PENALTY", "D_2210_PRIOR_YEAR", "D_2210_110", "D_2210_AI", "D_2210_TY2026"}
@@ -151,8 +210,9 @@ print("FORM_2210 (facts/rules/lines/diagnostics/scenarios/links):",
        len(spec["diagnostics"]), len(spec["scenarios"]), len(spec["rule_links"])))
 print(f"Flow assertions: {len(m.FLOW_ASSERTIONS)}; authority sources: {len(m.AUTHORITY_SOURCES)}")
 print("Independently recomputed - T1 deminimis 0 / T2 prior-SH 0 / T3 full 461 / T4 110% l9=44000 / "
-      "T5 estimates-cure 0 / T6 partial 143; the §6654 safe harbors + the §6621 7%/6% penalty factors "
-      "+ Schedule AI cross-checked.")
+      "T5 estimates-cure 0 / T6 partial 143 / T7 dated-lump 217 / T8 late-Q4 5; the §6654 safe harbors "
+      "+ the §6621 dated accrual (earliest-first, due date -> date cured, 7%/6% split 3/31/2026, cap "
+      "4/15/2026) + the DAYS_7/DAYS_6 equivalence at the cap + Schedule AI cross-checked.")
 
 if errors:
     print("\nFAILURES:")
