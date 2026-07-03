@@ -12,25 +12,33 @@ last_updated: 2026-04-27
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **76 TaxForms / 341 FlowAssertions**. Newest unit:
-`1065_SE` (Form 1065 Schedule K / K-1 line 14a self-employment) seeded + exported 2026-07-01.
+Active spec-authoring tool. RS Supabase holds **77 TaxForms / 371 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest on the 1065 track: `1065_SE`
+**leg 2** (the 14a SE-base sub-spec, worksheet WS1a–WS5) seeded + exported 2026-07-02, Ken-approved.
+Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is ingested in tts at
+`e5f2795` with B1–B7 pinned as pending-skips.
 
 ## In progress
 
-- [ ] Nothing in flight in Rule Studio. The `1065_SE` handoff is complete (export fetchable).
+- [ ] Nothing in flight on the 1065_SE track in RS. (Other tracks: see FORM_7217 / MeF entries in
+  session_log.md — owned by parallel sessions.)
 
 ## Next up
 
-1. **tts-tax-app session (separate repo):** write the `seed_*` loader for `1065_se_spec.json`, seed it,
-   then rewrite `compute_self_employment` to fetch it (replaces the silent limited-partner exclusion at
-   `k1_allocator.py:223-225` and the independent `K14a = K1 + K4c` at `compute.py:288`). Gated on this export.
-2. **14a SE-base sub-spec (RS):** the base itself (i1065 2025 worksheet lines 1a–3a — Form 4797 Part II
-   gain/loss adjustment + conditional rental inclusions). **Coupled** with the 4797 §1245-vs-§1250 recapture
-   verification (a recapture misclassification propagates into box 14a). Spec §14.
+1. **tts build leg (separate tts session):** the SE-base compute (worksheet 1a–3a: 1b/1c rental
+   inclusions + 4797 Part II 1d/2 adjustment) + the `R-SE-NONIND` non-individual guard in
+   `k1_allocator` — then un-skip B1–B7 in `test_1065_se_compute_leg.py` (47 passed / 7 skipped today).
+2. **4797 recapture-classification RS unit (Ken to scope):** CONFIRMED tts bug —
+   `resolve_recapture_type()` (compute.py:1272) classifies by recovery period, so 15-yr QIP/land
+   improvements get §1245 full recapture instead of §1250; `test_improvements_15yr_is_1245` pins the
+   bug; propagates into box 14a via ws 1d/2. Ken must adjudicate: property-character classifier
+   (per-asset determination + diagnostic), 150DB additional-depreciation handling, and whether bonus
+   on QIP is §1250(b) additional depreciation (UNVERIFIED — flagged, not guessed).
+3. K-1 14b/14c pass-through verification (spec §14.4) — still out of scope.
 
 ## Blocked / waiting on
 
-Nothing blocking RS. The compute rewrite is intentionally deferred to a tts session (Ken's sequencing).
+Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-specialty call).
 
 ## Known issues
 

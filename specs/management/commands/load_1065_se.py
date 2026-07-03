@@ -67,10 +67,9 @@ from specs.models import (
 
 
 # Leg 1 (classification, T1-T10) seeded 2026-07-01 under Ken's locked spec.
-# Leg 2 (the 14a SE-BASE sub-spec, B1-B7 — spec §4b/§14.1) authored 2026-07-02:
-# gated FALSE pending Ken's review walk (the 1b dealer/services input shape, the
-# 4797 1d/2 adjustment diagnostics, and the non-individual 3b/4b guard).
-READY_TO_SEED = False
+# Leg 2 (the 14a SE-BASE sub-spec, B1-B7 — spec §4b/§14.1) authored 2026-07-02;
+# FLIPPED 2026-07-02 — Ken approved the review walk ("approve and seed").
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"

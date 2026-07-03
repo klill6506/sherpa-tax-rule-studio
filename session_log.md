@@ -4,6 +4,42 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 — 1065_SE leg 2: the 14a SE-BASE sub-spec SEEDED + EXPORTED (Ken: "approve and seed") + 4797 §1245/§1250 BUG CONFIRMED
+- **Leg 2 (spec §4b/§14.1)** amends `1065_SE` with the ordinary-income SE base per the IRS "Worksheet
+  for Figuring Net Earnings (Loss) From Self-Employment" — **text VERIFIED + quoted VERBATIM 2026-07-02
+  from the live 2025 i1065 PDF (pymupdf dump, printed p.44-45)**, replacing leg 1's paraphrased excerpts.
+- **Authored:** +7 facts (ws 1a/1b/1c/1d/2 inputs + 1e/3a outputs), **+5 rules** (`R-SE-BASE-1B` dealer/
+  services-to-occupants rental inclusion [preparer-entered, maid-service-yes/heat-light-trash-no verbatim],
+  `R-SE-BASE-1C` other-net-rental K3c inclusion, `R-SE-BASE-4797` Part II line 17 gain-out/loss-back,
+  `R-SE-BASE-3A` 1e=1a+1b+1c+1d; 3a=1e−2, `R-SE-NONIND` no box 14a for estates/trusts/corps/exempts/IRAs
+  — closes §14.5, now worksheet-3b/4b + Code-A grounded, not inferred), **+13 WS lines** (WS1a-WS5),
+  **+3 diagnostics** (`D_SE_RENT1B` warning nudge when K2≠0, `D_SE_4797ORD` error when Part II active but
+  1d/2 blank, `D_SE_NONIND` info), **+7 scenarios** (B1-B7 incl. the 3a sign rule B6: −5k−10k=(15k)),
+  **+INV-SE-BASE** (active) — FLOW-14A-SE stays disabled. New `check_1065_se_integrity.py` math gate
+  (independent re-type of the classification table + worksheet; loader & gate share no math) — ALL PASS.
+- Ken walked the 3 design calls (1b preparer-entered+nudge; D_SE_4797ORD hard error until the 4797 engine
+  feeds 1d/2; B-scenario values) → **"approve and seed"**. Seeded RS Supabase (idempotent; "Updated
+  1065_SE": 18 facts / 14 rules / 25 links / 15 lines / 6 diags / 17 scenarios; **FlowAssertions → 371**,
+  all rules cited) → re-exported `1065_se_spec.json` (59 KB) → **tts handoff committed (`e5f2795`)**:
+  spec JSON + seed_1065_se EXPECTED bumped (re-ran clean) + test_1065_se_compute_leg partitions B1-B7 as
+  NAMED pending-skips (47 passed, 7 skipped) — the base compute + non-individual guard are the next tts
+  build leg.
+- **⚠ COUPLED VERIFICATION (spec §4b) — REAL BUG CONFIRMED in tts:** `resolve_recapture_type()`
+  (tts compute.py:1272-1290) classifies Improvements by RECOVERY PERIOD (life <27.5 → §1245), so a 15-yr
+  QIP/land improvement sold at a gain takes FULL ordinary recapture instead of §1250 treatment
+  (additional-depreciation-over-SL only; remainder unrecaptured §1250 → K-1 9c) — and
+  `test_improvements_15yr_is_1245` PINS the bug. Propagates into box 14a via ws 1d/2. RS 4797 Part III
+  math is correct once property_type is known — the defect is the tts auto-classification input.
+  **Ken-flagged nuances (his call, NOT decided here):** (1) not all 15-yr is §1250 (single-purpose ag
+  structures are §1245) — property character, not life, is the classifier → likely a per-asset
+  determination + diagnostic (the se_classification pattern); (2) land improvements at 150DB DO have
+  additional depreciation → partial ordinary recapture; (3) whether BONUS on QIP is §1250(b) additional
+  depreciation — UNVERIFIED, do not guess. Recommended: its own RS-spec'd unit.
+- **NEXT:** (a) tts build leg — base compute (worksheet 1a-3a) + R-SE-NONIND guard, un-skip B1-B7;
+  (b) the 4797 recapture-classification RS unit (Ken to scope); (c) K-1 14b/14c still out of scope (§14.4).
+
+---
+
 ## 2026-07-02 (MeF track, ATS Scenario 12) — NEW FORM_7217 spec AUTHORED (READY_TO_SEED=False, Ken review pending)
 - **Trigger:** ATS Scenario 12 (Sam Gardenia) is the next smallest-first scenario (Ken's 2026-07-02
   ruling); its tax-law form — Form 7217, Partner's Report of Property Distributed by a Partnership

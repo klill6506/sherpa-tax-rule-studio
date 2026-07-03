@@ -165,12 +165,17 @@ def f7217(inp):
     loss = max(Decimal(0), line10 - sum_e) if (liq and not withheld) else Decimal(0)
     money_only = (not props) or all(p.get("is_security", False) for p in props)
     dd = _d(inp.get("distribution_date"))
+    # J1 wire: the 8949 feed, gated on the holding-period assertion
+    held = inp.get("interest_held_lt", None)
+    feed_st = line7 if (line7 > 0 and held is False) else Decimal(0)
+    feed_lt = line7 if (line7 > 0 and held is True) else Decimal(0)
     out.update({
         "f7217_line3": line3, "f7217_line5b": line5b, "f7217_line5c": line5c,
         "f7217_line6": line6, "f7217_line7": line7, "f7217_line9": line9,
         "f7217_line10": line10, "col_e": col_e, "f7217_loss_731a2": loss,
+        "f7217_8949_st": feed_st, "f7217_8949_lt": feed_lt,
         "D_7217_001": inp.get("sec751b") is True,
-        "D_7217_002": line7 > 0,
+        "D_7217_002": line7 > 0 and held is not None,
         "D_7217_003": money_only,
         "D_7217_004": (inp.get("outside_basis") is None or inp.get("liquidating") is None
                        or inp.get("sec751b") is None),
@@ -180,6 +185,7 @@ def f7217(inp):
         "D_7217_008": withheld,
         "D_7217_009": gain737 > 0,
         "D_7217_010": dd is not None and dd.year != year,
+        "D_7217_011": line7 > 0 and held is None,
     })
     return out
 

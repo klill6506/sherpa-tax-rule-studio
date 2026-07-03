@@ -38,11 +38,23 @@ Sources VERIFIED 2026-07-02 (all verbatim, fetched today):
   - IRS 2026-04-27 update (box 19 codes, TY2025+) — irs.gov/forms-pubs.
 
 JUDGMENT ITEMS FOR KEN (Authoritative-Source Rule #4 — review walk):
-  J1. Line-7 gain flow: §731(a)(1) gain is capital gain "from the sale or
-      exchange of the partnership interest" → Schedule D. v1 encodes a RED
-      defer (D_7217_002 "report on Schedule D manually") — the 8911/3800
-      precedent — rather than wiring a Sch D feed. Recommend: defer v1;
-      wire as a fast-follow if the client mix needs it. S12 has zero gain.
+  J1. Line-7 gain flow — RULED 2026-07-02 (AskUserQuestion): Ken chose
+      "Wire §731(a)(1) gain to Sch D now" over the recommended defer. The
+      face-correct landing per the Partner's Instructions for Schedule K-1
+      (Form 1065), box 19 (verbatim, fetched 2026-07-02): "the excess is
+      treated as gain from the sale or exchange of your partnership
+      interest. Generally, this gain is treated as gain from the sale of a
+      capital asset and should be reported on Form 8949 and the Schedule D
+      for your return." ENCODED: line 7 > 0 feeds a synthesized no-1099-B
+      Form 8949 row (Part I box C short-term / Part II box F long-term per
+      the holding-period preparer assertion; proceeds = line 5c, basis =
+      line 6, gain = line 7) which then rides the existing 8949 → Schedule D
+      machinery. Holding period UNASSERTED → the feed is WITHHELD +
+      D_7217_011 RED (never silently default a character); asserted →
+      D_7217_002 (info) reports the auto-feed. Reg §1.1223-3 split holding
+      periods are out of scope (single ST/LT assertion — stated boundary).
+      The §751 hot-asset ordinary-income attribution stays under the
+      D_7217_001 §751(b) defer.
   J2. §731(a)(2) liquidating LOSS (money + receivables/inventory only):
       detected when Σ col (e) < line 10 on a liquidating distribution — the
       one case where the form face's "line 10 should equal Part II B(e)"
@@ -73,7 +85,9 @@ v1 SCOPE BOUNDARIES (stated, not silent):
     basis machinery is explicitly out of scope (DECISIONS: K-1 flow-through).
   - §751(b) recharacterization: line 2 Yes → D_7217_001 RED (attach the
     Reg 1.751-1(b)(5) statement + compute manually). Face still computes.
-  - Gain (line 7), §737 gain, and §731(a)(2) loss never auto-flow (J1-J3).
+  - Line-7 gain IS wired (J1, Ken 2026-07-02): a synthesized 8949 row per
+    the holding-period assertion. §737 gain and the §731(a)(2) loss remain
+    manual REDs (J2/J3 — Ken kept the defers).
   - §707(a)(1) service payments / §707(a)(2)(B) disguised sales: the
     don't-file screens are instruction notes on the form-level facts; no
     adjudication.
@@ -471,6 +485,73 @@ AUTHORITY_SOURCES: list[dict] = [
         ],
     },
     {
+        "source_code": "IRS_2025_K1P_INSTR",
+        "source_type": "official_guidance",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "Partner's Instructions for Schedule K-1 (Form 1065) (2025) — box 19 Distributions",
+        "citation": "2025 Partner's Instructions for Schedule K-1 (Form 1065), box 19",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf",
+        "current_status": "active",
+        "is_substantive_authority": False,
+        "is_filing_authority": True,
+        "trust_score": 9.50,
+        "requires_human_review": True,
+        "notes": (
+            "Fetched 2026-07-02 (the 2025 revision — carries OBBBA What's-New items). Governs WHERE "
+            "the §731(a)(1) distribution-in-excess-of-basis gain lands on the partner's return: "
+            "Form 8949 + Schedule D (the J1 wire's face authority). REQUIRES HUMAN REVIEW: Ken "
+            "blessed the wire at the 2026-07-02 walk; the synthesized-row presentation (proceeds = "
+            "line 5c, basis = line 6) is the encoded reading — the instructions name the forms, "
+            "not the row layout."
+        ),
+        "topics": ["pship_distributions"],
+        "excerpts": [
+            {
+                "excerpt_label": "Box 19 gain — reported on Form 8949 and Schedule D (verbatim)",
+                "location_reference": "2025 Partner's Instructions for Schedule K-1 (Form 1065), box 19 (codes A/C), Gain",
+                "excerpt_text": (
+                    "Gain. To the extent the cash and the FMV of the securities (reduced by the "
+                    "reduction amount) received exceed the adjusted basis of your partnership "
+                    "interest immediately before the distribution, the excess is treated as gain "
+                    "from the sale or exchange of your partnership interest. Generally, this gain "
+                    "is treated as gain from the sale of a capital asset and should be reported on "
+                    "Form 8949 and the Schedule D for your return. However, if you receive cash or "
+                    "property in exchange for any part of a partnership interest, the amount of the "
+                    "distribution attributable to your share of the partnership's unrealized "
+                    "receivables or inventory items results in ordinary income."
+                ),
+                "summary_text": (
+                    "The J1 wire's landing: Form 8949 + Schedule D, capital-asset character. The "
+                    "'However' hot-asset ordinary-income arm is the §751 territory covered by the "
+                    "D_7217_001 defer."
+                ),
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Box 19 code B — §737 gain reporting (verbatim)",
+                "location_reference": "2025 Partner's Instructions for Schedule K-1 (Form 1065), box 19 code B worksheet",
+                "excerpt_text": (
+                    "The type of gain (section 1231 gain, capital gain, etc.) generated is "
+                    "determined by the type of gain you would have recognized if you sold the "
+                    "property rather than contributing it to the partnership. However, to the "
+                    "extent section 751(b) applies, the gain will be treated as ordinary income. "
+                    "Accordingly, report the amount from line 7, above, on Form 4797 or Form 8949 "
+                    "and the Schedule D of your tax return."
+                ),
+                "summary_text": (
+                    "§737 gain's character follows the contributed property (4797 OR 8949/Sch D) — "
+                    "exactly why J3 stays a preparer-routed RED defer rather than an auto-feed."
+                ),
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
         "source_code": "IRS_2024_7217_FORM",
         "source_type": "official_form",
         "source_rank": "primary_official",
@@ -543,6 +624,7 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("USC_26_731", "FORM_7217", "governs"),
     ("IRS_2024_7217_INSTR", "FORM_7217", "governs"),
     ("IRS_2024_7217_FORM", "FORM_7217", "governs"),
+    ("IRS_2025_K1P_INSTR", "FORM_7217", "governs"),
 ]
 
 
@@ -559,12 +641,15 @@ F7217_IDENTITY = {
         "list row + DistributedProperty child rows — the InstallmentSale pattern, "
         "one level deeper). Part I is pure arithmetic over the distribution facts; "
         "Part II column (e) is the §732(c) allocation waterfall computed per "
-        "property. INFORMATIONAL v1: no dollar flows to the 1040 — §731(a)(1) "
-        "gain (line 7), §737 gain, and the §731(a)(2) liquidating loss are "
-        "RED-deferred to manual Schedule D entry (D_7217_002/009/006). Hot-asset "
-        "classification (§751(c)/(d)) is a per-row preparer assertion; unanswered "
-        "withholds the allocation (D_7217_008). §731(c) marketable-security rows "
-        "auto-feed line 5b (YELLOW, override GREEN) and stay in Part II/line 3."
+        "property. §731(a)(1) gain (line 7) IS WIRED (Ken 2026-07-02): a "
+        "synthesized no-1099-B Form 8949 row (box C/F, ST/LT per the holding-"
+        "period assertion; proceeds = 5c, basis = 6) rides the existing 8949 → "
+        "Schedule D machinery; an unasserted holding period WITHHOLDS the feed "
+        "(D_7217_011 RED). §737 gain and the §731(a)(2) liquidating loss remain "
+        "RED-deferred to manual entry (D_7217_009/006). Hot-asset classification "
+        "(§751(c)/(d)) is a per-row preparer assertion; unanswered withholds the "
+        "allocation (D_7217_008). §731(c) marketable-security rows auto-feed "
+        "line 5b (YELLOW, override GREEN) and stay in Part II/line 3."
     ),
 }
 
@@ -614,6 +699,13 @@ F7217_FACTS: list[dict] = [
      "notes": ("PER-DISTRIBUTION PREPARER ASSERTION (nullable). Required only when line 7 > 0 — "
                "unanswered with a gain -> D_7217_007. (A No arises for e.g. treaty-exempt foreign "
                "partners — rare on a 1040.)")},
+    {"fact_key": "f7217_interest_held_lt", "label": "Partnership interest held more than one year at the distribution date?",
+     "data_type": "boolean", "sort_order": 11,
+     "notes": ("PER-DISTRIBUTION PREPARER ASSERTION (nullable) — drives the ST/LT character of the "
+               "line-7 §731(a)(1) gain feed (J1, Ken 2026-07-02). None with a gain -> D_7217_011 "
+               "RED and the 8949 feed is WITHHELD (never silently default a character). Reg "
+               "§1.1223-3 split holding periods out of scope (stated boundary). Irrelevant (and "
+               "quiet) when line 7 = 0.")},
     # ── Property-level inputs (Part II — one row per distributed property) ──
     {"fact_key": "f7217_prop_description", "label": "Part II (a) — description of distributed property (+ Pub 946 App B code if applicable)",
      "data_type": "string", "sort_order": 20, "notes": "PER-PROPERTY INPUT."},
@@ -674,8 +766,17 @@ F7217_FACTS: list[dict] = [
      "data_type": "decimal", "sort_order": 47,
      "notes": ("OUTPUT per property — the R-7217-ALLOC §732(c) waterfall result (rounded per J4). "
                "Excludes any §731(c)(4) step-up (i7217 col (e) verbatim).")},
-    {"fact_key": "f7217_loss_731a2", "label": "§731(a)(2) loss recognized on liquidating distribution (detected)",
+    {"fact_key": "f7217_8949_st", "label": "Short-term §731(a)(1) gain fed to Form 8949 Part I (box C)",
      "data_type": "decimal", "sort_order": 48,
+     "notes": ("OUTPUT (J1 wire). = line 7 when interest_held_lt is False; the synthesized 8949 row "
+               "carries proceeds = line 5c, basis = line 6. 0 when no gain or the assertion is "
+               "unanswered (withheld, D_7217_011).")},
+    {"fact_key": "f7217_8949_lt", "label": "Long-term §731(a)(1) gain fed to Form 8949 Part II (box F)",
+     "data_type": "decimal", "sort_order": 49,
+     "notes": ("OUTPUT (J1 wire). = line 7 when interest_held_lt is True; proceeds = line 5c, basis "
+               "= line 6. 0 when no gain or the assertion is unanswered (withheld, D_7217_011).")},
+    {"fact_key": "f7217_loss_731a2", "label": "§731(a)(2) loss recognized on liquidating distribution (detected)",
+     "data_type": "decimal", "sort_order": 50,
      "notes": ("OUTPUT. = line 10 − Σ col (e) when positive on a liquidating distribution (only "
                "arises when nothing but money + hot assets was distributed) -> D_7217_006 RED: "
                "capital loss — Schedule D MANUAL entry v1 (J2). NOT a form-face line.")},
@@ -700,20 +801,31 @@ F7217_RULES: list[dict] = [
                      "disguised sales are excluded by instruction note only (not adjudicated — "
                      "stated v1 boundary).")},
     {"rule_id": "R-7217-GAIN",
-     "title": "Lines 5a-8 — money + securities vs outside basis; §731(a)(1) gain",
+     "title": "Lines 5a-8 — money + securities vs outside basis; §731(a)(1) gain -> Form 8949/Schedule D",
      "rule_type": "calculation", "precedence": 2, "sort_order": 2,
      "formula": (
          "line_5b = Σ FMV of property rows with is_security=True (YELLOW) unless "
          "securities_fmv_override > 0 (GREEN override wins). line_5c = line_5a + line_5b. "
          "line_6 = min(line_4, line_5c). line_7 = line_5c − line_6 (≥ 0 by construction — "
          "§731(a)(1): gain only to the extent money (incl. §731(c) securities) exceeds outside "
-         "basis). line_7 > 0 -> D_7217_002 RED (capital gain, sale/exchange character — Schedule D "
-         "MANUAL v1) AND line 8 must be answered (None -> D_7217_007). The §731(c)(4) securities "
-         "basis step-up that accompanies such gain is NOT computed (col (e) excludes it — i7217)."),
+         "basis). GAIN FEED (J1, Ken 2026-07-02): line_7 > 0 AND interest_held_lt asserted -> a "
+         "synthesized no-1099-B Form 8949 row (Part I box C when False / Part II box F when True; "
+         "description names the partnership + '§731(a)(1) distribution in excess of basis'; "
+         "proceeds = line_5c, basis = line_6, gain = line_7) riding the EXISTING 8949 -> Schedule "
+         "D machinery (8949_st or 8949_lt output; K-1 instructions box 19 verbatim: 'reported on "
+         "Form 8949 and the Schedule D'). line_7 > 0 with interest_held_lt None -> the feed is "
+         "WITHHELD + D_7217_011 RED (no silent character). Feed made -> D_7217_002 info "
+         "(transparency). line 8 must be answered when line_7 > 0 (None -> D_7217_007). The "
+         "§731(c)(4) securities basis step-up that accompanies such gain is NOT computed (col (e) "
+         "excludes it — i7217; the partner's outside record)."),
      "inputs": ["f7217_cash_received", "f7217_securities_fmv_override", "f7217_outside_basis",
-                "f7217_prop_is_security", "f7217_prop_fmv", "f7217_us_tax_on_gain"],
-     "outputs": ["f7217_line5b", "f7217_line5c", "f7217_line6", "f7217_line7"],
-     "description": "Pure arithmetic over the face; the gain FLOW is the J1 defer."},
+                "f7217_prop_is_security", "f7217_prop_fmv", "f7217_us_tax_on_gain",
+                "f7217_interest_held_lt"],
+     "outputs": ["f7217_line5b", "f7217_line5c", "f7217_line6", "f7217_line7",
+                 "f7217_8949_st", "f7217_8949_lt"],
+     "description": ("Face arithmetic + the WIRED gain feed (Ken chose wire-now over the defer at "
+                     "the 2026-07-02 review walk). Compute ordering: 7217 runs BEFORE the 8949/"
+                     "Schedule D netting so the synthesized row joins the same pass.")},
     {"rule_id": "R-7217-L9L10",
      "title": "Lines 3, 9, 10 — the allocable-basis mechanic (§732(a)(2)/(b))",
      "rule_type": "calculation", "precedence": 3, "sort_order": 3,
@@ -809,15 +921,24 @@ F7217_DIAGNOSTICS: list[dict] = [
                  "§1.751-1(b)(5)) and report the recharacterized amounts manually — the software "
                  "computes the Form 7217 face but does not model the §751(b) recharacterization."),
      "notes": "v1 RED-defer. The face arithmetic still renders (the form is still filed with the statement)."},
-    {"diagnostic_id": "D_7217_002", "title": "Gain recognized on the distribution — Schedule D entry is manual", "severity": "error",
-     "condition": "line 7 > 0 (money + §731(c) securities exceed outside basis)",
-     "message": ("Not supported — prepare manually: gain of the line-7 amount is recognized under "
-                 "§731(a)(1) (money distributed exceeds outside basis). The gain is capital gain "
-                 "from the sale or exchange of the partnership interest — enter it on Schedule D "
-                 "(8949/Sch D) manually with the correct holding period. The software does not "
-                 "auto-wire this feed in v1, and any §731(c)(4) securities basis step-up is not "
-                 "tracked."),
-     "notes": "J1 defer (Ken review). S12 has zero gain; the mapper never hits this."},
+    {"diagnostic_id": "D_7217_002", "title": "§731(a)(1) gain auto-reported on Form 8949 / Schedule D", "severity": "info",
+     "condition": "line 7 > 0 and the holding-period assertion is answered (the feed was made)",
+     "message": ("Gain of the line-7 amount is recognized under §731(a)(1) (money distributed "
+                 "exceeds outside basis) and has been reported automatically on Form 8949 (no-1099-B "
+                 "box C/F) and Schedule D as short/long-term capital gain per the holding-period "
+                 "answer — gain from the sale or exchange of the partnership interest (K-1 box 19 "
+                 "instructions). Note: any §731(c)(4) marketable-security basis step-up is the "
+                 "partner's outside record — it is not tracked here."),
+     "notes": "J1 WIRED (Ken 2026-07-02). Transparency info, mirrors D_1116_001's auto-applied role."},
+    {"diagnostic_id": "D_7217_011", "title": "Gain recognized but holding period unasserted — 8949 feed withheld", "severity": "error",
+     "condition": "line 7 > 0 and the interest-held-more-than-one-year question is unanswered",
+     "message": ("Gain is recognized on this distribution under §731(a)(1), but the holding period "
+                 "of the partnership interest is not asserted — answer whether the interest was "
+                 "held more than one year at the distribution date. Until answered, the gain is "
+                 "NOT reported on Form 8949/Schedule D (the software never defaults a capital-gain "
+                 "character). Split holding periods (Reg §1.1223-3) are not modeled — use the "
+                 "predominant character or prepare the 8949 rows manually."),
+     "notes": "The no-silent-character gate on the J1 wire (the 8911 census-tract assertion pattern)."},
     {"diagnostic_id": "D_7217_003", "title": "Money-only distribution — Form 7217 is not filed", "severity": "error",
      "condition": "a distribution has no property rows, or every property row is a §731(c) marketable security",
      "message": ("Form 7217 is not filed for a distribution consisting only of money or marketable "
@@ -1005,10 +1126,38 @@ F7217_SCENARIOS: list[dict] = [
                 "properties": [{"description": "EQUIPMENT", "category": "other", "pship_basis": 2000, "fmv": 2500}]},
      "expected_outputs": {"f7217_line5c": 5000, "f7217_line6": 3000, "f7217_line7": 2000,
                           "f7217_line9": 0, "f7217_line10": 0, "col_e": [0],
-                          "D_7217_002": True, "D_7217_007": True, "D_7217_005": True},
-     "notes": ("HAND-COMPUTED. Cash 5,000 > outside 3,000 -> line 7 gain 2,000 (D_002 RED: Schedule "
-               "D manual) + line 8 unanswered (D_007). Line 9 floors at 0 -> the distributed "
-               "property takes ZERO basis (§732(a)(2) at its harshest).")},
+                          "f7217_8949_st": 0, "f7217_8949_lt": 0,
+                          "D_7217_002": False, "D_7217_011": True, "D_7217_007": True,
+                          "D_7217_005": True},
+     "notes": ("HAND-COMPUTED. Cash 5,000 > outside 3,000 -> line 7 gain 2,000, but the holding "
+               "period is UNASSERTED -> the 8949 feed is withheld (both feed outputs 0) + "
+               "D_7217_011 RED + line 8 unanswered (D_007); D_002 info stays quiet (no feed made). "
+               "Line 9 floors at 0 -> the distributed property takes ZERO basis (§732(a)(2) at its "
+               "harshest).")},
+    {"scenario_name": "7217-T10 — §731(a)(1) gain WIRED long-term (J1)", "scenario_type": "normal", "sort_order": 17,
+     "inputs": {"tax_year": 2025, "liquidating": False, "sec751b": False,
+                "outside_basis": 3000, "cash_received": 5000, "gain_737": 0,
+                "us_tax_on_gain": True, "interest_held_lt": True,
+                "distribution_date": "2025-03-20",
+                "properties": [{"description": "EQUIPMENT", "category": "other", "pship_basis": 2000, "fmv": 2500}]},
+     "expected_outputs": {"f7217_line7": 2000, "f7217_8949_st": 0, "f7217_8949_lt": 2000,
+                          "D_7217_002": True, "D_7217_011": False, "D_7217_007": False},
+     "notes": ("HAND-COMPUTED (the J1 wire). Same facts as G1 with the assertions answered: gain "
+               "2,000 feeds Form 8949 Part II box F (LT — interest held > 1 year) as a synthesized "
+               "no-1099-B row (proceeds 5,000 / basis 3,000), riding the existing 8949 -> Schedule "
+               "D machinery; D_002 info reports the auto-feed.")},
+    {"scenario_name": "7217-T11 — §731(a)(1) gain WIRED short-term (J1)", "scenario_type": "normal", "sort_order": 18,
+     "inputs": {"tax_year": 2025, "liquidating": False, "sec751b": False,
+                "outside_basis": 1000, "cash_received": 1600, "gain_737": 0,
+                "us_tax_on_gain": True, "interest_held_lt": False,
+                "distribution_date": "2025-08-15",
+                "properties": [{"description": "SUPPLIES INVENTORY", "category": "hot", "pship_basis": 400, "fmv": 400}]},
+     "expected_outputs": {"f7217_line7": 600, "f7217_8949_st": 600, "f7217_8949_lt": 0,
+                          "f7217_line9": 0, "f7217_line10": 0, "col_e": [0],
+                          "D_7217_002": True, "D_7217_011": False},
+     "notes": ("HAND-COMPUTED. Interest held ≤ 1 year -> the 600 gain feeds 8949 Part I box C (ST; "
+               "proceeds 1,600 / basis 1,000). Line 9 floors at 0 -> the inventory takes zero "
+               "basis via the tier-1 (c)(3) decrease.")},
     {"scenario_name": "7217-G2 — §751(b) part answered Yes (RED defer, face still computes)", "scenario_type": "diagnostic", "sort_order": 11,
      "inputs": {"tax_year": 2025, "liquidating": False, "sec751b": True,
                 "outside_basis": 10000, "cash_received": 0, "gain_737": 0,
@@ -1066,6 +1215,7 @@ F7217_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-7217-FILE", "IRS_2024_7217_INSTR", "primary", "Who Must File verbatim: per-date form; money-only/securities-only never file; §707 screens"),
     ("R-7217-FILE", "IRS_2024_7217_FORM", "secondary", "Part I heading: 'File a separate form for each date'"),
     ("R-7217-GAIN", "USC_26_731", "primary", "§731(a)(1) gain = money over outside basis; sale/exchange character"),
+    ("R-7217-GAIN", "IRS_2025_K1P_INSTR", "primary", "Box 19 verbatim: the gain 'should be reported on Form 8949 and the Schedule D' — the J1 wire's landing"),
     ("R-7217-GAIN", "IRS_2024_7217_INSTR", "secondary", "Lines 5a/5b sourcing (§752(b) deemed money; §731(c) securities); col (e) §731(c)(4) exclusion"),
     ("R-7217-L9L10", "USC_26_732", "primary", "§732(a)(1)/(a)(2)/(b): carryover-capped vs substituted basis"),
     ("R-7217-L9L10", "IRS_2024_7217_INSTR", "secondary", "Lines 9/10 verbatim: 5a-only subtraction, floor, §737 include, smaller-of"),
@@ -1115,16 +1265,31 @@ FLOW_ASSERTIONS: list[dict] = [
                                    "col_e[row] == 0 for every category='other' row when line_10 <= sum(col_b of hot rows)"]},
      "sort_order": 3},
     {"assertion_id": "FA-1040-7217-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "No silent flows: line-7 gain / §737 gain / §731(a)(2) loss / §751(b) surface RED and write NOTHING to Schedule D (v1)",
-     "description": ("Validates the J1/J2/J3 + §751(b) defers: Form 7217 is informational in v1 — "
-                     "any recognized gain/loss fires its diagnostic (D_7217_002/006/009, D_7217_001) "
-                     "and no 7217-sourced amount lands on Schedule D, Schedule 1, or anywhere else. "
-                     "Bug it catches: a future Sch D feed added without retiring the REDs (the "
-                     "gate-and-cascade-must-agree lesson)."),
+     "title": "No silent flows: unasserted-holding-period gain / §737 gain / §731(a)(2) loss / §751(b) surface RED and feed NOTHING (v1 defers)",
+     "description": ("Validates the J2/J3 + §751(b) defers and the J1 withhold arm: §737 gain and "
+                     "the §731(a)(2) liquidating loss fire their REDs (D_7217_009/006) and never "
+                     "land anywhere; a §751(b) Yes fires D_7217_001; and a line-7 gain with the "
+                     "holding period UNASSERTED fires D_7217_011 with BOTH 8949 feed outputs zero. "
+                     "Bug it catches: a feed leaking despite its gate (the gate-and-cascade-must-"
+                     "agree lesson)."),
      "definition": {"kind": "gating_check", "form": "FORM_7217", "expect": {"red_fires": True},
-                    "blockers": ["gain_731a1_no_schd_feed", "gain_737_no_income_feed",
-                                 "loss_731a2_no_schd_feed", "sec751b_no_recharacterization"]},
+                    "blockers": ["gain_737_no_income_feed", "loss_731a2_no_schd_feed",
+                                 "sec751b_no_recharacterization", "gain_unasserted_holding_no_feed"]},
      "sort_order": 4},
+    {"assertion_id": "FA-1040-7217-05", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "§731(a)(1) gain feed: line 7 -> a synthesized 8949 no-1099-B row (box C ST / box F LT per assertion) -> Schedule D netting",
+     "description": ("Validates the J1 wire (Ken 2026-07-02): when line 7 > 0 and the holding "
+                     "period is asserted, exactly one 8949 row per gaining distribution carries "
+                     "proceeds = line 5c, basis = line 6, gain = line 7 into the EXISTING 8949 -> "
+                     "Schedule D machinery (ST vs LT by the assertion), and D_7217_002 info "
+                     "reports it. Bug it catches: the gain double-fed (a raw Sch D line write PLUS "
+                     "the 8949 row), the character flipped, or proceeds/basis presented so the row "
+                     "nets a different gain than line 7."),
+     "definition": {"kind": "flow_assertion", "form": "FORM_7217",
+                    "checks": [{"source_line": "7", "must_write_to": ["FORM_8949.row", "SCH_D.netting"],
+                                "character": "st_or_lt_per_assertion",
+                                "row_identity": "proceeds=line_5c, basis=line_6, gain=line_7"}]},
+     "sort_order": 5},
 ]
 
 
