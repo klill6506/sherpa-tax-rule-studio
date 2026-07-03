@@ -25,10 +25,12 @@ Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is inge
 
 ## Next up
 
-1. ~~tts build leg~~ **DONE 2026-07-02 (tts `dd4ec14`):** SE-base worksheet compute live (WS1a–WS5
-   FormFieldValues; WS1d/WS2 auto-pull page-1 line 6; per-partner base = share of WS3a) +
-   `R-SE-NONIND` guard + 3 new diagnostics; **B1–B7 un-skipped — 57 passed, 0 skipped.** The full
-   1065_SE unit (both legs) is now spec→seed→compute→test round-tripped.
+1. ~~tts build leg~~ **DONE + DB-VERIFIED 2026-07-02 (tts `dd4ec14` + `ccc8a11`):** SE-base worksheet
+   compute live (WS1a–WS5 FormFieldValues; WS1d/WS2 auto-pull page-1 line 6; per-partner base = share
+   of WS3a) + `R-SE-NONIND` guard + 3 new diagnostics; B1–B7 un-skipped (57 unit tests, 0 skipped) AND
+   **the end-to-end DB pipeline suite `test_1065_se_pipeline_leg.py`: 9/9 green** against the shared
+   test DB (real seed → Partner rows → compute_return → diagnostics; the two pooler AdminShutdown
+   blips re-ran clean). The 1065_SE unit is fully closed: spec→seed→compute→test→DB-verified.
 2. **4797 recapture-classification RS unit (Ken to scope):** CONFIRMED tts bug —
    `resolve_recapture_type()` (compute.py:1272) classifies by recovery period, so 15-yr QIP/land
    improvements get §1245 full recapture instead of §1250; `test_improvements_15yr_is_1245` pins the
