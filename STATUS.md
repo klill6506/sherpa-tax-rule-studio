@@ -1,7 +1,7 @@
 ---
 type: project-status
 project: sherpa-tax-rule-studio
-last_updated: 2026-04-27
+last_updated: 2026-07-03
 ---
 
 # STATUS — sherpa-tax-rule-studio
@@ -36,8 +36,15 @@ Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is inge
    is_qpp → §1245(a)(3)(G); override for the other (a)(3) exceptions); §1250 ordinary = min(gain,
    line-26a additional depr incl. bonus — i4797 verbatim resolved the bonus-on-QIP question);
    DepreciationAsset +section_1250_additional_depr +is_qpp (mig 0152); 4 new D_4797_* diagnostics
-   registered; the pinned test FLIPPED; C1-C3 + counterfactual — 40 passed. Optional: DB pipeline
-   stamp on the entity-side aggregate (say the word). Historical note kept below:
+   registered; the pinned test FLIPPED; C1-C3 + counterfactual — 40 passed.
+   ~~Optional: DB pipeline stamp on the entity-side aggregate~~ **DONE + DB-VERIFIED 2026-07-03
+   (tts `08c5382`):** `test_4797_pipeline_leg.py` — real 1065 seed → DepreciationAsset dispositions →
+   `compute_return`/`aggregate_dispositions` over the shared test DB. **11/11 green** (6 classification
+   C1-C3+QPP+override+KENFLAG, 1 SE-base coupling: C1 ordinary recapture rides 1a→K1, auto-pulled to
+   WS2 so WS3a excludes it, 4 diagnostics D_4797_CLASS/_ADDL/_QPP/quiet). Only non-passes were the known
+   transient pooler AdminShutdown drops (re-ran clean). **⚠ The stamp CAUGHT a new confirmed bug** — see
+   Known Issues (1065 unrecaptured-§1250 misroute to K8c) — pinned by the KENFLAG test, awaiting Ken's fix.
+   Historical note kept below:
    ORIGINAL FINDING — CONFIRMED tts bug —
    `resolve_recapture_type()` (compute.py:1272) classifies by recovery period, so 15-yr QIP/land
    improvements get §1245 full recapture instead of §1250; `test_improvements_15yr_is_1245` pins the
@@ -52,6 +59,14 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Known issues
 
+- **⚠ tts 1065 unrecaptured-§1250 misroute (CONFIRMED, caught by the 4797 DB stamp 2026-07-03; task
+  chip spawned).** `aggregate_dispositions()` (tts compute.py ~1453 clear-list + ~1555 write) writes
+  the unrecaptured §1250 gain to the hardcoded line `K8c` for BOTH forms. `K8c` is the 1120-S line;
+  the 1065's own seeded line is `K9c` (seed_1065.py:288), which `k1_allocator` distributes to partner
+  K-1 box 9c. So on a partnership the value is written to a nonexistent line (`_set_field_value`
+  silently skips) and never reaches the K-1. Fix = form-branch the K8c write like `ordinary_line`/
+  `k_1231_line` already are, then FLIP `test_4797_pipeline_leg.py::...KENFLAG` from 0 to 80000. Box-9c
+  pass-through was otherwise out of scope — confirm with Ken before wiring the downstream allocation.
 - `1065_SE` case-law authority (`CASELAW_SE_LP`) sits on a **developing circuit split** and is
   `requires_human_review=True` — **re-verify each filing season** and on any ruling in the pending
   Soroban (2nd Cir.) / Denham (1st Cir.) appeals; an appellate reversal could flip the §6 GA
@@ -62,6 +77,9 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-03: 4797 classification unit **DB-VERIFIED** (tts `08c5382`) — `test_4797_pipeline_leg.py`
+  11/11 green end-to-end over the shared test DB; the stamp also CAUGHT the 1065 unrecaptured-§1250
+  K8c→K9c misroute (pinned + task-chipped). The 4797 unit is now fully closed: spec→seed→compute→test→DB.
 - 2026-07-01: `1065_SE` authored, seeded, exported (`1065_se_spec.json`, 38 KB) — 9 rules / 3 diagnostics
   / 10 tests / 7 authorities / 3 flow assertions, all rules cited, FLOW-14A-SE disabled. CFR/USC text
   quoted verbatim from primary sources.

@@ -4,6 +4,39 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-03 — 4797 classification unit DB-VERIFIED (tts `08c5382`) + NEW confirmed 1065 unrecap-§1250 misroute caught
+- Ken: "go" → picked the optional **4797 DB pipeline stamp on the entity-side aggregate** (AskUserQuestion).
+- Authored **tts `server/tests/test_4797_pipeline_leg.py`** — real 1065 FormDefinition (`seed_1065`), real
+  `DepreciationAsset` disposition rows, real `compute_return` → `aggregate_dispositions` over the shared
+  Supabase test DB. **11/11 green** (the only non-passes across runs were the known transient pooler
+  AdminShutdown drops — memory `tts-test-db-collisions`; re-ran clean):
+  - **TestPipelineClassification (6):** C1 15-yr land improvement 150DB (line 6 ordinary 20k / K10 §1231
+    180k — NOT the §1245 100k), C2 SL QIP (ordinary 0 / §1231 200k), C3 bonused QIP (ordinary 280k /
+    §1231 70k), `is_qpp` Building → §1245 full recapture (line 6 100k / K10 100k / K9c 0), explicit-1245
+    override counterfactual, + the KENFLAG pin. Same numbers as the single-asset unit test, now through
+    the production aggregate. Assets use **method=NONE** so `aggregate_depreciation` (runs first and
+    overwrites current_depreciation + bonus_amount from the engine) is a no-op — the disposition math is
+    deterministic off `prior_depreciation` + line-26a additional depr (a live MACRS tail was inflating
+    total_depr by 985 in the first draft; method=NONE + folding C3's bonus into prior_depreciation fixed it).
+  - **TestPipelineSEBase (1):** the C1 §1250 ordinary recapture (line 6 = 20k) rides the 1a-chain into K1
+    AND is auto-pulled to WS2, so the box-14a SE base (WS3a) excludes it — the exact coupling the
+    diagnostics call "misstated through worksheet 1d/2" when the character is wrong.
+  - **TestPipelineDiagnostics (4):** `D_4797_CLASS` warns on the auto-§1250 Improvements default,
+    `D_4797_ADDL` errors on a 150DB asset with a blank 26a, `D_4797_QPP` info fires, and clean §1245
+    equipment stays quiet.
+- **⚠ NEW CONFIRMED BUG the stamp caught (pinned, NOT fixed — Ken's K-1 call):** `aggregate_dispositions`
+  writes the unrecaptured §1250 gain to the hardcoded **`K8c`** (a 1120-S line) for BOTH forms. The 1065's
+  own line is **`K9c`** (seed_1065.py:288), which `k1_allocator` sends to partner K-1 box 9c — so on a
+  partnership the value is written to a nonexistent line, silently skipped, and NEVER reaches the K-1. The
+  `...KENFLAG` test pins the broken state (K9c stays 0). Fix = form-branch the write like
+  `ordinary_line`/`k_1231_line` already are, then flip the pin to 80000. **Task chip spawned**
+  (`task_a7c88bd6`). Recorded in STATUS Known Issues. Box-9c pass-through was otherwise out of scope.
+- **NEXT:** (a) Ken adjudicates the K8c→K9c fix; (b) the three 4797 depreciation nuances still await his
+  scoping (property-character vs recovery-period edge cases, 150DB land-improvement additional depr,
+  bonus-on-QIP §1250(b)); (c) K-1 14b/14c still out of scope (§14.4).
+
+---
+
 ## 2026-07-02 — SCHEDULE_SE R-SE-ROUND: per-line whole-dollar rounding (Ken ruled; the S12 REVIEW_QUEUE item) SEEDED + EXPORTED
 - **Ken ruled in-session (AskUserQuestion, the recommended option): Schedule SE adopts the
   per-line whole-dollar convention** — the engine's cents-chain (12 = 3,437.44) diverged $1
