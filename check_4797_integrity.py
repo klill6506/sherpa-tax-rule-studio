@@ -135,6 +135,14 @@ for s in spec["scenarios"]:
                        - (D(p.get("cost_basis", 0)) - D(p.get("depreciation_allowed", 0))) > 0
                        for p in props):
                 err(f"{name}: D_4797_CLASS expected but no Improvements-group long-term gain disposition")
+        # Nuance leg (2026-07-03): the (D)/(E)/(F) §1245 real-property exceptions
+        for _dcode, _exc in (("D_4797_1245AG", "single_purpose_ag"),
+                             ("D_4797_1245PETRO", "petroleum_storage"),
+                             ("D_4797_1245RRGR", "railroad_grading")):
+            if _dcode in diag_expected:
+                props = inp.get("properties") or []
+                if not any(p.get("section_1245_exception") == _exc for p in props):
+                    err(f"{name}: {_dcode} expected but no property with section_1245_exception=={_exc}")
         continue
     got = ind_compute(**inp)
     gl = m.compute_4797(**inp)
@@ -191,6 +199,10 @@ print("Independently recomputed — T1 §1245 all-ord 10000 / T2 excess→Sch D 
 print("Classification leg — C1 150DB land improvement (ord 20000 / unrecap 80000) / C2 SL QIP "
       "(ord 0 / unrecap 100000) / C3 bonused QIP (ord 280000 / unrecap 20000: bonus IS additional "
       "depreciation, i4797 verbatim) / C4 D_4797_ADDL gate / C5 D_4797_CLASS character check.")
+print("Nuance leg — N1 single-purpose ag structure is §1245 (ord 80000, NO unrecap §1250; §1245(a)(3)(D)/"
+      "§168(i)(13)) / N2-N4 the (D)/(E)/(F) exception info diagnostics (ag / petroleum §1245(a)(3)(E) / "
+      "railroad §1245(a)(3)(F)-§168(e)(4)); 26a now COMPUTED (actual incl. bonus − SL on unreduced basis) "
+      "where MACRS data present, D_4797_ADDL the fallback gate.")
 
 if errors:
     print("\nFAILURES:")

@@ -68,6 +68,31 @@ Improvements dispositions listing the §1245 exceptions. C2 line 26a stays prepa
 with a HARD ERROR (D_4797_ADDL) when a disposed §1250 asset used an accelerated method or
 claimed bonus and 26a is blank; the i4797 carve-out classes stay auto-zero. C3 v1 edges =
 diagnostics only (D_4797_179REAL warning, D_4797_QPP info) — no §1245/§1250 split engine.
+
+═══ NUANCE LEG (2026-07-03, Ken Decisions 1-2 via AskUserQuestion) ═══
+Closes the three depreciation nuances flagged when the classification leg was built.
+LAW VERIFIED 2026-07-03 verbatim (Cornell LII + the 2025 i4797 instructions):
+  - §1245(a)(3)(D)/(E)/(F): the real-property exceptions cross-reference §168 — (D) single-
+    purpose ag/hort structure (§168(i)(13): a livestock enclosure or a commercial greenhouse),
+    (E) petroleum-distribution storage facility, (F) railroad grading/tunnel bore (§168(e)(4)).
+  - §1250(b)(1)+(b)(3): additional depreciation = actual adjustments over straight line; the
+    (b)(3) carve-out excludes only the PRE-1976 §168, so current MACRS + §168(k) bonus ARE
+    depreciation adjustments (nuance 3 now statutorily grounded, not just i4797).
+  - §168(b)(2)(A): 15-yr land improvements use 150DB → actual > SL → §1250 additional depreciation.
+  - i4797 line 26a verbatim: SL comparison uses the UNREDUCED basis ("do not reduce the basis...").
+KEN'S DECISIONS (2026-07-03):
+  Decision 1 (nuance 1) = a NEW per-asset classifier field f4797_section_1245_exception
+    (none / single_purpose_ag / petroleum_storage / railroad_grading) auto-returns §1245 for the
+    (D)/(E)/(F) real-property exceptions + a per-exception info diagnostic (D_4797_1245AG/PETRO/RRGR).
+    (C) §179-realty stays via D_4797_179REAL; (G) QPP via is_qpp/D_4797_QPP.
+  Decision 2 (nuances 2+3) = COMPUTE line 26a = max(0, actual accumulated depr incl. bonus − SL
+    on the unreduced basis) in the tts engine where the disposed §1250 asset has the MACRS data
+    (method/life/convention/dates) — one computation covering BOTH 150DB land improvements and
+    bonused QIP; preparer-overridable. D_4797_ADDL becomes the FALLBACK gate (fires only when the
+    engine cannot compute: pre-1987/ACRS, imported). Applicable % = 100%.
+The RS spec encodes the rules/diagnostics/scenarios + authority; the SL-equivalent computation
+itself is the tts build leg (engine + resolve_recapture_type + a section_1245_exception model
+field + the D_4797_1245* diagnostics), verified there + in a DB stamp.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -132,10 +157,15 @@ def compute_property(*, sales_price=0, cost_basis=0, expense_of_sale=0, deprecia
                      section_1252_deductions=0, section_1252_pct=0,
                      section_1254_costs=0,
                      section_1255_excluded=0, section_1255_pct=0,
-                     used_accel_bonus=False, asset_group="") -> dict:
-    # used_accel_bonus / asset_group (classification leg 2026-07-02) are
-    # diagnostic drivers (D_4797_ADDL / D_4797_CLASS), not math inputs — the
-    # math reads the preparer's line-26a additional_depreciation as before.
+                     used_accel_bonus=False, asset_group="",
+                     section_1245_exception="none") -> dict:
+    # used_accel_bonus / asset_group (classification leg 2026-07-02) and
+    # section_1245_exception (nuance leg 2026-07-03) are diagnostic drivers
+    # (D_4797_ADDL / D_4797_CLASS / D_4797_1245AG|PETRO|RRGR), not math inputs.
+    # The classifier (tts resolve_recapture_type) maps a set section_1245_exception
+    # to property_type "1245" UPSTREAM — the scenarios pass the resolved
+    # property_type, and the math reads the preparer's line-26a additional_
+    # depreciation (computed in tts where MACRS data is present) as before.
     """One disposed property. Returns its routing buckets:
       ordinary_recapture — Part III ordinary (→ Part II line 13), or short-term ordinary
       section_1231       — the §1231 gain/loss going to Part I (line 2 direct or line 6 via L32)
@@ -398,6 +428,70 @@ AUTHORITY_SOURCES: list[dict] = [
         ],
     },
     {
+        "source_code": "IRC_168",
+        "source_type": "statute", "source_rank": "primary_official", "jurisdiction_code": "FED",
+        "title": "IRC §168 — Accelerated Cost Recovery System (MACRS: the §1245(a)(3) cross-refs + 150DB)",
+        "citation": "26 U.S.C. §168(i)(13), (e)(4), (b)(2)(A), (b)(3)(G)/(e)(6), (k)", "issuer": "U.S. Congress",
+        "official_url": "https://uscode.house.gov/view.xhtml?req=(title:26%20section:168%20edition:prelim)",
+        "current_status": "active", "is_substantive_authority": True, "is_filing_authority": False,
+        "trust_score": 10.0, "requires_human_review": True,
+        "notes": "NUANCE LEG (2026-07-03): §1245(a)(3) cross-references §168 for the definitions of the "
+                 "real-property exceptions ((D) single-purpose ag §168(i)(13), (F) railroad grading "
+                 "§168(e)(4), (G) QPP §168(n)(2)) and for the MACRS methods that create §1250 additional "
+                 "depreciation ((b)(2)(A) 150DB for 15/20-yr land improvements; (k) special allowance/bonus). "
+                 "Verified verbatim 2026-07-03 (Cornell LII).",
+        "topics": ["depreciation_recapture"],
+        "excerpts": [
+            {"excerpt_label": "§168(i)(13) — single purpose agricultural or horticultural structure",
+             "location_reference": "26 U.S.C. §168(i)(13) (verified 2026-07-03)",
+             "excerpt_text": (
+                 "The term 'single purpose agricultural or horticultural structure' means (A) a single "
+                 "purpose livestock structure, and (B) a single purpose horticultural structure. A single "
+                 "purpose livestock structure is any enclosure or structure specifically designed, "
+                 "constructed, and used for housing, raising, and feeding a particular type of livestock; a "
+                 "single purpose horticultural structure is a greenhouse specifically designed, constructed, "
+                 "and used for the commercial production of plants."),
+             "summary_text": "Single-purpose ag/hort structure = a livestock enclosure or a commercial "
+                             "greenhouse — §1245 property under §1245(a)(3)(D).",
+             "is_key_excerpt": True},
+            {"excerpt_label": "§168(e)(4) — railroad grading or tunnel bore",
+             "location_reference": "26 U.S.C. §168(e)(4) (verified 2026-07-03)",
+             "excerpt_text": (
+                 "The term 'railroad grading or tunnel bore' means all improvements resulting from "
+                 "excavations (including tunneling), construction of embankments, clearings, diversions of "
+                 "roads and streams, sodding of slopes, and from similar work necessary to provide, "
+                 "construct, reconstruct, alter, protect, improve, replace, or restore a roadbed or "
+                 "right-of-way for railroad track."),
+             "summary_text": "Railroad grading/tunnel bore (§168(e)(4)) — §1245 property under §1245(a)(3)(F).",
+             "is_key_excerpt": True},
+            {"excerpt_label": "§168(b)(2)(A) + (b)(3)/(e)(6) — 150DB for 15/20-yr; QIP is SL 15-yr",
+             "location_reference": "26 U.S.C. §168(b)(2)(A), (b)(3)(G), (e)(6) (verified 2026-07-03)",
+             "excerpt_text": (
+                 "Paragraph (2) (the 150 percent declining balance method) applies to any 15-year or "
+                 "20-year property not referred to in paragraph (3). Land improvements are 15-year property "
+                 "→ 150DB, so their actual depreciation exceeds straight line and creates §1250 additional "
+                 "depreciation. Qualified improvement property (§168(e)(6)) is depreciated under the "
+                 "straight line method (§168(b)(3)(G)) over a 15-year recovery period, but is bonus-eligible "
+                 "(§168(k)) — the bonus, not the method, creates its additional depreciation."),
+             "summary_text": "15-yr land improvements = 150DB (> SL → additional depreciation exists); QIP = "
+                             "SL 15-yr, additional depreciation only from bonus.",
+             "is_key_excerpt": True},
+            {"excerpt_label": "§168(k) special (bonus) allowance is a depreciation adjustment (§1250(b)(3))",
+             "location_reference": "26 U.S.C. §168(k) (cf. §1250(b)(3), verified 2026-07-03)",
+             "excerpt_text": (
+                 "The §168(k) special depreciation allowance ('bonus depreciation') is an additional "
+                 "first-year depreciation deduction. It is a depreciation adjustment reflected in adjusted "
+                 "basis; §1250(b)(3) excludes from 'depreciation adjustments' only amortization under the "
+                 "PRE-1976 section 168 (and §169/§185/§188/§190/§193), NOT the current §168(k). Bonus on "
+                 "§1250 realty (e.g., QIP) is therefore additional depreciation to the extent it exceeds "
+                 "straight line — confirming the i4797 line-26a 'including any special depreciation "
+                 "allowance' instruction."),
+             "summary_text": "§168(k) bonus IS a depreciation adjustment → §1250 additional depreciation "
+                             "(the (b)(3) carve-out is pre-1976 §168 only).",
+             "is_key_excerpt": True},
+        ],
+    },
+    {
         "source_code": "IRC_1_H_1_E",
         "source_type": "statute", "source_rank": "primary_official", "jurisdiction_code": "FED",
         "title": "IRC §1(h)(1)(E) — Unrecaptured Section 1250 Gain (25% Rate)",
@@ -541,10 +635,12 @@ AUTHORITY_SOURCES: list[dict] = [
                  "Enter the additional depreciation for the period after 1975. Additional depreciation is "
                  "the excess of actual depreciation (including any special depreciation allowance, or "
                  "commercial revitalization deduction) over depreciation figured using the straight line "
-                 "method."),
+                 "method. For this purpose, do not reduce the basis under section 50(c)(1) (or the "
+                 "corresponding provision of prior law) to figure straight line depreciation."),
              "summary_text": "THE bonus-on-QIP answer: 'including any special depreciation allowance' — "
-                             "§168(k) bonus on §1250 property IS additional depreciation → ordinary "
-                             "recapture to the extent of gain (line 26g).",
+                             "§168(k) bonus on §1250 property IS additional depreciation; the straight-line "
+                             "comparison uses the UNREDUCED basis (so the whole bonus excess over SL is "
+                             "additional depreciation) → ordinary recapture to the extent of gain (line 26g).",
              "is_key_excerpt": True},
         ],
     },
@@ -579,6 +675,7 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRC_1231", "4797", "governs"),
     ("IRC_1245", "4797", "governs"),
     ("IRC_1250", "4797", "governs"),
+    ("IRC_168", "4797", "informs"),
     ("IRC_1_H_1_E", "4797", "governs"),
     ("IRC_1252_1254_1255", "4797", "governs"),
     ("IRC_179D_280F", "4797", "governs"),
@@ -625,17 +722,34 @@ P_FACTS: list[dict] = [
     {"fact_key": "f4797_property_type", "label": "Recapture type: 1245/1250/1252/1254/1255/1231/ordinary",
      "data_type": "string", "default_value": "1231", "sort_order": 6,
      "notes": "1231 = non-depreciable §1231 (no recapture); ordinary = dealer/short-term."},
+    {"fact_key": "f4797_section_1245_exception",
+     "label": "§1245(a)(3) real-property exception: none / single_purpose_ag (D) / petroleum_storage (E) / railroad_grading (F)",
+     "data_type": "string", "default_value": "none", "sort_order": 6,
+     "notes": "NUANCE LEG (2026-07-03, Decision 1): a per-asset classifier for the real property that IS "
+              "§1245. When set, tts resolve_recapture_type returns §1245 for this depreciable REAL property "
+              "(character override of the Buildings/Improvements → §1250 default) and fires the matching "
+              "info diagnostic (D_4797_1245AG / D_4797_1245PETRO / D_4797_1245RRGR). The other two §1245(a)(3) "
+              "real-property exceptions are already surfaced: (C) §179-adjusted realty via D_4797_179REAL; "
+              "(G) qualified production property via is_qpp / D_4797_QPP. In tts a per-asset choice field, "
+              "GREEN when the preparer sets it."},
     {"fact_key": "f4797_additional_depreciation", "label": "§1250 additional depreciation after 1975 (line 26a)",
      "data_type": "decimal", "default_value": "0", "sort_order": 7,
      "notes": "Excess of actual (INCLUDING any special depreciation allowance — i4797 verbatim) over "
-              "straight-line. Auto-zero ONLY for the i4797 carve-out classes (27.5-yr residential / "
-              "22-31.5-39-yr nonresidential MACRS); REQUIRED (D_4797_ADDL) for 150DB land improvements "
-              "and bonused QIP. Corrected 2026-07-02 from the old 'post-1986 MACRS SL → 0' shorthand."},
+              "straight-line, computed on the UNREDUCED basis (i4797 line 26a: 'do not reduce the basis... "
+              "to figure straight line depreciation'). NUANCE LEG (2026-07-03, Decision 2): COMPUTED in tts "
+              "(actual accumulated depreciation incl. bonus − SL-equivalent on the full cost basis over the "
+              "same recovery period) for a disposed §1250 asset that has the MACRS data (method / life / "
+              "convention / dates) — auto-handling 150DB land improvements AND bonused QIP; the computed "
+              "value fills line 26a (YELLOW) and the preparer can override. When the engine LACKS the data "
+              "(pre-1987 / ACRS, imported assets), it stays preparer-entered and D_4797_ADDL guards a blank. "
+              "Auto-zero for the i4797 carve-out classes (27.5-yr residential / 22-31.5-39-yr nonresidential "
+              "MACRS SL). §1250 applicable percentage = 100% (post-1975, non-low-income-housing)."},
     {"fact_key": "f4797_used_accel_bonus", "label": "§1250 property used accelerated method (150DB) or claimed bonus?",
      "data_type": "boolean", "default_value": "false", "sort_order": 7,
-     "notes": "CLASSIFICATION LEG (Decision C2): drives the D_4797_ADDL hard gate — when true and "
-              "line 26a is 0/blank, the §1250 ordinary recapture is understated. In tts this is derived "
-              "from the asset's method/bonus columns (YELLOW), preparer-overridable."},
+     "notes": "CLASSIFICATION LEG (Decision C2): drives the D_4797_ADDL gate. NUANCE LEG (2026-07-03): with "
+              "26a now COMPUTED where the engine has the MACRS data, D_4797_ADDL is the FALLBACK gate — it "
+              "fires only when this is true, 26a is 0/blank, AND the engine could not compute it (missing "
+              "method/life/convention). Derived from the asset's method/bonus columns in tts."},
     {"fact_key": "f4797_applicable_pct_1250", "label": "§1250 applicable percentage (line 26b, default 100%)",
      "data_type": "decimal", "default_value": "1", "sort_order": 8},
     {"fact_key": "f4797_section_1252_deductions", "label": "§1252 soil/water/land-clearing deductions (line 27a)",
@@ -742,24 +856,36 @@ P_RULES: list[dict] = [
                  "and 15-yr QIP are §1250. Implementation (Decision C1): character-based defaults by asset "
                  "group (Buildings → 1250; Improvements → 1250; Machinery/Furniture/Vehicles → 1245) + the "
                  "per-asset recapture_type override; every Improvements-group disposition at a gain fires "
-                 "D_4797_CLASS listing the §1245 exceptions — surfaced, never silent."),
-     "inputs": ["f4797_property_type"], "outputs": [],
+                 "D_4797_CLASS listing the §1245 exceptions — surfaced, never silent. NUANCE LEG "
+                 "(2026-07-03, Decision 1): the §1245(a)(3) real-property exceptions are now AUTO-classified "
+                 "from a per-asset field (f4797_section_1245_exception) rather than left to the override — "
+                 "single-purpose agricultural/horticultural structure (D, §168(i)(13)), petroleum storage "
+                 "facility (E), and railroad grading/tunnel bore (F, §168(e)(4)) each return §1245 and fire "
+                 "their info diagnostic. (C) §179-adjusted realty stays via D_4797_179REAL; (G) QPP via is_qpp."),
+     "inputs": ["f4797_property_type", "f4797_section_1245_exception"], "outputs": [],
      "description": "Closes the recovery-period misclassification (tts resolve_recapture_type; the pinned "
-                    "test_improvements_15yr_is_1245). §1250(c) verbatim; §1245(a)(3) verbatim."},
-    {"rule_id": "R-4797-ADDLDEPR", "title": "Line 26a — additional depreciation incl. bonus; carve-out auto-zero", "rule_type": "conditional",
+                    "test_improvements_15yr_is_1245). §1250(c) verbatim; §1245(a)(3)(A)-(G) verbatim; the "
+                    "(D)/(E)/(F) definitions per §168(i)(13)/§168(e)(4)."},
+    {"rule_id": "R-4797-ADDLDEPR", "title": "Line 26a — additional depreciation computed (actual incl. bonus − SL); carve-out auto-zero", "rule_type": "calculation",
      "precedence": 8, "sort_order": 8,
-     "formula": ("Additional depreciation = actual depreciation (INCLUDING any special depreciation "
-                 "allowance — i4797 line 26a verbatim) − straight-line equivalent (§1250(b)(1)). "
-                 "PREPARER-ENTERED at line 26a (Decision C2 — no SL-schedule engine in v1). Auto-zero "
-                 "ONLY for the i4797 carve-out classes (27.5-yr residential; 22/31.5/39-yr nonresidential "
-                 "MACRS). A disposed §1250 asset that used an accelerated method (150DB land improvements) "
-                 "or claimed bonus (QIP) with line 26a blank/zero fires D_4797_ADDL (ERROR) — the "
-                 "understated-ordinary no-silent-gap gate."),
+     "formula": ("Additional depreciation = max(0, actual accumulated depreciation (INCLUDING any special "
+                 "depreciation allowance — i4797 line 26a verbatim) − straight-line-equivalent accumulated "
+                 "depreciation), the SL figured on the UNREDUCED basis over the same recovery period (i4797 "
+                 "line 26a: 'do not reduce the basis... to figure straight line depreciation'; §1250(b)(1)). "
+                 "NUANCE LEG (2026-07-03, Decision 2): COMPUTED in tts where the disposed §1250 asset has the "
+                 "MACRS data (method/life/convention/dates) — auto-handling BOTH 150DB land improvements "
+                 "(§168(b)(2)(A)) and bonused QIP; the computed value fills line 26a, preparer-overridable. "
+                 "§1250 ordinary = applicable% (100%) × min(gain, line 26a). Auto-zero for the i4797 "
+                 "carve-out classes (27.5-yr residential; 22/31.5/39-yr nonresidential MACRS SL). FALLBACK: "
+                 "when the engine cannot compute (pre-1987/ACRS, imported), 26a stays preparer-entered and "
+                 "D_4797_ADDL (ERROR) guards a blank on an accel/bonus asset — the no-silent-gap gate."),
      "inputs": ["f4797_used_accel_bonus", "f4797_additional_depreciation", "f4797_property_type"],
      "outputs": [],
-     "description": "Bonus-on-QIP RESOLVED by the implementation authority: 'including any special "
-                    "depreciation allowance' (i4797 2025 p.10, verbatim). 150DB > SL → additional "
-                    "depreciation exists for land improvements."},
+     "description": "Bonus-on-QIP RESOLVED and now statutorily grounded: additional depreciation = actual "
+                    "'including any special depreciation allowance' (i4797 2025 p.10) over SL on the "
+                    "unreduced basis (§1250(b)(1)/(b)(3): the (b)(3) carve-out excludes only PRE-1976 §168, "
+                    "so current MACRS/§168(k) bonus IS a depreciation adjustment). 150DB (§168(b)(2)(A)) > "
+                    "SL → additional depreciation exists for 15-yr land improvements."},
 ]
 
 P_LINES: list[dict] = [
@@ -873,8 +999,10 @@ P_DIAGNOSTICS: list[dict] = [
                  "straight line (i4797). With 26a blank the §1250 ordinary recapture is understated (and "
                  "on a 1065, box 14a self-employment earnings are misstated through the worksheet 1d/2 "
                  "adjustment). Enter the excess-over-straight-line amount on line 26a."),
-     "notes": "Decision C2 hard gate. The 27.5/39-yr MACRS carve-out classes stay auto-zero and never "
-              "fire this."},
+     "notes": "Decision C2 hard gate; NUANCE LEG (2026-07-03, Decision 2): now the FALLBACK gate — with 26a "
+              "computed where the engine has the MACRS data, this fires only when the engine could NOT "
+              "compute it (missing method/life/convention: pre-1987/ACRS, imported) and 26a is left blank. "
+              "The 27.5/39-yr MACRS carve-out classes stay auto-zero and never fire this."},
     {"diagnostic_id": "D_4797_179REAL", "title": "§179-expensed real property — §1245 recapture applies", "severity": "warning",
      "condition": "a disposed real-property asset carries §179 expensing",
      "message": ("This real property took a section 179 expense deduction. Under §1245(a)(3)(C), real "
@@ -890,6 +1018,30 @@ P_DIAGNOSTICS: list[dict] = [
                  "expensed/depreciated amounts recapture in full as ordinary income on disposition. "
                  "Classify it 1245, not 1250."),
      "notes": "Decision C3 (v1 flag). New law — re-verify each season."},
+    # ── NUANCE LEG (2026-07-03, Decision 1): the (D)/(E)/(F) §1245 real-property exceptions ──
+    {"diagnostic_id": "D_4797_1245AG", "title": "Single-purpose ag/horticultural structure is §1245", "severity": "info",
+     "condition": "a disposed asset has section_1245_exception == single_purpose_ag",
+     "message": ("This asset is classified as a single purpose agricultural or horticultural structure "
+                 "(a single purpose livestock structure or a greenhouse for commercial plant production, "
+                 "§168(i)(13)). Under §1245(a)(3)(D) it is SECTION 1245 property even though it is a "
+                 "structure — ALL depreciation recaptures as ordinary income on disposition (line 25), not "
+                 "the §1250 additional-depreciation rule. It has been auto-classified §1245."),
+     "notes": "Decision 1 (nuance leg). §1245(a)(3)(D) / §168(i)(13)."},
+    {"diagnostic_id": "D_4797_1245PETRO", "title": "Petroleum storage facility is §1245", "severity": "info",
+     "condition": "a disposed asset has section_1245_exception == petroleum_storage",
+     "message": ("This asset is classified as a storage facility (other than a building or its structural "
+                 "components) used in the distribution of petroleum or a primary petroleum product. Under "
+                 "§1245(a)(3)(E) it is SECTION 1245 property — ALL depreciation recaptures as ordinary "
+                 "income on disposition (line 25), not the §1250 rule. It has been auto-classified §1245."),
+     "notes": "Decision 1 (nuance leg). §1245(a)(3)(E)."},
+    {"diagnostic_id": "D_4797_1245RRGR", "title": "Railroad grading / tunnel bore is §1245", "severity": "info",
+     "condition": "a disposed asset has section_1245_exception == railroad_grading",
+     "message": ("This asset is classified as railroad grading or a tunnel bore (§168(e)(4) — improvements "
+                 "from excavation, embankments, tunneling, and similar work for a railroad roadbed or "
+                 "right-of-way). Under §1245(a)(3)(F) it is SECTION 1245 property — ALL depreciation "
+                 "recaptures as ordinary income on disposition (line 25), not the §1250 rule. It has been "
+                 "auto-classified §1245."),
+     "notes": "Decision 1 (nuance leg). §1245(a)(3)(F) / §168(e)(4)."},
 ]
 
 P_SCENARIOS: list[dict] = [
@@ -1004,6 +1156,35 @@ P_SCENARIOS: list[dict] = [
      "expected_outputs": {"D_4797_CLASS": True},
      "notes": "Decision C1: every Improvements-group disposition at a gain surfaces the §1245-exceptions "
               "checklist (single-purpose ag / §179-adjusted / QPP) with the §1250 character default applied."},
+    # ── NUANCE LEG (2026-07-03, N-scenarios) ──
+    {"scenario_name": "F4797-N1 — single-purpose ag structure is §1245 (full recapture, not §1250)", "scenario_type": "normal", "sort_order": 18,
+     "inputs": {"properties": [{"sales_price": 300000, "cost_basis": 250000, "depreciation_allowed": 80000,
+                                "holding_period_months": 84, "property_type": "1245",
+                                "section_1245_exception": "single_purpose_ag"}]},
+     "expected_outputs": {"f4797_line18b": 80000, "f4797_line7": 50000, "f4797_line9": 50000,
+                          "f4797_unrecaptured_1250": 0, "f4797_sch1_line4": 80000},
+     "notes": ("Decision 1: a single-purpose ag/hort structure (§168(i)(13)) is §1245 under §1245(a)(3)(D) "
+               "even though it is a structure — resolve_recapture_type returns 1245. adj basis 170k; gain "
+               "130k; §1245 ordinary = min(130k, 80k depr) = 80k → L13 → L18b (NOT the §1250 "
+               "additional-depreciation rule, and NO unrecaptured §1250); excess 50k → §1231 → L9 Sch D.")},
+    {"scenario_name": "F4797-N2 — single-purpose ag classification → D_4797_1245AG", "scenario_type": "diagnostic", "sort_order": 19,
+     "inputs": {"properties": [{"sales_price": 300000, "cost_basis": 250000, "depreciation_allowed": 80000,
+                                "holding_period_months": 84, "property_type": "1245",
+                                "section_1245_exception": "single_purpose_ag"}]},
+     "expected_outputs": {"D_4797_1245AG": True},
+     "notes": "Decision 1: the single-purpose ag/hort structure auto-classified §1245 fires the info diagnostic (§1245(a)(3)(D))."},
+    {"scenario_name": "F4797-N3 — petroleum storage classification → D_4797_1245PETRO", "scenario_type": "diagnostic", "sort_order": 20,
+     "inputs": {"properties": [{"sales_price": 300000, "cost_basis": 250000, "depreciation_allowed": 80000,
+                                "holding_period_months": 84, "property_type": "1245",
+                                "section_1245_exception": "petroleum_storage"}]},
+     "expected_outputs": {"D_4797_1245PETRO": True},
+     "notes": "Decision 1: a petroleum-distribution storage facility (not a building) is §1245 under §1245(a)(3)(E)."},
+    {"scenario_name": "F4797-N4 — railroad grading classification → D_4797_1245RRGR", "scenario_type": "diagnostic", "sort_order": 21,
+     "inputs": {"properties": [{"sales_price": 300000, "cost_basis": 250000, "depreciation_allowed": 80000,
+                                "holding_period_months": 84, "property_type": "1245",
+                                "section_1245_exception": "railroad_grading"}]},
+     "expected_outputs": {"D_4797_1245RRGR": True},
+     "notes": "Decision 1: railroad grading/tunnel bore (§168(e)(4)) is §1245 under §1245(a)(3)(F)."},
 ]
 
 P_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -1022,9 +1203,11 @@ P_RULE_LINKS: list[tuple[str, str, str, str]] = [
     # Classification leg
     ("R-4797-CHARCLASS", "IRC_1250", "primary", "§1250(c): real property not §1245 — character, not recovery period"),
     ("R-4797-CHARCLASS", "IRC_1245", "primary", "§1245(a)(3): the enumerated real-property exceptions (C/D/E/F/G)"),
+    ("R-4797-CHARCLASS", "IRC_168", "secondary", "§168(i)(13) single-purpose ag / §168(e)(4) railroad grading definitions"),
     ("R-4797-CHARCLASS", "IRS_2025_4797_INSTR", "secondary", "i4797 'Section 1250 property' definition (verbatim)"),
-    ("R-4797-ADDLDEPR", "IRS_2025_4797_INSTR", "primary", "Line 26a verbatim: additional depreciation includes any special depreciation allowance"),
-    ("R-4797-ADDLDEPR", "IRC_1250", "primary", "§1250(b)(1) additional depreciation over straight line"),
+    ("R-4797-ADDLDEPR", "IRS_2025_4797_INSTR", "primary", "Line 26a verbatim: additional depr incl. special allowance; SL on unreduced basis"),
+    ("R-4797-ADDLDEPR", "IRC_1250", "primary", "§1250(b)(1)/(b)(3) additional depreciation over straight line"),
+    ("R-4797-ADDLDEPR", "IRC_168", "secondary", "§168(b)(2)(A) 150DB for 15-yr land improvements; §168(k) bonus is a depreciation adjustment"),
 ]
 
 
