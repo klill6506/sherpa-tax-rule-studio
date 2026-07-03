@@ -64,13 +64,13 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
     computed-26a end-to-end; preparer override; the D/E/F exception diagnostics; D_4797_ADDL fallback on a
     non-computable asset). One transient pooler DEADLOCK (parallel-session DB contention) re-ran clean; one
     stale D_4797_ADDL assertion was CORRECTLY failing (the demotion) → retargeted.
-  - **⚠ tts push HELD (both commits):** migration 0157 depends on the PARALLEL EIC session's
-    `0156_taxpayer_eic_opt_out`, still untracked / not-yet-on-remote (remote main at 0155). tts AUTO-DEPLOYS on
-    push (Render) — pushing 0157 without 0156 would break the deploy's migrate. Push after the parallel session
-    lands 0156 (keeps a clean linear 0155→0156→0157, no merge migration); commits are safe locally in the
-    shared working tree D:\dev\tts-tax-app. Alternative if needed now: retarget 0157→0155 + a 0158 merge.
-- **NEXT:** land the held tts push once 0156 is on remote; then the 4797 nuance unit is fully closed across
-  all three nuances: spec→seed→export→build→unit→DB-verified.
+  - **tts push RESOLVED (2026-07-03):** the parallel EIC session committed its `0156_taxpayer_eic_opt_out`
+    (`c53e942`) ON TOP of the two 4797 commits in the shared local repo and pushed the whole chain — so
+    `98ac1c5` + `be47294` are now on remote main (origin/main == local HEAD, 0 ahead). Migration chain is a
+    clean linear 0155→0156→0157 (both files present; 0157 depends on 0156 — Django resolves by the dependency
+    graph, not commit order), no merge migration, Render-deploy-safe.
+- **DONE — the 4797 nuance unit is fully closed across all three nuances:** spec→seed→export→build→unit→
+  DB-verified, all on remote (RS + tts).
 
 ---
 
