@@ -4,6 +4,41 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 (MeF track, ATS Scenario 12) — NEW FORM_7217 spec AUTHORED (READY_TO_SEED=False, Ken review pending)
+- **Trigger:** ATS Scenario 12 (Sam Gardenia) is the next smallest-first scenario (Ken's 2026-07-02
+  ruling); its tax-law form — Form 7217, Partner's Report of Property Distributed by a Partnership
+  (§732) — had no RS spec (lookup 404, the process gate). The SEASON_PLAN appendix-4 OBBBA check ran
+  at the spec leg: §732 is a basis provision, not a credit — NO sunset; amendment history stops at
+  P.L. 106-170 (1999), OBBBA untouched; the Dec-2024 form/instructions revision is current. One
+  post-publication development FOUND and encoded: the IRS 2026-04-27 update re-sources lines 3/5a/5b
+  to NEW K-1 (1065) box 19 codes for TY2025+ (line 3 ← B/C/G + the A/F securities statement; 5a ←
+  A/D/F excl. securities; 5b ← the A/F statement; instructions revision announced for Dec 2026) —
+  sourcing hints only, math unchanged.
+- **`load_1040_form_7217.py` (NEW):** 28 facts (distribution-level + per-property Part II rows) /
+  5 rules (R-7217-FILE per-date+money-only+§751(b)+claim-year screens; -GAIN §731(a)(1) lines 5-8;
+  -L9L10 the §732(a)(2)/(b) allocable-basis mechanic incl. the i7217 line-9 §737-include +
+  5a-only-subtraction literal reading; -ALLOC the FULL §732(c) waterfall — hot assets at basis
+  first (decrease-only tier), other property with (c)(2) increase / (c)(3) decrease; -LOSS the
+  §731(a)(2) liquidating-loss detection, the one lawful line-10 ≠ B(e) case) / 23 lines / 10
+  diagnostics / **16 HAND-COMPUTED scenarios** (T1 = ATS-12 facts under enacted law — ⚠️ the IRS
+  key's own Part II is internally inconsistent (col (e) 4,000 vs its line 10 = 6,000) and lists
+  "CASH" as a Part II property; T2/T3 pin the i7217's OWN Examples 1 & 2 verbatim incl. the worked
+  100/440/110 waterfall; every (c)(1)(A)/(B), (c)(2)(A)/(B), (c)(3)(A)/(B) branch + gain / loss /
+  §737 / securities / unclassified / money-only / claim-year edges) / 4 loader-homed
+  FA-1040-7217-01..04. Sources: NEW USC_26_732 + USC_26_731 + IRS_2024_7217_INSTR (incl. the
+  box-19 update excerpt) + IRS_2024_7217_FORM, all key passages verbatim, requires_human_review set.
+- **Gate:** NEW `check_7217_integrity.py` — an INDEPENDENT §732(c) transcription (statute-direct,
+  self-tested against the IRS Example-2 answer before checking the loader) + full per-scenario
+  recompute + varchar(20) id guards + structure checks — **ALL CHECKS PASS** (16 scenarios). The
+  gate caught one authoring gap live (D_7217_004 unexercised → scenario 7217-G7 added).
+- **NOT seeded** — READY_TO_SEED=False; refusal verified. Six judgment items J1-J6 queued for
+  Ken's review walk (gain/loss/§737 RED-defers; rounding; classification withhold; securities
+  feeder) + the T1 answer-key divergence.
+- tts build (PartnershipDistribution + DistributedProperty models, compute_7217, input tab,
+  AcroForm render, FA merge, then the Scenario-12 mapper) follows in tts-tax-app after approval.
+
+---
+
 ## 2026-07-02 (MeF track, ATS Scenario 13) — NEW FORM_8911 spec AUTHORED + SEEDED + EXPORTED
 - **Trigger:** ATS Scenario 13 (Birch) is the next smallest-first scenario unit (Ken's 2026-07-02
   ruling); its tax-law form (8911 + Schedule A) had no RS spec (lookup 404 — the process gate).
