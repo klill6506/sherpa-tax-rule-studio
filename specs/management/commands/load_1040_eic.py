@@ -632,6 +632,16 @@ EIC_FACTS: list[dict] = [
      "data_type": "boolean", "sort_order": 11,
      "notes": ("RETURN LEVEL. v1 RED-DEFER (D_EIC_015): these Worksheet-B sub-paths need Schedule SE detail not "
                "built. The mainstream sole-proprietor SE path (Sch 1 L3 - Sch 1 L15) IS computed.")},
+    # ── Appended 2026-07-03 (ATS Scenario 2; Ken ruled ACTC-sibling skip-entirely) ──
+    {"fact_key": "eic_opt_out", "label": "Do not want to claim the EIC (1040 line 27c checkbox)",
+     "data_type": "boolean", "sort_order": 70,
+     "notes": ("RETURN LEVEL. 2025 Form 1040 line 27c (face verbatim): 'If you do not want to claim the EIC, "
+               "check here.' KEN RULING 2026-07-03 — the exact sibling of the line-28 ACTC opt-out "
+               "(SCH_8812 R017): the election DISENGAGES the EIC computation and every D_EIC diagnostic "
+               "entirely (skip-entirely, never compute-then-zero); line 27a is CLEARED (blank); Schedule EIC "
+               "does not attach; the Form 8867 gate stays consistent automatically (it keys on 27a > 0, "
+               "the f9a167b lock-step invariant). D_EIC_017 (info) explains the blank line. E-file: IRS1040 "
+               "DoNotClaimEICInd at the line-27c position; the EarnedIncomeCreditAmt element is omitted.")},
     {"fact_key": "eic_se_net_earnings", "label": "Worksheet B SE net earnings (Sch 1 line 3 net SE profit, or override)",
      "data_type": "decimal", "default_value": "0", "sort_order": 12,
      "notes": ("RETURN LEVEL. DoD: 'SE from Schedule 1 flowed-or-direct; Schedule C compute NOT required.' "
@@ -845,12 +855,16 @@ EIC_RULES: list[dict] = [
     # ── Final EIC -> 1040 line 27a ──
     {"rule_id": "R-EIC-27A", "title": "Earned Income Credit -> 1040 line 27a (computed feeder)",
      "rule_type": "calculation", "precedence": 6, "sort_order": 10,
-     "formula": ("agg_27a = 0 if any eligibility gate fails (R-EIC-ELIG / R-EIC-CHILDLESS / R-EIC-INVINC); "
+     "formula": ("IF eic_opt_out (line 27c checked): line 27a is CLEARED (blank) and the EIC computation is "
+                 "SKIPPED ENTIRELY (no engagement, no D_EIC diagnostics, no Schedule EIC) — Ken ruling "
+                 "2026-07-03, the ACTC-sibling election. ELSE: agg_27a = 0 if any eligibility gate fails "
+                 "(R-EIC-ELIG / R-EIC-CHILDLESS / R-EIC-INVINC); "
                  "else the lower-of result (R-EIC-LOWEROF). -> 1040 line 27a (override = escape hatch)."),
-     "inputs": [], "outputs": ["1040.L27a"],
+     "inputs": ["eic_opt_out"], "outputs": ["1040.L27a"],
      "description": ("ONCE PER RETURN. The EIC lands on Form 1040 line 27a (refundable, page-2 payments block). "
-                     "Computed feeder (YELLOW); preparer override remains. 27b (PYEI election) / 27c are "
-                     "separate; v1 uses current-year earned income only.")},
+                     "Computed feeder (YELLOW); preparer override remains. 27b (PYEI election) is separate; "
+                     "v1 uses current-year earned income only. 27c = the opt-out election (fact eic_opt_out, "
+                     "amended 2026-07-03).")},
 ]
 
 EIC_LINES: list[dict] = [
@@ -993,6 +1007,14 @@ EIC_DIAGNOSTICS: list[dict] = [
                  "number for employment by the due date of the return (Pub 596 Rule 2). An ITIN or a 'Not Valid "
                  "for Employment' SSN does not qualify. Line 27a is set to 0."),
      "notes": "Rule 2."},
+    {"diagnostic_id": "D_EIC_017", "title": "EIC opt-out (line 27c) — line 27a intentionally blank", "severity": "info",
+     "condition": "eic_opt_out is True",
+     "message": ("The 'do not want to claim the EIC' box (Form 1040 line 27c) is checked — line 27a is "
+                 "intentionally blank, the EIC was not computed, Schedule EIC is not attached, and the other "
+                 "EIC diagnostics are suppressed. Uncheck the box on the EIC inputs to claim the credit."),
+     "notes": ("Appended 2026-07-03 (ATS Scenario 2). The D_8812_014 sibling — explains the deliberately blank "
+               "line so the election is never mistaken for a computation gap. Fires as the ONLY EIC finding "
+               "on an opted-out return (the eic_engaged gate suppresses the rest).")},
 ]
 
 EIC_SCENARIOS: list[dict] = [
@@ -1096,6 +1118,18 @@ EIC_SCENARIOS: list[dict] = [
                 "eic_clergy_church_statutory": True},
      "expected_outputs": {"D_EIC_015_fires": True, "earned_income_not_computed": True},
      "notes": "Worksheet B clergy/church/statutory needs Sch SE detail -> not computed this sprint."},
+    {"scenario_name": "EIC-G6 — line-27c opt-out: qualifying return, election checked -> 27a BLANK, all quiet",
+     "scenario_type": "edge", "sort_order": 11,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "qualifying_children": 1, "earned_income": 15000,
+                "agi": 15000, "eic_opt_out": True},
+     "expected_outputs": {"1040_line_27a_blank": True, "eic_not_computed": True, "D_EIC_017_fires": True,
+                          "no_other_D_EIC_fires": True, "schedule_eic_not_attached": True},
+     "notes": ("Ken ruling 2026-07-03 (ACTC-sibling skip-entirely): the SAME facts without the election would "
+               "compute the plateau max 4,328 (EIC-T1 shape) — with 27c checked the engine computes NOTHING, "
+               "clears 27a (a previously computed value must not linger), and only the D_EIC_017 info fires. "
+               "E-file: DoNotClaimEICInd emitted, EarnedIncomeCreditAmt omitted. The ATS Scenario 2 (Jones) "
+               "shape: their statutory-employee Sch C would otherwise hit the D_EIC_015 RED-defer; the "
+               "scenario declines the credit via 27c exactly like the IRS answer key.")},
 ]
 
 EIC_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -1503,6 +1537,22 @@ FLOW_ASSERTIONS: list[dict] = [
                                  "form_4797_present"],
                     "expect": {"result_blank": True, "red_fires": True}},
      "sort_order": 9},
+    {"assertion_id": "FA-1040-EIC-10", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "EIC opt-out (1040 line 27c checkbox) disengages the EIC entirely — 27a cleared, no diagnostics",
+     "description": ("Pins the KEN RULING 2026-07-03 (ACTC-sibling skip-entirely, amended R-EIC-27A): "
+                     "eic_opt_out disengages eic_engaged AND the auto-engage path, CLEARS 1040 line 27a "
+                     "(a previously computed value must not linger), suppresses every D_EIC diagnostic "
+                     "except the D_EIC_017 info, and Schedule EIC does not attach. Bug it catches: the "
+                     "election computing-then-zeroing (a phantom Schedule EIC / 8867 exposure), a stale "
+                     "27a surviving the election, or the RED-defer paths (D_EIC_015) firing on a return "
+                     "that declined the credit. Maps to EIC-G6. Added 2026-07-03 (ATS Scenario 2 / "
+                     "DoNotClaimEICInd)."),
+     "definition": {"kind": "conditional_zero", "form": "1040_EIC",
+                    "trigger": "eic_opt_out",
+                    "zeroes": ["1040.L_27a"],
+                    "expect": {"result_blank": True, "diagnostics_suppressed_except": ["D_EIC_017"],
+                               "schedule_eic_not_attached": True}},
+     "sort_order": 10},
 ]
 
 
