@@ -4,6 +4,23 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-03 — 1040_EIC amended: `eic_opt_out` (1040 line 27c) — Ken ruled ACTC-sibling skip-entirely (S2 prep session)
+- **Ken RULED (AskUserQuestion): "Skip-entirely, ACTC-sibling"** for the 2025 Form 1040 line 27c
+  election ("If you do not want to claim the EIC, check here" — face verbatim, verified against the
+  official 2025 f1040 PDF): the election disengages the EIC computation and every D_EIC diagnostic,
+  CLEARS line 27a (never compute-then-zero), Schedule EIC does not attach, the 8867 gate stays
+  consistent automatically (27a > 0 keying). Needed by ATS Scenario 2 (Jones) — their
+  statutory-employee Sch C would otherwise hit the D_EIC_015 RED-defer; the scenario declines via 27c.
+- **Amended `load_1040_eic.py`** (commit `e64dbea`): +fact `eic_opt_out` (sort 70), R-EIC-27A formula
+  gains the opt-out gate (inputs now ["eic_opt_out"]), +D_EIC_017 (info — the D_8812_014 sibling
+  explaining the blank line), +scenario EIC-G6 (opted-out qualifying return → 27a BLANK, only 017
+  fires), +FA-1040-EIC-10 (loader-homed; pins the ruling incl. the stale-27a clear).
+- **Seeded RS Supabase** (idempotent; FlowAssertions 381 → 382) → **deployed export verified**
+  (fact/diag/scenario/rule-gate all present; drift = exactly the 3 additions) → canonical
+  `eic_spec.json` refreshed in tts (tests 16 → 17).
+- tts build same session: mig 0156, eic_engaged + compute_eic opt-out gates, D_EIC_017 in rules_eic,
+  c2_13 render, DoNotClaimEICInd in the MeF mapper, FA gate 380 → 381, topic7 suite extended.
+
 ## 2026-07-03 — 4797 NUANCE LEG (the 3 depreciation nuances) authored + gated + SEEDED + EXPORTED (Ken: "go ahead" + 2 decisions)
 - Ken: "continue with the three 4797 depreciation nuances" → verified all law verbatim (Cornell LII +
   2025 i4797) BEFORE any code, then walked 2 design decisions (AskUserQuestion):
