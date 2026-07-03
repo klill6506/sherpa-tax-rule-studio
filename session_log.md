@@ -52,16 +52,20 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   - **TestPipelineDiagnostics (4):** `D_4797_CLASS` warns on the auto-§1250 Improvements default,
     `D_4797_ADDL` errors on a 150DB asset with a blank 26a, `D_4797_QPP` info fires, and clean §1245
     equipment stays quiet.
-- **⚠ NEW CONFIRMED BUG the stamp caught (pinned, NOT fixed — Ken's K-1 call):** `aggregate_dispositions`
-  writes the unrecaptured §1250 gain to the hardcoded **`K8c`** (a 1120-S line) for BOTH forms. The 1065's
-  own line is **`K9c`** (seed_1065.py:288), which `k1_allocator` sends to partner K-1 box 9c — so on a
-  partnership the value is written to a nonexistent line, silently skipped, and NEVER reaches the K-1. The
-  `...KENFLAG` test pins the broken state (K9c stays 0). Fix = form-branch the write like
-  `ordinary_line`/`k_1231_line` already are, then flip the pin to 80000. **Task chip spawned**
-  (`task_a7c88bd6`). Recorded in STATUS Known Issues. Box-9c pass-through was otherwise out of scope.
-- **NEXT:** (a) Ken adjudicates the K8c→K9c fix; (b) the three 4797 depreciation nuances still await his
-  scoping (property-character vs recovery-period edge cases, 150DB land-improvement additional depr,
-  bonus-on-QIP §1250(b)); (c) K-1 14b/14c still out of scope (§14.4).
+- **⚠ CONFIRMED BUG the stamp caught → Ken: "go ahead" → FIXED same session (tts `f23dc54`):**
+  `aggregate_dispositions` was writing the unrecaptured §1250 gain to the hardcoded **`K8c`** (a 1120-S
+  line) for BOTH forms. The 1065's own line is **`K9c`** (seed_1065.py:288), which `k1_allocator` sends to
+  partner K-1 box 9c — so on a partnership the value was written to a nonexistent line, silently skipped,
+  and never reached the K-1. Fix: form-branched the line (`unrecap_1250_line = "K9c" if 1065 else "K8c"`)
+  in both the clear-list and the write, exactly like `ordinary_line`/`k_1231_line`; 1120-S path unchanged.
+  Flipped `test_unrecaptured_1250_flows_to_k9c_on_1065` from K9c=0 to **K9c=80000** — re-ran green (with
+  the prior run, all 11 pipeline tests pass with the fix). Verified the two `test_compute_4797.py` diag
+  "failures" seen en route are 1040-path (`_build_return` code=1040 → the fix's `else` branch,
+  byte-identical to before) + pooler-storm AdminShutdown drops — NOT a regression. Task chip dismissed.
+- **NEXT:** (a) the three 4797 depreciation nuances still await Ken's scoping (property-character vs
+  recovery-period edge cases, 150DB land-improvement additional depr, bonus-on-QIP §1250(b)); (b) K-1
+  14b/14c still out of scope (§14.4); (c) optionally re-verify the now-fed K-1 box 9c partner pass-through
+  (k1_allocator K9c→9c) if it surfaces.
 
 ---
 
