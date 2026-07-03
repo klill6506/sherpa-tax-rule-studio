@@ -47,24 +47,30 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   TaxForms 78 / FlowAssertions 381) → exported `4797_spec.json` to tts (facts 27 / diagnostics 14 / tests 21
   [1 pre-existing DB orphan scenario] / sources 14 [all linked]) → verified the new content landed
   (classifier fact, D_4797_1245*, IRC_168, N1-N4).
-- **tts build leg — SUB-LEG A DONE (nuance 1, the classifier), committed tts `98ac1c5` (push HELD, see below):**
-  DepreciationAsset.section_1245_exception (none/single_purpose_ag/petroleum_storage/railroad_grading) +
-  migration 0157; resolve_recapture_type returns §1245 for a set (D)/(E)/(F) exception (after override + is_qpp);
-  3 info diagnostics D_4797_1245AG/PETRO/RRGR registered; test_4797_spec.py +5 classifier tests and the
-  _make_asset mock now defaults the field 'none' (a bare MagicMock attr reads truthy → would force §1245) —
-  **44 passed** (fast, non-DB).
-  - **⚠ tts push HELD:** migration 0157 depends on the PARALLEL EIC session's `0156_taxpayer_eic_opt_out`,
-    which is untracked/not-yet-on-remote (remote main is at 0155). Pushing 0157 alone would break the remote
-    migration chain. Push after 0156 lands (keeps linear 0155→0156→0157, no merge migration). Commit is safe
-    locally; shared working tree D:\dev\tts-tax-app.
-- **NEXT — tts SUB-LEG B (nuance 2, engine-computed 26a) + DB stamp:** a helper that computes the §1250
-  additional depreciation = max(0, accumulated actual incl. bonus − SL-equivalent on the UNREDUCED full basis)
-  using _macrs_pct(method="SL", life, convention, year_num) summed over the holding period + disposal
-  proration (mirror the AMT recompute block, engine lines ~528-560); wire it into aggregate_dispositions to
-  fill section_1250_additional_depr where the asset has method/life/convention/dates (preparer-overridable);
-  demote D_4797_ADDL to fire only when the engine can't compute; extend test_4797_pipeline_leg.py (the
-  D_4797_1245* diagnostics + a computed-26a scenario) + a DB stamp. Recommend a fresh session (tax-critical
-  engine math + a 15-min DB stamp on the currently-flaky Supabase pooler).
+- **tts build leg — COMPLETE (both sub-legs), committed tts `98ac1c5` (A) + `be47294` (B); push HELD, see below.**
+  - **SUB-LEG A (nuance 1, classifier):** DepreciationAsset.section_1245_exception
+    (none/single_purpose_ag/petroleum_storage/railroad_grading) + migration 0157; resolve_recapture_type
+    returns §1245 for a set (D)/(E)/(F) exception (after override + is_qpp); 3 info diagnostics
+    D_4797_1245AG/PETRO/RRGR; test_4797_spec.py +5 classifier tests, _make_asset mock defaults the field 'none'
+    (a bare MagicMock attr reads truthy → would force §1245).
+  - **SUB-LEG B (nuance 2, engine-computed 26a):** depreciation_engine.calculate_1250_additional_depreciation
+    = max(0, accumulated actual incl. bonus − SL-equivalent on the UNREDUCED basis), SL summed via
+    _macrs_pct("SL",...) over the holding period + disposal proration (§179 reduces the SL basis, bonus does
+    NOT — i4797); returns None when the MACRS data is missing. compute._resolve_1250_additional_depr +
+    aggregate_dispositions wiring (preparer non-zero overrides → else engine → else 0). D_4797_ADDL demoted to
+    the FALLBACK gate (fires only when the engine can't compute). +5 fast unit tests (hand-verified 10-yr HY
+    case: actual 70k − SL 50k = 20k; unreduced-basis; zero-floor; None; resolve override/compute/fallback).
+  - **VERIFIED: 49 fast unit tests + the pipeline DB stamp 15/15 green** (single-purpose ag → §1245; 150DB
+    computed-26a end-to-end; preparer override; the D/E/F exception diagnostics; D_4797_ADDL fallback on a
+    non-computable asset). One transient pooler DEADLOCK (parallel-session DB contention) re-ran clean; one
+    stale D_4797_ADDL assertion was CORRECTLY failing (the demotion) → retargeted.
+  - **⚠ tts push HELD (both commits):** migration 0157 depends on the PARALLEL EIC session's
+    `0156_taxpayer_eic_opt_out`, still untracked / not-yet-on-remote (remote main at 0155). tts AUTO-DEPLOYS on
+    push (Render) — pushing 0157 without 0156 would break the deploy's migrate. Push after the parallel session
+    lands 0156 (keeps a clean linear 0155→0156→0157, no merge migration); commits are safe locally in the
+    shared working tree D:\dev\tts-tax-app. Alternative if needed now: retarget 0157→0155 + a 0158 merge.
+- **NEXT:** land the held tts push once 0156 is on remote; then the 4797 nuance unit is fully closed across
+  all three nuances: spec→seed→export→build→unit→DB-verified.
 
 ---
 

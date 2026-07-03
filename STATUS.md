@@ -81,10 +81,12 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
   compute line 26a (actual incl. bonus − SL on unreduced basis) where MACRS data present, `D_4797_ADDL`
   the fallback. Law verified verbatim (§1245(a)(3)(D/E/F), §168(i)(13)/(e)(4)/(b)(2)(A), §1250(b)(1)/(3),
   i4797 26a); new `IRC_168` source. Gate ALL PASS (27/8/34/14/20/19). `4797_spec.json` exported to tts.
-  **tts SUB-LEG A DONE** (nuance 1 classifier: field + mig 0157 + resolve_recapture_type + 3 diagnostics;
-  44 unit tests pass) — committed tts `98ac1c5`, **push HELD** (mig 0157 depends on the parallel EIC
-  session's not-yet-pushed 0156). **NEXT: tts SUB-LEG B** — engine-computed 26a (actual incl. bonus − SL on
-  unreduced basis) + D_4797_ADDL fallback + DB stamp (recommend fresh session; see session_log for the recipe).
+  **tts BUILD LEG COMPLETE** — sub-leg A (classifier: field + mig 0157 + resolve_recapture_type + 3
+  diagnostics) + sub-leg B (engine-computed 26a = actual incl. bonus − SL on unreduced basis;
+  _resolve_1250_additional_depr override/compute/fallback; D_4797_ADDL demoted to fallback). **49 unit tests +
+  pipeline DB stamp 15/15 green.** Committed tts `98ac1c5` + `be47294`, **push HELD** (mig 0157 depends on the
+  parallel EIC session's not-yet-on-remote 0156; tts auto-deploys on push → would break migrate). Land the
+  push once 0156 is on remote; then all three 4797 nuances are fully closed (spec→build→unit→DB-verified).
 - 2026-07-03: 4797 classification unit **DB-VERIFIED** (tts `08c5382`) — `test_4797_pipeline_leg.py`
   11/11 green end-to-end over the shared test DB; the stamp CAUGHT and (Ken: "go ahead") FIXED the 1065
   unrecaptured-§1250 K8c→K9c misroute (tts `f23dc54`). The 4797 unit is fully closed: spec→seed→compute→test→DB.
