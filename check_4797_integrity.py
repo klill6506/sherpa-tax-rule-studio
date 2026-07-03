@@ -9,7 +9,10 @@ authored expected_outputs.
 """
 import os
 import sys
-from decimal import ROUND_HALF_UP, Decimal
+
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+from decimal import ROUND_HALF_UP, Decimal  # noqa: E402
 
 import django
 
@@ -118,6 +121,20 @@ for s in spec["scenarios"]:
             if not (not got.get("red_defer") and D(got.get("l7")) > 0
                     and D(inp.get("nonrecaptured_1231_losses", 0)) == 0):
                 err(f"{name}: D_4797_001 expected but not a net §1231 gain with no line-8 entry")
+        # Classification leg (2026-07-02)
+        if "D_4797_ADDL" in diag_expected:
+            props = inp.get("properties") or []
+            if not any(p.get("property_type") == "1250" and p.get("used_accel_bonus")
+                       and D(p.get("additional_depreciation", 0)) == 0 for p in props):
+                err(f"{name}: D_4797_ADDL expected but no accel/bonus §1250 property with blank 26a")
+        if "D_4797_CLASS" in diag_expected:
+            props = inp.get("properties") or []
+            if not any(p.get("asset_group") == "Improvements"
+                       and int(p.get("holding_period_months") or 0) > 12
+                       and D(p.get("sales_price", 0))
+                       - (D(p.get("cost_basis", 0)) - D(p.get("depreciation_allowed", 0))) > 0
+                       for p in props):
+                err(f"{name}: D_4797_CLASS expected but no Improvements-group long-term gain disposition")
         continue
     got = ind_compute(**inp)
     gl = m.compute_4797(**inp)
@@ -171,6 +188,9 @@ print(f"Flow assertions: {len(m.FLOW_ASSERTIONS)}; authority sources: {len(m.AUT
 print("Independently recomputed — T1 §1245 all-ord 10000 / T2 excess→Sch D 20000 / T5 unrecap §1250 "
       "100000 / T6 lookback L9 12000 L18b 38000 / T7 §1252 18000 / T8 §179 recap 7000; the §1231 "
       "netting + 5-yr lookback + the §1245/1250/1252/1254/1255 recapture cross-checked.")
+print("Classification leg — C1 150DB land improvement (ord 20000 / unrecap 80000) / C2 SL QIP "
+      "(ord 0 / unrecap 100000) / C3 bonused QIP (ord 280000 / unrecap 20000: bonus IS additional "
+      "depreciation, i4797 verbatim) / C4 D_4797_ADDL gate / C5 D_4797_CLASS character check.")
 
 if errors:
     print("\nFAILURES:")
