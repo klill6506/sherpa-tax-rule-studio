@@ -674,6 +674,30 @@ NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = [
             "is_key_excerpt": True,
         },
     ),
+    (
+        "IRS_2025_1040_INSTR",
+        {
+            "excerpt_label": "Rounding Off to Whole Dollars (verbatim — the per-line convention)",
+            "location_reference": "2025 Instructions for Form 1040, 'Rounding Off to Whole Dollars' (i1040gi p.23)",
+            "excerpt_text": (
+                "You can round off cents to whole dollars on your return and schedules. "
+                "If you do round to whole dollars, you must round all amounts. To round, "
+                "drop amounts under 50 cents and increase amounts from 50 to 99 cents to "
+                "the next dollar. For example, $1.39 becomes $1 and $2.50 becomes $3. If "
+                "you have to add two or more amounts to figure the amount to enter on a "
+                "line, include cents when adding the amounts and round off only the total."
+            ),
+            "summary_text": (
+                "Ken ruled 2026-07-02 (S12 REVIEW_QUEUE item): Schedule SE adopts the "
+                "per-line whole-dollar convention (R-SE-ROUND) — every computed line is "
+                "rounded half-up as entered; sum lines add already-rounded entries. "
+                "Matches the ATS answer key / TaxWise and makes the printed face "
+                "self-consistent (10 + 11 = 12 at whole dollars). Re-fetched + quoted "
+                "verbatim 2026-07-02 (scratchpad i1040gi.pdf)."
+            ),
+            "is_key_excerpt": True,
+        },
+    ),
 ]
 
 
@@ -983,7 +1007,10 @@ SCHEDSE_IDENTITY = {
         "SS wages). Part I standard method only. SE tax (line 12) -> Schedule 2 line "
         "4; 1/2-SE-tax deduction (line 13) -> Schedule 1 line 15 (already an EIC "
         "Worksheet-B + 8812 feeder). Year-keyed SS wage base (line 7). Part II "
-        "optional methods + church-employee income (line 5) = RED-defer."
+        "optional methods + church-employee income (line 5) = RED-defer. "
+        "ROUNDING (R-SE-ROUND, Ken ruled 2026-07-02): per-line whole-dollar, "
+        "half-up — every computed line is rounded as entered (i1040 'Rounding "
+        "Off to Whole Dollars'); replaces the original cents-chained math."
     ),
 }
 
@@ -1030,8 +1057,17 @@ SCHEDSE_FACTS: list[dict] = [
 ]
 
 SCHEDSE_RULES: list[dict] = [
+    {"rule_id": "R-SE-ROUND", "title": "Rounding convention — per-line whole-dollar, half-up", "rule_type": "calculation", "precedence": 0, "sort_order": 0,
+     "formula": ("Every Schedule SE line is a whole-dollar amount, rounded HALF-UP as entered (i1040 'Rounding Off to "
+                 "Whole Dollars': 50-99 cents up, under 50 down). Multiplication lines (4a, 5b, 10, 11, 13) round their "
+                 "product; sum lines (3, 4c, 6, 8d, 12) add the already-rounded entries; L2 sums its Schedule C line 31 "
+                 "components in cents and rounds the total ('include cents when adding... round off only the total')."),
+     "inputs": [], "outputs": [],
+     "description": ("CONVENTION (Ken ruled 2026-07-02, S12 REVIEW_QUEUE). Replaces the original cents-chained math. "
+                     "Guarantees the printed face is self-consistent (10 + 11 = 12 at whole dollars) and matches the "
+                     "ATS answer key / TaxWise per-line convention (SPRINT_SCOPE quality rule 1).")},
     {"rule_id": "R-SE-L2", "title": "Line 2 — aggregate Schedule C net profit per proprietor", "rule_type": "aggregation", "precedence": 1, "sort_order": 1,
-     "formula": "L2 = sum of Schedule C line 31 over all businesses where sc_proprietor == se_proprietor (+ 1065 K-1 box 14 A non-farm).",
+     "formula": "L2 = round(sum of Schedule C line 31 over all businesses where sc_proprietor == se_proprietor (+ 1065 K-1 box 14 A non-farm)) — cents summed, total rounded (R-SE-ROUND).",
      "inputs": ["se_proprietor"], "outputs": ["2"],
      "description": ("PER PROPRIETOR. Decision 3: one Schedule SE per person aggregates that person's Schedule C "
                      "businesses. Statutory-employee Schedule C is excluded (D_SC_001).")},
@@ -1039,7 +1075,7 @@ SCHEDSE_RULES: list[dict] = [
      "formula": "L3 = L1a + L1b + L2. (L1b is negative — CRP payments.)",
      "inputs": [], "outputs": ["3"], "description": "PER PROPRIETOR."},
     {"rule_id": "R-SE-L4A", "title": "Line 4a — net earnings x 92.35%", "rule_type": "calculation", "precedence": 3, "sort_order": 3,
-     "formula": "L4a = L3 x 0.9235 if L3 > 0 else L3.",
+     "formula": "L4a = round(L3 x 0.9235) if L3 > 0 else L3 (whole-dollar half-up per R-SE-ROUND).",
      "inputs": ["se_net_earnings_factor"], "outputs": ["4a"],
      "description": "PER PROPRIETOR. Net earnings from self-employment. If L3 <= 0, carry L3 (a loss yields no SE tax)."},
     {"rule_id": "R-SE-L4C", "title": "Line 4c — combine 4a/4b; $400 floor", "rule_type": "calculation", "precedence": 4, "sort_order": 4,
@@ -1047,7 +1083,7 @@ SCHEDSE_RULES: list[dict] = [
      "inputs": ["se_filing_floor"], "outputs": ["4c"],
      "description": "PER PROPRIETOR. The $400 filing floor. Optional methods (Part II) are RED-defer (D_SE_003)."},
     {"rule_id": "R-SE-L6", "title": "Line 6 — add 4c and 5b", "rule_type": "calculation", "precedence": 5, "sort_order": 5,
-     "formula": "L5b = L5a x 0.9235 (if < $100 -> 0); L6 = L4c + L5b. v1: L5a/L5b = 0 (church = RED-defer).",
+     "formula": "L5b = round(L5a x 0.9235) (if < $100 -> 0, whole-dollar per R-SE-ROUND); L6 = L4c + L5b. v1: L5a/L5b = 0 (church = RED-defer).",
      "inputs": [], "outputs": ["5b", "6"],
      "description": "PER PROPRIETOR. The SE-tax base. -> se_net_earnings_l6, read by Form 8959 line 8."},
     {"rule_id": "R-SE-L7", "title": "Line 7 — SS wage base (year-keyed)", "rule_type": "calculation", "precedence": 6, "sort_order": 6,
@@ -1059,19 +1095,19 @@ SCHEDSE_RULES: list[dict] = [
      "inputs": [], "outputs": ["8d", "9"],
      "description": "PER PROPRIETOR. The W-2-SS-wage cap interaction (D_SE_002): wages already taxed for SS reduce the SE SS base."},
     {"rule_id": "R-SE-L10", "title": "Line 10 — SS portion (capped) x 12.4%", "rule_type": "calculation", "precedence": 8, "sort_order": 8,
-     "formula": "L10 = min(L6, L9) x 0.124.",
+     "formula": "L10 = round(min(L6, L9) x 0.124) (whole-dollar half-up per R-SE-ROUND).",
      "inputs": ["se_ss_rate"], "outputs": ["10"],
      "description": "PER PROPRIETOR. The 12.4% social-security portion, capped at the remaining wage base (line 9)."},
     {"rule_id": "R-SE-L11", "title": "Line 11 — Medicare portion (uncapped) x 2.9%", "rule_type": "calculation", "precedence": 9, "sort_order": 9,
-     "formula": "L11 = L6 x 0.029.",
+     "formula": "L11 = round(L6 x 0.029) (whole-dollar half-up per R-SE-ROUND).",
      "inputs": ["se_medicare_rate"], "outputs": ["11"],
      "description": "PER PROPRIETOR. The 2.9% Medicare portion — uncapped (no wage-base limit)."},
     {"rule_id": "R-SE-L12", "title": "Line 12 — SE tax -> Schedule 2 line 4", "rule_type": "calculation", "precedence": 10, "sort_order": 10,
-     "formula": "L12 = L10 + L11 -> se_tax_l12 -> Schedule 2 line 4.",
+     "formula": "L12 = L10 + L11 (already-rounded addends, R-SE-ROUND) -> se_tax_l12 -> Schedule 2 line 4.",
      "inputs": [], "outputs": ["12"],
      "description": "PER PROPRIETOR. Total SE tax. On MFJ, taxpayer + spouse Schedule SE line 12 amounts both feed Schedule 2 line 4."},
     {"rule_id": "R-SE-L13", "title": "Line 13 — 1/2-SE-tax deduction -> Schedule 1 line 15", "rule_type": "calculation", "precedence": 11, "sort_order": 11,
-     "formula": "L13 = L12 x 0.50 -> se_half_deduction_l13 -> Schedule 1 line 15.",
+     "formula": "L13 = round(L12 x 0.50) (whole-dollar half-up per R-SE-ROUND) -> se_half_deduction_l13 -> Schedule 1 line 15.",
      "inputs": ["se_half_rate"], "outputs": ["13"],
      "description": ("PER PROPRIETOR. The above-the-line 1/2-SE-tax deduction (§164(f)). ALREADY feeds the EIC "
                      "Worksheet-B (eic_se_half_deduction <- Sch 1 L15) and Schedule 8812 — re-point cleanly when "
@@ -1139,34 +1175,41 @@ SCHEDSE_DIAGNOSTICS: list[dict] = [
 SCHEDSE_SCENARIOS: list[dict] = [
     {"scenario_name": "SE-T1 — simple sole proprietor, TY2025: net profit 50,000", "scenario_type": "normal", "sort_order": 1,
      "inputs": {"tax_year": 2025, "line_2": 50000, "se_w2_ss_wages_l8a": 0},
-     "expected_outputs": {"line_4a": 46175, "line_6": 46175, "line_10": 5725.70, "line_11": 1339.08,
-                          "line_12": 7064.78, "line_13": 3532.39},
-     "notes": ("L4a=50,000 x 0.9235=46,175; SS L10=46,175 x 0.124=5,725.70; Medicare L11=46,175 x 0.029=1,339.08; "
-               "L12=7,064.78 -> Sch 2 L4; L13=3,532.39 -> Sch 1 L15. Integrity check pins the rounding.")},
+     "expected_outputs": {"line_4a": 46175, "line_6": 46175, "line_10": 5726, "line_11": 1339,
+                          "line_12": 7065, "line_13": 3533},
+     "notes": ("R-SE-ROUND per-line whole-dollar (re-pinned 2026-07-02): L4a=50,000 x 0.9235=46,175; SS "
+               "L10=46,175 x 0.124=5,725.70 -> 5,726; Medicare L11=46,175 x 0.029=1,339.075 -> 1,339; "
+               "L12=5,726+1,339=7,065 -> Sch 2 L4; L13=7,065 x 0.50=3,532.50 -> 3,533 (half-up) -> Sch 1 L15. "
+               "Integrity check pins the rounding.")},
     {"scenario_name": "SE-T2 — W-2 wages consume the SS base, TY2025: profit 60,000 + W-2 SS wages 170,000", "scenario_type": "normal", "sort_order": 2,
      "inputs": {"tax_year": 2025, "line_2": 60000, "se_w2_ss_wages_l8a": 170000},
      "expected_outputs": {"line_4a": 55410, "line_6": 55410, "line_7": 176100, "line_9": 6100,
-                          "line_10": 756.40, "line_11": 1606.89, "line_12": 2363.29, "D_SE_002": True},
-     "notes": ("L6=55,410; L9=176,100-170,000=6,100; SS L10=min(55,410, 6,100) x 0.124=756.40; Medicare "
-               "L11=55,410 x 0.029=1,606.89; L12=2,363.29. W-2 SS wages cap the SS portion.")},
+                          "line_10": 756, "line_11": 1607, "line_12": 2363, "D_SE_002": True},
+     "notes": ("R-SE-ROUND (re-pinned 2026-07-02): L6=55,410; L9=176,100-170,000=6,100; SS L10=min(55,410, "
+               "6,100) x 0.124=756.40 -> 756; Medicare L11=55,410 x 0.029=1,606.89 -> 1,607; L12=756+1,607="
+               "2,363. W-2 SS wages cap the SS portion.")},
     {"scenario_name": "SE-T3 — below the $400 floor (D_SE_001)", "scenario_type": "normal", "sort_order": 3,
      "inputs": {"tax_year": 2025, "line_2": 400, "se_w2_ss_wages_l8a": 0},
-     "expected_outputs": {"line_4a": 369.40, "line_4c": 369.40, "line_12": 0, "D_SE_001": True},
-     "notes": "L4a=400 x 0.9235=369.40 < $400 -> stop, no SE tax."},
+     "expected_outputs": {"line_4a": 369, "line_4c": 369, "line_12": 0, "D_SE_001": True},
+     "notes": "R-SE-ROUND (re-pinned 2026-07-02): L4a=400 x 0.9235=369.40 -> 369 < $400 -> stop, no SE tax."},
     {"scenario_name": "SE-T4 — profit above the wage base, TY2026: profit 250,000 (SS capped, D_SE_004)", "scenario_type": "normal", "sort_order": 4,
      "inputs": {"tax_year": 2026, "line_2": 250000, "se_w2_ss_wages_l8a": 0},
      "expected_outputs": {"line_4a": 230875, "line_6": 230875, "line_7": 184500, "line_9": 184500,
-                          "line_10": 22878.00, "line_11": 6695.38, "line_12": 29573.38, "D_SE_004": True},
-     "notes": ("TY2026 wage base 184,500. L6=230,875 > L9=184,500 -> SS L10=184,500 x 0.124=22,878.00; Medicare "
-               "L11=230,875 x 0.029=6,695.38 (uncapped). Year-keying load-bearing (2025 base would differ).")},
+                          "line_10": 22878, "line_11": 6695, "line_12": 29573, "D_SE_004": True},
+     "notes": ("R-SE-ROUND (re-pinned 2026-07-02): TY2026 wage base 184,500. L6=230,875 > L9=184,500 -> SS "
+               "L10=184,500 x 0.124=22,878 (exact); Medicare L11=230,875 x 0.029=6,695.375 -> 6,695 (uncapped); "
+               "L12=29,573. Year-keying load-bearing (2025 base would differ).")},
     {"scenario_name": "SE-T5 — 1/2-SE-tax feeds Schedule 1 line 15 (EIC/8812 feeder)", "scenario_type": "normal", "sort_order": 5,
      "inputs": {"tax_year": 2025, "line_2": 30000, "se_w2_ss_wages_l8a": 0},
-     "expected_outputs": {"line_4a": 27705, "line_12": 4238.87, "line_13": 2119.44, "feeds_sch1_l15": True},
-     "notes": ("L4a=27,705; L12=27,705 x 0.153=4,238.87; L13=2,119.44 -> Sch 1 L15 (re-points the EIC Worksheet-B "
-               "+ 8812 feeder from direct-entry to computed).")},
+     "expected_outputs": {"line_4a": 27705, "line_12": 4238, "line_13": 2119, "feeds_sch1_l15": True},
+     "notes": ("R-SE-ROUND (re-pinned 2026-07-02): L4a=27,705; L10=27,705 x 0.124=3,435.42 -> 3,435; L11="
+               "27,705 x 0.029=803.445 -> 803; L12=3,435+803=4,238 (per-line vs cents-chain 4,238.87 -> the "
+               "convention is load-bearing here); L13=4,238 x 0.50=2,119 -> Sch 1 L15 (re-points the EIC "
+               "Worksheet-B + 8812 feeder from direct-entry to computed).")},
 ]
 
 SCHEDSE_RULE_LINKS: list[tuple[str, str, str, str]] = [
+    ("R-SE-ROUND", "IRS_2025_1040_INSTR", "primary", "Rounding Off to Whole Dollars (per-line convention)"),
     ("R-SE-L2", "IRS_2025_SCHEDSE_FORM", "primary", "Line 2 <- Schedule C line 31"),
     ("R-SE-L3", "IRS_2025_SCHEDSE_FORM", "primary", "Line 3 combine 1a/1b/2"),
     ("R-SE-L4A", "IRS_2025_SCHEDSE_FORM", "primary", "Line 4a x 92.35%"),
@@ -1683,12 +1726,14 @@ FLOW_ASSERTIONS: list[dict] = [
      "sort_order": 5},
     {"assertion_id": "FA-1040-SCHSE-02", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Schedule SE math: 92.35% net earnings, 12.4% SS (capped), 2.9% Medicare (uncapped)",
-     "description": ("Validates R-SE-L4A/L10/L11. L4a = L3 x 0.9235 (L3>0); L10 = min(L6,L9) x 12.4%; L11 = L6 x "
-                     "2.9%. Bug it catches: applying the wage-base cap to the Medicare portion, or dropping the "
-                     "92.35% factor."),
+     "description": ("Validates R-SE-L4A/L10/L11 under R-SE-ROUND (per-line whole-dollar, half-up — Ken ruled "
+                     "2026-07-02). L4a = round(L3 x 0.9235) (L3>0); L10 = round(min(L6,L9) x 12.4%); L11 = "
+                     "round(L6 x 2.9%). Bug it catches: applying the wage-base cap to the Medicare portion, "
+                     "dropping the 92.35% factor, or regressing to the cents-chained math."),
      "definition": {"kind": "formula_check", "form": "SCHEDULE_SE",
-                    "formula": "line_4a == round(line_3*0.9235,2) if line_3>0 else line_3; line_10 == round(min(line_6,line_9)*0.124,2); line_11 == round(line_6*0.029,2)",
-                    "constants": {"factor": 0.9235, "ss_rate": 0.124, "medicare_rate": 0.029, "floor": 400}},
+                    "formula": "line_4a == round(line_3*0.9235,0) if line_3>0 else line_3; line_10 == round(min(line_6,line_9)*0.124,0); line_11 == round(line_6*0.029,0)",
+                    "constants": {"factor": 0.9235, "ss_rate": 0.124, "medicare_rate": 0.029, "floor": 400,
+                                  "rounding": "per-line whole-dollar half-up (R-SE-ROUND)"}},
      "sort_order": 6},
     {"assertion_id": "FA-1040-SCHSE-03", "assertion_type": "table_invariant", "entity_types": ["1040"],
      "title": "SE social-security wage base is year-keyed ($176,100 2025 / $184,500 2026)",

@@ -4,6 +4,32 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-02 — SCHEDULE_SE R-SE-ROUND: per-line whole-dollar rounding (Ken ruled; the S12 REVIEW_QUEUE item) SEEDED + EXPORTED
+- **Ken ruled in-session (AskUserQuestion, the recommended option): Schedule SE adopts the
+  per-line whole-dollar convention** — the engine's cents-chain (12 = 3,437.44) diverged $1
+  from the ATS key / TaxWise per-line math (2,786 + 652 = 3,438) and printed a self-inconsistent
+  face (10 + 11 ≠ 12 at whole dollars).
+- **Authority**: i1040 "Rounding Off to Whole Dollars" fetched fresh (i1040gi.pdf p.23) and
+  quoted VERBATIM as a new excerpt on `IRS_2025_1040_INSTR` (the WebFetch summary paraphrased it
+  WRONG — the PDF quote is canonical; [[webfetch-tax-summary-unreliable]] again).
+- **Authored** (`load_1040_schedule_c.py` SE section): NEW rule **R-SE-ROUND** (precedence 0 —
+  multiplication lines 4a/5b/10/11/13 round their product half-up; sum lines 3/4c/6/8d/12 add
+  already-rounded entries; L2 sums cents, rounds the total per the "include cents when adding"
+  sentence); L4A/L6/L10/L11/L12/L13 formulas restated with round(); SCHEDSE identity notes;
+  **SE-T1..T5 re-pinned whole-dollar** (T5 load-bearing: 4,238 vs cents-chain 4,238.87);
+  **FA-1040-SCHSE-02** formula → `round(...,0)` + a rounding constant; rule link R-SE-ROUND →
+  IRS_2025_1040_INSTR. `check_topic8_integrity.py` `se_part_i` converted to per-line `dollars()`
+  (incl. the three load-bearing sanity re-checks) — **ALL CHECKS PASS**.
+- **Seeded RS Supabase** (idempotent; SCHEDULE_SE rules 13→14, all cited). **Deployed export
+  verified**: R-SE-ROUND present, L4A formula carries round(), SE-T1 pins whole-dollar, the
+  rounding excerpt serves. Canonical `schedule_se_spec.json` refreshed in tts; tts gate file
+  `flow_assertions_1040.json` FA-1040-SCHSE-02 synced verbatim (no id drift — amended in place).
+- **tts build leg same session**: `compute_schedule_se_lines` per-line `_qd`; S12 re-pinned
+  (whole-dollar XML values unchanged); Schedule C/8995/7206 audited — 7206 already per-line,
+  Schedule C sums-only, **8995 ×20% lines still cents → candidate R-8995-ROUND follow-up for Ken**.
+
+---
+
 ## 2026-07-02 — 1065_SE leg 2: the 14a SE-BASE sub-spec SEEDED + EXPORTED (Ken: "approve and seed") + 4797 §1245/§1250 BUG CONFIRMED
 - **Leg 2 (spec §4b/§14.1)** amends `1065_SE` with the ordinary-income SE base per the IRS "Worksheet
   for Figuring Net Earnings (Loss) From Self-Employment" — **text VERIFIED + quoted VERBATIM 2026-07-02

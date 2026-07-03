@@ -16,9 +16,11 @@ wage base, 8995 thresholds) and statutory rates, re-typed from the brief's cited
 sources, and cross-checks the loader's module constants cell-by-cell — so a
 transcription error in the loader cannot also pass the checker.
 
-Rounding convention: each currency line is rounded to the cent with ROUND_HALF_UP
-(the campaign's quantize convention). Settled definitively at the compute leg vs
-real TaxWise returns; the cent-level mode is below the to-the-dollar match bar.
+Rounding convention: Schedule SE is PER-LINE WHOLE-DOLLAR half-up (R-SE-ROUND,
+Ken ruled 2026-07-02 — i1040 'Rounding Off to Whole Dollars'; matches the ATS
+key / TaxWise and makes 10 + 11 = 12 on the printed face). Schedule C / 8995 /
+8959 scenarios remain cent-rounded pending their own convention ruling (the
+2026-07-02 audit item).
 """
 import os
 import sys
@@ -44,6 +46,12 @@ def D(x):
 
 def cents(x):
     return D(x).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def dollars(x):
+    """R-SE-ROUND (Ken ruled 2026-07-02): per-line whole-dollar, half-up —
+    i1040 'Rounding Off to Whole Dollars' (50-99 cents up, under 50 down)."""
+    return D(x).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
 
 def check(name, got, want):
@@ -86,9 +94,11 @@ def status_key(status: str) -> str:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def se_part_i(net_profit, w2_ss_wages=0, year=2025, farm_1a=0, crp_1b=0):
-    """Schedule SE Part I standard method -> dict of line values (cents)."""
-    l3 = D(farm_1a) + D(crp_1b) + D(net_profit)
-    l4a = cents(l3 * IND_SE_FACTOR) if l3 > 0 else cents(l3)
+    """Schedule SE Part I standard method -> dict of line values.
+    R-SE-ROUND: per-line whole-dollar half-up — multiplication lines round
+    their product; sum lines add the already-rounded entries."""
+    l3 = dollars(D(farm_1a) + D(crp_1b) + D(net_profit))
+    l4a = dollars(l3 * IND_SE_FACTOR) if l3 > 0 else l3
     l4c = l4a  # L4b optional = 0 in v1
     out = {"3": l3, "4a": l4a, "4c": l4c}
     if l4c < IND_SE_FLOOR:
@@ -99,10 +109,10 @@ def se_part_i(net_profit, w2_ss_wages=0, year=2025, farm_1a=0, crp_1b=0):
     l7 = D(IND_SE_WAGE_BASE[year])
     l8d = D(w2_ss_wages)
     l9 = max(Decimal("0"), l7 - l8d)
-    l10 = cents(min(l6, l9) * IND_SE_SS_RATE)
-    l11 = cents(l6 * IND_SE_MEDICARE_RATE)
-    l12 = cents(l10 + l11)
-    l13 = cents(l12 * IND_SE_HALF)
+    l10 = dollars(min(l6, l9) * IND_SE_SS_RATE)
+    l11 = dollars(l6 * IND_SE_MEDICARE_RATE)
+    l12 = l10 + l11
+    l13 = dollars(l12 * IND_SE_HALF)
     out.update({"6": l6, "7": l7, "9": l9, "10": l10, "11": l11, "12": l12, "13": l13, "stop": False})
     return out
 
@@ -326,7 +336,7 @@ for ln in ("4a", "6", "7", "9", "10", "11", "12"):
     check(f"SE-T2 L{ln}", r[ln], o[f"line_{ln}"])
 if not (r["9"] < r["6"]):  # the W-2-SS-wage cap binds (line 10 uses line 9, not line 6)
     err("SE-T2: W-2-SS-wage cap not load-bearing (line 9 not < line 6)")
-if r["10"] != cents(r["9"] * IND_SE_SS_RATE):
+if r["10"] != dollars(r["9"] * IND_SE_SS_RATE):
     err("SE-T2: line 10 did not use the capped line 9")
 
 i, o = i_of("SE-T3"), o_of("SE-T3")
@@ -341,13 +351,13 @@ for ln in ("4a", "6", "7", "9", "10", "11", "12"):
     check(f"SE-T4 L{ln}", r[ln], o[f"line_{ln}"])
 if D(IND_SE_WAGE_BASE[2026]) == D(IND_SE_WAGE_BASE[2025]):
     err("SE-T4: SE wage base year-keying not load-bearing (2025 == 2026)")
-if r["10"] != cents(D(IND_SE_WAGE_BASE[2026]) * IND_SE_SS_RATE):
+if r["10"] != dollars(D(IND_SE_WAGE_BASE[2026]) * IND_SE_SS_RATE):
     err("SE-T4: line 10 did not cap at the 2026 wage base")
 
 i, o = i_of("SE-T5"), o_of("SE-T5")
 r = se_part_i(i["line_2"], i["se_w2_ss_wages_l8a"], i["tax_year"])
 check("SE-T5 L4a", r["4a"], o["line_4a"]); check("SE-T5 L12", r["12"], o["line_12"]); check("SE-T5 L13", r["13"], o["line_13"])
-if r["13"] != cents(r["12"] * IND_SE_HALF):
+if r["13"] != dollars(r["12"] * IND_SE_HALF):
     err("SE-T5: line 13 != line 12 x 50%")
 
 # ── Form 8995 ──
