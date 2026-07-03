@@ -31,7 +31,14 @@ Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is inge
    **the end-to-end DB pipeline suite `test_1065_se_pipeline_leg.py`: 9/9 green** against the shared
    test DB (real seed → Partner rows → compute_return → diagnostics; the two pooler AdminShutdown
    blips re-ran clean). The 1065_SE unit is fully closed: spec→seed→compute→test→DB-verified.
-2. **4797 recapture-classification RS unit (Ken to scope):** CONFIRMED tts bug —
+2. ~~4797 recapture-classification unit~~ **DONE 2026-07-02 (RS `9e38bb2` seeded/exported; tts
+   `12725b6` built):** character-based `resolve_recapture_type` (Buildings/Improvements → §1250;
+   is_qpp → §1245(a)(3)(G); override for the other (a)(3) exceptions); §1250 ordinary = min(gain,
+   line-26a additional depr incl. bonus — i4797 verbatim resolved the bonus-on-QIP question);
+   DepreciationAsset +section_1250_additional_depr +is_qpp (mig 0152); 4 new D_4797_* diagnostics
+   registered; the pinned test FLIPPED; C1-C3 + counterfactual — 40 passed. Optional: DB pipeline
+   stamp on the entity-side aggregate (say the word). Historical note kept below:
+   ORIGINAL FINDING — CONFIRMED tts bug —
    `resolve_recapture_type()` (compute.py:1272) classifies by recovery period, so 15-yr QIP/land
    improvements get §1245 full recapture instead of §1250; `test_improvements_15yr_is_1245` pins the
    bug; propagates into box 14a via ws 1d/2. Ken must adjudicate: property-character classifier
