@@ -25,6 +25,26 @@ Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is inge
 
 ## Next up
 
+**► ACTIVE (Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
+The 2026-07-03 K9c fix (tts `f23dc54`) made `aggregate_dispositions` write the 1065 entity unrecaptured
+§1250 gain to Schedule K line **K9c**, and `k1_allocator` (server/apps/returns/k1_allocator.py: `"K9c"`→
+box **9c**, LT_CAPITAL category; the box map at ~line 159) distributes it to each partner's K-1. That
+downstream allocation was NOT separately re-verified — this task closes it.
+- **Where:** tts `server/tests/test_4797_pipeline_leg.py` (the DB stamp). Add 1–2 focused tests using
+  `allocate_all_k1s(tr)` (already imported by the sibling `test_1065_se_pipeline_leg.py` via its
+  `_k1_by_partner` helper — mirror that pattern: `{e["partner"].name: e["k1_data"] for e in allocate_all_k1s(tr)}`).
+- **Scenario:** a 1065 return + a real §1250 disposition that produces a non-zero entity K9c (e.g. the C1
+  shape — Improvements, method="NONE" for determinism, prior_depr 100k, cost 400k/sales 500k,
+  section_1250_additional_depr 20k → K9c = 80,000), with **2 partners** at, say, 60/40 profit %.
+- **Assert:** `_line(tr,"K9c") == 80000.00` (entity), AND each partner's `k1_data["9c"]` = their share
+  (48,000 / 32,000); the sum of partner 9c == entity K9c (RECON). Confirm box 9c is allocated by the
+  LT-capital/profit-% ratio (check whether k1_allocator uses profit_pct for LT_CAPITAL — read it first).
+- **Run:** `poetry run pytest tests/test_4797_pipeline_leg.py -q --reuse-db --timeout=1800` (shared Supabase
+  test DB; pooler has been flaky — check for a parallel pytest + drop a stale test_postgres first, memory
+  `tts-test-db-collisions`; transient AdminShutdown/Deadlock re-runs clean). On green: commit + push tts,
+  update STATUS Known-issues (drop the "not separately re-verified" caveat) + session_log.
+- Small unit; no scoping round needed. The RS 4797 spec is unchanged (this is a tts-only verification).
+
 1. ~~tts build leg~~ **DONE + DB-VERIFIED 2026-07-02 (tts `dd4ec14` + `ccc8a11`):** SE-base worksheet
    compute live (WS1a–WS5 FormFieldValues; WS1d/WS2 auto-pull page-1 line 6; per-partner base = share
    of WS3a) + `R-SE-NONIND` guard + 3 new diagnostics; B1–B7 un-skipped (57 unit tests, 0 skipped) AND
