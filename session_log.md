@@ -4,6 +4,39 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-03 — 4797 NUANCE LEG (the 3 depreciation nuances) authored + gated + SEEDED + EXPORTED (Ken: "go ahead" + 2 decisions)
+- Ken: "continue with the three 4797 depreciation nuances" → verified all law verbatim (Cornell LII +
+  2025 i4797) BEFORE any code, then walked 2 design decisions (AskUserQuestion):
+  - **D1 (nuance 1):** a NEW per-asset classifier field `f4797_section_1245_exception`
+    (none / single_purpose_ag / petroleum_storage / railroad_grading) auto-returns §1245 for the
+    §1245(a)(3) real-property exceptions (D)/(E)/(F) + a per-exception info diagnostic
+    (`D_4797_1245AG` / `D_4797_1245PETRO` / `D_4797_1245RRGR`). (C) §179-realty stays via D_4797_179REAL;
+    (G) QPP via is_qpp/D_4797_QPP.
+  - **D2 (nuances 2+3):** COMPUTE line 26a = max(0, actual accumulated depr incl. bonus − SL on the
+    UNREDUCED basis) in the tts engine where the disposed §1250 asset has the MACRS data — ONE computation
+    covering both 150DB land improvements (§168(b)(2)(A)) and bonused QIP; preparer-overridable.
+    `D_4797_ADDL` demoted to the FALLBACK gate (fires only when the engine can't compute). Applicable % = 100%.
+- **Law (verbatim, verified 2026-07-03):** §1245(a)(3)(D)/(E)/(F) + the §168(i)(13) (livestock enclosure /
+  commercial greenhouse) and §168(e)(4) (railroad grading) definitions; §1250(b)(1)/(b)(3) — the (b)(3)
+  carve-out is PRE-1976 §168 only, so current MACRS + §168(k) bonus ARE depreciation adjustments (nuance 3
+  now statutorily grounded, not just i4797); §168(b)(2)(A) 150DB for 15-yr land improvements; i4797 line 26a
+  "do not reduce the basis... to figure straight line". NEW `IRC_168` authority source (4 verbatim excerpts).
+- **Authored** into `load_4797.py`: +1 fact (the classifier), R-4797-CHARCLASS + R-4797-ADDLDEPR rewritten
+  (updated in place, no new rule ids), +3 info diagnostics, +4 scenarios (N1 ag→§1245 math; N2-N4 the
+  exception diagnostics), +IRC_168 source/links, +the i4797 "unreduced basis" clause. `check_4797_integrity.py`
+  extended (N-branch validation). **Gate ALL PASS: 27 facts / 8 rules / 34 lines / 14 diagnostics / 20
+  scenarios / 19 rule links / 9 sources.** Committed GATED (`03a5606`).
+- Ken: **"Approve — seed + export"** → seeded RS Supabase (idempotent; "Updated Form 4797", all rules cited;
+  TaxForms 78 / FlowAssertions 381) → exported `4797_spec.json` to tts (facts 27 / diagnostics 14 / tests 21
+  [1 pre-existing DB orphan scenario] / sources 14 [all linked]) → verified the new content landed
+  (classifier fact, D_4797_1245*, IRC_168, N1-N4).
+- **NEXT — the tts build leg:** section_1245_exception model field + migration; resolve_recapture_type
+  handles the (D)/(E)/(F) field → §1245; the depreciation engine computes the §1250 additional depreciation
+  (accumulated actual incl. bonus − SL-equivalent on the unreduced full basis, using _macrs_pct(method="SL")
+  + disposal proration); the D_4797_1245* diagnostics + D_4797_ADDL fallback; unit tests + a DB stamp.
+
+---
+
 ## 2026-07-03 — FORM 8283 authored + SEEDED (ATS Scenario 2's tax-law form; Ken's walk: J6 RULED warn-only)
 - Ken: "go" → the S2 (Form 8283) spec-first unit per the smallest-first ruling. OBBBA check at
   the spec leg: §170(f)(11)/(f)(12) untouched by P.L. 119-21; Rev. 12-2025 form + instructions
