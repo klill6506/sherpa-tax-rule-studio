@@ -4,6 +4,34 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-03 — FORM 8283 authored + SEEDED (ATS Scenario 2's tax-law form; Ken's walk: J6 RULED warn-only)
+- Ken: "go" → the S2 (Form 8283) spec-first unit per the smallest-first ruling. OBBBA check at
+  the spec leg: §170(f)(11)/(f)(12) untouched by P.L. 119-21; Rev. 12-2025 form + instructions
+  fetched verbatim (i8283 + USC §170(f)(11) via law.cornell.edu).
+- **Authored `load_1040_form_8283.py`** (commit `0748f06`): AMENDS the shared "8283" TaxForm BY
+  LOOKUP (1120S/1065/1040 entity_types preserved — the rs-amend-shared-form lesson); RETIRES the
+  load_1120s_complete placeholder stub (10 facts / 5 unnamed rules / SA-*/SB-1 lines / D001-D003 /
+  2 tests — never approved, never seeded to tts). 51 facts / 5 rules (R-8283-FILE/SECTION/SUBST/
+  TOTAL/SCHA12) / 49 lines / 13 diagnostics / 13 hand-computed scenarios / 5 loader-homed FA
+  (FA-1040-8283-01..05). IRS_2025_8283_INSTR refreshed to Rev. 12-2025 with verbatim excerpts;
+  NEW source USC_26_170F11.
+- **Ken's review walk (AskUserQuestion): J6 RULED "warn only, feed anyway"** — substantiation
+  gaps (§170(f)(11)(C) appraisal, §170(f)(12) vehicle CWA, the attach tier) fire ERROR
+  diagnostics while the amount still feeds Schedule A line 12; the withhold recommendation was
+  REJECTED (do not re-litigate; FA-04 re-authored to pin the ruling). J2 (nullable capgain
+  assertion, default 50% bucket, D_8283_008 warns only when the limitation binds) and J4
+  (conservation RED-defer = the ONE feed withhold) as recommended; J1 feeder convention /
+  J3 preparer-applied §170(e) reductions / J5 one-row-per-group / J7 wet-ink Parts IV-V +
+  PDF-attachment e-file note + the stub retirement all approved. Flipped → seeded RS Supabase
+  (FlowAssertions 376→381) → deployed export verified (51 facts, 0 stale ids; entity_types
+  intact) → canonical `server/specs/8283_spec.json` exported to tts.
+- `check_8283_integrity.py` (new root gate): independent recompute of all 13 scenarios + the
+  Pub 526 T6 worksheet + id caps + citation coverage — ALL PASS (re-run after the J6 re-encode).
+- **tts build same session — UNIT COMPLETE, tag `1040-form-8283-complete`** (flow gate 375→380;
+  DB pipeline 6/6). Detail → tts STATUS.md / form_coverage_tracker.
+
+---
+
 ## 2026-07-03 — 4797 classification unit DB-VERIFIED (tts `08c5382`) + NEW confirmed 1065 unrecap-§1250 misroute caught
 - Ken: "go" → picked the optional **4797 DB pipeline stamp on the entity-side aggregate** (AskUserQuestion).
 - Authored **tts `server/tests/test_4797_pipeline_leg.py`** — real 1065 FormDefinition (`seed_1065`), real
