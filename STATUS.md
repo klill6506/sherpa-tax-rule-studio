@@ -25,9 +25,10 @@ Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is inge
 
 ## Next up
 
-1. **tts build leg (separate tts session):** the SE-base compute (worksheet 1a–3a: 1b/1c rental
-   inclusions + 4797 Part II 1d/2 adjustment) + the `R-SE-NONIND` non-individual guard in
-   `k1_allocator` — then un-skip B1–B7 in `test_1065_se_compute_leg.py` (47 passed / 7 skipped today).
+1. ~~tts build leg~~ **DONE 2026-07-02 (tts `dd4ec14`):** SE-base worksheet compute live (WS1a–WS5
+   FormFieldValues; WS1d/WS2 auto-pull page-1 line 6; per-partner base = share of WS3a) +
+   `R-SE-NONIND` guard + 3 new diagnostics; **B1–B7 un-skipped — 57 passed, 0 skipped.** The full
+   1065_SE unit (both legs) is now spec→seed→compute→test round-tripped.
 2. **4797 recapture-classification RS unit (Ken to scope):** CONFIRMED tts bug —
    `resolve_recapture_type()` (compute.py:1272) classifies by recovery period, so 15-yr QIP/land
    improvements get §1245 full recapture instead of §1250; `test_improvements_15yr_is_1245` pins the
