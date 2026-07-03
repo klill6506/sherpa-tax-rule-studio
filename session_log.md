@@ -40,7 +40,28 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-07-02 (MeF track, ATS Scenario 12) — NEW FORM_7217 spec AUTHORED (READY_TO_SEED=False, Ken review pending)
+## 2026-07-02 (MeF track, ATS Scenario 12) — NEW FORM_7217 spec AUTHORED + KEN-APPROVED + SEEDED + EXPORTED
+- **Ken approved in-session** (AskUserQuestion, four items): **J1 RULED "wire §731(a)(1) gain to
+  Sch D now"** (over the recommended defer) — post-ruling amendment encodes a synthesized
+  no-1099-B Form 8949 row (Part I box C ST / Part II box F LT per a NEW holding-period preparer
+  assertion `f7217_interest_held_lt`; proceeds = line 5c, basis = line 6; unasserted → feed
+  WITHHELD + NEW **D_7217_011** RED; **D_7217_002** re-purposed to the info "auto-reported"
+  transparency role; outputs `f7217_8949_st/lt`; scenarios T10/T11 added, G1 re-pinned; FA-04
+  reworded + NEW **FA-1040-7217-05**) — the landing verified VERBATIM against the 2025 Partner's
+  Instructions for Schedule K-1 (Form 1065) box 19 ("should be reported on Form 8949 and the
+  Schedule D"; NEW source **IRS_2025_K1P_INSTR**, also carrying the §737 4797-or-8949 excerpt
+  that backs the J3 defer). J2 §731(a)(2)-loss + J3 §737 defers KEPT; J4 rounding / J5
+  classification-withhold / J6 securities feeder approved as encoded; the T1 answer-key
+  divergence acknowledged.
+- **Integrity gate re-run post-amendment: ALL CHECKS PASS** (18 scenarios / 31 facts / 5 rules /
+  23 lines / 11 diagnostics / 5 FAs). **Seeded RS Supabase** (FORM_7217 created, TaxForms 78,
+  all rules cited). **Deployed export id-verified: PASS** (5/11/23/31/18 exact — NOTE the lookup
+  key is `FORM_7217`; the bare-number `7217` 404s). **FA drift check: RS 1040 export 353 vs tts
+  gate 348 — delta EXACTLY FA-1040-7217-01..05, zero other drift.** Canonical `7217_spec.json` +
+  `flow_assertions_1040_7217_pending.json` → tts `server/specs/` (ASCII-escaped). tts four-leg
+  build next. *(Coordination note: a parallel 1065_SE session committed fc93643 mid-unit, which
+  swept in this unit's in-flight check_7217_integrity.py J1 edit — content verified intact.)*
+- *(Authoring detail below, written pre-ruling — the J1 items superseded per the amendment above.)*
 - **Trigger:** ATS Scenario 12 (Sam Gardenia) is the next smallest-first scenario (Ken's 2026-07-02
   ruling); its tax-law form — Form 7217, Partner's Report of Property Distributed by a Partnership
   (§732) — had no RS spec (lookup 404, the process gate). The SEASON_PLAN appendix-4 OBBBA check ran

@@ -95,7 +95,12 @@ v1 SCOPE BOUNDARIES (stated, not silent):
     adjusted col (b) amounts come from the K-1 19C statement / 732(d)
     statement as entered; the software does not compute the adjustments.
 
-SAFETY GUARD: READY_TO_SEED=False — Ken has NOT approved. Do not seed.
+SAFETY GUARD: READY_TO_SEED flipped 2026-07-02 — Ken approved the review walk
+in-session (AskUserQuestion): J1 ruled WIRE-NOW (§731(a)(1) gain → a
+synthesized 8949 row per the holding-period assertion — the K-1 box 19
+instructions' verbatim landing); J2/J3 defers kept; J4 rounding, J5
+classification-withhold, and J6 securities feeder approved as encoded; the
+T1 answer-key divergence documentation acknowledged.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -120,7 +125,7 @@ from specs.models import (
 )
 
 
-READY_TO_SEED = False  # Ken's review walk pending — J1..J6 in the module docstring.
+READY_TO_SEED = True  # FLIPPED 2026-07-02 — Ken approved the review walk in-session (AskUserQuestion): J1 RULED "wire §731(a)(1) gain to Sch D now" (the 8949 feed encoded above); J2/J3 defers kept; J4/J5/J6 approved as encoded; flip-seed-build approved.
 
 
 FORM_JURISDICTION = "FED"
