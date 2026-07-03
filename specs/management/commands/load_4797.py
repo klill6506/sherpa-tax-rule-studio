@@ -92,9 +92,9 @@ from specs.models import (
 )
 
 
-# Broad-v1 seeded 2026-06-27 ("Approve — seed it"). FLIPPED BACK False 2026-07-02 for the
-# CLASSIFICATION LEG — pending Ken's review walk of the C-scenarios + the new excerpts.
-READY_TO_SEED = False
+# Broad-v1 seeded 2026-06-27 ("Approve — seed it"). Classification leg FLIPPED 2026-07-02 —
+# Ken approved the review walk ("approve and seed").
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
