@@ -59,7 +59,17 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
   `flow_assertions_1040.json` FA-1040-SCHSE-02 synced verbatim (no id drift — amended in place).
 - **tts build leg same session**: `compute_schedule_se_lines` per-line `_qd`; S12 re-pinned
   (whole-dollar XML values unchanged); Schedule C/8995/7206 audited — 7206 already per-line,
-  Schedule C sums-only, **8995 ×20% lines still cents → candidate R-8995-ROUND follow-up for Ken**.
+  Schedule C sums-only, 8995 ×20% lines still cents → flagged to Ken.
+- **SAME-SESSION FOLLOW-UP — Ken ruled "build it now": 8995 gains R-8995-ROUND** (RS `bfe1d4f`;
+  the identical convention: ×20% lines 5/9/14 round their product, entries round at entry,
+  sums/combines operate on rounded entries; **Form 8995-A explicitly stays cents-chained** —
+  its own future ruling). Authored: R-8995-ROUND rule + link to the same IRS_2025_1040_INSTR
+  excerpt (summary updated to cover both forms); R-8995-L2-L5 / L8-L9 / L13-L14 formulas
+  restated; 8995-T2 re-pinned (9,952.20 → 9,952); `check_topic8_integrity.qbi_8995` per-line —
+  ALL PASS. Seeded (8995 rules 8→9), deployed export verified, canonical `8995_spec.json`
+  refreshed in tts. tts: `compute_8995_lines` + the 1i-1v face-row writes per-line `_qd`; S12
+  re-pinned again (QBI 4,322 whole → taxable 102,373.00 / tax 17,436.06 / owe 6,430.06 —
+  whole-dollar XML values STILL unchanged). No FA drift (no 8995 FA formula carries a mode).
 
 ---
 
