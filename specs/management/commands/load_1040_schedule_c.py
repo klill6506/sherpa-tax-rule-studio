@@ -688,12 +688,13 @@ NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = [
                 "line, include cents when adding the amounts and round off only the total."
             ),
             "summary_text": (
-                "Ken ruled 2026-07-02 (S12 REVIEW_QUEUE item): Schedule SE adopts the "
-                "per-line whole-dollar convention (R-SE-ROUND) — every computed line is "
-                "rounded half-up as entered; sum lines add already-rounded entries. "
-                "Matches the ATS answer key / TaxWise and makes the printed face "
-                "self-consistent (10 + 11 = 12 at whole dollars). Re-fetched + quoted "
-                "verbatim 2026-07-02 (scratchpad i1040gi.pdf)."
+                "Ken ruled 2026-07-02 (S12 REVIEW_QUEUE item + same-day companion "
+                "audit): Schedule SE (R-SE-ROUND) AND Form 8995 (R-8995-ROUND) adopt "
+                "the per-line whole-dollar convention — every computed line is rounded "
+                "half-up as entered; sum lines add already-rounded entries. Matches the "
+                "ATS answer key / TaxWise and keeps printed faces self-consistent "
+                "(SE 10 + 11 = 12 at whole dollars). Re-fetched + quoted verbatim "
+                "2026-07-02 (scratchpad i1040gi.pdf)."
             ),
             "is_key_excerpt": True,
         },
@@ -1241,7 +1242,9 @@ F8995_IDENTITY = {
         "x 20%, the taxable-income x 20% limitation -> the smaller -> Form 1040 line "
         "13a. BELOW-THRESHOLD ONLY (year-keyed); above threshold -> Form 8995-A "
         "RED-defer. The stub artifacts (R001-R005, D001-D003, lines 1-8, the 3 "
-        "tests) are retired by this loader."
+        "tests) are retired by this loader. ROUNDING (R-8995-ROUND, Ken ruled "
+        "2026-07-02): per-line whole-dollar, half-up — same convention as "
+        "R-SE-ROUND (i1040 'Rounding Off to Whole Dollars')."
     ),
 }
 
@@ -1292,6 +1295,16 @@ F8995_FACTS: list[dict] = [
 ]
 
 F8995_RULES: list[dict] = [
+    {"rule_id": "R-8995-ROUND", "title": "Rounding convention — per-line whole-dollar, half-up", "rule_type": "calculation", "precedence": 0, "sort_order": 0,
+     "formula": ("Every Form 8995 line is a whole-dollar amount, rounded HALF-UP as entered (i1040 'Rounding Off to "
+                 "Whole Dollars'). The x20% lines (5, 9, 14) round their product; entry lines (1i-1v, 3, 6, 7, 11, 12) "
+                 "round at entry; sum/combine lines (2, 4, 8, 10, 13, 15, 16, 17) operate on the already-rounded "
+                 "entries."),
+     "inputs": [], "outputs": [],
+     "description": ("CONVENTION (Ken ruled 2026-07-02, with R-SE-ROUND — the same-day companion audit). Replaces the "
+                     "cents-chained x20% math; 1040 line 13a now lands whole-dollar in the taxable-income chain, "
+                     "matching the TaxWise per-line convention (SPRINT_SCOPE quality rule 1). Form 8995-A remains "
+                     "cents-chained (its own future convention ruling).")},
     {"rule_id": "R-8995-SCOPE", "title": "Scope gate — taxable income at/below threshold (else Form 8995-A)", "rule_type": "routing", "precedence": 0, "sort_order": 1,
      "formula": "If qbi_taxable_income_before_qbi (line 11) > QBI_THRESHOLDS[year][status] -> D_8995_001 RED (use Form 8995-A); 8995 not used.",
      "inputs": ["qbi_taxable_income_before_qbi", "qbi_threshold", "qbi_filing_status"], "outputs": [],
@@ -1304,11 +1317,11 @@ F8995_RULES: list[dict] = [
      "inputs": ["qbi_business_qbi"], "outputs": ["1i", "1ii", "1iii", "1iv", "1v"],
      "description": "RETURN LEVEL (per-business rows). i8995: QBI is reduced by the deductions attributable to the trade/business."},
     {"rule_id": "R-8995-L2-L5", "title": "Lines 2/4/5 — QBI component", "rule_type": "calculation", "precedence": 2, "sort_order": 3,
-     "formula": "L2 = sum(1i..1v); L4 = max(0, L2 + L3 prior-year carryforward); L5 = L4 x 20%.",
+     "formula": "L2 = sum(1i..1v, each rounded at entry); L4 = max(0, L2 + L3 prior-year carryforward); L5 = round(L4 x 20%) (whole-dollar per R-8995-ROUND).",
      "inputs": ["qbi_loss_carryforward_prior", "qbi_rate"], "outputs": ["2", "4", "5"],
      "description": "RETURN LEVEL. The QBI component. L3 (prior-year loss carryforward) is negative."},
     {"rule_id": "R-8995-L8-L9", "title": "Lines 8/9 — REIT/PTP component", "rule_type": "calculation", "precedence": 3, "sort_order": 4,
-     "formula": "L8 = max(0, L6 REIT/PTP income + L7 prior-year carryforward); L9 = L8 x 20%.",
+     "formula": "L8 = max(0, L6 REIT/PTP income + L7 prior-year carryforward); L9 = round(L8 x 20%) (whole-dollar per R-8995-ROUND).",
      "inputs": ["qbi_reit_ptp_income", "qbi_reit_ptp_carryforward_prior", "qbi_rate"], "outputs": ["8", "9"],
      "description": "RETURN LEVEL. The REIT/PTP component. L6 reuses 1099-DIV box 5 §199A dividends + PTP income."},
     {"rule_id": "R-8995-L10", "title": "Line 10 — QBI deduction before income limitation", "rule_type": "calculation", "precedence": 4, "sort_order": 5,
@@ -1317,7 +1330,7 @@ F8995_RULES: list[dict] = [
     {"rule_id": "R-8995-L13-L14", "title": "Lines 11/12/13/14 — income limitation", "rule_type": "calculation", "precedence": 5, "sort_order": 6,
      "formula": ("L11 = taxable income before QBI (1040 L11 - L12 - L13b Sch 1-A); L12 = net capital gain = "
                  "1040 L3a + (Schedule D engaged ? schd_net_capital_gain [min(D15, D16), 0 if not both gains] "
-                 ": the line-7 cap-gain distributions); L13 = max(0, L11 - L12); L14 = L13 x 20%."),
+                 ": the line-7 cap-gain distributions); L13 = max(0, L11 - L12); L14 = round(L13 x 20%) (whole-dollar per R-8995-ROUND)."),
      "inputs": ["qbi_taxable_income_before_qbi", "qbi_net_capital_gain", "qbi_rate"], "outputs": ["11", "12", "13", "14"],
      "description": ("RETURN LEVEL. The income limitation reduces taxable income by net capital gain before the 20%. "
                      "L11 subtracts the OBBBA Schedule 1-A line-13b deduction (Ken-approved 2026-06-12 — every "
@@ -1398,8 +1411,9 @@ F8995_SCENARIOS: list[dict] = [
     {"scenario_name": "8995-T2 — QBI reduced by 1/2-SE-tax + SEHI", "scenario_type": "normal", "sort_order": 2,
      "inputs": {"tax_year": 2025, "filing_status": "single", "sch_c_net_profit": 60000, "half_se_tax": 4239, "sehi": 6000,
                 "qbi_taxable_income_before_qbi": 80000, "qbi_net_capital_gain": 0},
-     "expected_outputs": {"qbi_business_qbi": 49761, "line_5": 9952.20, "line_15": 9952.20},
-     "notes": "QBI = 60,000 - 4,239 (1/2-SE) - 6,000 (SEHI) = 49,761; L5=9,952.20; income limit not binding -> L15=9,952.20."},
+     "expected_outputs": {"qbi_business_qbi": 49761, "line_5": 9952, "line_15": 9952},
+     "notes": ("R-8995-ROUND (re-pinned 2026-07-02): QBI = 60,000 - 4,239 (1/2-SE) - 6,000 (SEHI) = 49,761; "
+               "L5 = 49,761 x 20% = 9,952.20 -> 9,952; income limit not binding -> L15=9,952.")},
     {"scenario_name": "8995-T3 — income limitation binds (L14 < L10)", "scenario_type": "normal", "sort_order": 3,
      "inputs": {"tax_year": 2025, "filing_status": "single", "qbi_business_qbi": 50000,
                 "qbi_taxable_income_before_qbi": 40000, "qbi_net_capital_gain": 0},
@@ -1426,6 +1440,7 @@ F8995_SCENARIOS: list[dict] = [
 ]
 
 F8995_RULE_LINKS: list[tuple[str, str, str, str]] = [
+    ("R-8995-ROUND", "IRS_2025_1040_INSTR", "primary", "Rounding Off to Whole Dollars (per-line convention)"),
     ("R-8995-SCOPE", "IRS_2025_8995_FORM", "primary", "Use-this-form-if threshold ($197,300/$394,600 2025)"),
     ("R-8995-SCOPE", "RP_2025_32", "primary", "TY2026 §199A thresholds (§4.26)"),
     ("R-8995-QBI", "IRS_2025_8995_INSTR", "primary", "QBI reduced by 1/2-SE/SEHI/SE-retirement"),

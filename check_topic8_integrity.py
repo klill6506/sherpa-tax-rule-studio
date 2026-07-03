@@ -16,11 +16,12 @@ wage base, 8995 thresholds) and statutory rates, re-typed from the brief's cited
 sources, and cross-checks the loader's module constants cell-by-cell — so a
 transcription error in the loader cannot also pass the checker.
 
-Rounding convention: Schedule SE is PER-LINE WHOLE-DOLLAR half-up (R-SE-ROUND,
-Ken ruled 2026-07-02 — i1040 'Rounding Off to Whole Dollars'; matches the ATS
-key / TaxWise and makes 10 + 11 = 12 on the printed face). Schedule C / 8995 /
-8959 scenarios remain cent-rounded pending their own convention ruling (the
-2026-07-02 audit item).
+Rounding convention: Schedule SE (R-SE-ROUND) and Form 8995 (R-8995-ROUND)
+are PER-LINE WHOLE-DOLLAR half-up (Ken ruled both 2026-07-02 — i1040
+'Rounding Off to Whole Dollars'; matches the ATS key / TaxWise and keeps the
+printed faces self-consistent). Schedule C is sums-only (no convention
+exposure); 8959 scenarios remain cent-rounded (unruled — its lines feed
+1040 25c/Sch 2 11 which whole-round at print).
 """
 import os
 import sys
@@ -143,17 +144,20 @@ def sched_c(line_1=0, line_2=0, line_4=0, line_6=0, line_28=0,
 
 def qbi_8995(qbi=0, taxable_before=0, net_cap_gain=0, reit_ptp=0,
              qbi_cf_prior=0, reit_cf_prior=0):
-    """Form 8995 lines 2-15 -> dict (single-business QBI passed directly)."""
-    l2 = D(qbi)
-    l4 = max(Decimal("0"), l2 + D(qbi_cf_prior))
-    l5 = cents(l4 * IND_QBI_RATE)
-    l8 = max(Decimal("0"), D(reit_ptp) + D(reit_cf_prior))
-    l9 = cents(l8 * IND_QBI_RATE)
+    """Form 8995 lines 2-15 -> dict (single-business QBI passed directly).
+    R-8995-ROUND (Ken ruled 2026-07-02, with R-SE-ROUND): per-line
+    whole-dollar half-up — entries round at entry, x20% lines round their
+    product, sums add the already-rounded entries."""
+    l2 = dollars(qbi)
+    l4 = max(Decimal("0"), l2 + dollars(qbi_cf_prior))
+    l5 = dollars(l4 * IND_QBI_RATE)
+    l8 = max(Decimal("0"), dollars(reit_ptp) + dollars(reit_cf_prior))
+    l9 = dollars(l8 * IND_QBI_RATE)
     l10 = l5 + l9
-    l11 = D(taxable_before)
-    l12 = D(net_cap_gain)
+    l11 = dollars(taxable_before)
+    l12 = dollars(net_cap_gain)
     l13 = max(Decimal("0"), l11 - l12)
-    l14 = cents(l13 * IND_QBI_RATE)
+    l14 = dollars(l13 * IND_QBI_RATE)
     l15 = min(l10, l14)
     return {"2": l2, "4": l4, "5": l5, "8": l8, "9": l9, "10": l10,
             "11": l11, "12": l12, "13": l13, "14": l14, "15": l15}
