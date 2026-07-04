@@ -1,7 +1,7 @@
 ---
 type: project-memory
 project: sherpa-tax-rule-studio
-last_updated: 2026-04-27
+last_updated: 2026-07-04
 ---
 
 # MEMORY — sherpa-tax-rule-studio
@@ -24,11 +24,19 @@ last_updated: 2026-04-27
 
 ## Integrations and external systems
 
-<APIs, webhooks, third-party services this app talks to. Auth patterns, rate limits, quirks.>
+- **Public status mirror (added 2026-07-04):** RS `STATUS.md` and `session_log.md` are auto-copied into
+  the **public** GitHub repo `klill6506/tts-tax-status` (under a `rule-studio/` subfolder) by
+  `tts-tax-app/scripts/sync_status_mirror.ps1` at session close. The RS repo itself is going private, so
+  this mirror is how RS status stays visible. `tts-tax-app` is the source of truth for the mirror's root
+  files; RS is the source for the `rule-studio/` ones. **Never hand-edit the `D:\dev\tts-tax-status`
+  clone** — the script overwrites it on every run.
 
 ## Gotchas and lessons learned
 
-<The things that have bitten us. Non-obvious behavior, debugging dead-ends, environment quirks. Write these when they happen so the next session doesn't repeat the mistake.>
+- **RS status files are PUBLIC.** Because of the mirror above, anything written to `STATUS.md` or
+  `session_log.md` lands in a public repo. The sync's PII guard only blocks SSN-shaped values and EFIN
+  mentions — it does NOT catch sensitive prose (client names, firm strategy, bank/entity specifics).
+  Keep those out of the two mirrored files.
 
 ## Data model highlights
 
