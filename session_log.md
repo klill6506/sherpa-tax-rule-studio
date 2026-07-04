@@ -4,6 +4,24 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — Between-session prep: S3/S4 integrity checker + 1065-core source brief (pre-scout for the July campaign)
+*Independent RS work while the parallel tts session builds S3/S4 — zero collision.*
+- **`check_s3s4_integrity.py`** (committed `a73d424`): pre-seed math+structure gate for 4835/8835/8936/
+  8936_SCHA — independent re-derivation of every test-vector's arithmetic (constants re-typed, not
+  imported) + id<=20 / all-cited / fact-key-input / no-dupe gates + constants cross-check. **390 checks,
+  all green.** Also verified the DEPLOYED Render endpoints match the local seed exactly (4835/8835/8936/
+  8936_SCHA — rules/facts/line_map counts identical; the tts consuming contract is live, not just local).
+- **`1065_core_source_brief.md`** (this commit): pre-scouted the NEXT campaign (July 1065 core). Gap map
+  (6 forms to author fresh — Sch K, K-1+allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065),
+  the D-1 reconcile targets in tts (`k1_allocator.py` / `compute_schedule_k1.py` / `compute_1065_se.py`,
+  read-only survey), and **§4 verbatim FINAL-2025 line maps** (3 research agents read f1065/f1065sk1/
+  i1065/i1065sk1 directly): page-1 (ord. income = line 23; tax/pmt 24-32; new direct-deposit 32b-d) +
+  Schedule B (33 Qs; Q4 L/M exemption receipts<$250k & assets<$1M; Q10 §754; Q23/24 §163(j) $31M) +
+  Schedule K (1-21 + Analysis) + K-1 (Part II items J/K/L/M/N, Part III 1-23) + the K→K-1 coded-box
+  mapping + K-2/K-3 split + OBBBA What's New (§174A R&E, §181 box-13 X, §1062 box-20 ZZ). Cross-tie: K-1
+  box-15 credit codes AY/AZ/AB carry the 8936/8835 credits I specced this session. NOT authorized to
+  seed — D-1 fresh-author + Ken walk when the campaign opens.
+
 ## 2026-07-04 — S3/S4 unblock campaign: 8835 + 8936 + Schedule A(8936) authored/seeded/exported; 4835 reconciled — ALL FOUR endpoints 200
 *Ken's campaign prompt (from a tts Claude): author the four missing specs so the tax app can build the
 last two 1040 MeF ATS scenarios (S3 = 4835; S4 = 8936 + Sch A + 8835). Started from the tts authoring
