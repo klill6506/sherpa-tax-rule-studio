@@ -1,0 +1,1106 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-07-04T15:36:33.180323+00:00",
+  "metadata": {
+    "form_number": "8936_SCHA",
+    "form_title": "Schedule A (Form 8936) — Clean Vehicle Credit Amount (per vehicle) (TY2025)",
+    "jurisdiction": "FED",
+    "entity_types": [
+      "1040"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft"
+  },
+  "facts": [
+    {
+      "fact_key": "f8936sa_year",
+      "label": "Line 1a — vehicle year",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 1,
+      "notes": "PER VEHICLE. Metadata."
+    },
+    {
+      "fact_key": "f8936sa_make",
+      "label": "Line 1b — make",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 2,
+      "notes": "PER VEHICLE. Metadata."
+    },
+    {
+      "fact_key": "f8936sa_model",
+      "label": "Line 1c — model",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 3,
+      "notes": "PER VEHICLE. Metadata."
+    },
+    {
+      "fact_key": "f8936sa_vin",
+      "label": "Line 2 — Vehicle Identification Number (VIN, 17 char)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 4,
+      "notes": "PER VEHICLE. Required (D_8936_004 if missing on a claimed vehicle)."
+    },
+    {
+      "fact_key": "f8936sa_placed_in_service_date",
+      "label": "Line 3 — date placed in service (possession)",
+      "data_type": "date",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 5,
+      "notes": "PER VEHICLE. Must be in the tax year. Required (D_8936_004)."
+    },
+    {
+      "fact_key": "f8936sa_acquired_date",
+      "label": "Acquired date (binding contract + payment) — OBBBA gate",
+      "data_type": "date",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 6,
+      "notes": "PER VEHICLE. 'Acquired' = written binding contract entered + payment made. On/before 2025-09-30 qualifies; after -> D_8936_001 (no credit). Lines 5/6/7 phrase it 'before October 1, 2025'."
+    },
+    {
+      "fact_key": "f8936sa_transferred_to_dealer",
+      "label": "Line 4a — credit transferred to dealer at sale? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 7,
+      "notes": "PER VEHICLE. If Yes + later MAGI-over-cap -> repayment (Sch 2 1b new / 1c used)."
+    },
+    {
+      "fact_key": "f8936sa_transferred_amount",
+      "label": "Line 4a — transferred amount (from seller's report)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 8,
+      "notes": "PER VEHICLE. The amount to repay if disqualified."
+    },
+    {
+      "fact_key": "f8936sa_vehicle_type",
+      "label": "Lines 5/6/7 — vehicle type",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 9,
+      "notes": "PER VEHICLE. new|used|commercial. Routes to Part II/III (new), Part IV (used), Part V (commercial)."
+    },
+    {
+      "fact_key": "f8936sa_resold_30_days",
+      "label": "Line 8a/13a — resold within 30 days? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 10,
+      "notes": "PER VEHICLE. Yes -> Stop; no credit; if transferred -> repay."
+    },
+    {
+      "fact_key": "f8936sa_tentative_credit",
+      "label": "Line 9 — tentative credit (from the seller report)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 11,
+      "notes": "PER VEHICLE. NEW 30D: from the seller's ECO-portal report; the $3,750/$7,500 tiers are §30D(b), NOT on the form. Do NOT assume $7,500."
+    },
+    {
+      "fact_key": "f8936sa_business_use_pct",
+      "label": "Line 10 — business/investment use %",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 12,
+      "notes": "PER VEHICLE. line 11 = line 9 × this; the remainder (line 12) is personal."
+    },
+    {
+      "fact_key": "f8936sa_prior_used_credit_3yr",
+      "label": "Line 13d — claimed a used credit in the prior 3 years? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 13,
+      "notes": "PER VEHICLE. Yes -> doesn't qualify."
+    },
+    {
+      "fact_key": "f8936sa_is_dependent",
+      "label": "Line 13g — can be claimed as a dependent? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 14,
+      "notes": "PER VEHICLE. Yes -> doesn't qualify (used credit)."
+    },
+    {
+      "fact_key": "f8936sa_sales_price",
+      "label": "Line 14 — sales price (used vehicle)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 15,
+      "notes": "PER VEHICLE. Must be <= $25,000 (line 13e) to qualify. line 15 = × 30%."
+    },
+    {
+      "fact_key": "f8936sa_powered_by_gas_diesel",
+      "label": "Line 18d — also powered by gas/diesel? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 16,
+      "notes": "PER VEHICLE. Yes -> 15% rate (line 22); No (pure EV/FCV) -> 30%."
+    },
+    {
+      "fact_key": "f8936sa_gvwr",
+      "label": "Line 18e — gross vehicle weight rating (lb)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 17,
+      "notes": "PER VEHICLE. >= 14,000 -> $40,000 max (line 25); else $7,500."
+    },
+    {
+      "fact_key": "f8936sa_cost_basis",
+      "label": "Line 19 — cost or other basis (commercial)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 18,
+      "notes": "PER VEHICLE. line 21 = line 19 - §179 (line 20)."
+    },
+    {
+      "fact_key": "f8936sa_sec179",
+      "label": "Line 20 — section 179 expense deduction",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 19,
+      "notes": "PER VEHICLE. Reduces the basis for the 45W credit."
+    },
+    {
+      "fact_key": "f8936sa_incremental_cost",
+      "label": "Line 23 — incremental cost of the vehicle",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 20,
+      "notes": "PER VEHICLE. 2025 safe harbor $7,500 (Notice 2025-9). line 24 = min(line 22, this)."
+    },
+    {
+      "fact_key": "f8936sa_business_credit_l11",
+      "label": "Line 11 — business-new credit -> Form 8936 line 6 (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 40,
+      "notes": "OUTPUT. = line 9 × line 10."
+    },
+    {
+      "fact_key": "f8936sa_personal_credit_l12",
+      "label": "Line 12 — personal-new credit -> Form 8936 line 9 (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 41,
+      "notes": "OUTPUT. = line 9 - line 11."
+    },
+    {
+      "fact_key": "f8936sa_used_credit_l17",
+      "label": "Line 17 — used credit -> Form 8936 line 14 (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 42,
+      "notes": "OUTPUT. = min(line 14 × 30%, $4,000)."
+    },
+    {
+      "fact_key": "f8936sa_commercial_credit_l26",
+      "label": "Line 26 — commercial credit -> Form 8936 line 19 (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 43,
+      "notes": "OUTPUT. = min(min(15%/30% × basis, incremental cost), $7,500/$40,000)."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "R-8936SA-OBBBA",
+      "title": "OBBBA gate — vehicle acquired after 9/30/2025 -> no credit",
+      "description": "PER VEHICLE. HIGHEST precedence. VERIFIED verbatim off i8936 What's New: no clean vehicle credit for new/used/commercial vehicles acquired after September 30, 2025 (P.L. 119-21). 'Acquired' = written binding contract + payment (nominal down payment / trade-in counts). Year-keyed; TY2026 -> credit gone entirely.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If f8936sa_acquired_date > OBBBA_ACQUIRED_CUTOFF[year] (2025-09-30) -> D_8936_001; NO credit (25E/30D/45W). Lines 5/6/7 require acquired 'before October 1, 2025'.",
+      "inputs": [
+        "f8936sa_acquired_date"
+      ],
+      "outputs": [],
+      "precedence": 1,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8936_INSTR",
+          "title": "2025 Instructions for Form 8936 (and Schedule A)",
+          "citation": "i8936 (2025); Cat. No. 67912V; dated Oct 14, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "What's New: no credit for vehicles acquired after 9/30/2025 (25E/30D/45W)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_8936SA_FORM",
+          "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+          "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Lines 5/6/7 'acquired before October 1, 2025' gate",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_30D_25E_45W",
+          "title": "IRC §§30D, 25E, 45W — Clean vehicle credits (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §§30D, 25E, 45W (2025); P.L. 119-21 (OBBBA, July 4, 2025); Notice 2025-9",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "P.L. 119-21 termination of §§30D/25E/45W",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8936SA-NEW-BIZ",
+      "title": "Line 11 — business-new credit = tentative × business-use %",
+      "description": "PER VEHICLE. §30D business/investment-use portion. The tentative credit is the seller-reported amount; do NOT hardcode $7,500 (that is the §30D(b) statutory max, not any given vehicle's amount).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 11 = line 9 (tentative, seller report) × line 10 (business-use %) -> Form 8936 line 6.",
+      "inputs": [
+        "f8936sa_tentative_credit",
+        "f8936sa_business_use_pct"
+      ],
+      "outputs": [
+        "11"
+      ],
+      "precedence": 2,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8936SA_FORM",
+          "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+          "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 11 = line 9 (tentative) × line 10 (business %)",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8936SA-NEW-PERS",
+      "title": "Line 12 — personal-new credit = tentative − business portion",
+      "description": "PER VEHICLE. §30D personal-use portion -> Form 8936 Part III (nonrefundable, tax-limited, unused LOST).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 12 = line 9 - line 11 -> Form 8936 line 9. If line 10 = 100% -> line 12 = 0 (all business).",
+      "inputs": [
+        "f8936sa_tentative_credit",
+        "f8936sa_business_credit_l11"
+      ],
+      "outputs": [
+        "12"
+      ],
+      "precedence": 3,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8936SA_FORM",
+          "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+          "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 12 = line 9 - line 11 -> Form 8936 line 9",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8936SA-USED",
+      "title": "Line 17 — used credit = min(30% × price, $4,000); price <= $25,000",
+      "description": "PER VEHICLE. §25E: lesser of $4,000 or 30% of the sales price; the vehicle sales price must not exceed $25,000; no used credit within 3 years of a prior one; buyer not claimable as a dependent.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "GATE: sales price <= $25,000 (else no credit, D_8936_006); not within 3 yr of a prior used credit; not a dependent. line 15 = line 14 × 30%; line 17 = min(line 15, $4,000) -> Form 8936 line 14.",
+      "inputs": [
+        "f8936sa_sales_price",
+        "f8936sa_prior_used_credit_3yr",
+        "f8936sa_is_dependent"
+      ],
+      "outputs": [
+        "15",
+        "17"
+      ],
+      "precedence": 4,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8936SA_FORM",
+          "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+          "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Lines 14-17: 30% × price, max $4,000, price <= $25,000",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_30D_25E_45W",
+          "title": "IRC §§30D, 25E, 45W — Clean vehicle credits (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §§30D, 25E, 45W (2025); P.L. 119-21 (OBBBA, July 4, 2025); Notice 2025-9",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§25E lesser of $4,000 / 30% of sales price",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8936SA-COMM",
+      "title": "Line 26 — commercial credit = min(rate × basis, incremental), max $7,500/$40,000",
+      "description": "PER VEHICLE. §45W: lesser of (15% basis, or 30% if not gas/diesel-powered) or the incremental cost; max $7,500 ($40,000 if GVWR >= 14,000 lb). 2025 incremental-cost safe harbor $7,500 (Notice 2025-9).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 21 = line 19 (basis) - line 20 (§179); line 22 = line 21 × 30% (15% if 18d gas/diesel); line 24 = min(line 22, line 23 incremental cost); line 26 = min(line 24, $7,500 or $40,000 if GVWR >= 14,000) -> Form 8936 line 19.",
+      "inputs": [
+        "f8936sa_cost_basis",
+        "f8936sa_sec179",
+        "f8936sa_powered_by_gas_diesel",
+        "f8936sa_incremental_cost",
+        "f8936sa_gvwr"
+      ],
+      "outputs": [
+        "22",
+        "24",
+        "26"
+      ],
+      "precedence": 5,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8936SA_FORM",
+          "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+          "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Lines 18-26: 15%/30% basis, incremental cost, max $7,500/$40,000",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_30D_25E_45W",
+          "title": "IRC §§30D, 25E, 45W — Clean vehicle credits (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §§30D, 25E, 45W (2025); P.L. 119-21 (OBBBA, July 4, 2025); Notice 2025-9",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§45W lesser of 15%/30% basis or incremental cost; Notice 2025-9",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "line_map": [
+    {
+      "line_number": "1a",
+      "description": "Vehicle year",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "1b",
+      "description": "Make",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "1c",
+      "description": "Model",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2",
+      "description": "Vehicle identification number (VIN)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3",
+      "description": "Date placed in service (possession)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4a",
+      "description": "Transferred the credit to the dealer at sale? (enter transferred amount)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4b",
+      "description": "If 4a Yes, complete line 8 or 13 as directed",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5",
+      "description": "New clean vehicle acquired before Oct 1, 2025 & placed in service? Yes -> Part II",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "6",
+      "description": "Previously owned clean vehicle acquired after 2022 & before Oct 1, 2025? Yes -> Part IV",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "7",
+      "description": "Qualified commercial clean vehicle acquired after 2022 & before Oct 1, 2025? Yes -> Part V",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8a",
+      "description": "Resold the vehicle within 30 days? (Yes -> Stop; if 4a Yes -> Sch 2 line 1b)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8b",
+      "description": "Filing with an individual income tax return?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8c",
+      "description": "2025 MAGI at/under the Part II/III limit?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8d",
+      "description": "2024 MAGI at/under the Part II/III limit? (Yes over both -> Sch 2 line 1b)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8e",
+      "description": "Acquired for use/lease, not resale?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9",
+      "description": "Tentative credit amount (from the seller report)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10",
+      "description": "Business/investment use percentage",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "11",
+      "description": "Line 9 × line 10 -> Form 8936 line 6 (business new)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "12",
+      "description": "Line 9 − line 11 -> Form 8936 line 9 (personal new)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13a",
+      "description": "Resold within 30 days? (Yes -> Stop; if 4a Yes -> Sch 2 line 1c)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13b",
+      "description": "2025 MAGI at/under the Part IV limit?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13c",
+      "description": "2024 MAGI at/under the Part IV limit? (Yes over both -> Sch 2 line 1c)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13d",
+      "description": "Claimed a previously-owned credit in the prior 3 years? (Yes -> Stop)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13e",
+      "description": "Sales price more than $25,000? (Yes -> doesn't qualify)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13f",
+      "description": "Acquired for use, not resale?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13g",
+      "description": "Can be claimed as a dependent? (Yes -> Stop)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "14",
+      "description": "Sales price of the vehicle",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "15",
+      "description": "Line 14 × 30%",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16",
+      "description": "Maximum vehicle credit amount — $4,000",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "17",
+      "description": "Smaller of line 15 or line 16 -> Form 8936 line 14 (used)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18a",
+      "description": "Elective-payment registration number (commercial)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18b",
+      "description": "Vehicle of a character subject to depreciation?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18c",
+      "description": "Acquired for use/lease, not resale?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18d",
+      "description": "Also powered by gas/diesel? (Yes -> 15% rate; No -> 30%)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18e",
+      "description": "Gross vehicle weight rating (GVWR)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "19",
+      "description": "Cost or other basis of the vehicle",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "20",
+      "description": "Section 179 expense deduction",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "21",
+      "description": "Line 19 − line 20",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22",
+      "description": "Line 21 × 15% (30% if line 18d is No)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "23",
+      "description": "Incremental cost of the vehicle",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "24",
+      "description": "Smaller of line 22 or line 23",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "25",
+      "description": "Maximum credit — $7,500 ($40,000 if GVWR >= 14,000 lb)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "26",
+      "description": "Smaller of line 24 or line 25 -> Form 8936 line 19 (commercial)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "D_8936_001",
+      "title": "Vehicle acquired after 9/30/2025 — OBBBA termination, no credit",
+      "severity": "error",
+      "condition": "f8936sa_acquired_date > 2025-09-30",
+      "message": "This vehicle was acquired after September 30, 2025. Under P.L. 119-21 (OBBBA), no clean vehicle credit (new §30D, previously owned §25E, or commercial §45W) is allowed for any vehicle acquired after that date. A vehicle is 'acquired' when a written binding contract is entered into AND a payment (including a nominal down payment or trade-in) is made. No credit for this vehicle."
+    },
+    {
+      "diagnostic_id": "D_8936_004",
+      "title": "Missing VIN or placed-in-service date on a claimed vehicle",
+      "severity": "error",
+      "condition": "f8936sa_vin is blank OR f8936sa_placed_in_service_date is blank (with a claimed credit)",
+      "message": "A clean vehicle credit is claimed but the VIN (line 2) and/or the placed-in-service date (line 3) is missing. The VIN and placed-in-service date are required to substantiate the credit and are validated against the IRS seller-report database. Enter both."
+    },
+    {
+      "diagnostic_id": "D_8936_006",
+      "title": "Used vehicle sales price over $25,000 — doesn't qualify",
+      "severity": "error",
+      "condition": "f8936sa_vehicle_type == 'used' AND f8936sa_sales_price > 25000",
+      "message": "This previously-owned clean vehicle has a sales price over $25,000 (line 13e). The §25E used clean vehicle credit is only available when the sales price does not exceed $25,000. No used credit."
+    },
+    {
+      "diagnostic_id": "D_8936_007",
+      "title": "New-vehicle tentative credit comes from the seller report",
+      "severity": "info",
+      "condition": "f8936sa_vehicle_type == 'new' (Part II/III)",
+      "message": "The new clean vehicle tentative credit (line 9) is the amount on the seller's report (filed via the IRS Energy Credits Online portal), reflecting the vehicle's critical-minerals/battery-components eligibility under §30D(b). The $3,750/$3,750/$7,500 tiers are statutory (§30D(b)) and are NOT printed on Form 8936 — do not assume $7,500 for a given vehicle."
+    }
+  ],
+  "tests": [
+    {
+      "scenario_name": "F8936SA-S4 — new personal EV, acquired before cutoff (qualifies, -> Form 8936 line 9)",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8936sa_make": "BMW",
+        "f8936sa_year": "2024",
+        "f8936sa_model": "i4",
+        "f8936sa_vehicle_type": "new",
+        "f8936sa_acquired_date": "2025-01-20",
+        "f8936sa_business_use_pct": 0,
+        "f8936sa_tentative_credit": "[VERIFY-ATS-KEY]",
+        "f8936sa_transferred_to_dealer": false,
+        "f8936sa_placed_in_service_date": "2025-01-25"
+      },
+      "expected_outputs": {
+        "line_11": 0,
+        "line_12": "[VERIFY-ATS-KEY]",
+        "routes_to": "8936_line_9",
+        "D_8936_001": false
+      }
+    },
+    {
+      "scenario_name": "F8936SA-T2 — acquired after 9/30/2025 (D_8936_001)",
+      "scenario_type": "edge_case",
+      "inputs": {
+        "tax_year": 2025,
+        "f8936sa_vehicle_type": "new",
+        "f8936sa_acquired_date": "2025-10-15",
+        "f8936sa_tentative_credit": 7500,
+        "f8936sa_placed_in_service_date": "2025-10-20"
+      },
+      "expected_outputs": {
+        "credit": 0,
+        "D_8936_001": true
+      }
+    },
+    {
+      "scenario_name": "F8936SA-T3 — used vehicle (min 30%/$4,000)",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8936sa_sales_price": 20000,
+        "f8936sa_is_dependent": false,
+        "f8936sa_vehicle_type": "used",
+        "f8936sa_acquired_date": "2025-05-01",
+        "f8936sa_prior_used_credit_3yr": false
+      },
+      "expected_outputs": {
+        "line_15": 6000,
+        "line_17": 4000
+      }
+    },
+    {
+      "scenario_name": "F8936SA-T4 — used vehicle price over $25,000 (D_8936_006)",
+      "scenario_type": "edge_case",
+      "inputs": {
+        "tax_year": 2025,
+        "f8936sa_sales_price": 30000,
+        "f8936sa_vehicle_type": "used",
+        "f8936sa_acquired_date": "2025-05-01"
+      },
+      "expected_outputs": {
+        "line_17": 0,
+        "D_8936_006": true
+      }
+    },
+    {
+      "scenario_name": "F8936SA-T5 — commercial EV (30%, $7,500 cap)",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8936sa_gvwr": 8000,
+        "f8936sa_sec179": 0,
+        "f8936sa_cost_basis": 60000,
+        "f8936sa_vehicle_type": "commercial",
+        "f8936sa_acquired_date": "2025-03-01",
+        "f8936sa_incremental_cost": 9000,
+        "f8936sa_powered_by_gas_diesel": false
+      },
+      "expected_outputs": {
+        "line_21": 60000,
+        "line_22": 18000,
+        "line_24": 9000,
+        "line_26": 7500
+      }
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRC_30D_25E_45W",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §§30D, 25E, 45W — Clean vehicle credits (as amended by P.L. 119-21)",
+      "citation": "26 U.S.C. §§30D, 25E, 45W (2025); P.L. 119-21 (OBBBA, July 4, 2025); Notice 2025-9",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "clean_vehicle_credits"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§30D(b) new-vehicle $3,750+$3,750; §25E used; §45W commercial",
+          "excerpt_text": "§30D(b): the new clean vehicle credit = $3,750 (critical minerals requirement) + $3,750 (battery components requirement) = up to $7,500. The tentative credit for a specific vehicle is reported by the seller (the form face does not print the tier split). §25E: previously owned clean vehicle credit = lesser of $4,000 or 30% of the sale price (price <= $25,000). §45W: qualified commercial clean vehicle credit = lesser of 15% of basis (30% if not powered by a gasoline or diesel internal combustion engine) or the incremental cost; max $7,500 ($40,000 if GVWR >= 14,000 lb). P.L. 119-21 terminated all three for vehicles acquired after 9/30/2025.",
+          "summary_text": "§30D(b) $3,750+$3,750; §25E lesser $4,000/30%; §45W 15%/30% + incremental, max $7,500/$40,000; OBBBA 9/30/2025 cutoff.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_8936_INSTR",
+      "source_type": "official_instructions",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Instructions for Form 8936 (and Schedule A)",
+      "citation": "i8936 (2025); Cat. No. 67912V; dated Oct 14, 2025",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.0,
+      "topics": [
+        "clean_vehicle_credits"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "MAGI best-of-two-years + unused personal credit LOST + transfer repayment (verbatim)",
+          "excerpt_text": "Your modified AGI for 2024 or 2025 is not more than $150,000 ($300,000 MFJ/QSS; $225,000 HoH) [new]; not more than $75,000 ($150,000 MFJ/QSS; $112,500 HoH) [used]. If your filing status changes between the preceding and current year, use the threshold applicable to your filing status for the year tested. If you cannot use part of the personal portion of the credit because of the tax liability limit, the unused credit is lost. The unused personal portion of the credit cannot be carried back or forward to other tax years. Previously owned credit: the credit is equal to the lesser of $4,000 or 30% of the sales price. If directed by line 8a, 8d, 13a, or 13c, you must report the transferred amount on Schedule 2 (Form 1040), line 1b (new) or line 1c (used).",
+          "summary_text": "MAGI qualifies if <= cap for EITHER 2024 OR 2025 (denied only if over BOTH). Personal (new/used) unused portion LOST (no carryforward). Used = lesser $4,000 / 30% price. Transfer repayment: new -> Sch2 1b; used -> Sch2 1c.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "OBBBA 9/30/2025 acquired termination + 'acquired' definition (verbatim)",
+          "excerpt_text": "Clean vehicles acquired after September 30, 2025. Taxpayers cannot claim clean vehicle credits for new, previously owned, or commercial clean vehicles that they acquired after September 30, 2025. For purposes of sections 25E, 30D, and 45W, a vehicle is 'acquired' as of the date a written binding contract is entered into and a payment has been made. A payment includes a nominal down payment or a vehicle trade-in. For general information on modifications to sections 25E, 30D, and 45W under P.L. 119-21, see IRS.gov/EnergyCreditFAQs.",
+          "summary_text": "OBBBA: no credit (25E/30D/45W) for vehicles acquired after 9/30/2025. 'Acquired' = written binding contract + payment (incl. nominal down payment / trade-in). TY2025 partial year; TY2026 gone.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_8936SA_FORM",
+      "source_type": "official_form",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Schedule A (Form 8936) — Clean Vehicle Credit Amount",
+      "citation": "Schedule A (Form 8936) (2025); f8936sa.pdf; Attachment Sequence No. 69A; Cat. No. 93602W; Created 8/21/25",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "clean_vehicle_credits"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Per-vehicle gate (lines 5/6/7 acquired-before-10/1/2025) + credit calcs (verbatim)",
+          "excerpt_text": "Part I: 1a Year, 1b Make, 1c Model; 2 VIN; 3 date placed in service; 4a transfer to dealer? (enter transferred amount); 5 new clean vehicle acquired BEFORE OCTOBER 1, 2025 and placed in service during the tax year? Yes -> Part II; 6 previously owned clean vehicle acquired after 2022 and before October 1, 2025? Yes -> Part IV; 7 qualified commercial clean vehicle acquired after 2022 and before October 1, 2025? Yes -> Part V. Part II (business new): 8a resold within 30 days?; 8b filing with an individual return?; 8c 2025 MAGI test; 8d 2024 MAGI test (Yes on 8a/8d + transfer -> Schedule 2 line 1b); 9 tentative credit (seller report); 10 business/investment use %; 11 = line 9 × line 10 -> Form 8936 line 6. Part III (personal new): 12 = line 9 - line 11 -> Form 8936 line 9. Part IV (used): 13a resold 30 days / 13b-13c MAGI (Yes + transfer -> Schedule 2 line 1c); 13d prior credit within 3 years; 13e sales price more than $25,000? (Yes -> doesn't qualify); 13f acquired for use not resale; 13g dependent?; 14 sales price; 15 = line 14 × 30%; 16 maximum $4,000; 17 smaller of 15 or 16 -> Form 8936 line 14. Part V (commercial): 18d powered by gas/diesel? (drives 15% vs 30%); 18e GVWR; 19 cost or basis; 20 section 179; 21 = line 19 - line 20; 22 = line 21 × 15% (30% if 18d No); 23 incremental cost; 24 smaller of 22 or 23; 25 max $7,500 ($40,000 if GVWR >= 14,000); 26 smaller of 24 or 25 -> Form 8936 line 19. Complete a separate Schedule A for each vehicle.",
+          "summary_text": "Per vehicle. Lines 5/6/7 gate: acquired before 10/1/2025 (= on/before 9/30/2025). Business new = tentative × biz%; personal new = tentative - biz; used = min(30%×price, $4,000), price <= $25,000; commercial = min(15%/30% basis, incremental cost), max $7,500/$40,000. Transfer repayment: new -> Sch2 1b, used -> Sch2 1c.",
+          "is_key_excerpt": true
+        }
+      ]
+    }
+  ],
+  "state_conformity": null
+}

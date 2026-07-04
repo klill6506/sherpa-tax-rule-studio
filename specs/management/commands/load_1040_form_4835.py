@@ -188,6 +188,7 @@ EXISTING_SOURCES_TO_REFERENCE: list[str] = [
     "IRC_77",                 # §77 CCC loan-as-income election
     "IRC_451_EF",             # §451(e)/(f) crop-insurance / weather deferral
     "IRC_263A",               # §263A capitalization (line 30g)
+    "IRC_199A",               # §199A QBI (rental only if it rises to a §162 trade/business)
     "IRS_2025_8582_INSTR",    # Form 8582 passive-loss limitation
     "IRS_2025_6198_INSTR",    # Form 6198 at-risk limitation
     "IRS_2025_SCHE_INSTR",    # Schedule E lines 40/42 (where 4835 lands)
@@ -346,6 +347,11 @@ F4835_FACTS: list[dict] = [
      "notes": "PER ACTIVITY. NOT a numbered line — the Purpose-of-Form threshold. True -> WRONG form -> D_4835_MATPART (use Schedule F). Default False (4835 presupposes non-material participation)."},
     {"fact_key": "f4835_real_estate_professional", "label": "Real estate professional materially participating in THIS activity? (Y/N)", "data_type": "boolean", "sort_order": 5,
      "notes": "PER ACTIVITY. Page-3 exception: a real-estate-professional materially participating -> loss NOT subject to §469 -> escapes 8582 (D_4835_REPRO RED-defer; preparer-asserted)."},
+    {"fact_key": "f4835_qbi_trade_or_business", "label": "Does this farm rental rise to a §162 trade/business for §199A QBI? (preparer determination; Y/N)", "data_type": "boolean", "default_value": "false", "sort_order": 6,
+     "notes": ("PER ACTIVITY. §199A QBI determination — DEFAULT False (not QBI). 4835 crop-share rental is QBI "
+               "ONLY if it (a) rises to a §162 trade/business, (b) is a self-rental to a commonly-controlled "
+               "entity (§1.199A-1(b)(14)), or (c) meets the Rev. Proc. 2019-38 250-hour safe harbor. Facts-and-"
+               "circumstances; preparer asserts. Drives R-4835-QBI / D_4835_QBI. Do NOT auto-feed 8995/8995-A.")},
 
     # ── Part I income inputs ──
     {"fact_key": "f4835_livestock_crops_1", "label": "Line 1 — Income from production of livestock, produce, grains, and other crops", "data_type": "decimal", "default_value": "0", "sort_order": 10, "notes": "PER ACTIVITY. Right column -> L7."},
@@ -489,6 +495,17 @@ F4835_RULES: list[dict] = [
      "inputs": ["f4835_net_income_l32"], "outputs": [],
      "description": ("PER ACTIVITY. Purpose of Form: 'If you have net income on line 32, your tax may be less if you "
                      "figure it using Schedule J.' Informational routing (Schedule J is its own form unit).")},
+    {"rule_id": "R-4835-QBI", "title": "§199A QBI — only if the rental rises to a §162 trade/business (preparer-asserted)", "rule_type": "routing", "precedence": 12, "sort_order": 12,
+     "formula": ("If f4835_qbi_trade_or_business is True AND L32 > 0 -> the net (line 32) is QBI from a qualified "
+                 "trade/business and may feed Form 8995/8995-A. Else (DEFAULT) -> NOT QBI; no 8995/8995-A feed. "
+                 "Always -> D_4835_QBI (documents the determination)."),
+     "inputs": ["f4835_qbi_trade_or_business", "f4835_net_income_l32"], "outputs": [],
+     "description": ("PER ACTIVITY. §199A treats a rental as a trade/business ONLY if it (a) rises to a §162 "
+                     "trade/business, (b) is a self-rental to a commonly-controlled entity (§1.199A-1(b)(14)), or "
+                     "(c) meets the Rev. Proc. 2019-38 safe harbor. Non-material-participation crop-share rent is "
+                     "NOT automatically QBI — the spec does NOT auto-feed the QBI base; the preparer asserts "
+                     "f4835_qbi_trade_or_business. requires_human_review. The note's [VERIFY-QBI] item, resolved "
+                     "to preparer-determination (default not-QBI).")},
 ]
 
 F4835_LINES: list[dict] = [
@@ -600,6 +617,14 @@ F4835_DIAGNOSTICS: list[dict] = [
      "message": ("This activity shows net farm rental income on line 32. Your tax may be lower if you use Schedule J "
                  "(Form 1040) farm income averaging. Consider whether Schedule J applies."),
      "notes": "Info routing (Schedule J is a separate form unit). Verified off the Purpose of Form."},
+    {"diagnostic_id": "D_4835_QBI", "title": "§199A QBI is a preparer determination for farm rental", "severity": "info",
+     "condition": "always (form present) — routes on f4835_qbi_trade_or_business",
+     "message": ("Form 4835 farm rental income is qualified business income (§199A) ONLY if this rental rises to a "
+                 "§162 trade or business, is a self-rental to a commonly-controlled entity, or meets the Rev. Proc. "
+                 "2019-38 250-hour safe harbor. Non-material-participation crop-share rent is not automatically QBI. "
+                 "The software does not auto-include it in the QBI base — confirm the determination and set the QBI "
+                 "flag if it qualifies."),
+     "notes": "Info; the [VERIFY-QBI] note item. Default not-QBI; preparer asserts. requires_human_review."},
 ]
 
 F4835_SCENARIOS: list[dict] = [
@@ -669,6 +694,16 @@ F4835_SCENARIOS: list[dict] = [
                 "f4835_active_participation_A": True, "f4835_magi_for_pal": 80000}]},
      "expected_outputs": {"sche_line_40_total": 18000},
      "notes": "PER-ACTIVITY model: activity 1 +30,000, activity 2 loss -12,000 (allowed in full: at risk + active + MAGI<100k) -> Sch E line 40 = 30,000 - 12,000 = 18,000."},
+    {"scenario_name": "F4835-S3 — MeF ATS scenario 3 (income case; the tts consuming vector)", "scenario_type": "normal", "sort_order": 13,
+     "inputs": {"tax_year": 2025, "line_1": 17035, "line_9": 879, "line_14": 350, "line_17": 690, "line_23": 1355,
+                "line_26": 2700, "f4835_active_participation_A": True, "f4835_material_participation": False,
+                "f4835_all_at_risk_34a": True},
+     "expected_outputs": {"line_7": 17035, "line_31": 5974, "line_32": 11061,
+                          "writes_sche_line_40": 11061, "writes_sche_line_42": 17035, "feeds_schse": False},
+     "notes": ("IRS 1040 MeF ATS scenario 3 Form 4835 (fictional taxpayer, not PII). L7=17,035; L31=879+350+690+"
+               "1,355+2,700=5,974; L32=17,035-5,974=11,061 income -> Sch E line 40=11,061, Sch E line 42=17,035; "
+               "NOTHING to Schedule SE (in S3 the SE tax comes only from the taxpayer's separate Schedule F). This "
+               "is the exact vector the tts-tax-app S3 build must reproduce.")},
 ]
 
 F4835_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -695,6 +730,8 @@ F4835_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-4835-263A", "IRC_263A", "primary", "§263A uniform capitalization on line 30g"),
     ("R-4835-263A", "IRS_2025_4835_INSTR", "secondary", "'How to report' — 30g parentheses, '263A' to the left"),
     ("R-4835-SCHJ", "IRS_2025_4835_FORM", "secondary", "Purpose of Form: net income on line 32 -> Schedule J may lower tax"),
+    ("R-4835-QBI", "IRC_199A", "primary", "§199A QBI = §162 trade/business; rental only if it rises to that / self-rental / RP 2019-38 safe harbor"),
+    ("R-4835-QBI", "IRS_PUB_225", "secondary", "Pub 225 QBI-for-farm-rental narrative (facts-and-circumstances)"),
 ]
 
 
@@ -711,6 +748,7 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRC_77", "4835", "informs"),
     ("IRC_451_EF", "4835", "informs"),
     ("IRC_263A", "4835", "informs"),
+    ("IRC_199A", "4835", "informs"),
 ]
 
 

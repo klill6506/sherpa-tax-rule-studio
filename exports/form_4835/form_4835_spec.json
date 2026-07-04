@@ -1,6 +1,6 @@
 {
   "export_version": "1.0",
-  "exported_at": "2026-07-04T13:22:47.565325+00:00",
+  "exported_at": "2026-07-04T15:36:30.418047+00:00",
   "metadata": {
     "form_number": "4835",
     "form_title": "Form 4835 — Farm Rental Income and Expenses (TY2025)",
@@ -67,6 +67,17 @@
       "choices": null,
       "sort_order": 5,
       "notes": "PER ACTIVITY. Page-3 exception: a real-estate-professional materially participating -> loss NOT subject to §469 -> escapes 8582 (D_4835_REPRO RED-defer; preparer-asserted)."
+    },
+    {
+      "fact_key": "f4835_qbi_trade_or_business",
+      "label": "Does this farm rental rise to a §162 trade/business for §199A QBI? (preparer determination; Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": "false",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 6,
+      "notes": "PER ACTIVITY. §199A QBI determination — DEFAULT False (not QBI). 4835 crop-share rental is QBI ONLY if it (a) rises to a §162 trade/business, (b) is a self-rental to a commonly-controlled entity (§1.199A-1(b)(14)), or (c) meets the Rev. Proc. 2019-38 250-hour safe harbor. Facts-and-circumstances; preparer asserts. Drives R-4835-QBI / D_4835_QBI. Do NOT auto-feed 8995/8995-A."
     },
     {
       "fact_key": "f4835_livestock_crops_1",
@@ -1049,9 +1060,197 @@
           "excerpt": null
         }
       ]
+    },
+    {
+      "rule_id": "R-4835-QBI",
+      "title": "§199A QBI — only if the rental rises to a §162 trade/business (preparer-asserted)",
+      "description": "PER ACTIVITY. §199A treats a rental as a trade/business ONLY if it (a) rises to a §162 trade/business, (b) is a self-rental to a commonly-controlled entity (§1.199A-1(b)(14)), or (c) meets the Rev. Proc. 2019-38 safe harbor. Non-material-participation crop-share rent is NOT automatically QBI — the spec does NOT auto-feed the QBI base; the preparer asserts f4835_qbi_trade_or_business. requires_human_review. The note's [VERIFY-QBI] item, resolved to preparer-determination (default not-QBI).",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If f4835_qbi_trade_or_business is True AND L32 > 0 -> the net (line 32) is QBI from a qualified trade/business and may feed Form 8995/8995-A. Else (DEFAULT) -> NOT QBI; no 8995/8995-A feed. Always -> D_4835_QBI (documents the determination).",
+      "inputs": [
+        "f4835_qbi_trade_or_business",
+        "f4835_net_income_l32"
+      ],
+      "outputs": [],
+      "precedence": 12,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_PUB_225",
+          "title": "IRS Publication 225 — Farmer's Tax Guide",
+          "citation": "IRS Pub 225 (2024 ed.; 2025 ed. pending)",
+          "source_type": "official_publication",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Pub 225 QBI-for-farm-rental narrative (facts-and-circumstances)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_199A",
+          "title": "IRC §199A — Qualified Business Income Deduction",
+          "citation": "26 U.S.C. §199A (20% QBI deduction; §199A(b) combined amount; §199A(e)(3) qualified REIT dividends and PTP income)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "§199A QBI = §162 trade/business; rental only if it rises to that / self-rental / RP 2019-38 safe harbor",
+          "excerpt": null
+        }
+      ]
     }
   ],
   "line_map": [
+    {
+      "line_number": "3a",
+      "description": "Agricultural program payments",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8",
+      "description": "Car and truck expenses (attach Form 4562)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13",
+      "description": "Employee benefit programs other than on line 21",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "14",
+      "description": "Feed",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "15",
+      "description": "Fertilizers and lime",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16",
+      "description": "Freight and trucking",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9",
+      "description": "Chemicals",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22a",
+      "description": "Rent or lease — vehicles, machinery, and equipment",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22b",
+      "description": "Rent or lease — other (land, animals, etc.)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "23",
+      "description": "Repairs and maintenance",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "24",
+      "description": "Seeds and plants",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "25",
+      "description": "Storage and warehousing",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "26",
+      "description": "Supplies",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "27",
+      "description": "Taxes",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "28",
+      "description": "Utilities",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
     {
       "line_number": "A",
       "description": "Did you actively participate in the operation of this farm during 2025? (§469(i))",
@@ -1085,16 +1284,6 @@
     {
       "line_number": "2b",
       "description": "Cooperative distributions — taxable amount",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "3a",
-      "description": "Agricultural program payments",
       "line_type": "input",
       "calculation": "",
       "source_facts": [],
@@ -1203,26 +1392,6 @@
       "notes": ""
     },
     {
-      "line_number": "8",
-      "description": "Car and truck expenses (attach Form 4562)",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "9",
-      "description": "Chemicals",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
       "line_number": "10",
       "description": "Conservation expenses (≤25% gross farm income)",
       "line_type": "input",
@@ -1246,46 +1415,6 @@
       "line_number": "12",
       "description": "Depreciation and section 179 expense — from Form 4562",
       "line_type": "calculated",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "13",
-      "description": "Employee benefit programs other than on line 21",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "14",
-      "description": "Feed",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "15",
-      "description": "Fertilizers and lime",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "16",
-      "description": "Freight and trucking",
-      "line_type": "input",
       "calculation": "",
       "source_facts": [],
       "source_rules": [],
@@ -1345,86 +1474,6 @@
     {
       "line_number": "21",
       "description": "Pension and profit-sharing plans",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "22a",
-      "description": "Rent or lease — vehicles, machinery, and equipment",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "22b",
-      "description": "Rent or lease — other (land, animals, etc.)",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "23",
-      "description": "Repairs and maintenance",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "24",
-      "description": "Seeds and plants",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "25",
-      "description": "Storage and warehousing",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "26",
-      "description": "Supplies",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "27",
-      "description": "Taxes",
-      "line_type": "input",
-      "calculation": "",
-      "source_facts": [],
-      "source_rules": [],
-      "destination_form": null,
-      "notes": ""
-    },
-    {
-      "line_number": "28",
-      "description": "Utilities",
       "line_type": "input",
       "calculation": "",
       "source_facts": [],
@@ -1608,6 +1657,13 @@
       "severity": "error",
       "condition": "f4835_material_participation is True",
       "message": "This activity is on Form 4835, but you indicated you materially participated in the farm's operation or management. Form 4835 is only for landowners who did NOT materially participate — materially-participated farming (and its self-employment tax) belongs on Schedule F (Form 1040). Move this activity to Schedule F."
+    },
+    {
+      "diagnostic_id": "D_4835_QBI",
+      "title": "§199A QBI is a preparer determination for farm rental",
+      "severity": "info",
+      "condition": "always (form present) — routes on f4835_qbi_trade_or_business",
+      "message": "Form 4835 farm rental income is qualified business income (§199A) ONLY if this rental rises to a §162 trade or business, is a self-rental to a commonly-controlled entity, or meets the Rev. Proc. 2019-38 250-hour safe harbor. Non-material-participation crop-share rent is not automatically QBI. The software does not auto-include it in the QBI base — confirm the determination and set the QBI flag if it qualifies."
     },
     {
       "diagnostic_id": "D_4835_REPRO",
@@ -1863,6 +1919,30 @@
       "expected_outputs": {
         "sche_line_40_total": 18000
       }
+    },
+    {
+      "scenario_name": "F4835-S3 — MeF ATS scenario 3 (income case; the tts consuming vector)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 17035,
+        "line_9": 879,
+        "line_14": 350,
+        "line_17": 690,
+        "line_23": 1355,
+        "line_26": 2700,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_7": 17035,
+        "line_31": 5974,
+        "line_32": 11061,
+        "feeds_schse": false,
+        "writes_sche_line_40": 11061,
+        "writes_sche_line_42": 17035
+      }
     }
   ],
   "authority_sources": [
@@ -1885,6 +1965,43 @@
           "excerpt_label": "§1402(a)(1) CRP exclusion (summary)",
           "excerpt_text": "There shall be excluded from net earnings from self-employment payments under the Conservation Reserve Program (CRP) to an individual receiving social security benefits for old-age, survivors, or disability insurance.",
           "summary_text": "CRP payments (in Sch F line 4b) -> Sch SE line 1b negative for SS retirement/disability recipients.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_199A",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §199A — Qualified Business Income Deduction",
+      "citation": "26 U.S.C. §199A (20% QBI deduction; §199A(b) combined amount; §199A(e)(3) qualified REIT dividends and PTP income)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "qbi_deduction",
+        "passthrough",
+        "k1_passthrough"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§199A 20% deduction on QBI + REIT/PTP",
+          "excerpt_text": "There shall be allowed as a deduction an amount equal to … 20 percent of the qualified business income … plus … 20 percent of the aggregate amount of the qualified REIT dividends and qualified publicly traded partnership income.",
+          "summary_text": "§199A: 20% of QBI plus 20% of qualified REIT dividends and qualified PTP income.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§199A(a) — QBI deduction allowance",
+          "excerpt_text": "For taxable years beginning after December 31, 2017, an individual taxpayer (including through a pass-through entity) is allowed a deduction equal to the lesser of: (A) the combined qualified business income amount, or (B) 20% of the excess (if any) of taxable income over net capital gain. The deduction is available regardless of whether the taxpayer itemizes. Made permanent by OBBBA.",
+          "summary_text": "20% deduction on qualified business income, limited to taxable income less net capital gain.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§199A(b)-(d) — W-2/UBIA and SSTB limitations",
+          "excerpt_text": "For taxpayers above the threshold amount ($197,300 single / $394,600 MFJ for 2025), the QBI deduction for each qualified trade or business is limited to the greater of: (1) 50% of W-2 wages, or (2) 25% of W-2 wages plus 2.5% of the unadjusted basis immediately after acquisition (UBIA) of qualified property. Specified service trades or businesses (SSTBs) — health, law, accounting, actuarial science, performing arts, consulting, athletics, financial services, brokerage, or any trade or business where the principal asset is the reputation or skill of employees — are phased out entirely above the threshold range.",
+          "summary_text": "Above threshold: W-2/UBIA limits apply. SSTBs phased out entirely above threshold.",
           "is_key_excerpt": true
         }
       ]

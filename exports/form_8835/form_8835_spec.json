@@ -1,0 +1,1237 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-07-04T15:36:31.376304+00:00",
+  "metadata": {
+    "form_number": "8835",
+    "form_title": "Form 8835 — Renewable Electricity Production Credit (TY2025)",
+    "jurisdiction": "FED",
+    "entity_types": [
+      "1040"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft"
+  },
+  "facts": [
+    {
+      "fact_key": "f8835_registration_no",
+      "label": "Line 1 — IRS-issued registration number (elective-payment/transfer)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 1,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_resource_type",
+      "label": "Line 2a — resource type",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 2,
+      "notes": "PER FACILITY. enum: wind|closed_loop_biomass|geothermal|solar|offshore_wind|open_loop_biomass|landfill_gas|trash|hydropower|marine_hydrokinetic. Drives the rate tier."
+    },
+    {
+      "fact_key": "f8835_owner_name",
+      "label": "Line 2b — owner name (if different than filer)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 3,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_owner_tin",
+      "label": "Line 2b — owner TIN (if different than filer)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 4,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_facility_address",
+      "label": "Line 3a — facility address",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 5,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_latitude",
+      "label": "Line 3b(i) — latitude (+/-)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 6,
+      "notes": "PER FACILITY. Metadata (e-file)."
+    },
+    {
+      "fact_key": "f8835_longitude",
+      "label": "Line 3b(ii) — longitude (+/-)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 7,
+      "notes": "PER FACILITY. Metadata (e-file)."
+    },
+    {
+      "fact_key": "f8835_construction_begin_date",
+      "label": "Line 4 — date construction began (OBBBA gate)",
+      "data_type": "date",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 8,
+      "notes": "PER FACILITY. Must be BEFORE 2025-01-01 for a §45 qualified facility (all resources). >= 2025-01-01 -> D_8835_001."
+    },
+    {
+      "fact_key": "f8835_placed_in_service_date",
+      "label": "Line 5 — date placed in service",
+      "data_type": "date",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 9,
+      "notes": "PER FACILITY. Drives the rate tier (post-2021 / post-2022 / pre-2022) AND the 4-yr 4e-vs-1f routing window."
+    },
+    {
+      "fact_key": "f8835_expansion_existing",
+      "label": "Line 6 — expansion of an existing biomass facility? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 10,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_qf_req_lt_1mw",
+      "label": "Line 8a — max net output < 1 MW (ac)? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 11,
+      "notes": "PER FACILITY. Gates the ×5 increased credit."
+    },
+    {
+      "fact_key": "f8835_qf_req_before_1_29_2023",
+      "label": "Line 8b — construction began before 1/29/2023? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 12,
+      "notes": "PER FACILITY. Gates the ×5 increased credit."
+    },
+    {
+      "fact_key": "f8835_qf_req_pwa",
+      "label": "Line 8c — prevailing wage + apprenticeship met? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 13,
+      "notes": "PER FACILITY. Gates the ×5 increased credit; if Yes -> Form 7220 attach (D_8835_003)."
+    },
+    {
+      "fact_key": "f8835_qf_req_none",
+      "label": "Line 8d — none of the requirements met (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 14,
+      "notes": "PER FACILITY. No ×5 (line 9 = line 8)."
+    },
+    {
+      "fact_key": "f8835_domestic_content",
+      "label": "Line 9a — domestic content bonus qualifies? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 15,
+      "notes": "PER FACILITY. +10% of line 9 (line 10)."
+    },
+    {
+      "fact_key": "f8835_energy_community",
+      "label": "Line 10a — energy community bonus qualifies? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 16,
+      "notes": "PER FACILITY. +10% of line 9 (line 11)."
+    },
+    {
+      "fact_key": "f8835_nameplate_dc_kw",
+      "label": "Line 11a — nameplate capacity dc (kW), solar",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 17,
+      "notes": "PER FACILITY. Metadata."
+    },
+    {
+      "fact_key": "f8835_nameplate_ac_kw",
+      "label": "Line 12 — nameplate capacity ac (kW)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 18,
+      "notes": "PER FACILITY. Metadata (drives the <1MW test)."
+    },
+    {
+      "fact_key": "f8835_kwh_produced",
+      "label": "Line 1 col (a) — kilowatt-hours produced and sold",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 30,
+      "notes": "PER FACILITY. × applicable rate -> line 2."
+    },
+    {
+      "fact_key": "f8835_applicable_rate",
+      "label": "Line 1 col (b) — applicable rate ($/kWh, year-keyed)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 31,
+      "notes": "PER FACILITY. From RATE_2025 by resource + PIS tier (0.006 tier-1 post-2021; 0.003 tier-2; 0.006 hydro/marine post-2022)."
+    },
+    {
+      "fact_key": "f8835_phaseout_adjustment",
+      "label": "Line 3 — phaseout adjustment",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 32,
+      "notes": "PER FACILITY. Reference-price phaseout (rare; 0 for 2025 wind/solar)."
+    },
+    {
+      "fact_key": "f8835_taxexempt_bond_fraction",
+      "label": "Line 5a — tax-exempt bond fraction",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 33,
+      "notes": "PER FACILITY. bond proceeds / additions to capital. line 5d = min(line4×5a, line4×15%)."
+    },
+    {
+      "fact_key": "f8835_wind_phasedown_l7g",
+      "label": "Line 7g — wind construction-year phasedown total",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 34,
+      "notes": "PER FACILITY. 0 for facilities placed in service after 2021 (lines 7a-7f each 0). Render-skip in v1."
+    },
+    {
+      "fact_key": "f8835_epe_2024_nonconforming",
+      "label": "Line 13 — §6417 EPE 2024-construction nonconforming? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 35,
+      "notes": "PER FACILITY. If True -> line 13 = line 12 × 90%; else line 13 = line 12. Rare edge."
+    },
+    {
+      "fact_key": "f8835_passthrough_credit",
+      "label": "Line 14 — §45 credit from pass-through (K-1 / 1099-PATR)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 36,
+      "notes": "PER RETURN. K-1 1065 box15 AB / 1120-S box13 AB / 1041 box13 J / 1099-PATR box12. Pass-through-only -> report on 3800 directly."
+    },
+    {
+      "fact_key": "f8835_patron_beneficiary_alloc",
+      "label": "Line 16 — amount allocated to patrons/beneficiaries",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 37,
+      "notes": "PER RETURN. Cooperative/estate/trust allocation (line 17 = 15 - 16)."
+    },
+    {
+      "fact_key": "f8835_credit_before_reduction_l4",
+      "label": "Line 4 — credit before reduction (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 60,
+      "notes": "OUTPUT. = line 2 - line 3."
+    },
+    {
+      "fact_key": "f8835_credit_after_bond_l8",
+      "label": "Line 8 — credit after bond/phasedown (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 61,
+      "notes": "OUTPUT. = line 6 - line 7g; line 6 = line 4 - line 5d."
+    },
+    {
+      "fact_key": "f8835_increased_credit_l9",
+      "label": "Line 9 — increased credit (×5 if Q8) (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 62,
+      "notes": "OUTPUT. = line 8 ×5 if 8a/8b/8c else line 8."
+    },
+    {
+      "fact_key": "f8835_total_credit_l12",
+      "label": "Line 12 — total credit (9+10+11) (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 63,
+      "notes": "OUTPUT. = line 9 + domestic-content 10 + energy-community 11."
+    },
+    {
+      "fact_key": "f8835_total_l15",
+      "label": "Line 15 — total to Form 3800 (13+14) (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 64,
+      "notes": "OUTPUT. = line 13 + line 14 -> Form 3800 Part III line 4e (within 4-yr PIS window) or 1f."
+    },
+    {
+      "fact_key": "f8835_route_3800_line",
+      "label": "Routing target on Form 3800 (4e or 1f) (output)",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 65,
+      "notes": "OUTPUT. '4e' if electricity produced within the 4-yr period from PIS; else '1f'."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "R-8835-OBBBA",
+      "title": "§45 before-2025 begin-construction gate (all resources)",
+      "description": "PER FACILITY. HIGHEST precedence. VERIFIED verbatim off the FINAL 2025 i8835 (Cat. 55349M): EVERY §45 resource requires 'the construction of which begins before 2025' — no per-resource variance. NOT the §45Y/§48E after-12/31/2025 termination (D_8835_004). Year-keyed cutoff.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If f8835_construction_begin_date >= SEC45_BEGIN_CONSTRUCTION_CUTOFF[year] (2025-01-01) -> facility NOT §45-qualified -> D_8835_001; credit = 0.",
+      "inputs": [
+        "f8835_construction_begin_date"
+      ],
+      "outputs": [],
+      "precedence": 1,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_INSTR",
+          "title": "2025 Instructions for Form 8835",
+          "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Qualified facilities — construction begins before 2025 (all resources)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_45",
+          "title": "IRC §45 — Electricity produced from certain renewable resources (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §45 (2025); P.L. 119-21 (OBBBA, July 4, 2025)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "§45(d) begin-construction-before-2025 qualified facility",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-RATE",
+      "title": "Line 2 — kWh × applicable rate (year-keyed)",
+      "description": "PER FACILITY. 2025 rates VERIFIED off the form pre-print + the 'Credit rates. For calendar year 2025' instruction (Fed. Reg. 2025-09366 inflation adjustment). 2026 UNPUBLISHED -> D_8835_RATE_YEAR + re-pin (the Sch F 2026 precedent).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 2 = f8835_kwh_produced × f8835_applicable_rate. Rate from RATE_2025[resource] by PIS tier (0.006 tier-1 post-2021; 0.003 tier-2; 0.006 hydro/marine post-2022; 3.0¢/1.5¢ pre-2022).",
+      "inputs": [
+        "f8835_kwh_produced",
+        "f8835_applicable_rate",
+        "f8835_resource_type",
+        "f8835_placed_in_service_date"
+      ],
+      "outputs": [
+        "2"
+      ],
+      "precedence": 2,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_FORM",
+          "title": "2025 Form 8835 — Renewable Electricity Production Credit",
+          "citation": "Form 8835 (2025); f8835.pdf; Attachment Sequence No. 835; Cat. No. 14954R; Created 9/16/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Part II pre-printed rate table ($0.006 / $0.003)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_8835_INSTR",
+          "title": "2025 Instructions for Form 8835",
+          "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Credit rates for calendar year 2025 (Fed. Reg. 2025-09366)",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-REDUCE",
+      "title": "Lines 4-8 — phaseout, tax-exempt bond, wind phasedown",
+      "description": "PER FACILITY. The tax-exempt-bond reduction (§45(b)(3), 15% cap) and the pre-2022 wind construction-year phasedown (7a-7g; 0 post-2021, render-skip).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 4 = line 2 - line 3; line 5d = min(line 4 × bond_fraction, line 4 × 0.15); line 6 = line 4 - line 5d; line 8 = line 6 - line 7g (wind phasedown, 0 for post-2021 facilities).",
+      "inputs": [
+        "f8835_phaseout_adjustment",
+        "f8835_taxexempt_bond_fraction",
+        "f8835_wind_phasedown_l7g"
+      ],
+      "outputs": [
+        "4",
+        "6",
+        "8"
+      ],
+      "precedence": 3,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_FORM",
+          "title": "2025 Form 8835 — Renewable Electricity Production Credit",
+          "citation": "Form 8835 (2025); f8835.pdf; Attachment Sequence No. 835; Cat. No. 14954R; Created 9/16/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Lines 4-8: phaseout, tax-exempt bond (15%), wind phasedown",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-INCREASED",
+      "title": "Line 9 — ×5 increased credit (Q8 gate)",
+      "description": "PER FACILITY. §45(b)(6): ×5 for <1MW OR began-before-1/29/2023 OR prevailing-wage-and-apprenticeship. The $0.006 form rate is the REDUCED rate; ×5 restores the full credit.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 9 = line 8 × 5 if (8a OR 8b OR 8c) else line 8. If 8c (PWA) -> Form 7220 attach (D_8835_003).",
+      "inputs": [
+        "f8835_credit_after_bond_l8",
+        "f8835_qf_req_lt_1mw",
+        "f8835_qf_req_before_1_29_2023",
+        "f8835_qf_req_pwa"
+      ],
+      "outputs": [
+        "9"
+      ],
+      "precedence": 4,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_INSTR",
+          "title": "2025 Instructions for Form 8835",
+          "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Increased credit ×5 (<1MW / before 1/29/2023 / PWA)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_45",
+          "title": "IRC §45 — Electricity produced from certain renewable resources (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §45 (2025); P.L. 119-21 (OBBBA, July 4, 2025)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§45(b)(6) increased credit amount",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-BONUS",
+      "title": "Lines 10-12 — domestic content / energy community +10% each",
+      "description": "PER FACILITY. §45(b)(9) domestic content (+10% of line 9) and §45(b)(11) energy community (+10% of line 9), BOTH computed on the post-×5 line-9 amount. Line 12 stacks them.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "line 10 = line 9 × 0.10 if domestic_content; line 11 = line 9 × 0.10 if energy_community; line 12 = line 9 + line 10 + line 11.",
+      "inputs": [
+        "f8835_increased_credit_l9",
+        "f8835_domestic_content",
+        "f8835_energy_community"
+      ],
+      "outputs": [
+        "10",
+        "11",
+        "12"
+      ],
+      "precedence": 5,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_INSTR",
+          "title": "2025 Instructions for Form 8835",
+          "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Domestic content (+10%) / energy community (+10%) of line 9",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_45",
+          "title": "IRC §45 — Electricity produced from certain renewable resources (as amended by P.L. 119-21)",
+          "citation": "26 U.S.C. §45 (2025); P.L. 119-21 (OBBBA, July 4, 2025)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§45(b)(9) domestic content / §45(b)(11) energy community",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-ROUTE",
+      "title": "Line 15 -> Form 3800 Part III line 4e (4-yr PIS window) or 1f",
+      "description": "PER FACILITY. VERIFIED verbatim off the line-15 face: 'for electricity produced during the 4-year period beginning on the date the facility was placed in service ... Form 3800, Part III, line 4e. For all other production ... line 1f.' Line 13 handles the rare §6417 EPE 2024-construction 90% phaseout.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "line 13 = line 12 × 0.90 if EPE-2024-nonconforming else line 12; line 15 = line 13 + line 14; route -> Form 3800 Part III line 4e if electricity produced within 4 years of PIS, else line 1f.",
+      "inputs": [
+        "f8835_total_credit_l12",
+        "f8835_epe_2024_nonconforming",
+        "f8835_passthrough_credit",
+        "f8835_placed_in_service_date"
+      ],
+      "outputs": [
+        "13",
+        "15"
+      ],
+      "precedence": 6,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_FORM",
+          "title": "2025 Form 8835 — Renewable Electricity Production Credit",
+          "citation": "Form 8835 (2025); f8835.pdf; Attachment Sequence No. 835; Cat. No. 14954R; Created 9/16/25",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 15 -> Form 3800 line 4e (4-yr PIS window) or 1f",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-8835-PASSTHROUGH",
+      "title": "Line 14 — pass-through §45 credit (K-1 / 1099-PATR)",
+      "description": "PER RETURN. The common 1040 path (a filer rarely owns a qualified facility directly). VERIFIED off the i8835 line-14 codes. §6418 transferred credits (K-1 codes BC) route via the Form 3800 transferee rules — out of scope here.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "line 14 = §45 credit from K-1 (1065 box15 AB / 1120-S box13 AB / 1041 box13 J) or 1099-PATR box 12. If the ONLY credit is pass-through -> report directly on Form 3800 line 1f/4e (skip Form 8835).",
+      "inputs": [
+        "f8835_passthrough_credit"
+      ],
+      "outputs": [
+        "14"
+      ],
+      "precedence": 7,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_8835_INSTR",
+          "title": "2025 Instructions for Form 8835",
+          "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+          "source_type": "official_instructions",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 14 pass-through K-1 codes; pass-through-only -> 3800 directly",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "line_map": [
+    {
+      "line_number": "1",
+      "description": "IRS-issued registration number (elective-payment/transfer)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2a",
+      "description": "Type (wind, closed-loop biomass, geothermal, solar, etc.)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2b",
+      "description": "Owner name + TIN, if different than filer",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3a",
+      "description": "Address of the facility",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3b",
+      "description": "Coordinates (latitude / longitude, +/-)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4",
+      "description": "Date construction began (OBBBA gate — must be before 2025)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5",
+      "description": "Date placed in service (drives rate tier + 4e/1f window)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "6",
+      "description": "Expansion of an existing biomass facility?",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "7",
+      "description": "Reserved for future use",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8a",
+      "description": "Yes — max net output < 1 MW (ac)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8b",
+      "description": "Yes — construction began before January 29, 2023",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8c",
+      "description": "Yes — prevailing wage (§45(b)(7)(A)) + apprenticeship (§45(b)(8)) met",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8d",
+      "description": "No — facility does not meet the qualified facility requirements",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9a",
+      "description": "Domestic content bonus — Yes (§45(b)(9)(B), 10%)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9b",
+      "description": "Domestic content bonus — No",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10a",
+      "description": "Energy community bonus — Yes (§45(b)(11)(B), 10%)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10b",
+      "description": "Energy community bonus — No",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10c",
+      "description": "Energy community bonus — Not applicable",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "11a",
+      "description": "Nameplate capacity dc (kW) — solar",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "12",
+      "description": "Nameplate capacity ac (kW) — all generating properties",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-1",
+      "description": "kWh produced and sold × rate, by resource (1a-1j)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-2",
+      "description": "Add column (c) of lines 1a-1j",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-3",
+      "description": "Phaseout adjustment",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-4",
+      "description": "Credit before reduction. Subtract line 3 from line 2",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-5a",
+      "description": "Tax-exempt bond fraction (proceeds / capital additions)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-5d",
+      "description": "Smaller of line 4 × 5a or line 4 × 15%",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-6",
+      "description": "Subtract line 5d from line 4",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-7g",
+      "description": "Wind construction-year phasedown total (7a-7f)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-8",
+      "description": "Subtract line 7g from line 6",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-9",
+      "description": "Increased credit: line 8 × 5.0 if a Q8 Yes box; else line 8",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-10",
+      "description": "Domestic content bonus: line 9 × 10% if qualify",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-11",
+      "description": "Energy community bonus: line 9 × 10% if qualify",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-12",
+      "description": "Add lines 9, 10, and 11",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-13",
+      "description": "Elective-payment phaseout (×90% for a 2024-construction nonconforming EPE facility)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-14",
+      "description": "§45 credit from pass-through (partnerships, S corps, coops, estates, trusts)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-15",
+      "description": "Add lines 13 and 14 -> Form 3800 Part III line 4e (4-yr PIS window) or 1f",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-16",
+      "description": "Amount allocated to patrons/beneficiaries",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "P2-17",
+      "description": "Coops/estates/trusts: line 15 - line 16 -> Form 3800 line 4e/1f",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "D_8835_001",
+      "title": "Construction began in/after 2025 — not a §45 qualified facility (OBBBA)",
+      "severity": "error",
+      "condition": "f8835_construction_begin_date >= 2025-01-01",
+      "message": "This facility's construction began on or after January 1, 2025. Under IRC §45 (as amended by P.L. 119-21), a qualified facility for the renewable electricity production credit must have construction beginning BEFORE 2025 — this applies to every resource type (wind, biomass, geothermal, solar, landfill gas, trash, hydropower, marine/hydrokinetic). No §45 credit."
+    },
+    {
+      "diagnostic_id": "D_8835_002",
+      "title": "Bonus credit claimed without supporting eligibility",
+      "severity": "warning",
+      "condition": "f8835_domestic_content or f8835_energy_community or a Q8 box is set without substantiation",
+      "message": "A bonus/increased credit is claimed (increased ×5, domestic content, or energy community) — the software honors the amount but does not verify the underlying eligibility (prevailing wage & apprenticeship records, domestic-content certification, energy-community location). Confirm the substantiation is on file."
+    },
+    {
+      "diagnostic_id": "D_8835_003",
+      "title": "×5 via prevailing wage/apprenticeship (8c) — attach Form 7220",
+      "severity": "warning",
+      "condition": "f8835_qf_req_pwa is True",
+      "message": "You claimed the ×5 increased credit via the prevailing wage and apprenticeship requirements (line 8c). New for 2025: Form 7220 (Prevailing Wage and Apprenticeship Verification and Corrections) must be attached to the return. The software does not generate Form 7220 — prepare and attach it."
+    },
+    {
+      "diagnostic_id": "D_8835_004",
+      "title": "§45 (Form 8835) is NOT the §45Y/§48E clean-electricity credit",
+      "severity": "info",
+      "condition": "always (form present) — modeling guard",
+      "message": "Form 8835 is the IRC §45 production credit (facilities begun before 2025). Do not confuse it with the §45Y Clean Electricity Production Credit or §48E Clean Electricity Investment Credit (different forms), which OBBBA terminated for wind/solar construction beginning AFTER December 31, 2025. The two regimes have different cutoffs and different forms."
+    },
+    {
+      "diagnostic_id": "D_8835_RATE_YEAR",
+      "title": "Applicable rate not published for this tax year",
+      "severity": "error",
+      "condition": "tax_year not in APPLICABLE_RATE_BY_YEAR",
+      "message": "The §45 applicable credit rate is inflation-adjusted and published annually (Federal Register). The rate for this tax year is not yet pinned in the software — the credit is not computed. Re-pin the rate from the year's IRS inflation-adjustment notice."
+    }
+  ],
+  "tests": [
+    {
+      "scenario_name": "F8835-S4 — MeF ATS scenario 4 solar facility (×5 -> $13,200 -> 3800 line 4e)",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8835_qf_req_pwa": true,
+        "f8835_kwh_produced": 440000,
+        "f8835_qf_req_lt_1mw": true,
+        "f8835_resource_type": "solar",
+        "f8835_applicable_rate": "0.006",
+        "f8835_domestic_content": false,
+        "f8835_energy_community": false,
+        "f8835_placed_in_service_date": "2023-09-22",
+        "f8835_construction_begin_date": "2017-08-15",
+        "f8835_qf_req_before_1_29_2023": true
+      },
+      "expected_outputs": {
+        "line_2": 2640,
+        "line_4": 2640,
+        "line_8": 2640,
+        "line_9": 13200,
+        "line_12": 13200,
+        "line_15": 13200,
+        "D_8835_003": true,
+        "route_3800_line": "4e"
+      }
+    },
+    {
+      "scenario_name": "F8835-T2 — OBBBA gate: construction began in 2025 (D_8835_001)",
+      "scenario_type": "edge_case",
+      "inputs": {
+        "tax_year": 2025,
+        "f8835_kwh_produced": 500000,
+        "f8835_resource_type": "solar",
+        "f8835_applicable_rate": "0.006",
+        "f8835_construction_begin_date": "2025-03-01"
+      },
+      "expected_outputs": {
+        "line_15": null,
+        "D_8835_001": true
+      }
+    },
+    {
+      "scenario_name": "F8835-T3 — no ×5 (no Q8 box): reduced rate only",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8835_qf_req_pwa": false,
+        "f8835_qf_req_none": true,
+        "f8835_kwh_produced": 1000000,
+        "f8835_qf_req_lt_1mw": false,
+        "f8835_resource_type": "wind",
+        "f8835_applicable_rate": "0.006",
+        "f8835_placed_in_service_date": "2024-01-10",
+        "f8835_construction_begin_date": "2022-06-01",
+        "f8835_qf_req_before_1_29_2023": false
+      },
+      "expected_outputs": {
+        "line_2": 6000,
+        "line_8": 6000,
+        "line_9": 6000,
+        "line_15": 6000,
+        "route_3800_line": "4e"
+      }
+    },
+    {
+      "scenario_name": "F8835-T4 — pass-through-only inflow (line 14)",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8835_passthrough_credit": 8500,
+        "f8835_placed_in_service_date": "2019-05-01"
+      },
+      "expected_outputs": {
+        "line_14": 8500,
+        "line_15": 8500,
+        "route_3800_line": "1f"
+      }
+    },
+    {
+      "scenario_name": "F8835-T5 — +10% domestic content + +10% energy community",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "f8835_qf_req_pwa": true,
+        "f8835_kwh_produced": 1000000,
+        "f8835_resource_type": "solar",
+        "f8835_applicable_rate": "0.006",
+        "f8835_domestic_content": true,
+        "f8835_energy_community": true,
+        "f8835_placed_in_service_date": "2024-06-01",
+        "f8835_construction_begin_date": "2023-01-01"
+      },
+      "expected_outputs": {
+        "line_8": 6000,
+        "line_9": 30000,
+        "line_10": 3000,
+        "line_11": 3000,
+        "line_12": 36000,
+        "route_3800_line": "4e"
+      }
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRC_45",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §45 — Electricity produced from certain renewable resources (as amended by P.L. 119-21)",
+      "citation": "26 U.S.C. §45 (2025); P.L. 119-21 (OBBBA, July 4, 2025)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "sec45_production_credit"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§45(d) qualified facility begin-construction + §45(b) increased/bonus credits",
+          "excerpt_text": "§45(d): qualified facilities (wind, closed/open-loop biomass, geothermal, solar, landfill gas, trash, qualified hydropower, marine and hydrokinetic) — the construction of which begins before January 1, 2025. §45(b)(6): the credit amount is multiplied by 5 for a facility meeting the <1 MW, begin-before-1/29/2023, or prevailing-wage-and-apprenticeship requirement. §45(b)(9): 10% domestic content bonus. §45(b)(11): 10% energy community bonus; P.L. 119-21 expanded the energy-community definition for advanced nuclear facilities (TY beginning after 7/4/2025).",
+          "summary_text": "§45 statutory basis: before-2025 begin-construction gate; ×5 increased credit; +10%/+10% bonuses; OBBBA nuclear energy-community.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_8835_FORM",
+      "source_type": "official_form",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Form 8835 — Renewable Electricity Production Credit",
+      "citation": "Form 8835 (2025); f8835.pdf; Attachment Sequence No. 835; Cat. No. 14954R; Created 9/16/25",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "sec45_production_credit"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Part I facility info + question 8 increased-credit gate (verbatim)",
+          "excerpt_text": "Part I: Line 1 IRS-issued registration number (for elective-payment/transfer election). Line 2a Type (wind, closed-loop biomass, geothermal, solar, open-loop biomass, landfill gas, etc.). Line 2b owner name + TIN if different than filer. Line 3a address; 3b coordinates (latitude/longitude, +/- sign). Line 4 Date construction began (MM/DD/YYYY). Line 5 Date placed in service (MM/DD/YYYY). Line 6 expansion of an existing biomass facility? Line 7 reserved. Line 8 Does the facility satisfy one of the qualified facility requirements? 8a Yes, maximum net output less than 1 megawatt (ac); 8b Yes, construction began before January 29, 2023; 8c Yes, meets the prevailing wage (§45(b)(7)(A)) and apprenticeship (§45(b)(8)) requirements; 8d No. Line 9 domestic content bonus? 9a Yes (§45(b)(9)(B) satisfied, 10%); 9b No. Line 10 energy community bonus? 10a Yes (§45(b)(11)(B), 10%); 10b No; 10c N/A. Line 11 nameplate capacity dc kW (11a solar). Line 12 nameplate capacity ac kW (12a solar/12b wind/12c other).",
+          "summary_text": "Line 4 begin-construction date = the OBBBA gate (before 2025). Line 5 PIS date drives the rate tier + the 4-yr 4e/1f routing window. Question 8 (8a <1MW / 8b before 1/29/2023 / 8c PWA) gates the ×5 increased credit; 8c PWA -> Form 7220 attach (new 2025). 9a domestic content, 10a energy community.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Part II rate table + line-15 routing to Form 3800 4e/1f (verbatim)",
+          "excerpt_text": "Part II line 1 (Kilowatt-hours produced and sold × Rate): 1a Wind $0.006; 1b Closed-loop biomass $0.006; 1c Geothermal $0.006; 1d Solar $0.006; 1e Offshore wind $0.006; 1f Open-loop biomass $0.003; 1g Landfill gas $0.003; 1h Trash $0.003; 1i Hydropower $0.003**; 1j Marine and hydrokinetic $0.003**. (** $0.006 for hydropower and marine/hydrokinetic placed in service after 2022.) Line 2 Add column (c) of lines 1a-1j. Line 3 Phaseout adjustment. Line 4 Credit before reduction (2 - 3). Lines 5a-5d tax-exempt bond reduction (smaller of line 4 × bond fraction or line 4 × 15%). Line 6 = line 4 - line 5d. Lines 7a-7g wind construction-year phasedown. Line 8 = line 6 - line 7g. Line 9 Increased credit: if a 'Yes' box in Part I question 8, multiply line 8 by 5.0; else line 8. Line 10 Domestic content bonus: line 9 × 10% if qualify. Line 11 Energy community bonus: line 9 × 10% if qualify. Line 12 Add lines 9, 10, 11. Line 13 elective-payment phaseout (line 12 × 90% for a nonconforming 2024-construction EPE facility; else line 12). Line 14 Renewable electricity production credit from partnerships, S corporations, cooperatives, estates, and trusts. Line 15 Add lines 13 and 14. Partnerships/S corporations report on Schedule K. All others: for electricity produced during the 4-year period beginning on the date the facility was placed in service, report on Form 3800, Part III, line 4e; for all other production, report on Form 3800, Part III, line 1f. Line 16 amount allocated to patrons/beneficiaries. Line 17 (coops/estates/trusts) line 15 - line 16 -> Form 3800 line 4e/1f.",
+          "summary_text": "line 2 = Σ(kWh × rate); line 4 = 2 - 3; line 6 = 4 - tax-exempt-bond; line 8 = 6 - wind phasedown; line 9 = 8 ×5 if Q8 box; line 10/11 = 9 ×10% (domestic content / energy community); line 12 = 9+10+11; line 15 = 13+14 -> Form 3800 line 4e (within 4-yr PIS window) or 1f. Rates pre-printed: $0.006 tier-1, $0.003 tier-2 (0.006 hydro/marine if PIS after 2022).",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_8835_INSTR",
+      "source_type": "official_instructions",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Instructions for Form 8835",
+      "citation": "i8835 (2025); Cat. No. 55349M; dated Dec 22, 2025",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.0,
+      "topics": [
+        "sec45_production_credit"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "2025 credit rates + ×5 increased credit + K-1 pass-through codes (verbatim)",
+          "excerpt_text": "Credit rates. For calendar year 2025: Qualified facilities placed in service after 2021 — wind, closed-loop biomass, geothermal, and solar, 0.6 cents per kWh; open-loop biomass, landfill gas, trash, qualified hydropower, and marine and hydrokinetic, 0.3 cents per kWh. Qualified facilities placed in service after 2022 — qualified hydropower and marine and hydrokinetic, 0.6 cents per kWh. Placed in service before 2022 — 3.0 cents (wind/CLB/geo) / 1.5 cents (others). See Federal Register 2025-09366 for the inflation adjustment. Increased Credit Amount: for a qualified facility that (a) has maximum net output less than 1 MW (ac), (b) began construction before January 29, 2023, or (c) satisfies the prevailing wage and apprenticeship requirements, the credit is multiplied by 5. If claiming via prevailing wage/apprenticeship (box 8c), attach Form 7220. Line 14 pass-through: Schedule K-1 (Form 1065) box 15 code AB; Schedule K-1 (Form 1120-S) box 13 code AB; Schedule K-1 (Form 1041) box 13 code J; Form 1099-PATR box 12. If the ONLY credit is the pass-through, report it directly on Form 3800, Part III, line 1f or 4e — don't file Form 8835.",
+          "summary_text": "2025 rate: 0.6¢ tier-1 / 0.3¢ tier-2 (post-2021); 0.6¢ hydro/marine (post-2022); 3.0¢/1.5¢ (pre-2022). ×5 if <1MW OR began before 1/29/2023 OR PWA (8c -> Form 7220). Pass-through at line 14 (K-1 codes); pass-through-only -> report directly on 3800 1f/4e.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Qualified facilities — before-2025 begin-construction cutoff (verbatim, all resources)",
+          "excerpt_text": "Wind facility originally placed in service after 1993, the construction of which begins before 2025. Closed-loop biomass facility originally placed in service after 1992, the construction of which begins before 2025. Open-loop biomass facility ... the construction of which begins before 2025. Geothermal facility originally placed in service after October 22, 2004, the construction of which begins before 2025. Solar energy facility ... the construction of which begins before 2025. Landfill gas or trash facility ... the construction of which begins before 2025. Hydropower facility ... the construction of which begins before 2025. Marine and hydrokinetic renewable energy facility ... the construction of which begins before 2025. [What's New] P.L. 119-21 (One Big Beautiful Bill Act) modified section 45 to expand the definition of 'energy community' for a qualified facility that is an advanced nuclear facility. This only applies for tax years beginning after July 4, 2025.",
+          "summary_text": "EVERY §45 resource: construction must begin BEFORE 2025 (no per-resource variance). OBBBA changed §45 ONLY for advanced-nuclear energy communities (TY after 7/4/2025) — NOT the before-2025 gate. NOT the §45Y/§48E after-12/31/2025 wind/solar termination (different forms).",
+          "is_key_excerpt": true
+        }
+      ]
+    }
+  ],
+  "state_conformity": null
+}

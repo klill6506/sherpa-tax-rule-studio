@@ -16,6 +16,54 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-04 — D-4: S3/S4 unblock campaign — Schedule A (8936) is a separate spec (key 8936_SCHA); OBBBA gates are first-class year-keyed gates
+
+**Decision:** Authoring the four MeF-ATS-blocking specs (4835, 8835, 8936, Schedule A
+(8936)), three sub-decisions: (a) **Schedule A (Form 8936) is exposed as its OWN RS form
+under the canonical lookup key `8936_SCHA`** (not folded into the 8936 export), following
+the `1120S_SCHL` convention — it is a distinct IRS form (Cat. 93602W, Attach. Seq. 69A),
+per-vehicle, while 8936 aggregates. (b) **The OBBBA termination gates are encoded as
+first-class, year-keyed, highest-precedence gates**, not buried in prose: 8936's
+"acquired after 9/30/2025 → no credit" runs per-vehicle on Schedule A before any credit
+math (`R-8936SA-OBBBA` / `D_8936_001`), and 8835's "construction begins before 2025"
+runs per-facility (`R-8835-OBBBA` / `D_8835_001`); both cutoffs live in year-keyed dicts
+(`OBBBA_ACQUIRED_CUTOFF`, `SEC45_BEGIN_CONSTRUCTION_CUTOFF`) so TY2026 forces a re-verify
+rather than silently reusing 2025. (c) **Disputed dollar amounts are left UNPINNED and
+flagged, not guessed** — the S4 new-vehicle tentative credit is blank on the scenario
+form (it comes from the seller report), so the S4 test asserts the gates + routing and
+carries the credit amount as `[VERIFY-ATS-KEY]`; the $3,750/$7,500 §30D(b) tiers are
+cited to the statute, not to Form 8936 (which doesn't print them).
+
+**Context:** Ken's campaign prompt directed authoring all four so the tts app can build
+S3 (Form 4835) and S4 (8936 + Schedule A + 8835). The prompt supplied tts-authored notes
+transcribed from the 2025 DRAFT forms; the Authoritative-Source Rule required re-verifying
+against the FINAL 2025 forms + instructions before locking (done via two subagents that
+read the final PDFs verbatim). The OBBBA (P.L. 119-21) energy-credit terminations are the
+highest-risk items and TY-sensitive.
+
+**Alternatives considered:**
+- Fold Schedule A into the 8936 export (one lookup key) — rejected: the tts build computes
+  per-vehicle Schedule A then aggregates; a separate spec mirrors that and matches the
+  probed `8936_SCHA` key + the `1120S_SCHL` precedent.
+- Encode the OBBBA cutoffs as inline constants for 2025 only — rejected: violates the
+  year-keyed-constants rule; a 2026 return would silently reuse the 2025 gate (and TY2026
+  the credits are gone entirely).
+- Assume $7,500 for the S4 EV credit to make the test concrete — rejected: the notes and
+  the form both say the tentative credit is seller-reported; guessing it would encode a
+  likely-wrong number (the BMW i4 is import-assembled and may not qualify at all).
+
+**Reasoning:** Separate-form modeling keeps the per-vehicle → aggregate flow honest and
+reusable. First-class year-keyed gates make the season-critical OBBBA terminations
+auditable and re-verify-forcing. Leaving disputed dollars unpinned honors the
+"flag, don't guess" tax-law rule and pushes the resolution to the ATS answer key / engine
+where it belongs.
+
+**Would reconsider if:** the tts build finds the aggregation cleaner with Schedule A
+folded into 8936; or the ATS answer key pins the S4 tentative credit (then update the S4
+test from `[VERIFY-ATS-KEY]` to the confirmed amount).
+
+---
+
 ## 2026-07-04 — D-3: Form 4835 loss path FULLY COMPUTED (not RED-deferred); SE-exclusion is a hard invariant
 
 **Decision:** The Form 4835 (Farm Rental Income and Expenses) spec computes the full
