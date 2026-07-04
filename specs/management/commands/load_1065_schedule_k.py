@@ -79,10 +79,12 @@ from specs.models import (
 )
 
 
-# FRESH-AUTHORED 2026-07-04 (Schedule K spine leg). Per D-1 + brief §5: author with
-# READY_TO_SEED=False, Ken walks the scope decisions (DONE — A/B/C above) + the reconcile,
-# THEN this flips to True and seeds. Held until the walk.
-READY_TO_SEED = False
+# FRESH-AUTHORED 2026-07-04 (Schedule K spine leg). Per D-1 + brief §5: authored with
+# READY_TO_SEED=False; Ken walked the scope decisions (A/B/C above) + the reconcile
+# (1065_core_reconcile_log — net-farm #7 CONFIRMED+FIXED in tts f61cfec; page-1 numbering
+# + box-9c left as tts-side build items, not RS-spec blockers). Ken: "flip seed export"
+# 2026-07-04 → FLIPPED.
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"

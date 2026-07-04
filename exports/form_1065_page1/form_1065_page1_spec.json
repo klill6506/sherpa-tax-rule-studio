@@ -1,0 +1,1236 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-07-04T23:02:29.704657+00:00",
+  "metadata": {
+    "form_number": "1065_PAGE1",
+    "form_title": "Form 1065 (2025) Page 1 — Ordinary Business Income (Income 1a-8, Deductions 9-22, Line 23 → Schedule K line 1)",
+    "jurisdiction": "FED",
+    "entity_types": [
+      "1065"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft"
+  },
+  "facts": [
+    {
+      "fact_key": "p1_1a_gross_receipts",
+      "label": "1a — Gross receipts or sales",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 1,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_1b_returns_allowances",
+      "label": "1b — Returns and allowances",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 2,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_1c_balance",
+      "label": "1c — Balance (1a − 1b)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 3,
+      "notes": "OUTPUT. 1c = 1a − 1b."
+    },
+    {
+      "fact_key": "p1_2_cogs",
+      "label": "2 — Cost of goods sold (← Form 1125-A)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 4,
+      "notes": "YELLOW pull from Form 1125-A line 8. D_1065P1_COGS nudges."
+    },
+    {
+      "fact_key": "p1_3_gross_profit",
+      "label": "3 — Gross profit (1c − 2)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 5,
+      "notes": "OUTPUT. 3 = 1c − 2."
+    },
+    {
+      "fact_key": "p1_4_other_ptr_income",
+      "label": "4 — Ordinary income (loss) from other partnerships/estates/trusts",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 6,
+      "notes": "Attach statement."
+    },
+    {
+      "fact_key": "p1_5_net_farm",
+      "label": "5 — Net farm profit (loss) (← Schedule F)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 7,
+      "notes": "YELLOW pull from Schedule F (Form 1040) line 34."
+    },
+    {
+      "fact_key": "p1_6_net_gain_4797",
+      "label": "6 — Net gain (loss) from Form 4797, Part II, line 17",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 8,
+      "notes": "YELLOW pull from Form 4797 Part II line 17. ⚠ Couples to the SE base (1065_SE worksheet 1d/2) and the §1245/§1250 recapture classification. D_1065P1_4797 guards."
+    },
+    {
+      "fact_key": "p1_7_other_income",
+      "label": "7 — Other income (loss)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 9,
+      "notes": "Attach statement."
+    },
+    {
+      "fact_key": "p1_8_total_income",
+      "label": "8 — Total income (loss) (Σ lines 3-7)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 10,
+      "notes": "OUTPUT. 8 = 3 + 4 + 5 + 6 + 7."
+    },
+    {
+      "fact_key": "p1_9_salaries_wages",
+      "label": "9 — Salaries and wages (less employment credits)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 11,
+      "notes": "Other than to partners."
+    },
+    {
+      "fact_key": "p1_10_guaranteed_payments",
+      "label": "10 — Guaranteed payments to partners (§707(c))",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 12,
+      "notes": "Ties to Schedule K line 4c (4a services + 4b capital). §707(c)."
+    },
+    {
+      "fact_key": "p1_11_repairs",
+      "label": "11 — Repairs and maintenance",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 13,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_12_bad_debts",
+      "label": "12 — Bad debts",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 14,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_13_rent",
+      "label": "13 — Rent",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 15,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_14_taxes_licenses",
+      "label": "14 — Taxes and licenses",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 16,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_15_interest",
+      "label": "15 — Interest",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 17,
+      "notes": "§163(j) business-interest limit tested on Schedule B Q24 / Form 8990 (L/M-B leg)."
+    },
+    {
+      "fact_key": "p1_16a_depreciation",
+      "label": "16a — Depreciation (← Form 4562)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 18,
+      "notes": "YELLOW pull from Form 4562. Carries OBBBA bonus/§179 (rides 4562)."
+    },
+    {
+      "fact_key": "p1_16b_depr_on_1125a",
+      "label": "16b — Less depreciation reported on 1125-A/elsewhere",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 19,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_16c_depr_balance",
+      "label": "16c — Depreciation balance (16a − 16b)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 20,
+      "notes": "OUTPUT. 16c = 16a − 16b."
+    },
+    {
+      "fact_key": "p1_17_depletion",
+      "label": "17 — Depletion (no oil/gas)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 21,
+      "notes": "Oil/gas depletion disallowed at entity (§703(a)(2)(F))."
+    },
+    {
+      "fact_key": "p1_18_retirement",
+      "label": "18 — Retirement plans, etc.",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 22,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_19_employee_benefits",
+      "label": "19 — Employee benefit programs",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 23,
+      "notes": ""
+    },
+    {
+      "fact_key": "p1_20_energy_efficient",
+      "label": "20 — Energy efficient commercial buildings (← Form 7205)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 24,
+      "notes": "§179D. YELLOW pull from Form 7205."
+    },
+    {
+      "fact_key": "p1_21_other_deductions",
+      "label": "21 — Other deductions (attach statement)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 25,
+      "notes": "Carries OBBBA §174A domestic R&E current deduction (tax years beginning after 2024). D_1065P1_174A."
+    },
+    {
+      "fact_key": "p1_22_total_deductions",
+      "label": "22 — Total deductions (Σ lines 9-21)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 26,
+      "notes": "OUTPUT. 22 = 9+10+11+12+13+14+15+16c+17+18+19+20+21."
+    },
+    {
+      "fact_key": "p1_23_ordinary_business_income",
+      "label": "23 — Ordinary business income (loss) (8 − 22)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 27,
+      "notes": "OUTPUT. THE key handoff: 23 = 8 − 22 → Schedule K line 1 (R-1065P1-23 / RECON-P1-K1)."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "R-1065P1-1C",
+      "title": "Line 1c balance = 1a − 1b",
+      "description": "f1065 page 1 line 1c.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "1c = line 1a (gross receipts/sales) − line 1b (returns and allowances).",
+      "inputs": [
+        "p1_1a_gross_receipts",
+        "p1_1b_returns_allowances"
+      ],
+      "outputs": [
+        "p1_1c_balance"
+      ],
+      "precedence": 1,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 1c = 1a − 1b",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-3",
+      "title": "Gross profit = 1c − 2 (COGS)",
+      "description": "f1065 page 1 line 3.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "3 = line 1c − line 2 (cost of goods sold ← Form 1125-A).",
+      "inputs": [
+        "p1_1c_balance",
+        "p1_2_cogs"
+      ],
+      "outputs": [
+        "p1_3_gross_profit"
+      ],
+      "precedence": 2,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 3 = 1c − 2 (COGS ← 1125-A)",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-8",
+      "title": "Total income = Σ lines 3-7",
+      "description": "f1065 page 1 line 8.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "8 = line 3 (gross profit) + line 4 (other partnerships/estates/trusts) + line 5 (net farm ← Sch F) + line 6 (net gain ← Form 4797 Part II line 17) + line 7 (other income).",
+      "inputs": [
+        "p1_3_gross_profit",
+        "p1_4_other_ptr_income",
+        "p1_5_net_farm",
+        "p1_6_net_gain_4797",
+        "p1_7_other_income"
+      ],
+      "outputs": [
+        "p1_8_total_income"
+      ],
+      "precedence": 3,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 8 = Σ lines 3-7",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_703",
+          "title": "IRC §703 — Partnership Computations (taxable income computed as an individual; separately-stated carve-outs; disallowed deductions)",
+          "citation": "26 U.S.C. §703(a), (a)(1), (a)(2), (b)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§703(a) partnership taxable income computed as an individual",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-16C",
+      "title": "Depreciation balance 16c = 16a − 16b",
+      "description": "f1065 page 1 line 16c. Avoids double-counting COGS depreciation.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "16c = line 16a (depreciation ← Form 4562) − line 16b (depr. reported on 1125-A/elsewhere).",
+      "inputs": [
+        "p1_16a_depreciation",
+        "p1_16b_depr_on_1125a"
+      ],
+      "outputs": [
+        "p1_16c_depr_balance"
+      ],
+      "precedence": 4,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 16c = 16a − 16b",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-22",
+      "title": "Total deductions = Σ lines 9-21 (16c for 16)",
+      "description": "f1065 page 1 line 22 (§703(a)).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "22 = line 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16c + 17 + 18 + 19 + 20 + 21. §703(a)(2) disallows six deductions at the entity level (personal exemptions, foreign taxes, charitable, NOL, individual itemized, oil/gas depletion) — none appear on page 1; charitable + §179 are separately stated on Schedule K instead.",
+      "inputs": [
+        "p1_9_salaries_wages",
+        "p1_10_guaranteed_payments",
+        "p1_11_repairs",
+        "p1_12_bad_debts",
+        "p1_13_rent",
+        "p1_14_taxes_licenses",
+        "p1_15_interest",
+        "p1_16c_depr_balance",
+        "p1_17_depletion",
+        "p1_18_retirement",
+        "p1_19_employee_benefits",
+        "p1_20_energy_efficient",
+        "p1_21_other_deductions"
+      ],
+      "outputs": [
+        "p1_22_total_deductions"
+      ],
+      "precedence": 5,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 22 = Σ lines 9-21",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_703",
+          "title": "IRC §703 — Partnership Computations (taxable income computed as an individual; separately-stated carve-outs; disallowed deductions)",
+          "citation": "26 U.S.C. §703(a), (a)(1), (a)(2), (b)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "§703(a)(1)/(a)(2) separately-stated items + disallowed deductions",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-23",
+      "title": "Ordinary business income = line 8 − line 22 → Schedule K line 1",
+      "description": "f1065 page 1 line 23 → Sch K line 1. The load-bearing handoff.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "23 = line 8 (total income) − line 22 (total deductions). This IS the partnership's ordinary trade-or-business income (§702(a)(8) / §703(a)) and flows to Schedule K line 1 (the entity→K handoff; RECON-P1-K1). ⚠ 2025 face: ordinary business income is line 23, NOT line 22.",
+      "inputs": [
+        "p1_8_total_income",
+        "p1_22_total_deductions"
+      ],
+      "outputs": [
+        "p1_23_ordinary_business_income"
+      ],
+      "precedence": 6,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 page 1 line 23 = 8 − 22 → Sch K line 1",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_702",
+          "title": "IRC §702 — Income and Credits of Partner (separately stated distributive share; character conduit)",
+          "citation": "26 U.S.C. §702(a), (a)(8), (b)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§702(a)(8) residual trade-or-business income",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_703",
+          "title": "IRC §703 — Partnership Computations (taxable income computed as an individual; separately-stated carve-outs; disallowed deductions)",
+          "citation": "26 U.S.C. §703(a), (a)(1), (a)(2), (b)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§703(a) partnership taxable income",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-1065P1-174A",
+      "title": "OBBBA §174A domestic R&E — current deduction (flag)",
+      "description": "i1065 2025 What's New (OBBBA). Surfaces the §174A election as a preparer determination.",
+      "rule_type": "conditional",
+      "conditions": {},
+      "formula": "OBBBA (P.L. 119-21): domestic research or experimental expenditures paid/incurred in tax years beginning after 2024 may be CURRENTLY deducted (line 21 other deductions) or amortized over ≥60 months by election under §174A(c). NEW for 2025 — a treatment choice, flagged (D_1065P1_174A), not auto-applied. (Foreign R&E stays §174 15-yr amortization.)",
+      "inputs": [
+        "p1_21_other_deductions"
+      ],
+      "outputs": [],
+      "precedence": 7,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_I1065",
+          "title": "2025 Instructions for Form 1065 — Analysis of Net Income (Loss), the K → K-1 correspondence, and the OBBBA (P.L. 119-21) What's New",
+          "citation": "Instructions for Form 1065 (2025), Cat. No. 11392V (dated Jan 14 2026), Analysis of Net Income + What's New + allocation (pp. 31/34)",
+          "source_type": "official_instructions",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "i1065 2025 What's New — §174A domestic R&E current deduction",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "line_map": [
+    {
+      "line_number": "1a",
+      "description": "Gross receipts or sales",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_1a_gross_receipts"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "1b",
+      "description": "Returns and allowances",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_1b_returns_allowances"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "1c",
+      "description": "Balance (1a − 1b)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-1C"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2",
+      "description": "Cost of goods sold (attach Form 1125-A)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "p1_2_cogs"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "YELLOW pull from Form 1125-A line 8."
+    },
+    {
+      "line_number": "3",
+      "description": "Gross profit (1c − 2)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-3"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4",
+      "description": "Ordinary income (loss) from other partnerships, estates, and trusts",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_4_other_ptr_income"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5",
+      "description": "Net farm profit (loss) (attach Schedule F)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "p1_5_net_farm"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "6",
+      "description": "Net gain (loss) from Form 4797, Part II, line 17",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "p1_6_net_gain_4797"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "7",
+      "description": "Other income (loss) (attach statement)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_7_other_income"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8",
+      "description": "Total income (loss) (Σ lines 3-7)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-8"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9",
+      "description": "Salaries and wages (less employment credits)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_9_salaries_wages"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10",
+      "description": "Guaranteed payments to partners",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_10_guaranteed_payments"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "11",
+      "description": "Repairs and maintenance",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_11_repairs"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "12",
+      "description": "Bad debts",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_12_bad_debts"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13",
+      "description": "Rent",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_13_rent"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "14",
+      "description": "Taxes and licenses",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_14_taxes_licenses"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "15",
+      "description": "Interest",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_15_interest"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16a",
+      "description": "Depreciation (attach Form 4562)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "p1_16a_depreciation"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16b",
+      "description": "Less depreciation reported on 1125-A and elsewhere",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_16b_depr_on_1125a"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16c",
+      "description": "Depreciation balance (16a − 16b)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-16C"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "17",
+      "description": "Depletion (do not deduct oil and gas depletion)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_17_depletion"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18",
+      "description": "Retirement plans, etc.",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_18_retirement"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "19",
+      "description": "Employee benefit programs",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_19_employee_benefits"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "20",
+      "description": "Energy efficient commercial buildings deduction (attach Form 7205)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "p1_20_energy_efficient"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "21",
+      "description": "Other deductions (attach statement)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "p1_21_other_deductions"
+      ],
+      "source_rules": [
+        "R-1065P1-174A"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22",
+      "description": "Total deductions (Σ lines 9-21)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-22"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "23",
+      "description": "Ordinary business income (loss) (line 8 − line 22)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-1065P1-23"
+      ],
+      "destination_form": "SCH_K_1065",
+      "notes": "→ Schedule K line 1 (the entity→K handoff)."
+    },
+    {
+      "line_number": "24",
+      "description": "Interest due under the look-back method (Form 8697)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "Tax/payment block — informational (not computed this leg)."
+    },
+    {
+      "line_number": "25",
+      "description": "Interest due under the look-back method — income forecast (Form 8866)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "Informational."
+    },
+    {
+      "line_number": "26",
+      "description": "BBA AAR imputed underpayment",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "Informational."
+    },
+    {
+      "line_number": "29",
+      "description": "Elective payment election amount (from Form 3800)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "Informational — ties to the S3/S4 credits (Form 3800)."
+    },
+    {
+      "line_number": "32",
+      "description": "Overpayment + direct-deposit routing/type/account (32a-32d)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": "32b/32c/32d NEW for 2025 (Exec. Order 14247). Informational."
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "D_1065P1_174A",
+      "title": "OBBBA §174A domestic R&E — deduct or amortize?",
+      "severity": "info",
+      "condition": "domestic R&E present in line 21",
+      "message": "OBBBA (2025): domestic research/experimental expenditures (tax years beginning after 2024) may be currently deducted here on line 21 or amortized over ≥60 months by §174A(c) election. This is a preparer/taxpayer choice — confirm the intended treatment. (Foreign R&E remains §174 15-year amortization.)"
+    },
+    {
+      "diagnostic_id": "D_1065P1_4797",
+      "title": "Line 6 net gain must come from Form 4797 Part II line 17",
+      "severity": "warning",
+      "condition": "p1_6_net_gain_4797 != 0",
+      "message": "Line 6 net gain (loss) carries from Form 4797, Part II, line 17. This amount feeds ordinary business income (line 23 → Schedule K line 1) AND the self-employment base (1065_SE worksheet lines 1d/2 back it out). Confirm the Form 4797 Part II §1245/§1250 recapture classification is correct — box 14a and line 23 both depend on it."
+    },
+    {
+      "diagnostic_id": "D_1065P1_COGS",
+      "title": "COGS present — confirm from Form 1125-A",
+      "severity": "warning",
+      "condition": "p1_2_cogs != 0 AND Form 1125-A not attached/linked",
+      "message": "Line 2 cost of goods sold should carry from Form 1125-A line 8. Confirm 1125-A is prepared and its line 8 ties to this amount — page-1 gross profit (line 3) depends on it."
+    }
+  ],
+  "tests": [
+    {
+      "scenario_name": "P1-1 — ordinary business income baseline (23 = 8 − 22)",
+      "scenario_type": "normal",
+      "inputs": {
+        "p1_2_cogs": 400000,
+        "p1_13_rent": 50000,
+        "p1_16a_depreciation": 30000,
+        "p1_9_salaries_wages": 200000,
+        "p1_1a_gross_receipts": 1000000,
+        "p1_1b_returns_allowances": 0,
+        "p1_10_guaranteed_payments": 100000
+      },
+      "expected_outputs": {
+        "p1_1c_balance": 1000000,
+        "p1_3_gross_profit": 600000,
+        "p1_8_total_income": 600000,
+        "p1_22_total_deductions": 380000,
+        "p1_23_ordinary_business_income": 220000
+      }
+    },
+    {
+      "scenario_name": "P1-2 — returns + 16b depreciation offset",
+      "scenario_type": "normal",
+      "inputs": {
+        "p1_2_cogs": 180000,
+        "p1_16a_depreciation": 40000,
+        "p1_9_salaries_wages": 90000,
+        "p1_16b_depr_on_1125a": 15000,
+        "p1_1a_gross_receipts": 500000,
+        "p1_1b_returns_allowances": 20000
+      },
+      "expected_outputs": {
+        "p1_1c_balance": 480000,
+        "p1_3_gross_profit": 300000,
+        "p1_8_total_income": 300000,
+        "p1_16c_depr_balance": 25000,
+        "p1_22_total_deductions": 115000,
+        "p1_23_ordinary_business_income": 185000
+      }
+    },
+    {
+      "scenario_name": "P1-3 — 4797 Part II gain in ordinary income (couples to SE)",
+      "scenario_type": "edge",
+      "inputs": {
+        "p1_11_repairs": 5000,
+        "p1_3_gross_profit": 0,
+        "p1_6_net_gain_4797": 30000,
+        "p1_1a_gross_receipts": 0
+      },
+      "expected_outputs": {
+        "D_1065P1_4797": true,
+        "p1_8_total_income": 30000,
+        "p1_22_total_deductions": 5000,
+        "p1_23_ordinary_business_income": 25000
+      }
+    },
+    {
+      "scenario_name": "P1-4 — ordinary LOSS (line 23 negative)",
+      "scenario_type": "edge",
+      "inputs": {
+        "p1_2_cogs": 150000,
+        "p1_13_rent": 60000,
+        "p1_16a_depreciation": 20000,
+        "p1_9_salaries_wages": 120000,
+        "p1_1a_gross_receipts": 300000
+      },
+      "expected_outputs": {
+        "p1_3_gross_profit": 150000,
+        "p1_8_total_income": 150000,
+        "p1_22_total_deductions": 200000,
+        "p1_23_ordinary_business_income": -50000
+      }
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRC_702",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §702 — Income and Credits of Partner (separately stated distributive share; character conduit)",
+      "citation": "26 U.S.C. §702(a), (a)(8), (b)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "partnership",
+        "schedule_k1",
+        "se_1402_partner",
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§702(a) — separately stated distributive share (opening)",
+          "excerpt_text": "In determining his income tax, each partner shall take into account separately his distributive share of the partnership's— (1) gains and losses from sales or exchanges of capital assets held for not more than 1 year, (2) gains and losses from sales or exchanges of capital assets held for more than 1 year, (3) gains and losses from sales or exchanges of property described in section 1231, (4) charitable contributions, (5) dividends with respect to which section 1(h)(11) or part VIII of subchapter B applies, (6) taxes, described in section 901, paid or accrued to foreign countries and to possessions of the United States, (7) other items of income, gain, loss, deduction, or credit, to the extent provided by regulations prescribed by the Secretary, and (8) taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a) requires each partner to separately state his distributive share of the enumerated items (capital gains ST/LT, §1231, charitable, dividends, foreign taxes, other regulatory items) plus (8) the residual trade/business income — this IS the Schedule K line structure.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(a) — Separately stated items",
+          "excerpt_text": "In determining income tax, each partner shall take into account separately the partner's distributive share of: (1) short-term capital gains/losses, (2) long-term capital gains/losses, (3) §1231 gains/losses, (4) charitable contributions, (5) dividends eligible for special rates, (6) taxes described in §901 (foreign tax credit), (7) other items required to be stated separately, and (8) taxable income or loss exclusive of items above.",
+          "summary_text": "Partners separately account for cap gains/losses, §1231, charitable, foreign tax, and other items.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(a)(8) — taxable income/loss distributive share",
+          "excerpt_text": "taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a)(8) is the residual trade-or-business income/loss distributive share referenced by §1402(a).",
+          "is_key_excerpt": false
+        },
+        {
+          "excerpt_label": "§702(a)(8) — taxable income/loss distributive share (→ Sch K line 1)",
+          "excerpt_text": "taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a)(8) is the residual ordinary trade-or-business income/loss — page-1 line 23 → Schedule K line 1.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(b) — character determined at the partnership level",
+          "excerpt_text": "The character of any item of income, gain, loss, deduction, or credit included in a partner's distributive share under paragraphs (1) through (7) of subsection (a) shall be determined as if such item were realized directly from the source from which realized by the partnership, or incurred in the same manner as incurred by the partnership.",
+          "summary_text": "Each separately-stated item keeps its partnership-level character in the partner's hands — the reason Schedule K lines 2-21 are broken out rather than folded into ordinary income.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_703",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §703 — Partnership Computations (taxable income computed as an individual; separately-stated carve-outs; disallowed deductions)",
+      "citation": "26 U.S.C. §703(a), (a)(1), (a)(2), (b)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "partnership",
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§703(a) — Prohibited deductions at partnership level",
+          "excerpt_text": "The taxable income of a partnership shall be computed in the same manner as an individual except: (1) items described in §702(a) shall be separately stated, (2) the following deductions shall NOT be allowed to the partnership: personal exemptions, foreign taxes (passed through), charitable contributions (passed through), net operating losses, and additional itemized deductions.",
+          "summary_text": "Partnership income computed like individual but without personal exemptions, NOLs, etc.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§703(a) — taxable income as an individual, with two exceptions",
+          "excerpt_text": "The taxable income of a partnership shall be computed in the same manner as in the case of an individual except that— (1) the items described in section 702(a) shall be separately stated, and (2) the following deductions shall not be allowed to the partnership: (A) the deductions for personal exemptions provided in section 151, (B) the deduction for taxes provided in section 164(a) with respect to taxes, described in section 901, paid or accrued to foreign countries and to possessions of the United States, (C) the deduction for charitable contributions provided in section 170, (D) the net operating loss deduction provided in section 172, (E) the additional itemized deductions for individuals provided in part VII of subchapter B (sec. 211 and following), and (F) the deduction for depletion under section 611 with respect to oil and gas wells.",
+          "summary_text": "Page-1 ordinary business income is partnership taxable income computed as an individual, minus the §702(a) separately-stated items (which go to Sch K) and minus the six disallowed entity-level deductions.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§703(b) — elections made at the partnership level",
+          "excerpt_text": "Any election affecting the computation of taxable income derived from a partnership shall be made by the partnership, except that any election under— (1) subsection (b)(5) or (c)(3) of section 108 (relating to income from discharge of indebtedness), (2) section 617 (relating to deduction and recapture of certain mining exploration expenditures), or (3) section 901 (relating to taxes of foreign countries and possessions of the United States), shall be made by each partner separately.",
+          "summary_text": "Tax elections are made by the partnership (entity-level) except the three partner-level carve-outs (§108 COD, §617 mining, §901 foreign tax credit).",
+          "is_key_excerpt": false
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_707C",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §707(c) — Guaranteed Payments (services or use of capital)",
+      "citation": "26 U.S.C. §707(c)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "se_1402_partner",
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§707(c) — guaranteed payments for services or use of capital",
+          "excerpt_text": "To the extent determined without regard to the income of the partnership, payments to a partner for services or the use of capital shall be considered as made to one who is not a member of the partnership, but only for the purposes of section 61(a) (relating to gross income) and, subject to section 263, for purposes of section 162(a) (relating to trade or business expenses).",
+          "summary_text": "Guaranteed payments (services 4a / capital 4b) are entity-level deductions (page-1 line 10) and separately stated on Sch K line 4c.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_F1065",
+      "source_type": "official_form",
+      "source_rank": "implementation_official",
+      "jurisdiction_code": "FED",
+      "title": "Form 1065 (2025) — U.S. Return of Partnership Income (page 1 income/deductions; page 5 Schedule K + Analysis of Net Income)",
+      "citation": "Form 1065 (2025), Cat. No. 11390Z (\"Created 11/25/25\"), page 1 lines 1a-32 + page 5 Schedule K lines 1-21 + Analysis",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Page 1 — deductions 9-22 + ordinary business income 23 (verbatim labels)",
+          "excerpt_text": "9 Salaries and wages (other than to partners) (less employment credits). 10 Guaranteed payments to partners. 11 Repairs and maintenance. 12 Bad debts. 13 Rent. 14 Taxes and licenses. 15 Interest (see instructions). 16a Depreciation (if required, attach Form 4562). 16b Less depreciation reported on Form 1125-A and elsewhere on return. 16c [balance]. 17 Depletion (Do not deduct oil and gas depletion.). 18 Retirement plans, etc. 19 Employee benefit programs. 20 Energy efficient commercial buildings deduction (attach Form 7205). 21 Other deductions (attach statement). 22 Total deductions. Add the amounts shown in the far right column for lines 9 through 21. 23 Ordinary business income (loss). Subtract line 22 from line 8.",
+          "summary_text": "Deductions: 16c = 16a − 16b; 22 = Σ lines 9-21; ORDINARY BUSINESS INCOME = line 23 = line 8 − line 22 → Schedule K line 1. (2025 face: 23 is ordinary income, NOT 22.)",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Page 1 — income lines 1a-8 (verbatim labels)",
+          "excerpt_text": "1a Gross receipts or sales. 1b Returns and allowances. 1c Balance. Subtract line 1b from line 1a. 2 Cost of goods sold (attach Form 1125-A). 3 Gross profit. Subtract line 2 from line 1c. 4 Ordinary income (loss) from other partnerships, estates, and trusts (attach statement). 5 Net farm profit (loss) (attach Schedule F (Form 1040)). 6 Net gain (loss) from Form 4797, Part II, line 17. 7 Other income (loss) (attach statement). 8 Total income (loss). Add lines 3 through 7.",
+          "summary_text": "Income: 1c = 1a − 1b; 3 = 1c − 2 (COGS ← 1125-A); 8 = Σ lines 3-7. Line 5 ← Schedule F, line 6 ← Form 4797 Part II line 17.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Schedule K (page 5) — distributive share items, Total amount column",
+          "excerpt_text": "1 Ordinary business income (loss). 2 Net rental real estate income (loss) (attach Form 8825). 3a Other gross rental income (loss). 3b Expenses from other rental activities. 3c Other net rental income (loss). 4a Guaranteed payments for services. 4b Guaranteed payments for capital. 4c Total guaranteed payments. 5 Interest income. 6a Ordinary dividends. 6b Qualified dividends. 6c Dividend equivalents. 7 Royalties. 8 Net short-term capital gain (loss) (attach Schedule D (Form 1065)). 9a Net long-term capital gain (loss). 9b Collectibles (28%) gain (loss). 9c Unrecaptured section 1250 gain. 10 Net section 1231 gain (loss) (attach Form 4797). 11 Other income (loss). 12 Section 179 deduction (attach Form 4562). 13a Contributions. 13b Investment interest expense. 13c Section 59(e)(2) expenditures. 13d Other deductions. 14a Net earnings (loss) from self-employment. 14b Gross farming or fishing income. 14c Gross nonfarm income. 15 Credits. 16 Schedule K-3 is attached if checked. 17 Alternative minimum tax (AMT) items. 18 Tax-exempt income and nondeductible expenses. 19 Distributions. 20 Other information. 21 Total foreign taxes paid or accrued.",
+          "summary_text": "The Schedule K distributive-share spine (Total amount col): income/loss 1-11, deductions 12-13, SE 14a-c, credits 15, K-3 checkbox 16, AMT 17, tax-exempt/nondeductible 18, distributions 19, other 20, foreign taxes 21. Line 16 is a K-3-attached CHECKBOX (all intl detail on K-2/K-3).",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_I1065",
+      "source_type": "official_instructions",
+      "source_rank": "implementation_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Instructions for Form 1065 — Analysis of Net Income (Loss), the K → K-1 correspondence, and the OBBBA (P.L. 119-21) What's New",
+      "citation": "Instructions for Form 1065 (2025), Cat. No. 11392V (dated Jan 14 2026), Analysis of Net Income + What's New + allocation (pp. 31/34)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Analysis of Net Income (Loss) per Return, line 1 (verbatim)",
+          "excerpt_text": "For each line item, combine the amounts on Schedule K, lines 1 through 11. From the result, subtract the sum of Schedule K, lines 12 through 13e, plus line 21.",
+          "summary_text": "Analysis of Net Income line 1 = (Σ Schedule K lines 1-11) − (Σ lines 12-13e + line 21). This equals Schedule M-1 line 9 / M-2 line 3.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "K → K-1 correspondence + §704/§706(d) allocation mechanics (verbatim)",
+          "excerpt_text": "Allocate to each partner a proportionate share of each item reported on Schedule K unless the partnership agreement provides for a special allocation. Specially allocated items are reported on the applicable line of the partner's Schedule K-1 and are included in the total on the corresponding line of Schedule K, not on the numbered lines of page 1. If a partner's interest changed during the year, figure the distributive share using the interim closing of the books method or, by agreement, the proration method (section 706(d)). Allocations of contributed property with a built-in gain or loss must be made under a reasonable method (section 704(c)).",
+          "summary_text": "Schedule K totals are allocated to partners per the agreement (special allocations go on the applicable K-1 line and into the Sch K total, not page 1); §706(d) governs mid-year interest changes; §704(c) built-in gain uses a reasonable method. The MATH is deferred to k1_allocator (Decision C).",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "TY2025 What's New — OBBBA (P.L. 119-21) partnership touches",
+          "excerpt_text": "Section 174A domestic research or experimental expenditures paid or incurred in tax years beginning after 2024 may be currently deducted (or amortized over not less than 60 months by election under section 174A(c)). Qualified sound recording production costs under section 181 may be elected as an expense and are reported on Schedule K/K-1 line 13e using code X. Gain on the sale of qualified farmland to a qualified farmer under section 1062 with a 4-installment election is reported on Schedule K/K-1 line 20c using code ZZ.",
+          "summary_text": "OBBBA 2025: §174A R&E current deduction (page-1 other deductions), §181 sound recording → Sch K line 13e code X, §1062 farmland → line 20c code ZZ. Flagged (D_1065P1_174A / notes) — coded-item detail is the K-1 leg.",
+          "is_key_excerpt": false
+        }
+      ]
+    }
+  ],
+  "state_conformity": null
+}

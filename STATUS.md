@@ -12,9 +12,11 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **82 TaxForms / 400 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **S3/S4 MeF ATS unblock
-campaign** (2026-07-04) — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
+Active spec-authoring tool. RS Supabase holds **84 TaxForms / 404 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule K
+spine** (2026-07-04) — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both `lookup/…/export/` = 200);
+the reconcile that authored it CAUGHT + FIXED a tts net-farm compute bug (`f61cfec`). Prior: the **S3/S4
+MeF ATS unblock campaign** (2026-07-04) — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
 exported, **all four `lookup/<form>/export/` endpoints return 200** (verified live). Every rule cited;
 OBBBA gates verified verbatim off the FINAL 2025 IRS sources. Prior newest on the 1065 track:
 `1065_SE` **leg 2** (the 14a SE-base sub-spec, worksheet WS1a–WS5) seeded + exported 2026-07-02. Leg 1
@@ -23,15 +25,17 @@ B1–B7 pinned as pending-skips.
 
 ## In progress
 
-- [ ] **1065 CORE — SPINE LEG AUTHORED, awaiting Ken walk (READY_TO_SEED=False).** Fresh-authored
+- [x] **1065 CORE — SPINE LEG SEEDED + EXPORTED ✅ (Ken: "flip seed export").** Fresh-authored
   2026-07-04 the first campaign unit: `specs/management/commands/load_1065_schedule_k.py` seeds TWO
-  forms — **`1065_PAGE1`** (page-1 income/deductions → line 23 ordinary business income → Sch K line 1)
-  and **`SCH_K_1065`** (Schedule K distributive-share spine 1-21 + Analysis of Net Income). Grounded in
-  primary IRC quoted verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b), §707(c)) + the brief §4.1/§4.2
-  FINAL-2025 f1065/i1065 line maps (filing authority, requires_human_review). **3 scope decisions LOCKED
-  by Ken** (AskUserQuestion): A. K-2/K-3 RED-defer (box 16 checkbox + `D_SCHK_K3`); B. M-3 RED-defer
-  (L/M leg); C. §704(b)/(c) structure-only, allocation MATH deferred to `k1_allocator` (`D_SCHK_704C`).
-  Loader py_compiles + the READY_TO_SEED guard fires clean ("all populated"). **D-1 reconcile survey DONE**
+  forms — **`1065_PAGE1`** (page-1 income/deductions → line 23 ordinary business income → Sch K line 1;
+  27 facts / 7 rules / 32 lines / 3 diag / 4 scenarios) and **`SCH_K_1065`** (Schedule K distributive-
+  share spine 1-21 + Analysis of Net Income; 40 facts / 11 rules / 38 lines / 4 diag / 7 scenarios / 4
+  flow assertions). Grounded in primary IRC quoted verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b),
+  §707(c)) + the brief §4.1/§4.2 FINAL-2025 f1065/i1065 line maps (filing authority). **3 scope decisions
+  LOCKED by Ken**: A. K-2/K-3 RED-defer (`D_SCHK_K3`); B. M-3 RED-defer (L/M leg); C. §704(b)/(c)
+  structure-only, allocation MATH deferred to `k1_allocator` (`D_SCHK_704C`). **SEEDED** (all rules cited)
+  → RS now **84 TaxForms / 404 FlowAssertions**; **EXPORTED** `lookup/{1065_PAGE1,SCH_K_1065}/export/` both
+  **HTTP 200** (exports/form_1065_page1/, exports/form_sch_k_1065/). **D-1 reconcile survey DONE**
   → `1065_core_reconcile_log.md` (8 items): 4 MATCH (page-1 L8, K3c, K14a bottom-up, §179→K12), 1 build-GAP
   (1065 Analysis of Net Income — tts has none; K18 is 1120-S-only), 1 ✅ **CONFIRMED+FIXED** (net-farm
   misroute — see below), 2 ⚠ still-open Ken calls (page-1 off-by-one field numbering; box-9c pass-through).
@@ -50,13 +54,18 @@ B1–B7 pinned as pending-skips.
 
 **► 1065 CORE CAMPAIGN — IN FLIGHT.** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
-(form 1 of 6) AUTHORED 2026-07-04** — see In-progress above; awaiting Ken walk to flip READY_TO_SEED.
-**Immediate next (this walk):** Ken reviews `load_1065_schedule_k.py` + `1065_core_reconcile_log.md`,
-adjudicates the 3 ⚠ reconcile items (esp. #7 net-farm routing — his farm call), then flip
-READY_TO_SEED=True → seed → export → verify `lookup/{1065_PAGE1,SCH_K_1065}/export/` = 200.
-**Then form 2:** Schedule K-1 (Form 1065) + allocation engine — reconciles `k1_allocator` (§704 math,
-Decision C) + `compute_schedule_k1` box map; transcribe the full ~200 K-1 coded-box code lists (brief
-§4.2). Order after: M-1/M-2 → L/B. Read the brief §4 + §2 + the reconcile log first.
+(form 1 of 6) DONE 2026-07-04** — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both endpoints 200).
+**► IMMEDIATE NEXT — form 2 of 6: Schedule K-1 (Form 1065) + the allocation engine.** This is the
+big one: reconcile against `k1_allocator.py` (the §704(b)/(c) allocation MATH — Decision C: confirm
+what it models vs. RED-defer) + `compute_schedule_k1.py` (the K→K-1 box-map consumers, `R-SCHK-KMAP`);
+transcribe the full ~200 K-1 coded-box code lists verbatim (brief §4.2, captured in the agent transcript);
+model Part II items J/K/L/M/N (profit/loss/capital %, liabilities, tax-basis capital, §704(c)) + Part III
+boxes 1-23. Fresh-author (READY_TO_SEED=False) → Ken walk → reconcile → seed (D-1). Also close the open
+**box-9c pass-through** verification here (STATUS item below). Order after: M-1/M-2 → L/B. Read the brief
+§4.2 + §2 + `1065_core_reconcile_log.md` first.
+**Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
+numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
+(2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new).
 
 **► STILL OPEN (tts-side, Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
 The 2026-07-03 K9c fix (tts `f23dc54`) made `aggregate_dispositions` write the 1065 entity unrecaptured
@@ -132,15 +141,17 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
-- 2026-07-04: **1065 core campaign KICKED OFF — Schedule K spine authored (2 forms, READY_TO_SEED=False).**
-  Ken said "go"; walked the 3 season-one scope decisions (AskUserQuestion: K-2/K-3 defer, M-3 defer,
-  §704 structure-only). Fresh-authored `load_1065_schedule_k.py` → `1065_PAGE1` (page-1 ordinary business
-  income, line 23 → Sch K line 1) + `SCH_K_1065` (distributive-share spine 1-21 + Analysis of Net Income).
-  Primary IRC quoted verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b) fetched this session; §707(c) reused);
-  form-line maps from the brief's FINAL-2025 f1065/i1065 verbatim transcription (requires_human_review).
-  All rules cited. py_compiles; refuse-to-seed guard verified. D-1 reconcile survey against tts compute.py
-  → `1065_core_reconcile_log.md` (8 items; 4 match, 1 build-gap, 3 Ken adjudications). NOT seeded (awaits
-  the walk per D-1). Next: Ken walk → flip → seed → export → then form 2 (K-1 + allocation engine).
+- 2026-07-04: **1065 core campaign — Schedule K spine SEEDED + EXPORTED (2 forms) + a tts bug fixed.**
+  Ken said "go"; walked the 3 season-one scope decisions (K-2/K-3 defer, M-3 defer, §704 structure-only).
+  Fresh-authored `load_1065_schedule_k.py` → `1065_PAGE1` (page-1 ordinary business income, line 23 → Sch K
+  line 1) + `SCH_K_1065` (distributive-share spine 1-21 + Analysis of Net Income). Primary IRC quoted
+  verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b) fetched this session; §707(c) reused); form-line maps from
+  the brief's FINAL-2025 f1065/i1065 verbatim transcription. All rules cited. **D-1 reconcile** vs tts
+  compute.py (8 items: 4 match, 1 build-gap, 1 CONFIRMED+FIXED, 2 open Ken calls) → the reconcile **CAUGHT a
+  tts net-farm compute bug** (Schedule F net misrouted to Sch K line 11, excluded from K1 + the SE base;
+  latent double-count) — Ken: "fix now" → fixed in tts `f61cfec` with a 3-test regression (green). Ken:
+  "flip seed export" → **SEEDED** (84 TaxForms / 404 FlowAssertions) + **EXPORTED** (both endpoints HTTP 200,
+  exports/form_1065_page1/ + exports/form_sch_k_1065/). Next: form 2 (Schedule K-1 + allocation engine).
 - 2026-07-04: **S3/S4 MeF ATS unblock campaign — four specs live, all endpoints 200.** Ken's campaign
   prompt (from a tts Claude): author the four missing specs blocking the last two 1040 MeF ATS scenarios.
   Started from the tts authoring notes as HYPOTHESIS; verified every rule against the FINAL 2025 IRS

@@ -4,8 +4,16 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine authored (2 forms, READY_TO_SEED=False)
-*Ken: "go" → the pre-staged 1065-core campaign. Authored the first of 6 forms; held pre-seed for the Ken walk (D-1).*
+## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine SEEDED + EXPORTED (+ a tts bug fixed)
+*Ken: "go" → author the first of 6 forms; walk (D-1); "dig into net-farm" → "fix now"; "flip seed export".*
+- **SEED + EXPORT (Ken: "flip seed export"):** flipped `READY_TO_SEED=True`, ran `load_1065_schedule_k`
+  → `1065_PAGE1` (27 facts / 7 rules / 32 lines / 3 diag / 4 scenarios) + `SCH_K_1065` (40 / 11 / 38 / 4 /
+  7 + 4 flow assertions), all rules cited → RS **84 TaxForms / 404 FlowAssertions**. Exported via the real
+  `form_lookup_export` view (APIRequestFactory): both `lookup/{1065_PAGE1,SCH_K_1065}/export/` = **HTTP 200**,
+  saved to `exports/form_1065_page1/` + `exports/form_sch_k_1065/` (51 KB / 70 KB; line_map 32 / 38). Spine
+  leg (form 1 of 6) DONE. **Next: form 2 — Schedule K-1 (Form 1065) + the allocation engine** (reconcile
+  `k1_allocator` §704 math + `compute_schedule_k1` box map; transcribe the ~200 coded-box lists; close the
+  box-9c pass-through).
 - **Scope walk (AskUserQuestion, 3 decisions LOCKED):** A. K-2/K-3 international → **RED-defer** (box 16 =
   Schedule K-3-attached checkbox only + `D_SCHK_K3`); B. Schedule M-3 → **RED-defer** (belongs to the L/M
   leg; threshold gating fact there); C. §704(b)/(c) → **encode structure, defer math** (items J/K/L/M/N +
