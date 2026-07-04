@@ -23,12 +23,21 @@ B1–B7 pinned as pending-skips.
 
 ## In progress
 
-- [ ] Nothing in flight on the 1065_SE track in RS. (Other tracks: see FORM_7217 / MeF entries in
-  session_log.md — owned by parallel sessions.)
+- [ ] Nothing actively authoring in RS. The **parallel tts session is building S3/S4** off the four RS
+  specs authored 2026-07-04 (`4835`, `8835`, `8936`, `8936_SCHA` — all `lookup/<form>/export/` = 200,
+  deployed-verified). Its latest: tts `035223e` "S3 build-ready — 4 mappers to build." RS side is done
+  for that campaign (specs live + `check_s3s4_integrity.py` 390/390 green).
 
 ## Next up
 
-**► ACTIVE (Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
+**► NEXT RS CAMPAIGN — 1065 core (July).** Pre-scouted + source-staged this session:
+`1065_core_source_brief.md` has the gap map (6 forms to author fresh — Schedule K spine, K-1 +
+allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065), the D-1 reconcile targets in tts, and
+§4 verbatim FINAL-2025 line maps (page 1 / Sch B / Sch K / K-1 / L / M-1 / M-2 + the K→K-1 coded-box
+mapping + OBBBA What's New). Per **D-1** it is fresh-authored → Ken walk → seed → reconcile — NOT a
+silent unblock. Start on the Schedule K spine; read the brief's §4 + §2 first.
+
+**► STILL OPEN (tts-side, Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
 The 2026-07-03 K9c fix (tts `f23dc54`) made `aggregate_dispositions` write the 1065 entity unrecaptured
 §1250 gain to Schedule K line **K9c**, and `k1_allocator` (server/apps/returns/k1_allocator.py: `"K9c"`→
 box **9c**, LT_CAPITAL category; the box map at ~line 159) distributes it to each partner's K-1. That
