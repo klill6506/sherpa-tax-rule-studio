@@ -4,6 +4,41 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — Form 3800 1040-side AMENDMENT authored + SEEDED (the S4 arc; the tts session)
+*Ken: "should you go ahead and build the 3800?" → spec-first. The deployed 3800 spec was the
+1120-S-era draft (10-line generic sketch, K-1-box-13 routing — unusable for the 1040/S4 build).*
+- **Scope walk (AskUserQuestion, 4 rulings LOCKED, all recommended):** J1 Part III rows = built
+  feeders (1f/4e 8835 · 1s 8911 · 1y/1aa 8936) + 1zz/4z catch-alls; J2 passive = per-inflow
+  nullable assertion (None → EXCLUDED + D_3800_002 RED; True → col (d) + D_3800_003 RED with the
+  line-3/33 escape hatches — 8582-CR manual); J3 carryforward = two direct-entry in-buckets
+  (line 4 regular / line 34 specified) + computed CF-out (D_3800_005 + statement; the Part IV
+  FIFO grid deferred to the proforma track); J4 §6417/§6418 OUT (D_3800_004 RED).
+- **Review walk (W1-W4 approved):** W1 the stale-grid replacement (deleted 1a/1b/1c, overwrote
+  2-7/38 with the 2025 face; entity rules R001-R003 KEPT, R004 refreshed in place); W2
+  unanswered-passive-excludes; W3 the line-10b list (= the Form 8911 line-6b Ken-approved
+  ordering reading, i3800 verbatim); W4 the S4 all-carries outcome (the 8936 personal credit
+  absorbs the ~$2,193 tax first via 10b → line 11 = 0 → the ENTIRE $13,200 specified 8835
+  credit carries forward, Sch 3 6a blank — F3800-S4 pins it).
+- **Authored `load_1040_form_3800.py`** — AMEND-BY-LOOKUP (never creates; preserves
+  entity_types ["1120S","1065","1120","1040"]): +13 facts / +8 rules (R-3800-P3-INFLOW/
+  P3-TOTALS/P1/P2-TAXLIM/P2-SECB/P2-SECC/ALLOWED/CF-OUT) / 42 face lines (Part III P3-prefixed;
+  P3-4e is the S4 row) / +6 diagnostics (D_3800_001-006) / +6 tests (F3800-S4 + T2-T6 incl. the
+  T3-vs-T4 §38(c)(4)(A) TMT-zeroing pair) / +5 FAs (FA-1040-3800-01..05). Authority: NEW
+  IRS_2025_3800_FORM (9-page 2025 face, sha256 cdfb169a…, verbatim Part I/II/III excerpts);
+  NEW excerpts on the EXISTING IRS_2025_3800_INSTR (the 10b list; carryover ordering) + IRC_38
+  (§38(c)(4)(A)-(B) verbatim incl. clause (iv)'s 4-year §45 window — fetched off LII).
+- **Seeded + verified:** loader run (3 stale lines deleted; totals: forms 84 / rules 726 /
+  FAs 409; all 3800 rules cited); deployed export re-fetched 200 — entity_types preserved,
+  rules R001-R004 + R-3800-* both present, stale lines gone, line 38 dest SCH_3.6a. Canonical
+  `3800_spec.json` cached in tts.
+- **Also this session (tts-side):** the FA-1040-8936-01..05 id collision found + fixed — my tts
+  gate entries had reused the ids this repo's `load_1040_form_8936.py` had already authored and
+  seeded; the tts gate file now carries the RS-canonical five verbatim (extras folded into the
+  runners; 5/5 green). NEXT: the tts 3800 unit build (retires D_8911_004, softens D_8936_003),
+  then 8835, then the S4 scenario.
+
+---
+
 ## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine SEEDED + EXPORTED (+ a tts bug fixed)
 *Ken: "go" → author the first of 6 forms; walk (D-1); "dig into net-farm" → "fix now"; "flip seed export".*
 - **SEED + EXPORT (Ken: "flip seed export"):** flipped `READY_TO_SEED=True`, ran `load_1065_schedule_k`
