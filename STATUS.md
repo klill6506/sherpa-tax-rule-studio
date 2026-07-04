@@ -23,19 +23,33 @@ B1–B7 pinned as pending-skips.
 
 ## In progress
 
-- [ ] Nothing actively authoring in RS. The **parallel tts session is building S3/S4** off the four RS
-  specs authored 2026-07-04 (`4835`, `8835`, `8936`, `8936_SCHA` — all `lookup/<form>/export/` = 200,
-  deployed-verified). Its latest: tts `035223e` "S3 build-ready — 4 mappers to build." RS side is done
-  for that campaign (specs live + `check_s3s4_integrity.py` 390/390 green).
+- [ ] **1065 CORE — SPINE LEG AUTHORED, awaiting Ken walk (READY_TO_SEED=False).** Fresh-authored
+  2026-07-04 the first campaign unit: `specs/management/commands/load_1065_schedule_k.py` seeds TWO
+  forms — **`1065_PAGE1`** (page-1 income/deductions → line 23 ordinary business income → Sch K line 1)
+  and **`SCH_K_1065`** (Schedule K distributive-share spine 1-21 + Analysis of Net Income). Grounded in
+  primary IRC quoted verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b), §707(c)) + the brief §4.1/§4.2
+  FINAL-2025 f1065/i1065 line maps (filing authority, requires_human_review). **3 scope decisions LOCKED
+  by Ken** (AskUserQuestion): A. K-2/K-3 RED-defer (box 16 checkbox + `D_SCHK_K3`); B. M-3 RED-defer
+  (L/M leg); C. §704(b)/(c) structure-only, allocation MATH deferred to `k1_allocator` (`D_SCHK_704C`).
+  Loader py_compiles + the READY_TO_SEED guard fires clean ("all populated"). **D-1 reconcile survey DONE**
+  → `1065_core_reconcile_log.md` (8 items): 4 MATCH (page-1 L8, K3c, K14a bottom-up, §179→K12), 1 build-GAP
+  (1065 Analysis of Net Income — tts has none; K18 is 1120-S-only), 3 ⚠ Ken calls (page-1 off-by-one field
+  numbering; net-farm page-1-line-5-vs-K11 routing — his farm call; box-9c pass-through = the open item).
+- [ ] The **parallel tts session is building S3/S4** off the four RS specs (`4835`, `8835`, `8936`,
+  `8936_SCHA` — all `lookup/<form>/export/` = 200). Latest: tts `035223e` "S3 build-ready — 4 mappers."
+  RS side done for that campaign (`check_s3s4_integrity.py` 390/390 green).
 
 ## Next up
 
-**► NEXT RS CAMPAIGN — 1065 core (July).** Pre-scouted + source-staged this session:
-`1065_core_source_brief.md` has the gap map (6 forms to author fresh — Schedule K spine, K-1 +
-allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065), the D-1 reconcile targets in tts, and
-§4 verbatim FINAL-2025 line maps (page 1 / Sch B / Sch K / K-1 / L / M-1 / M-2 + the K→K-1 coded-box
-mapping + OBBBA What's New). Per **D-1** it is fresh-authored → Ken walk → seed → reconcile — NOT a
-silent unblock. Start on the Schedule K spine; read the brief's §4 + §2 first.
+**► 1065 CORE CAMPAIGN — IN FLIGHT.** `1065_core_source_brief.md` has the gap map (6 forms fresh —
+Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
+(form 1 of 6) AUTHORED 2026-07-04** — see In-progress above; awaiting Ken walk to flip READY_TO_SEED.
+**Immediate next (this walk):** Ken reviews `load_1065_schedule_k.py` + `1065_core_reconcile_log.md`,
+adjudicates the 3 ⚠ reconcile items (esp. #7 net-farm routing — his farm call), then flip
+READY_TO_SEED=True → seed → export → verify `lookup/{1065_PAGE1,SCH_K_1065}/export/` = 200.
+**Then form 2:** Schedule K-1 (Form 1065) + allocation engine — reconciles `k1_allocator` (§704 math,
+Decision C) + `compute_schedule_k1` box map; transcribe the full ~200 K-1 coded-box code lists (brief
+§4.2). Order after: M-1/M-2 → L/B. Read the brief §4 + §2 + the reconcile log first.
 
 **► STILL OPEN (tts-side, Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
 The 2026-07-03 K9c fix (tts `f23dc54`) made `aggregate_dispositions` write the 1065 entity unrecaptured
@@ -111,6 +125,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **1065 core campaign KICKED OFF — Schedule K spine authored (2 forms, READY_TO_SEED=False).**
+  Ken said "go"; walked the 3 season-one scope decisions (AskUserQuestion: K-2/K-3 defer, M-3 defer,
+  §704 structure-only). Fresh-authored `load_1065_schedule_k.py` → `1065_PAGE1` (page-1 ordinary business
+  income, line 23 → Sch K line 1) + `SCH_K_1065` (distributive-share spine 1-21 + Analysis of Net Income).
+  Primary IRC quoted verbatim (§702(a)/(b), §703(a)/(b), §704(a)/(b) fetched this session; §707(c) reused);
+  form-line maps from the brief's FINAL-2025 f1065/i1065 verbatim transcription (requires_human_review).
+  All rules cited. py_compiles; refuse-to-seed guard verified. D-1 reconcile survey against tts compute.py
+  → `1065_core_reconcile_log.md` (8 items; 4 match, 1 build-gap, 3 Ken adjudications). NOT seeded (awaits
+  the walk per D-1). Next: Ken walk → flip → seed → export → then form 2 (K-1 + allocation engine).
 - 2026-07-04: **S3/S4 MeF ATS unblock campaign — four specs live, all endpoints 200.** Ken's campaign
   prompt (from a tts Claude): author the four missing specs blocking the last two 1040 MeF ATS scenarios.
   Started from the tts authoring notes as HYPOTHESIS; verified every rule against the FINAL 2025 IRS

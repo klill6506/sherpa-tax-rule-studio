@@ -4,6 +4,47 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine authored (2 forms, READY_TO_SEED=False)
+*Ken: "go" → the pre-staged 1065-core campaign. Authored the first of 6 forms; held pre-seed for the Ken walk (D-1).*
+- **Scope walk (AskUserQuestion, 3 decisions LOCKED):** A. K-2/K-3 international → **RED-defer** (box 16 =
+  Schedule K-3-attached checkbox only + `D_SCHK_K3`); B. Schedule M-3 → **RED-defer** (belongs to the L/M
+  leg; threshold gating fact there); C. §704(b)/(c) → **encode structure, defer math** (items J/K/L/M/N +
+  %-alloc as facts + cited §704 authority + gating flags; special-allocation MATH deferred to tts
+  `k1_allocator`; `D_SCHK_704C` surfaces item M/N). All three on the recommended calls.
+- **Authored `specs/management/commands/load_1065_schedule_k.py`** (fresh, per D-1) — seeds TWO forms
+  mirroring the 1120-S decomposition (`1120S_PAGE1` + `SCH_K_1120S`):
+  - **`1065_PAGE1`** — Form 1065 page 1: income 1a-8 (1c=1a−1b; 3=1c−2 COGS←1125-A; 8=Σ3-7; L5←Sch F;
+    L6←4797 PtII L17), deductions 9-22 (16c=16a−16b←4562; 22=Σ9-21), **ordinary business income
+    line 23 = 8−22 → Sch K line 1** (the handoff, `R-1065P1-23`). 27 facts / 7 rules / 32 lines /
+    3 diagnostics / 4 scenarios. ⚠ 2025 face: ordinary income is L23 (NOT 22).
+  - **`SCH_K_1065`** — Schedule K distributive-share spine (Total-amount col) lines 1-21 + Analysis of
+    Net Income line 1 = (Σ 1-11)−(Σ 12-13e+21). Line 1←page-1 L23; 3c=3a−3b; 4c=4a+4b; 9c←4797;
+    14a=the `1065_SE` spec (cross-ref, not recomputed); line 16=K-3 checkbox (RED-defer). ~30 facts /
+    11 rules / ~40 lines / 4 diagnostics / 7 scenarios. K→K-1 box map (`R-SCHK-KMAP`) + §704 allocation
+    structure (`R-SCHK-ALLOC`) authored as routing rules (per-partner math = the K-1 leg).
+  - Authority: **primary IRC quoted VERBATIM** — §702(a)/(a)(8)/(b), §703(a)/(b), §704(a)/(b) (fetched
+    2026-07-04 off Cornell LII this session), §707(c) (reused from the vetted 1065_SE load); + FINAL-2025
+    **f1065/i1065** line maps as filing authority (`IRS_2025_F1065`/`IRS_2025_I1065`, requires_human_review,
+    from the brief §4.1/§4.2 verbatim transcription). 4 flow assertions (RECON-P1-K1, RECON-ANALYSIS,
+    INV-K-CHARACTER, GATE-K2K3-DEFER). All rules cited.
+- **Validation:** `py_compile` OK; the READY_TO_SEED=False refuse-to-seed guard fires clean ("all
+  populated" — nothing hollow, held only on the sentinel). NOT seeded (awaits the walk per D-1).
+- **D-1 reconcile survey** (read-only, tts `server/apps/returns/compute.py` entity Sch K block ~L240-298
+  + `compute_schedule_k1.py`) → **`1065_core_reconcile_log.md`, 8 items:**
+  - ✅ MATCH ×4 — page-1 L8=Σ(3-7) (`:240`); K3c=K3a−K3b (`:284`); K14a bottom-up SE (`:288-292`,
+    reconciled this season); §179→K12 for 1065 (`:984`).
+  - 🔨 BUILD-GAP ×1 — tts has **no 1065 Analysis of Net Income** compute (`K18` at `:120` is 1120-S income
+    reconciliation only); `R-SCHK-ANALYSIS` is new → a tts build item (ties to M-1 L9 / M-2 L3, L/M leg).
+  - ⚠ KEN ADJUDICATION ×3 — (a) page-1 **off-by-one field numbering**: tts internal deductions=field"21"
+    (Σ9-20), ordinary=field"22"(8−21), K1←"22" vs the 2025 face 22/23 (arithmetic identical; map or
+    renumber); (b) **net-farm routing** — tts routes Sch F net (F34)→**Sch K line 11** (`:287`), but the
+    face puts net farm on **page-1 line 5**→ord income→K1 — Ken's farm/depreciation call (check
+    double-count); (c) **box-9c pass-through** = the STILL-OPEN tts verification (STATUS Next-up).
+- **Files:** `load_1065_schedule_k.py` (new), `1065_core_reconcile_log.md` (new), STATUS.md updated.
+  Committed this session; loader inert (READY_TO_SEED=False) until the walk.
+
+---
+
 ## 2026-07-04 — Between-session prep: S3/S4 integrity checker + 1065-core source brief (pre-scout for the July campaign)
 *Independent RS work while the parallel tts session builds S3/S4 — zero collision.*
 - **`check_s3s4_integrity.py`** (committed `a73d424`): pre-seed math+structure gate for 4835/8835/8936/
