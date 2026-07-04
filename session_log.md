@@ -41,7 +41,21 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
     face puts net farm on **page-1 line 5**→ord income→K1 — Ken's farm/depreciation call (check
     double-count); (c) **box-9c pass-through** = the STILL-OPEN tts verification (STATUS Next-up).
 - **Files:** `load_1065_schedule_k.py` (new), `1065_core_reconcile_log.md` (new), STATUS.md updated.
-  Committed this session; loader inert (READY_TO_SEED=False) until the walk.
+  Committed `bbe6913`; loader inert (READY_TO_SEED=False) until the walk.
+- **🐛 CONFIRMED + FIXED a tts bug the reconcile caught (net-farm misroute).** Ken: "dig into the tts
+  net-farm path to confirm double-count" → then "fix now in tts + add test." Traced via an Explore agent
+  (which I corrected on one point — it claimed `F34=0` for 1065, conflating the inline `F34=F9−F33` formula
+  in `FORMULAS_1065:278` with the 1040-only `compute_schedule_f_family`; verified `seed_1065` seeds the full
+  enterable F-block, so `F34` IS computed inline). **Bug:** `FORMULAS_1065` routed `F34` → **Schedule K line
+  11** (`compute.py:287`) instead of page-1 line 5 → K1. Two modes: (a) F-block only → farm on K11 not K1 →
+  the 14a SE base (reads K1 only) omits it → **SE understatement**; (b) F-block + hand-entered line 5 →
+  **double-count**. **Fix (tts `f61cfec`):** relocated the Schedule F block ahead of page-1 line 8; added
+  `("5", F34)` so farm flows line 5 → 8 → 22 → **K1** (and the SE base); removed `K11←F34`; `seed_1065` line 5
+  `is_computed=True` (YELLOW). Pure-Python sim confirmed routing; `TestNetFarmRouting` (3 tests) **3/3 green**
+  over the shared test DB (one AdminShutdown blip re-ran clean, per `tts-test-db-collisions`). **Committed
+  INDEX-ONLY** — the parallel S3/S4 session has heavy uncommitted 8936 work in the same `compute.py` (+ models/
+  views/serializers/migrations); staged only my FORMULAS_1065 hunks via a filtered patch (`git apply --cached`)
+  + the 2 mine-only files, leaving their WIP untouched. Pushed clean (`962be0a..f61cfec`, fast-forward).
 
 ---
 

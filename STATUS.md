@@ -33,8 +33,15 @@ B1–B7 pinned as pending-skips.
   (L/M leg); C. §704(b)/(c) structure-only, allocation MATH deferred to `k1_allocator` (`D_SCHK_704C`).
   Loader py_compiles + the READY_TO_SEED guard fires clean ("all populated"). **D-1 reconcile survey DONE**
   → `1065_core_reconcile_log.md` (8 items): 4 MATCH (page-1 L8, K3c, K14a bottom-up, §179→K12), 1 build-GAP
-  (1065 Analysis of Net Income — tts has none; K18 is 1120-S-only), 3 ⚠ Ken calls (page-1 off-by-one field
-  numbering; net-farm page-1-line-5-vs-K11 routing — his farm call; box-9c pass-through = the open item).
+  (1065 Analysis of Net Income — tts has none; K18 is 1120-S-only), 1 ✅ **CONFIRMED+FIXED** (net-farm
+  misroute — see below), 2 ⚠ still-open Ken calls (page-1 off-by-one field numbering; box-9c pass-through).
+- [ ] **✅ tts net-farm bug FIXED this session (`f61cfec`).** The reconcile CAUGHT a confirmed 1065 compute
+  bug: `FORMULAS_1065` routed Schedule F net (`F34`) to Schedule K line 11 instead of page-1 line 5 → K1, so
+  farm was excluded from ordinary income AND the 14a SE base (SE understatement), with a latent double-count
+  if line 5 was also hand-entered. Traced (Explore agent + verified); Ken said "fix now": relocated the
+  Schedule F block ahead of page-1 line 8, `("5", F34)` → line 8 → K1, removed `K11←F34`, `seed_1065` line 5
+  `is_computed=True`. Regression `TestNetFarmRouting` 3/3 green (shared test DB). Committed index-only (parallel
+  S3/S4 8936 WIP left untouched). RS spine was already correct here (net farm → line 5 → K1); no RS change.
 - [ ] The **parallel tts session is building S3/S4** off the four RS specs (`4835`, `8835`, `8936`,
   `8936_SCHA` — all `lookup/<form>/export/` = 200). Latest: tts `035223e` "S3 build-ready — 4 mappers."
   RS side done for that campaign (`check_s3s4_integrity.py` 390/390 green).
