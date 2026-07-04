@@ -4,6 +4,27 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-03 — 8995A amended: Schedule D patron reduction + capped DPAD COMPUTED (Ken ruling — MeF ATS S2)
+- **Ken RULED (AskUserQuestion): "Is this a MeF test scenario? If so build 8995-A Schedule D"** — S2
+  (Jones) stipulates ag-co-op patrons who "do not qualify" for QBI; enacted law routes patrons to
+  8995-A at ANY income (i8995a 2025 'Who Can Take the Deduction') with the face line-3 skip at/below
+  the threshold, and the §199A(b)(7) reduction = min(9% × allocable QBI, 50% × allocable W-2 wages)
+  is $0 for a zero-wage business — the ATS key's blank 13a is scenario fiat, documented divergence.
+- **Amended `load_1040_form_8995a.py`** (amend-by-lookup, ids stable): +facts `a_business_schd_qbi_alloc`
+  / `a_business_schd_wages_alloc` / `a_dpad_199ag`; R-8995A-PATRON reauthored routing→calculation
+  (SD2–SD6 chain → L14); R-8995A-SCOPE/P2-COMP/P4-LIMIT amended (patron-at-any-income, L15 floor,
+  L38 cap = L33 − L37 face verbatim); +7 SD line-map rows; D_8995A_001/002 REPURPOSED error→info
+  (**Ken ruled info**: patron-no-alloc confirm-the-zero; DPAD clipped) + NEW D_8995A_008/009 guards;
+  T9 amended + T11–T15 hand-computed (T13 = the S2 below-threshold zero-wage patron, LOAD-BEARING);
+  FA-1040-8995A-08 gating_check → formula_check. New authority source IRS_8995A_SCHD_FORM
+  (f8995ad Rev 12-2022 verbatim) + patron-rules excerpt on IRS_2025_8995A_INSTR.
+- **`check_8995a_integrity.py` extended** (own Sch D/skip/cap transcription) — ALL CHECKS PASS,
+  15 scenarios re-derived.
+- **Seeded RS Supabase** → deployed export drift = EXACTLY the amendment (24 facts / 11 rules /
+  58 lines / 9 diags / 15 tests; old T9 retired) → canonical `8995a_spec.json` refreshed in tts.
+- tts build same session (`f10e864`): mig 0158, engine + router + render + FormEditor; the retired
+  `D_8995_001` is dormant in rules_schedule_c. Flow gate 381 (FA-08 amended in place).
+
 ## 2026-07-03 — 1040_EIC amended: `eic_opt_out` (1040 line 27c) — Ken ruled ACTC-sibling skip-entirely (S2 prep session)
 - **Ken RULED (AskUserQuestion): "Skip-entirely, ACTC-sibling"** for the 2025 Form 1040 line 27c
   election ("If you do not want to claim the EIC, check here" — face verbatim, verified against the

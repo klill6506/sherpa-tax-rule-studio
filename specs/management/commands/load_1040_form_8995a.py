@@ -21,7 +21,7 @@ SCOPE (Ken-approved kickoff, AskUserQuestion 2026-06-23):
   • Schedule A (SSTB applicable-% phase-in)                                         = IN
   • Schedule B (aggregation of business operations — FULL engine)                   = IN
   • Schedule C (per-business loss netting + carryforward)                           = IN
-  • Schedule D (patron reduction L14 + DPAD §199A(g) L38)                           = RED-defer (out of v1)
+  • Schedule D (patron reduction L14 + capped DPAD §199A(g) L38)                    = IN (built 2026-07-03, Ken ruling — MeF ATS S2)
 
 ═══════════════════════════════════════════════════════════════════════════
 VERIFIED FORM STRUCTURE (2025 f8995a.pdf — read directly; i8995a 12pp)
@@ -41,7 +41,7 @@ Part II (cols A/B/C, per business):
   11  W-2/UBIA limitation = smaller of L3 or L10
   12  Phased-in reduction = amount from L26 (Part III), if any
   13  greater of L11 or L12
-  14  Patron reduction (Schedule D L6)                     [RED-defer]
+  14  Patron reduction (Schedule D L6)                     [COMPUTED 2026-07-03]
   15  L13 − L14   (QBI component)
   16  Σ L15 across all businesses (Total QBI component)
 Part III (cols A/B/C — ONLY if TI in band AND L10 < L3):
@@ -106,8 +106,12 @@ W2. Schedule C loss apportionment: total QB loss (current-year losses + prior
 W3. Schedule B aggregation (FULL engine per Ken): 50%-ownership + 2-of-3-factor
     tests are preparer-asserted; none-SSTB is enforced (an SSTB in an aggregation
     = error). Combine QBI/W-2/UBIA. Confirm the asserted-vs-enforced split.
-W4. Patron reduction (L14) + DPAD §199A(g) (L38) — Schedule D RED-deferred out of
-    v1 (ag/hort-coop patrons rare). Confirm.
+W4. Patron reduction (L14) + DPAD §199A(g) (L38) — Schedule D BUILT 2026-07-03
+    (Ken ruled build-it for the MeF ATS S2 scenario leg; superseded the v1
+    RED-defer). Per patron business: SD6 = min(9% × allocable QBI, 50% × allocable
+    W-2 wages) → L14; patron routes to 8995-A at ANY income with the face line-3
+    skip at/below the threshold; L38 capped at L33 − L37 (face verbatim).
+    D_8995A_001/002 repurposed error → info; new guards D_8995A_008/009.
 W5. Line 34 net capital gain = qualified dividends (1040 L3a) + net capital gain
     (Schedule D min(15,16), else 1040 L7) — IDENTICAL to the simplified-8995 L12
     sourcing (already Ken-approved 2026-06-13). Confirm reuse.
@@ -284,6 +288,50 @@ AUTHORITY_SOURCES: list[dict] = [
                 "summary_text": "Above $197,300/$394,600 → 8995-A. Part III phase-in only in-band AND when the wage limit binds.",
                 "is_key_excerpt": True,
             },
+            {
+                "excerpt_label": "Line 3 below-threshold skip + line 38 DPAD cap (2025 face, verbatim)",
+                "excerpt_text": (
+                    "Line 3: Multiply line 2 by 20% (0.20). If your taxable income is $197,300 or less ($394,600 "
+                    "if married filing jointly), skip lines 4 through 12 and enter the amount from line 3 on "
+                    "line 13. Line 14: Patron reduction. Enter the amount from Schedule D (Form 8995-A), line 6, "
+                    "if any. See instructions. Line 15: Qualified business income component. Subtract line 14 "
+                    "from line 13. Line 38: DPAD under section 199A(g) allocated from an agricultural or "
+                    "horticultural cooperative. Don't enter more than line 33 minus line 37."
+                ),
+                "summary_text": "Below threshold: skip L4–12, L13 = L3 (no W-2/UBIA limit). L14 ← Sch D L6. L38 capped at L33 − L37.",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
+        "source_code": "IRS_8995A_SCHD_FORM",
+        "source_type": "official_form",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "title": "Schedule D (Form 8995-A) — Special Rules for Patrons of Agricultural or Horticultural Cooperatives (Rev. Dec 2022, current for TY2025)",
+        "citation": "Schedule D (Form 8995-A) (Rev. 12-2022); f8995ad.pdf; Attachment Sequence No. 55E; Cat. No. 72683Z",
+        "issuer": "IRS",
+        "official_url": "https://www.irs.gov/pub/irs-pdf/f8995ad.pdf",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "trust_score": 9.5,
+        "topics": ["qbi_deduction", "qbi_patron_reduction"],
+        "excerpts": [
+            {
+                "excerpt_label": "Schedule D (8995-A) full face (Rev. 12-2022, verbatim; fetched 2026-07-03)",
+                "excerpt_text": (
+                    "Complete Schedule D only if you're a patron of an agricultural or horticultural cooperative. "
+                    "If you have more than three trades, businesses, or aggregations, attach as many Schedules D "
+                    "as needed. Columns A/B/C: 1a Trade, business, or aggregation name; 1b Taxpayer identification "
+                    "number; 2 Qualified business income allocable to qualified payments received from "
+                    "cooperative; 3 Multiply line 2 by 9% (0.09); 4 W-2 wages from trade or business allocable to "
+                    "the qualified payments; 5 Multiply line 4 by 50% (0.50); 6 Patron reduction. Enter the "
+                    "smaller of line 3 or line 5. Enter this amount on Form 8995-A, line 14, for the "
+                    "corresponding trade, business, or aggregation."
+                ),
+                "summary_text": "Sch D per business: L6 patron reduction = min(9% × allocable QBI, 50% × allocable W-2 wages) → 8995-A L14.",
+                "is_key_excerpt": True,
+            },
         ],
     },
 ]
@@ -316,6 +364,31 @@ NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = [
             "Complete Schedule B before starting Part I."
         ),
         "summary_text": "Sch B: 50% ownership + none-SSTB + 2-of-3 factors; combine QBI/W-2/UBIA across the group.",
+        "is_key_excerpt": True,
+    }),
+    ("IRS_2025_8995A_INSTR", {
+        "excerpt_label": "Schedule D (8995-A) patron rules — routing, qualified payments, L14 (2025, verbatim)",
+        "excerpt_text": (
+            "Who Can Take the Deduction: use Form 8995-A if you have QBI and your taxable income before the QBI "
+            "deduction is more than $394,600 MFJ / $197,300 all other returns, OR you're a patron in a specified "
+            "agricultural or horticultural cooperative. Otherwise use Form 8995. If your taxable income is at or "
+            "below the threshold, you don't need to reduce your QBI. You must complete Schedule D (Form 8995-A) "
+            "if you're a patron in a specified agricultural or horticultural cooperative and are claiming a QBI "
+            "deduction in relation to your trade or business conducted with the cooperative. A specified "
+            "agricultural or horticultural cooperative is a cooperative that markets or is engaged in the "
+            "manufacturing, production, growth, or extraction of any agricultural or horticultural products to "
+            "which Part I of subchapter T applies. See section 199A(g)(3). Also see T.D. 9947. Schedule D "
+            "Line 2: Input the QBI for the trade or business as properly allocable to qualified payments "
+            "received from the cooperative. Qualified payments include patronage dividends and per-unit retains "
+            "allocations. Schedule D Line 4: Enter the portion of W-2 wages from Form 8995-A, line 4, that are "
+            "allocable to the qualified payments. Form 8995-A Line 14: Report the amount from Schedule D "
+            "(Form 8995-A), line 6, if any. Patrons of agricultural or horticultural cooperatives are required "
+            "to reduce their QBI component by the lesser of: 9% of QBI allocable to qualified payments from a "
+            "specified cooperative, or 50% of W-2 wages allocable to qualified payments. Line 15: Subtract the "
+            "patron reduction on line 14 from the amount on line 13. If zero or less, enter zero. Line 39: Enter "
+            "the amount from line 39 on Form 1040 or 1040-SR, line 13a."
+        ),
+        "summary_text": "Patron → 8995-A at ANY income; at/below threshold no QBI reduction; Sch D L2 = QBI allocable to qualified payments (patronage dividends + per-unit retains); L14 = lesser of 9%/50%.",
         "is_key_excerpt": True,
     }),
     ("IRS_2025_8995A_INSTR", {
@@ -366,7 +439,20 @@ F8995A_FACTS: list[dict] = [
                "in an aggregation (Schedule B eligibility).")},
     {"fact_key": "a_business_is_patron", "label": "Part I col (e) — patron of an ag/hort cooperative",
      "data_type": "boolean", "sort_order": 5,
-     "notes": "PER BUSINESS. Patron reduction (line 14, Schedule D) is RED-deferred in v1 (D_8995A_001)."},
+     "notes": ("PER BUSINESS. Routes the return to Form 8995-A at ANY income (i8995a 2025 'Who Can Take the "
+               "Deduction') and engages Schedule D (patron reduction → L14). COMPUTED since 2026-07-03 "
+               "(Ken ruling, MeF S2): R-8995A-PATRON. Specified ag/hort co-op per §199A(g)(3) / T.D. 9947.")},
+    {"fact_key": "a_business_schd_qbi_alloc", "label": "Schedule D line 2 — QBI allocable to qualified payments from the cooperative",
+     "data_type": "decimal", "default_value": "0", "sort_order": 9,
+     "notes": ("PER BUSINESS (patron only). Preparer-entered: the portion of the business's QBI properly "
+               "allocable to qualified payments (patronage dividends + per-unit retains allocations, "
+               "Form 1099-PATR). Blank/0 with the patron flag set → patron reduction $0 + D_8995A_001 "
+               "(info) asks the preparer to confirm no qualified payments.")},
+    {"fact_key": "a_business_schd_wages_alloc", "label": "Schedule D line 4 — W-2 wages allocable to the qualified payments",
+     "data_type": "decimal", "default_value": "0", "sort_order": 10,
+     "notes": ("PER BUSINESS (patron only). The portion of Form 8995-A line 4 W-2 wages allocable to the "
+               "qualified payments. Must not exceed the business's line 4 wages (D_8995A_009). A zero-wage "
+               "business ⇒ reduction $0 (the 50% arm is the lesser) — §199A(b)(7)(B).")},
     {"fact_key": "a_aggregation_group", "label": "Part I col (c) — aggregation group id (Schedule B)",
      "data_type": "string", "sort_order": 6,
      "notes": ("PER BUSINESS. Blank = stands alone; a shared group id (e.g. 'AGG1') aggregates the businesses "
@@ -399,6 +485,12 @@ F8995A_FACTS: list[dict] = [
     {"fact_key": "a_qbi_loss_carryforward_prior", "label": "Schedule C line 2 — QBI net (loss) carryforward from prior years",
      "data_type": "decimal", "default_value": "0", "sort_order": 25,
      "notes": "RETURN LEVEL. Negative. Enters Schedule C loss netting (or Form 8995 line 16 of the prior year)."},
+    {"fact_key": "a_dpad_199ag", "label": "Line 38 — DPAD §199A(g) allocated from an ag/hort cooperative",
+     "data_type": "decimal", "default_value": "0", "sort_order": 26,
+     "notes": ("RETURN LEVEL. Preparer-entered from the cooperative's written notice (1099-PATR box 6 / "
+               "attachment). CAPPED on entry to the form: line 38 face verbatim — \"Don't enter more than "
+               "line 33 minus line 37\" (D_8995A_002 fires when the cap clips). COMPUTED since 2026-07-03; "
+               "previously the D_8995A_002 RED-defer.")},
     # ── Outputs ──
     {"fact_key": "a_qbi_deduction_l39", "label": "Line 39 — total QBI deduction (output → Form 1040 line 13)",
      "data_type": "decimal", "sort_order": 40,
@@ -427,10 +519,14 @@ F8995A_FACTS: list[dict] = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 F8995A_RULES: list[dict] = [
-    {"rule_id": "R-8995A-SCOPE", "title": "Scope gate — used when taxable income is ABOVE the threshold (or a patron)", "rule_type": "routing", "precedence": 0, "sort_order": 1,
-     "formula": "Used iff a_taxable_income_before_qbi > QBI_THRESHOLDS[year][status] (else the simplified Form 8995 applies). Patrons use it at any income (RED-defer in v1).",
-     "inputs": ["a_taxable_income_before_qbi", "a_threshold", "a_filing_status"], "outputs": [],
-     "description": "RETURN LEVEL. Complement of R-8995-SCOPE (simplified). Above the year-keyed threshold the W-2/UBIA and SSTB limits bite → Form 8995-A."},
+    {"rule_id": "R-8995A-SCOPE", "title": "Scope gate — above the threshold OR any patron business", "rule_type": "routing", "precedence": 0, "sort_order": 1,
+     "formula": ("Used iff a_taxable_income_before_qbi > QBI_THRESHOLDS[year][status] OR any business has "
+                 "a_business_is_patron (patrons use 8995-A at ANY income — i8995a 2025 'Who Can Take the "
+                 "Deduction'). A patron at/below the threshold takes the face line-3 skip: skip lines 4–12, "
+                 "L13 = L3 (no W-2/UBIA limit, no Part III, no Schedule A) — only the Schedule D patron "
+                 "reduction applies. Otherwise the simplified Form 8995 computes."),
+     "inputs": ["a_taxable_income_before_qbi", "a_threshold", "a_filing_status", "a_business_is_patron"], "outputs": [],
+     "description": "RETURN LEVEL. Complement of R-8995-SCOPE (simplified). Above the year-keyed threshold the W-2/UBIA and SSTB limits bite; a patron routes here regardless of income."},
     {"rule_id": "R-8995A-SCHA", "title": "Schedule A — SSTB applicable percentage (in-band reduction; above-ceiling exclusion)", "rule_type": "calculation", "precedence": 1, "sort_order": 2,
      "formula": ("If a business is an SSTB: applicable% = clamp((ceiling − TI) / range, 0, 1) where ceiling = "
                  "threshold + range. Reduce the SSTB's QBI (L2), W-2 wages (L4), and UBIA (L7) by applicable% "
@@ -470,25 +566,40 @@ F8995A_RULES: list[dict] = [
      "outputs": ["17", "18", "19", "20", "21", "22", "23", "24", "25", "26"],
      "description": "RETURN LEVEL (per column). Phases OUT the wage/UBIA limitation across the band (full QBI 20% at the floor → full limit at the ceiling)."},
     {"rule_id": "R-8995A-P2-COMP", "title": "Part II lines 12–16 — QBI component", "rule_type": "calculation", "precedence": 6, "sort_order": 7,
-     "formula": "Per business: L12 = L26 (if Part III) else blank; L13 = max(L11, L12); L14 = patron reduction (RED-defer, v1 = 0); L15 = L13 − L14. L16 = Σ L15 across all businesses.",
-     "inputs": [], "outputs": ["12", "13", "14", "15", "16"],
-     "description": "RETURN LEVEL. L13 takes the GREATER of the full limit (L11) or the phased-in amount (L12) — the phase-in only ever helps."},
+     "formula": ("Per business: L12 = L26 (if Part III) else blank; L13 = max(L11, L12) — EXCEPT at/below the "
+                 "threshold (patron path): skip 4–12 and L13 = L3 (face line-3 verbatim); L14 = Schedule D "
+                 "line 6 for the corresponding business (R-8995A-PATRON; 0 for non-patrons); L15 = max(0, "
+                 "L13 − L14) ('If zero or less, enter zero' — i8995a L15). L16 = Σ L15 across all businesses."),
+     "inputs": ["a_business_schd_qbi_alloc", "a_business_schd_wages_alloc"], "outputs": ["12", "13", "14", "15", "16"],
+     "description": "RETURN LEVEL. L13 takes the GREATER of the full limit (L11) or the phased-in amount (L12) — the phase-in only ever helps. L14 is the computed Schedule D patron reduction."},
     {"rule_id": "R-8995A-P4-REIT", "title": "Part IV lines 27–32 — REIT/PTP component", "rule_type": "calculation", "precedence": 7, "sort_order": 8,
      "formula": "L27 = L16; L30 = max(0, L28 REIT/PTP income + L29 prior carryforward); L31 = L30 × 20%; L32 = L27 + L31.",
      "inputs": ["a_reit_ptp_income", "a_reit_ptp_carryforward_prior", "a_qbi_rate"], "outputs": ["27", "28", "29", "30", "31", "32"],
      "description": "RETURN LEVEL. The REIT/PTP component is 20% of (positive) qualified REIT dividends + PTP income."},
     {"rule_id": "R-8995A-P4-LIMIT", "title": "Part IV lines 33–39 — income limitation → Form 1040 line 13", "rule_type": "calculation", "precedence": 8, "sort_order": 9,
-     "formula": "L33 = TI before QBI; L34 = net cap gain + qual dividends; L35 = max(0, L33 − L34); L36 = L35 × 20%; L37 = min(L32, L36); L38 = DPAD (RED-defer, v1 = 0); L39 = L37 + L38 → Form 1040 line 13.",
-     "inputs": ["a_taxable_income_before_qbi", "a_net_capital_gain", "a_qbi_rate"], "outputs": ["33", "34", "35", "36", "37", "38", "39"],
-     "description": "RETURN LEVEL. The deduction is the smaller of the components total (L32) and 20% of (TI − net cap gain). L39 → 1040 line 13 (override = escape hatch)."},
+     "formula": ("L33 = TI before QBI; L34 = net cap gain + qual dividends; L35 = max(0, L33 − L34); L36 = L35 × "
+                 "20%; L37 = min(L32, L36); L38 = min(a_dpad_199ag, max(0, L33 − L37)) — face-verbatim cap "
+                 "\"Don't enter more than line 33 minus line 37\" (D_8995A_002 info when clipped); "
+                 "L39 = L37 + L38 → Form 1040 line 13."),
+     "inputs": ["a_taxable_income_before_qbi", "a_net_capital_gain", "a_qbi_rate", "a_dpad_199ag"], "outputs": ["33", "34", "35", "36", "37", "38", "39"],
+     "description": "RETURN LEVEL. The deduction is the smaller of the components total (L32) and 20% of (TI − net cap gain), plus the capped §199A(g) DPAD. L39 → 1040 line 13 (override = escape hatch)."},
     {"rule_id": "R-8995A-P4-CARRYFWD", "title": "Line 40 — REIT/PTP (loss) carryforward to next year", "rule_type": "calculation", "precedence": 9, "sort_order": 10,
      "formula": "L40 = min(0, L28 + L29) (negative REIT/PTP carried forward); else 0.",
      "inputs": ["a_reit_ptp_income", "a_reit_ptp_carryforward_prior"], "outputs": ["40"],
      "description": "RETURN LEVEL. A net negative REIT/PTP carries forward; it does not reduce the QBI component."},
-    {"rule_id": "R-8995A-PATRON", "title": "Patron reduction (L14) + DPAD §199A(g) (L38) — RED-defer", "rule_type": "routing", "precedence": 10, "sort_order": 11,
-     "formula": "If a_business_is_patron (any business) OR a DPAD amount is present → D_8995A_001 / D_8995A_002 RED-defer (Schedule D out of v1). v1: L14 = L38 = 0.",
-     "inputs": ["a_business_is_patron"], "outputs": ["14", "38"],
-     "description": "RETURN LEVEL. Ag/hort-coop patron reduction + the §199A(g) DPAD are RED-deferred (Schedule D not built). No silent gap."},
+    {"rule_id": "R-8995A-PATRON", "title": "Schedule D — patron reduction per business (COMPUTED; Ken ruling 2026-07-03, MeF S2)", "rule_type": "calculation", "precedence": 10, "sort_order": 11,
+     "formula": ("Per patron business (a_business_is_patron): SD2 = a_business_schd_qbi_alloc; SD3 = SD2 × 9% "
+                 "(0.09); SD4 = a_business_schd_wages_alloc; SD5 = SD4 × 50% (0.50); SD6 = min(SD3, SD5) → "
+                 "Form 8995-A line 14 for the corresponding trade, business, or aggregation (f8995ad face "
+                 "verbatim; §199A(b)(7)). Non-patron business → L14 = 0. Patron with SD2 blank/0 → reduction 0 "
+                 "+ D_8995A_001 (info: confirm no qualified payments on the 1099-PATR). NOTE the lesser-of arms: "
+                 "a zero-wage patron business (e.g. a statutory-employee Sch C) always reduces by $0 even when "
+                 "ALL QBI is allocable to qualified payments — 50% × 0 wages is the lesser."),
+     "inputs": ["a_business_is_patron", "a_business_schd_qbi_alloc", "a_business_schd_wages_alloc"],
+     "outputs": ["14", "SD2", "SD3", "SD4", "SD5", "SD6"],
+     "description": ("RETURN LEVEL (per patron business). Replaces the v1 RED-defer (D_8995A_001/002 error → "
+                     "info, 2026-07-03). Amounts stay CENTS through the chain (8995-A is a stated R-SE-ROUND "
+                     "boundary; whole-dollar only at the 1040 face).")},
 ]
 
 
@@ -514,7 +625,7 @@ F8995A_LINES: list[dict] = [
     {"line_number": "11", "description": "W-2/UBIA limitation = smaller of line 3 or line 10", "line_type": "calculated"},
     {"line_number": "12", "description": "Phased-in reduction = amount from line 26 (Part III), if any", "line_type": "calculated"},
     {"line_number": "13", "description": "Greater of line 11 or line 12 (QBI deduction before patron reduction)", "line_type": "calculated"},
-    {"line_number": "14", "description": "Patron reduction (Schedule D line 6) — RED-defer (v1 = 0)", "line_type": "input"},
+    {"line_number": "14", "description": "Patron reduction = Schedule D line 6 for the corresponding business (computed)", "line_type": "calculated"},
     {"line_number": "15", "description": "QBI component = line 13 − line 14", "line_type": "calculated"},
     {"line_number": "16", "description": "Total QBI component = Σ line 15 (all businesses)", "line_type": "subtotal"},
     # Part III (per business column A/B/C)
@@ -540,7 +651,7 @@ F8995A_LINES: list[dict] = [
     {"line_number": "35", "description": "Subtract line 34 from line 33; if ≤ 0 enter 0", "line_type": "calculated"},
     {"line_number": "36", "description": "Income limitation = line 35 × 20%", "line_type": "calculated"},
     {"line_number": "37", "description": "Smaller of line 32 or line 36 (before DPAD)", "line_type": "calculated"},
-    {"line_number": "38", "description": "DPAD §199A(g) from ag/hort coop — RED-defer (v1 = 0)", "line_type": "input"},
+    {"line_number": "38", "description": "DPAD §199A(g) from ag/hort coop — input capped at line 33 − line 37 (face verbatim)", "line_type": "input"},
     {"line_number": "39", "description": "Total QBI deduction = line 37 + line 38 → Form 1040 line 13", "line_type": "total"},
     {"line_number": "40", "description": "REIT/PTP (loss) carryforward out = min(0, line 28 + line 29)", "line_type": "calculated"},
     # Schedule A (SSTB) — computational worksheet; exact PDF line numbers verified at render (W7)
@@ -555,6 +666,14 @@ F8995A_LINES: list[dict] = [
     # Schedule C (loss netting)
     {"line_number": "SC-1C", "description": "Schedule C line 1(c) — adjusted QBI after loss netting → Part II line 2", "line_type": "calculated"},
     {"line_number": "SC-6", "description": "Schedule C line 6 — QBI net (loss) carryforward to next year (negative)", "line_type": "calculated"},
+    # Schedule D (patron reduction; per business column A/B/C, Rev. 12-2022 face)
+    {"line_number": "SD1A", "description": "Schedule D line 1a — trade, business, or aggregation name (per column)", "line_type": "input"},
+    {"line_number": "SD1B", "description": "Schedule D line 1b — taxpayer identification number (per column)", "line_type": "input"},
+    {"line_number": "SD2", "description": "Schedule D line 2 — QBI allocable to qualified payments received from cooperative", "line_type": "input"},
+    {"line_number": "SD3", "description": "Schedule D line 3 — line 2 × 9%", "line_type": "calculated"},
+    {"line_number": "SD4", "description": "Schedule D line 4 — W-2 wages allocable to the qualified payments", "line_type": "input"},
+    {"line_number": "SD5", "description": "Schedule D line 5 — line 4 × 50%", "line_type": "calculated"},
+    {"line_number": "SD6", "description": "Schedule D line 6 — patron reduction = smaller of line 3 or line 5 → 8995-A line 14", "line_type": "calculated"},
 ]
 
 
@@ -563,19 +682,34 @@ F8995A_LINES: list[dict] = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 F8995A_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_8995A_001", "title": "Patron of an ag/hort cooperative — Schedule D not supported", "severity": "error",
-     "condition": "any business a_business_is_patron is True",
-     "message": ("Not supported — prepare manually: this return claims a patron of an agricultural or "
-                 "horticultural cooperative. The Schedule D (Form 8995-A) patron reduction (line 14) is not "
-                 "built this version. Compute the patron reduction manually and enter it; the rest of the QBI "
-                 "deduction is computed."),
-     "notes": "RED-defer Schedule D (patron). v1 line 14 = 0."},
-    {"diagnostic_id": "D_8995A_002", "title": "DPAD §199A(g) present — not supported", "severity": "error",
-     "condition": "a DPAD §199A(g) amount (line 38) is present",
-     "message": ("Not supported — prepare manually: a §199A(g) domestic production activities deduction (DPAD) "
-                 "from an agricultural or horticultural cooperative is present. Line 38 is not computed this "
-                 "version."),
-     "notes": "RED-defer Schedule D (DPAD). v1 line 38 = 0."},
+    {"diagnostic_id": "D_8995A_001", "title": "Patron with no Schedule D allocation — patron reduction computed as $0", "severity": "info",
+     "condition": "a_business_is_patron is True AND a_business_schd_qbi_alloc is blank/0 for that business",
+     "message": ("This business is flagged as a patron of an agricultural or horticultural cooperative, but no "
+                 "QBI allocable to qualified payments (Schedule D line 2) has been entered. The patron reduction "
+                 "computes as $0 and the full QBI deduction flows. Confirm against the Form 1099-PATR that the "
+                 "business received no qualified payments (patronage dividends or per-unit retain allocations); "
+                 "if it did, enter the allocable QBI and W-2 wages on the business's Schedule D fields."),
+     "notes": ("REPURPOSED 2026-07-03 (was the Schedule D RED-defer; Ken ruled build for MeF S2). Now the "
+               "confirm-the-zero surface. Severity error → info.")},
+    {"diagnostic_id": "D_8995A_002", "title": "DPAD §199A(g) clipped to the line 38 cap", "severity": "info",
+     "condition": "a_dpad_199ag > max(0, line_33 − line_37)",
+     "message": ("The §199A(g) DPAD entered exceeds the Form 8995-A line 38 cap — the face instructs \"Don't "
+                 "enter more than line 33 minus line 37.\" Line 38 is limited to ${cap}; the excess does not "
+                 "carry forward on this form. Verify the cooperative's written notice amount."),
+     "notes": ("REPURPOSED 2026-07-03 (was the DPAD RED-defer). Now fires only when the input is clipped by "
+               "the face cap. Severity error → info.")},
+    {"diagnostic_id": "D_8995A_008", "title": "Schedule D allocable QBI exceeds the business's QBI", "severity": "warning",
+     "condition": "a_business_schd_qbi_alloc > adjusted QBI (Part II line 2) for that business",
+     "message": ("Schedule D line 2 (QBI allocable to qualified payments) exceeds the business's total QBI on "
+                 "Form 8995-A Part II line 2. Allocable QBI is a portion of the business's QBI and cannot "
+                 "exceed it. Correct the allocation."),
+     "notes": "Input-consistency guard on the Schedule D allocation (new 2026-07-03)."},
+    {"diagnostic_id": "D_8995A_009", "title": "Schedule D allocable W-2 wages exceed the business's W-2 wages", "severity": "warning",
+     "condition": "a_business_schd_wages_alloc > a_business_w2_wages for that business",
+     "message": ("Schedule D line 4 (W-2 wages allocable to qualified payments) exceeds the business's W-2 "
+                 "wages on Form 8995-A line 4. The instructions define line 4 as the PORTION of Form 8995-A "
+                 "line 4 wages allocable to the qualified payments. Correct the allocation."),
+     "notes": "Input-consistency guard on the Schedule D allocation (new 2026-07-03)."},
     {"diagnostic_id": "D_8995A_003", "title": "Aggregation elected — verify §1.199A-4 eligibility", "severity": "warning",
      "condition": "a_aggregation_group set for a group but a_agg_ownership_50pct or a_agg_factors_met not asserted",
      "message": ("Businesses are aggregated for the QBI W-2/UBIA limitation, but the §1.199A-4 eligibility "
@@ -657,11 +791,60 @@ F8995A_SCENARIOS: list[dict] = [
                 "a_agg_ownership_50pct": True, "a_agg_factors_met": True, "a_net_capital_gain": 0},
      "expected_outputs": {"SB-AGG-QBI": 100000, "SB-AGG-W2": 60000, "line_3": 20000, "line_5": 30000, "line_10": 30000, "line_11": 20000, "line_39": 20000},
      "notes": "Aggregated QBI 100k, W-2 60k → L11 = min(20k, 30k) = 20k. Without aggregation the separate wage limits give ~9k. Aggregation engine load-bearing."},
-    {"scenario_name": "8995A-T9 — patron of ag coop → Schedule D RED-defer (D_8995A_001)", "scenario_type": "edge_case", "sort_order": 9,
+    {"scenario_name": "8995A-T9 — patron with no Schedule D allocation → reduction $0 + D_8995A_001 info", "scenario_type": "edge_case", "sort_order": 9,
      "inputs": {"tax_year": 2025, "filing_status": "single", "a_taxable_income_before_qbi": 260000,
                 "businesses": [{"qbi": 100000, "w2": 100000, "ubia": 0, "sstb": False, "patron": True}], "a_net_capital_gain": 0},
-     "expected_outputs": {"D_8995A_001": True, "line_14": 0},
-     "notes": "Patron present → D_8995A_001 RED-defer; the patron reduction (line 14) is computed manually (v1 = 0). The rest of the deduction still computes."},
+     "expected_outputs": {"D_8995A_001": True, "line_14": 0, "line_11": 20000, "line_13": 20000, "line_15": 20000, "line_16": 20000, "line_39": 20000},
+     "notes": ("AMENDED 2026-07-03 (was the RED-defer pin). Patron flag with no allocable-QBI entry → Schedule D "
+               "L2 = 0 → L14 = 0 and the FULL deduction flows (L11 = min(20k, 50k) = 20k → L39 = 20,000); "
+               "D_8995A_001 (now info) asks the preparer to confirm no qualified payments.")},
+    {"scenario_name": "8995A-T11 — patron 9%-arm binds (Sch D L3 < L5)", "scenario_type": "normal", "sort_order": 11,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "a_taxable_income_before_qbi": 260000,
+                "businesses": [{"qbi": 100000, "w2": 60000, "ubia": 0, "sstb": False, "patron": True,
+                                "schd_qbi_alloc": 100000, "schd_wages_alloc": 60000}], "a_net_capital_gain": 0},
+     "expected_outputs": {"SD2": 100000, "SD3": 9000, "SD4": 60000, "SD5": 30000, "SD6": 9000,
+                          "line_11": 20000, "line_13": 20000, "line_14": 9000, "line_15": 11000, "line_16": 11000, "line_37": 11000, "line_39": 11000},
+     "notes": ("HAND-COMPUTED. Above ceiling (260k), wage limit L5 = 30k > L3 = 20k → L11 = 20k = L13. Sch D: "
+               "9% × 100k = 9,000 vs 50% × 60k = 30,000 → SD6 = 9,000 (9% arm). L15 = 20,000 − 9,000 = 11,000; "
+               "income limit 52k not binding → L39 = 11,000.")},
+    {"scenario_name": "8995A-T12 — patron 50%-wage-arm binds (Sch D L5 < L3)", "scenario_type": "normal", "sort_order": 12,
+     "inputs": {"tax_year": 2025, "filing_status": "single", "a_taxable_income_before_qbi": 260000,
+                "businesses": [{"qbi": 100000, "w2": 60000, "ubia": 0, "sstb": False, "patron": True,
+                                "schd_qbi_alloc": 100000, "schd_wages_alloc": 10000}], "a_net_capital_gain": 0},
+     "expected_outputs": {"SD3": 9000, "SD5": 5000, "SD6": 5000, "line_14": 5000, "line_15": 15000, "line_39": 15000},
+     "notes": ("HAND-COMPUTED. Same as T11 but only 10k of wages allocable: 50% × 10k = 5,000 < 9,000 → "
+               "SD6 = 5,000 (wage arm). L15 = 20,000 − 5,000 = 15,000 → L39 = 15,000.")},
+    {"scenario_name": "8995A-T13 — BELOW-threshold patron, zero wages (S2 Jones shape): skip 4–12, reduction $0", "scenario_type": "edge_case", "sort_order": 13,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "a_taxable_income_before_qbi": 60000,
+                "businesses": [{"qbi": 26979, "w2": 0, "ubia": 0, "sstb": False, "patron": True}], "a_net_capital_gain": 0},
+     "expected_outputs": {"line_3": 5395.80, "line_13": 5395.80, "line_14": 0, "line_15": 5395.80, "line_16": 5395.80,
+                          "line_36": 12000, "line_37": 5395.80, "line_39": 5395.80, "D_8995A_001": True},
+     "notes": ("HAND-COMPUTED — THE LOAD-BEARING S2 TEST. Patron routes to 8995-A BELOW the threshold (i8995a "
+               "'Who Can Take'); face line-3 skip: skip L4–12, L13 = L3 = 20% × 26,979 = 5,395.80 (cents — "
+               "8995-A is an R-SE-ROUND stated boundary). The zero-wage business is NOT zeroed by the W-2 "
+               "limit (the limit doesn't exist below the threshold — §199A(b)(3)(A)); no allocation entered → "
+               "L14 = 0 + D_8995A_001 info. L39 = 5,395.80 → 1040 13a. Proves the ATS S2 stipulation "
+               "('patrons therefore do not qualify') is NOT enacted law — the divergence is documented at the "
+               "scenario leg.")},
+    {"scenario_name": "8995A-T14 — patron below threshold, FULL allocation but zero wages → reduction still $0", "scenario_type": "edge_case", "sort_order": 14,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "a_taxable_income_before_qbi": 100000,
+                "businesses": [{"qbi": 50000, "w2": 0, "ubia": 0, "sstb": False, "patron": True,
+                                "schd_qbi_alloc": 50000, "schd_wages_alloc": 0}], "a_net_capital_gain": 0},
+     "expected_outputs": {"SD2": 50000, "SD3": 4500, "SD4": 0, "SD5": 0, "SD6": 0,
+                          "line_13": 10000, "line_14": 0, "line_15": 10000, "line_39": 10000},
+     "notes": ("HAND-COMPUTED — the sharpest §199A(b)(7) point: even with 100% of QBI allocable to qualified "
+               "payments, a business that paid NO W-2 wages reduces by $0 — min(9% × 50k = 4,500, 50% × 0 = 0) "
+               "= 0. D_8995A_001 does NOT fire (allocation entered). L39 = 10,000.")},
+    {"scenario_name": "8995A-T15 — DPAD input clipped by the line 38 cap (L33 − L37)", "scenario_type": "edge_case", "sort_order": 15,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "a_taxable_income_before_qbi": 8000,
+                "businesses": [{"qbi": 30000, "w2": 0, "ubia": 0, "sstb": False, "patron": True}],
+                "a_net_capital_gain": 0, "a_dpad_199ag": 10000},
+     "expected_outputs": {"line_13": 6000, "line_32": 6000, "line_36": 1600, "line_37": 1600,
+                          "line_38": 6400, "line_39": 8000, "D_8995A_002": True},
+     "notes": ("HAND-COMPUTED. Below threshold: L13 = 20% × 30k = 6,000; income limit L36 = 20% × 8,000 = "
+               "1,600 binds → L37 = 1,600. DPAD cap = L33 − L37 = 8,000 − 1,600 = 6,400 < input 10,000 → "
+               "L38 = 6,400 + D_8995A_002 (clipped). L39 = 1,600 + 6,400 = 8,000 (= L33 — the cap exists "
+               "precisely so QBI + DPAD never exceeds taxable income).")},
     {"scenario_name": "8995A-T10 — TY2026 ceiling year-keying (load-bearing)", "scenario_type": "normal", "sort_order": 10,
      "inputs": {"tax_year": 2026, "filing_status": "single", "a_taxable_income_before_qbi": 230000,
                 "businesses": [{"qbi": 100000, "w2": 20000, "ubia": 0, "sstb": False}], "a_net_capital_gain": 0},
@@ -691,7 +874,11 @@ F8995A_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8995A-P4-LIMIT", "IRS_2025_8995A_FORM", "primary", "Part IV lines 33–39 income limit → 1040 L13"),
     ("R-8995A-P4-LIMIT", "IRS_2025_8995A_INSTR", "secondary", "Line 34 net cap gain + qualified dividends"),
     ("R-8995A-P4-CARRYFWD", "IRS_2025_8995A_FORM", "primary", "Line 40 REIT/PTP carryforward out"),
-    ("R-8995A-PATRON", "IRS_2025_8995A_INSTR", "primary", "Schedule D patron reduction + DPAD (RED-defer)"),
+    ("R-8995A-PATRON", "IRS_8995A_SCHD_FORM", "primary", "Schedule D face: L6 = min(9% × L2, 50% × L4) → 8995-A L14"),
+    ("R-8995A-PATRON", "IRS_2025_8995A_INSTR", "primary", "Patron routing at any income; qualified payments; L14/L15"),
+    ("R-8995A-PATRON", "IRC_199A", "primary", "§199A(b)(7) patron reduction; §199A(g)(3) specified co-op"),
+    ("R-8995A-P4-LIMIT", "IRS_2025_8995A_FORM", "secondary", "L38 DPAD cap: don't enter more than L33 − L37 (face verbatim)"),
+    ("R-8995A-SCOPE", "IRS_2025_8995A_INSTR", "primary", "Patron uses 8995-A at any income ('Who Can Take the Deduction')"),
 ]
 
 
@@ -758,12 +945,20 @@ FLOW_ASSERTIONS: list[dict] = [
                                   "phase_in_range": PHASE_IN_RANGE, "rate": 0.20, "applies_to_years": [2025, 2026]}},
      "sort_order": 7},
     {"assertion_id": "FA-1040-8995A-08", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Patron reduction (L14) + DPAD (L38) RED-defer — no silent gap",
-     "description": ("Validates R-8995A-PATRON. A patron of an ag/hort cooperative, or a §199A(g) DPAD, fires a "
-                     "RED (D_8995A_001 / D_8995A_002) rather than silently computing a wrong number; the rest of "
-                     "the QBI deduction still computes."),
-     "definition": {"kind": "gating_check", "form": "8995A",
-                    "blockers": ["patron_of_cooperative", "dpad_199a_g"], "expect": {"red_fires": True}},
+     "title": "Schedule D patron reduction: L14 = min(9% × SD2, 50% × SD4); patron routes to 8995-A at ANY income",
+     "description": ("Validates R-8995A-PATRON (COMPUTED since 2026-07-03 — was the RED-defer gating check). "
+                     "Per patron business: Sch D L6 = min(9% × allocable QBI, 50% × allocable W-2 wages) → "
+                     "8995-A L14; L15 = max(0, L13 − L14). A patron return uses 8995-A even at/below the "
+                     "threshold, where the face line-3 skip applies (L13 = L3 — the W-2/UBIA limit must NOT "
+                     "zero a below-threshold zero-wage patron). L38 = min(DPAD input, L33 − L37). Bugs it "
+                     "catches: patron routed to the simplified 8995; the wage limit applied below the "
+                     "threshold; the reduction taken as the GREATER arm; the DPAD cap dropped."),
+     "definition": {"kind": "formula_check", "form": "8995A",
+                    "formula": ("line_14 == min(0.09 * schd_qbi_alloc, 0.50 * schd_wages_alloc); "
+                                "line_15 == max(0, line_13 - line_14); "
+                                "patron_below_threshold_line_13 == line_3; "
+                                "line_38 == min(dpad_input, max(0, line_33 - line_37))"),
+                    "constants": {"patron_pct": 0.09, "wage_pct": 0.50}},
      "sort_order": 8},
     {"assertion_id": "FA-1040-8995A-09", "assertion_type": "flow_assertion", "entity_types": ["1040"],
      "title": "Routing: above the threshold uses Form 8995-A (not the simplified 8995)",
@@ -786,9 +981,10 @@ FORMS: list[dict] = [
                 "did NOT match the form). The real face: Part I (businesses A/B/C + SSTB/aggregation/patron), "
                 "Part II (per-business W-2/UBIA limit), Part III (phase-in), Part IV (REIT/PTP + income limit "
                 "→ 1040 L13), Schedule A (SSTB applicable %), Schedule B (aggregation — full engine), "
-                "Schedule C (loss netting). Schedule D (patron reduction L14 + DPAD L38) RED-deferred. "
-                "Verified against the 2025 f8995a.pdf + i8995a (NOT memory). Used ABOVE the §199A threshold; "
-                "the simplified 8995 applies at/below it."
+                "Schedule C (loss netting), Schedule D (patron reduction L14 + capped DPAD L38 — BUILT "
+                "2026-07-03, Ken ruling for MeF ATS S2; was RED-deferred). Verified against the 2025 "
+                "f8995a.pdf + i8995a + f8995ad Rev 12-2022 (NOT memory). Used ABOVE the §199A threshold OR "
+                "for any patron at any income (face line-3 skip at/below); the simplified 8995 otherwise."
             ),
         },
         "facts": F8995A_FACTS,

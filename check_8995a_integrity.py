@@ -75,7 +75,7 @@ def ceiling(year, status):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prior=0,
-                  qbi_cf_prior=0):
+                  qbi_cf_prior=0, dpad=0):
     ti = D(ti)
     thr = D(threshold(year, status))
     rng = D(prange(status))
@@ -83,7 +83,9 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
 
     # ---- normalize business dicts (copies) ----
     biz = [dict(qbi=D(b.get("qbi", 0)), w2=D(b.get("w2", 0)), ubia=D(b.get("ubia", 0)),
-                sstb=bool(b.get("sstb")), patron=bool(b.get("patron")), agg=b.get("agg"))
+                sstb=bool(b.get("sstb")), patron=bool(b.get("patron")), agg=b.get("agg"),
+                schd_qbi_alloc=D(b.get("schd_qbi_alloc", 0)),
+                schd_wages_alloc=D(b.get("schd_wages_alloc", 0)))
            for b in businesses]
 
     # ---- Schedule A: SSTB applicable % (in-band reduction / above-ceiling exclusion) ----
@@ -110,10 +112,15 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
     for gid, members in groups.items():
         col = dict(qbi=sum((mm["qbi"] for mm in members), Decimal(0)),
                    w2=sum((mm["w2"] for mm in members), Decimal(0)),
-                   ubia=sum((mm["ubia"] for mm in members), Decimal(0)))
+                   ubia=sum((mm["ubia"] for mm in members), Decimal(0)),
+                   patron=any(mm["patron"] for mm in members),
+                   schd_qbi_alloc=sum((mm["schd_qbi_alloc"] for mm in members), Decimal(0)),
+                   schd_wages_alloc=sum((mm["schd_wages_alloc"] for mm in members), Decimal(0)))
         agg_combined[gid] = col
         columns.append(col)
-    columns += [dict(qbi=b["qbi"], w2=b["w2"], ubia=b["ubia"]) for b in standalone]
+    columns += [dict(qbi=b["qbi"], w2=b["w2"], ubia=b["ubia"], patron=b["patron"],
+                     schd_qbi_alloc=b["schd_qbi_alloc"],
+                     schd_wages_alloc=b["schd_wages_alloc"]) for b in standalone]
 
     # ---- Schedule C: loss netting (apportion total loss pro-rata by QBI) ----
     total_loss = D(qbi_cf_prior) + sum((c["qbi"] for c in columns if c["qbi"] < 0), Decimal(0))
@@ -147,6 +154,7 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
 
     # ---- Part II / III per column ----
     in_band = thr < ti <= ceil
+    below = ti <= thr  # face line-3 verbatim: skip 4–12, enter L3 on L13 (patron path)
     col_lines = []
     for c in columns:
         L2 = c["adj"]
@@ -169,12 +177,29 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
             L25 = L19 * L24
             L26 = L3 - L25
             L12 = L26
-        L13 = max(L11, L12) if L12 is not None else L11
-        L14 = Decimal(0)  # patron RED-defer
-        L15 = L13 - L14
+        if below:
+            # At/below the threshold (patron routing): the W-2/UBIA limit does not
+            # exist (§199A(b)(3)(A)); L13 = L3 per the face line-3 skip.
+            L13 = L3
+        else:
+            L13 = max(L11, L12) if L12 is not None else L11
+        # Schedule D patron reduction: SD6 = min(9% × SD2, 50% × SD4) → L14
+        if c.get("patron"):
+            SD2 = c["schd_qbi_alloc"]
+            SD3 = SD2 * Decimal("0.09")
+            SD4 = c["schd_wages_alloc"]
+            SD5 = SD4 * Decimal("0.50")
+            SD6 = min(SD3, SD5)
+        else:
+            SD2 = SD3 = SD4 = SD5 = SD6 = Decimal(0)
+        L14 = SD6
+        L15 = max(Decimal(0), L13 - L14)  # i8995a L15: if zero or less, enter zero
         col_lines.append(dict(L2=L2, L3=L3, L4=L4, L5=L5, L6=L6, L7=L7, L8=L8, L9=L9,
-                              L10=L10, L11=L11, L12=L12, L13=L13, L15=L15, L24=L24,
-                              L25=L25, L26=L26))
+                              L10=L10, L11=L11, L12=L12, L13=L13, L14=L14, L15=L15,
+                              L24=L24, L25=L25, L26=L26,
+                              SD2=SD2, SD3=SD3, SD4=SD4, SD5=SD5, SD6=SD6,
+                              patron=bool(c.get("patron")),
+                              schd_qbi_alloc=c.get("schd_qbi_alloc", Decimal(0))))
 
     L16 = sum((cl["L15"] for cl in col_lines), Decimal(0))
 
@@ -190,7 +215,11 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
     L35 = max(Decimal(0), L33 - L34)
     L36 = L35 * IND_RATE
     L37 = min(L32, L36)
-    L38 = Decimal(0)  # DPAD RED-defer
+    # DPAD §199A(g): face-verbatim cap "Don't enter more than line 33 minus line 37"
+    dpad_in = D(dpad)
+    dpad_cap = max(Decimal(0), L33 - L37)
+    L38 = min(dpad_in, dpad_cap)
+    dpad_clipped = dpad_in > dpad_cap
     L39 = L37 + L38
     L40 = min(Decimal(0), L28 + L29)
 
@@ -200,7 +229,8 @@ def compute_8995a(year, status, ti, ncg, businesses, reit_income=0, reit_cf_prio
     return dict(applicable=applicable, columns=columns, col_lines=col_lines,
                 agg_combined=agg_combined, carryforward_out=carryforward_out,
                 primary=primary, L16=L16, L27=L27, L28=L28, L30=L30, L31=L31,
-                L32=L32, L33=L33, L34=L34, L35=L35, L36=L36, L37=L37, L39=L39, L40=L40)
+                L32=L32, L33=L33, L34=L34, L35=L35, L36=L36, L37=L37, L38=L38,
+                L39=L39, L40=L40, dpad_clipped=dpad_clipped)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -262,10 +292,11 @@ for ln in m.F8995A_LINES:
 # ═══════════════════════════════════════════════════════════════════════════
 
 PER_COL = {"line_2", "line_3", "line_4", "line_5", "line_6", "line_7", "line_8",
-           "line_9", "line_10", "line_11", "line_12", "line_13", "line_15",
-           "line_24", "line_25", "line_26"}
+           "line_9", "line_10", "line_11", "line_12", "line_13", "line_14", "line_15",
+           "line_24", "line_25", "line_26",
+           "SD2", "SD3", "SD4", "SD5", "SD6"}
 AGG = {"line_16", "line_27", "line_30", "line_31", "line_32", "line_33", "line_34",
-       "line_35", "line_36", "line_37", "line_39", "line_40"}
+       "line_35", "line_36", "line_37", "line_38", "line_39", "line_40"}
 
 for sc in m.F8995A_SCENARIOS:
     name = sc["scenario_name"]
@@ -277,13 +308,19 @@ for sc in m.F8995A_SCENARIOS:
         reit_income=inp.get("a_reit_ptp_income", 0),
         reit_cf_prior=inp.get("a_reit_ptp_carryforward_prior", 0),
         qbi_cf_prior=inp.get("a_qbi_loss_carryforward_prior", 0),
+        dpad=inp.get("a_dpad_199ag", 0),
     )
     prim = res["primary"]
     for key, want in exp.items():
-        if key in ("D_8995A_001", "D_8995A_004"):
+        if key in ("D_8995A_001", "D_8995A_002", "D_8995A_004"):
             # diagnostic booleans
             if key == "D_8995A_001":
-                got = any(b.get("patron") for b in inp.get("businesses", []))
+                # REPURPOSED 2026-07-03: patron with NO allocable-QBI entry (confirm-the-zero)
+                got = any(b.get("patron") and not D(b.get("schd_qbi_alloc", 0))
+                          for b in inp.get("businesses", []))
+            elif key == "D_8995A_002":
+                # REPURPOSED 2026-07-03: DPAD input clipped by the L33 − L37 cap
+                got = res["dpad_clipped"]
             else:  # D_8995A_004: SSTB above ceiling
                 got = any(b.get("sstb") for b in inp.get("businesses", [])) and \
                     D(inp["a_taxable_income_before_qbi"]) > ceiling(inp["tax_year"], inp["filing_status"])
@@ -303,9 +340,6 @@ for sc in m.F8995A_SCENARIOS:
                 col = list(res["agg_combined"].values())[0]
                 fld = {"SB-AGG-QBI": "qbi", "SB-AGG-W2": "w2", "SB-AGG-UBIA": "ubia"}[key]
                 check(f"{name} :: {key}", col[fld], want)
-        elif key == "line_14":
-            # patron reduction — RED-deferred, always 0 in v1
-            check(f"{name} :: line_14 (patron reduction, v1=0)", 0, want)
         elif key == "a_qbi_carryforward_out":
             check(f"{name} :: carryforward_out", res["carryforward_out"], want)
         elif key in AGG:
@@ -332,6 +366,12 @@ if "greater of line 11 or line 12" not in line_desc.get("13", ""):
     err("line 13 description drifted from 'greater of line 11 or line 12'")
 if "form 1040 line 13" not in line_desc.get("39", ""):
     err("line 39 must route to Form 1040 line 13")
+if "schedule d line 6" not in line_desc.get("14", ""):
+    err("line 14 description drifted from 'Schedule D line 6'")
+if "smaller of line 3 or line 5" not in line_desc.get("SD6", ""):
+    err("SD6 description drifted from 'smaller of line 3 or line 5' (f8995ad face)")
+if "line 33" not in line_desc.get("38", "") or "line 37" not in line_desc.get("38", ""):
+    err("line 38 description must carry the L33 − L37 cap (face verbatim)")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
