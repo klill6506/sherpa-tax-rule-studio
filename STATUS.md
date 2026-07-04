@@ -12,11 +12,11 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **85 TaxForms / 413 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule K-1 +
-allocation engine** (`SCHEDULE_K1_1065`, 2026-07-04) — seeded + exported (200), with the full ~200-code
-K-1 coded-box lists transcribed verbatim from the FINAL i1065sk1; it confirmed + CLOSED the box-9c
-pass-through. Prior same day: the **Schedule K spine** (`1065_PAGE1` + `SCH_K_1065`, both endpoints 200;
+Active spec-authoring tool. RS Supabase holds **87 TaxForms / 416 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule M-1 +
+M-2** (`1065_M1` / `1065_M2`, 2026-07-04) — seeded + exported (both 200); M-1 line 9 = Analysis line 1,
+M-2 tax-basis capital. Prior same day (all 200): **Schedule K-1 + allocation** (`SCHEDULE_K1_1065`, full
+~200-code K-1 coded-box lists verbatim; CLOSED the box-9c pass-through) and the **Schedule K spine**. Prior same day: the **Schedule K spine** (`1065_PAGE1` + `SCH_K_1065`, both endpoints 200;
 the reconcile that authored it CAUGHT + FIXED a tts net-farm compute bug `f61cfec`), and the **S3/S4
 MeF ATS unblock campaign** — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
 exported, **all four `lookup/<form>/export/` endpoints return 200** (verified live). Every rule cited;
@@ -64,12 +64,17 @@ loss-% allocation + `PartnerAllocation` category overrides; GP + distributions d
 §704(c) built-in gain (items M/N), §704(b) SEE, §706(d) varying interest, item-L capital roll-forward.
 FULL ~200-code coded-box lists (boxes 11/13/14/15/17/18/19/20) transcribed verbatim from the FINAL
 i1065sk1.pdf (pp. 33-36, pymupdf) as `IRS_2025_I1065SK1` excerpts. Committed `8673fdd` + the seed.
-**► IMMEDIATE NEXT — form 3 of 6: Schedule M-1 + M-2 (`1065_M1` / `1065_M2`).** M-1 book↔return
-reconciliation (line 9 = Analysis-of-Net-Income line 1); M-2 partners' capital (line 1 = Σ K-1 item L
-beginning tax-basis capital — but note item-L roll-forward is a tts RED-defer, so M-2 line 1 can't
-auto-derive yet; log it). Then form 4: Schedule L (balance sheet) + Schedule B (33 questions incl. the
-Q4 L/M-2 small-partnership exemption gating fact). 8825/4562/3800 already cover 1065. Brief §4.3 has the
-verbatim L/M-1/M-2 line maps + thresholds; read it + `1065_core_reconcile_log.md` first.
+**✅ form 3 of 6 DONE — Schedule M-1 + M-2 (`1065_M1` / `1065_M2`).** Seeded + exported (both 200), all
+rules cited. M-1 line 9 = Analysis line 1 (face verbatim); M-2 tax-basis capital roll-forward. Authored
+from the FINAL f1065 page 6 (pymupdf verbatim). Reconcile finding: **tts M2_3 mis-source** (labeled "per
+books" data-entry; should tie to Analysis line 1 on a tax-basis M-2) → **spawned tts task `task_4bf72675`**
+(coupled to the unbuilt 1065 Analysis compute). Small-partnership exemption (Q4) encoded as a gating fact.
+**► IMMEDIATE NEXT — form 4 of 6: Schedule L (balance sheet) + Schedule B (33 questions).** Schedule L
+(assets 1-14, liab/capital 15-22; L21 partners' capital ties to M-2 line 9; L14/L22 the balance check);
+Schedule B (the 33 Yes/No questions incl. Q4 small-partnership exemption — already a gating fact in
+1065_M1/M2/L; Q10 §754; Q23/24 §163(j) $31M; Q30 digital asset). Brief §4.3 (L verbatim) + §4.1 (Sch B
+33 Qs) have the maps; the f1065.pdf is already downloaded (page 6 = Schedule L). Then 8825/4562/3800
+already cover 1065 → campaign near-complete. Read the brief + `1065_core_reconcile_log.md` first.
 **Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
 numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
 (2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new). Plus the
@@ -155,6 +160,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **1065 core — Schedule M-1 + M-2 SEEDED + EXPORTED (`1065_M1` / `1065_M2`).** Form 3 of 6.
+  Authored from the FINAL f1065 page 6 (pymupdf verbatim) + primary IRC (§705 tax-basis capital, §702
+  book-tax). M-1: 9 = 5−8 = **Analysis of Net Income line 1** (face verbatim — validates the spine's
+  `R-SCHK-ANALYSIS`). M-2 (tax basis): 9 = 5−8; line 3 = Analysis line 1 = M-1 line 9. Reconciled vs tts
+  `FORMULAS_1065` M-1/M-2 → surfaced the **M2_3 mis-source** (tts labels line 3 "per books" data-entry;
+  a tax-basis M-2 ties it to Analysis line 1 per return) → Ken: "log + spawn tts task" → **`task_4bf72675`**
+  (coupled to the unbuilt 1065 Analysis compute + M-1 line 9). Sch B Q4 small-partnership exemption →
+  gating fact. Seeded (all cited) → 87 TaxForms; both `lookup/{1065_M1,1065_M2}/export/` = 200. Next: form
+  4 (Schedule L + Schedule B).
 - 2026-07-04: **1065 core — Schedule K-1 + allocation engine SEEDED + EXPORTED (`SCHEDULE_K1_1065`).**
   Form 2 of 6. Fresh-authored + reconciled against tts `k1_allocator.py` (Explore agent survey): encodes
   the engine's profit/loss-% allocation + `PartnerAllocation` category overrides (Lacerte special

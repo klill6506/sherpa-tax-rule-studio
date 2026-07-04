@@ -73,9 +73,10 @@ from specs.models import (
 )
 
 
-# FRESH-AUTHORED 2026-07-04 (M-1/M-2 leg). Per D-1: READY_TO_SEED=False until the Ken walk
-# (the M2_3 mis-source adjudication + reconcile findings), then flip and seed.
-READY_TO_SEED = False
+# FRESH-AUTHORED 2026-07-04 (M-1/M-2 leg). Per D-1: authored READY_TO_SEED=False; Ken walked
+# the reconcile findings (2026-07-04): the M2_3 mis-source → "log + spawn a tts task"
+# (task_4bf72675 — the spec stays correct per current tax-basis law); "flip seed export" approved.
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -658,7 +659,7 @@ FLOW_ASSERTIONS: list[dict] = [
                                "m2_3_net_income == 1065_M1.m1_9_income",
                     "note": "carries the K-1 item-L RED-defer (D_K1_ITEML) home"},
      "bug_reference": "tts item L is data-entry (no roll-forward compute)", "sort_order": 2},
-    {"assertion_id": "GATE-SMALL-PARTNERSHIP", "assertion_type": "gating_check", "entity_types": ["1065"],
+    {"assertion_id": "GATE-SMALL-PTNR", "assertion_type": "gating_check", "entity_types": ["1065"],
      "status": "active",
      "title": "Schedule B Q4 small-partnership exemption → M-1/M-2 (and L, K-1 item L) not required",
      "description": ("When Schedule B Q4 is 'Yes' (receipts < $250,000 AND assets < $1,000,000 AND timely "

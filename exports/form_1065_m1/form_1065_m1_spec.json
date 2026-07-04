@@ -1,0 +1,622 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-07-04T23:53:18.089974+00:00",
+  "metadata": {
+    "form_number": "1065_M1",
+    "form_title": "Schedule M-1 (Form 1065, 2025) — Reconciliation of Income (Loss) per Books With Analysis of Net Income (Loss) per Return",
+    "jurisdiction": "FED",
+    "entity_types": [
+      "1065"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft"
+  },
+  "facts": [
+    {
+      "fact_key": "m1_1_book_income",
+      "label": "1 — Net income (loss) per books",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 1,
+      "notes": ""
+    },
+    {
+      "fact_key": "m1_2_income_on_k_not_books",
+      "label": "2 — Income on Sch K (1,2,3c,5,6a,7,8,9a,10,11) not on books",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 2,
+      "notes": "Itemize. Timing/permanent book↔return diff."
+    },
+    {
+      "fact_key": "m1_3_guaranteed_payments",
+      "label": "3 — Guaranteed payments (other than health insurance)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 3,
+      "notes": "YELLOW pull = Sch K line 4c (tts M1_3 = K4c). GP is a return deduction not a book expense."
+    },
+    {
+      "fact_key": "m1_4a_depreciation",
+      "label": "4a — Expenses on books not on Sch K: depreciation",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 4,
+      "notes": ""
+    },
+    {
+      "fact_key": "m1_4b_travel_entertainment",
+      "label": "4b — Expenses on books not on Sch K: travel & entertainment",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 5,
+      "notes": "tts M1_4b = D_MEALS_NONDED (nondeductible meals/entertainment)."
+    },
+    {
+      "fact_key": "m1_5_add_1_to_4",
+      "label": "5 — Add lines 1 through 4",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 6,
+      "notes": "OUTPUT. 5 = 1 + 2 + 3 + 4a + 4b."
+    },
+    {
+      "fact_key": "m1_6a_taxexempt_interest",
+      "label": "6a — Income on books not on Sch K: tax-exempt interest",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 7,
+      "notes": "Ties to Sch K line 18a (tax-exempt interest)."
+    },
+    {
+      "fact_key": "m1_7a_depreciation",
+      "label": "7a — Deductions on Sch K not on books: depreciation",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 8,
+      "notes": ""
+    },
+    {
+      "fact_key": "m1_8_add_6_to_7",
+      "label": "8 — Add lines 6 and 7",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 9,
+      "notes": "OUTPUT. 8 = 6a + 7a."
+    },
+    {
+      "fact_key": "m1_9_income",
+      "label": "9 — Income (loss) = line 5 − line 8 (= Analysis line 1)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 10,
+      "notes": "OUTPUT. 9 = 5 − 8 → Analysis of Net Income line 1 (= SCH_K_1065 k_analysis_net_income = M-2 line 3)."
+    },
+    {
+      "fact_key": "m_schb_q4_small",
+      "label": "Schedule B Q4 — small-partnership exemption met? (suppresses M-1)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": "false",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 20,
+      "notes": "Receipts < $250k AND assets < $1M AND timely K-1s AND not-M-3. If true, M-1 not required (D_M1_EXEMPT)."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "R-M1-3",
+      "title": "Line 3 guaranteed payments = Schedule K line 4c",
+      "description": "f1065 M-1 line 3. YELLOW pull from Sch K 4c.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "M-1 line 3 (guaranteed payments other than health insurance) = Schedule K line 4c (total guaranteed payments). A return deduction that is not a book expense — added back on the book→return bridge. tts M1_3 = K4c.",
+      "inputs": [
+        "m1_3_guaranteed_payments"
+      ],
+      "outputs": [],
+      "precedence": 1,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) page 6 — Schedule M-1 (book↔return reconciliation) + Schedule M-2 (partners' capital accounts)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z, page 6, Schedule M-1 lines 1-9 + Schedule M-2 lines 1-9",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 M-1 line 3 guaranteed payments",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-M1-5",
+      "title": "Line 5 = add lines 1 through 4",
+      "description": "f1065 M-1 line 5.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "5 = line 1 (book income) + line 2 (income on K not on books) + line 3 (guaranteed payments) + line 4a (book depreciation) + line 4b (travel/entertainment).",
+      "inputs": [
+        "m1_1_book_income",
+        "m1_2_income_on_k_not_books",
+        "m1_3_guaranteed_payments",
+        "m1_4a_depreciation",
+        "m1_4b_travel_entertainment"
+      ],
+      "outputs": [
+        "m1_5_add_1_to_4"
+      ],
+      "precedence": 2,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) page 6 — Schedule M-1 (book↔return reconciliation) + Schedule M-2 (partners' capital accounts)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z, page 6, Schedule M-1 lines 1-9 + Schedule M-2 lines 1-9",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 M-1 line 5 = Σ lines 1-4",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-M1-8",
+      "title": "Line 8 = add lines 6 and 7",
+      "description": "f1065 M-1 line 8.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "8 = line 6a (tax-exempt interest on books not on Sch K) + line 7a (Sch K depreciation not charged against book income).",
+      "inputs": [
+        "m1_6a_taxexempt_interest",
+        "m1_7a_depreciation"
+      ],
+      "outputs": [
+        "m1_8_add_6_to_7"
+      ],
+      "precedence": 3,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) page 6 — Schedule M-1 (book↔return reconciliation) + Schedule M-2 (partners' capital accounts)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z, page 6, Schedule M-1 lines 1-9 + Schedule M-2 lines 1-9",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 M-1 line 8 = Σ lines 6-7",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-M1-9",
+      "title": "Line 9 = line 5 − line 8 → Analysis of Net Income line 1",
+      "description": "f1065 M-1 line 9 = Analysis line 1. The load-bearing book↔return tie.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "9 = line 5 − line 8. The face labels this 'Income (loss) (Analysis of Net Income (Loss) per Return, line 1)' — so M-1 line 9 MUST equal SCH_K_1065 Analysis of Net Income line 1 (RECON-M1-ANALYSIS) and Schedule M-2 line 3. ⚠ tts computes NO 1065 Analysis line (spine reconcile gap #6) — the Analysis compute must be built for this tie to hold (D_M1_ANALYSIS).",
+      "inputs": [
+        "m1_5_add_1_to_4",
+        "m1_8_add_6_to_7"
+      ],
+      "outputs": [
+        "m1_9_income"
+      ],
+      "precedence": 4,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_F1065",
+          "title": "Form 1065 (2025) page 6 — Schedule M-1 (book↔return reconciliation) + Schedule M-2 (partners' capital accounts)",
+          "citation": "Form 1065 (2025), Cat. No. 11390Z, page 6, Schedule M-1 lines 1-9 + Schedule M-2 lines 1-9",
+          "source_type": "official_form",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "f1065 M-1 line 9 = 5 − 8 = Analysis line 1 (face verbatim)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_702",
+          "title": "IRC §702 — Income and Credits of Partner (separately stated items; character conduit)",
+          "citation": "26 U.S.C. §702(a), (b)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§702(a)/(b) — the separately-stated return items Analysis line 1 combines",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-M1-EXEMPT",
+      "title": "Schedule B Q4 small-partnership exemption suppresses M-1",
+      "description": "i1065 Schedule B Q4. Gating.",
+      "rule_type": "conditional",
+      "conditions": {},
+      "formula": "If Schedule B Q4 is 'Yes' (total receipts < $250,000 AND total assets < $1,000,000 AND Schedules K-1 timely filed/furnished AND not required to file Schedule M-3), the partnership is NOT required to complete Schedule M-1. D_M1_EXEMPT surfaces the suppression; the schedule may be left blank.",
+      "inputs": [
+        "m_schb_q4_small"
+      ],
+      "outputs": [],
+      "precedence": 5,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_I1065",
+          "title": "2025 Instructions for Form 1065 — Schedule M-2 line 3 (= Analysis line 1) + the Schedule B Q4 small-partnership exemption + the M-3 threshold",
+          "citation": "Instructions for Form 1065 (2025), Cat. No. 11392V, Schedules M-1/M-2 + Schedule B question 4",
+          "source_type": "official_instructions",
+          "source_rank": "implementation_official",
+          "support_level": "primary",
+          "relevance_note": "i1065 Schedule B Q4 small-partnership exemption",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "line_map": [
+    {
+      "line_number": "1",
+      "description": "Net income (loss) per books",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_1_book_income"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2",
+      "description": "Income on Schedule K (1,2,3c,5,6a,7,8,9a,10,11) not recorded on books",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_2_income_on_k_not_books"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3",
+      "description": "Guaranteed payments (other than health insurance)",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [
+        "m1_3_guaranteed_payments"
+      ],
+      "source_rules": [
+        "R-M1-3"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4a",
+      "description": "Expenses on books not on Sch K — depreciation",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_4a_depreciation"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4b",
+      "description": "Expenses on books not on Sch K — travel and entertainment",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_4b_travel_entertainment"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5",
+      "description": "Add lines 1 through 4",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-M1-5"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "6a",
+      "description": "Income on books not on Sch K — tax-exempt interest",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_6a_taxexempt_interest"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "7a",
+      "description": "Deductions on Sch K not charged against book income — depreciation",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [
+        "m1_7a_depreciation"
+      ],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8",
+      "description": "Add lines 6 and 7",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-M1-8"
+      ],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9",
+      "description": "Income (loss) (Analysis of Net Income line 1) = line 5 − line 8",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [
+        "R-M1-9"
+      ],
+      "destination_form": "1065_M2",
+      "notes": "= Analysis of Net Income line 1 = M-2 line 3."
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "D_M1_ANALYSIS",
+      "title": "M-1 line 9 must equal Analysis of Net Income line 1",
+      "severity": "error",
+      "condition": "m1_9_income != SCH_K_1065.k_analysis_net_income",
+      "message": "Schedule M-1 line 9 must equal the Analysis of Net Income (Loss) per Return, line 1 (the face says so). Confirm the reconciliation ties. NOTE: tts does not yet compute the 1065 Analysis of Net Income (spine reconcile gap) — that compute must be built for this tie to hold; until then M-1 line 9 is the reconciliation's own output."
+    },
+    {
+      "diagnostic_id": "D_M1_EXEMPT",
+      "title": "Small-partnership exemption — Schedule M-1 not required",
+      "severity": "info",
+      "condition": "m_schb_q4_small is True",
+      "message": "Schedule B question 4 is answered 'Yes' (receipts < $250,000, assets < $1,000,000, timely K-1s, not M-3): the partnership is not required to complete Schedule M-1. Any entries here are optional."
+    }
+  ],
+  "tests": [
+    {
+      "scenario_name": "M1-1 — book→return reconciliation (9 = 5 − 8)",
+      "scenario_type": "normal",
+      "inputs": {
+        "m1_1_book_income": 200000,
+        "m1_4a_depreciation": 10000,
+        "m1_7a_depreciation": 18000,
+        "m1_3_guaranteed_payments": 100000,
+        "m1_6a_taxexempt_interest": 2000,
+        "m1_2_income_on_k_not_books": 5000,
+        "m1_4b_travel_entertainment": 3000
+      },
+      "expected_outputs": {
+        "m1_9_income": 298000,
+        "m1_5_add_1_to_4": 318000,
+        "m1_8_add_6_to_7": 20000
+      }
+    },
+    {
+      "scenario_name": "M1-2 — guaranteed payments pull (line 3 = K4c)",
+      "scenario_type": "normal",
+      "inputs": {
+        "m1_1_book_income": 50000,
+        "m1_3_guaranteed_payments": 75000
+      },
+      "expected_outputs": {
+        "m1_9_income": 125000,
+        "m1_5_add_1_to_4": 125000
+      }
+    },
+    {
+      "scenario_name": "M1-3 — small-partnership exemption (Q4) → not required",
+      "scenario_type": "edge",
+      "inputs": {
+        "m_schb_q4_small": true,
+        "m1_1_book_income": 40000
+      },
+      "expected_outputs": {
+        "D_M1_EXEMPT": true
+      }
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRC_702",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §702 — Income and Credits of Partner (separately stated items; character conduit)",
+      "citation": "26 U.S.C. §702(a), (b)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "partnership",
+        "schedule_k1",
+        "se_1402_partner",
+        "partnership_1065_core",
+        "partner_k1_allocation"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§702(a) — separately stated distributive share (opening)",
+          "excerpt_text": "In determining his income tax, each partner shall take into account separately his distributive share of the partnership's— (1) gains and losses from sales or exchanges of capital assets held for not more than 1 year, (2) gains and losses from sales or exchanges of capital assets held for more than 1 year, (3) gains and losses from sales or exchanges of property described in section 1231, (4) charitable contributions, (5) dividends with respect to which section 1(h)(11) or part VIII of subchapter B applies, (6) taxes, described in section 901, paid or accrued to foreign countries and to possessions of the United States, (7) other items of income, gain, loss, deduction, or credit, to the extent provided by regulations prescribed by the Secretary, and (8) taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a) requires each partner to separately state his distributive share of the enumerated items (capital gains ST/LT, §1231, charitable, dividends, foreign taxes, other regulatory items) plus (8) the residual trade/business income — this IS the Schedule K line structure.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(a) — Separately stated items",
+          "excerpt_text": "In determining income tax, each partner shall take into account separately the partner's distributive share of: (1) short-term capital gains/losses, (2) long-term capital gains/losses, (3) §1231 gains/losses, (4) charitable contributions, (5) dividends eligible for special rates, (6) taxes described in §901 (foreign tax credit), (7) other items required to be stated separately, and (8) taxable income or loss exclusive of items above.",
+          "summary_text": "Partners separately account for cap gains/losses, §1231, charitable, foreign tax, and other items.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(a)(8) — taxable income/loss distributive share",
+          "excerpt_text": "taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a)(8) is the residual trade-or-business income/loss distributive share referenced by §1402(a).",
+          "is_key_excerpt": false
+        },
+        {
+          "excerpt_label": "§702(a)(8) — taxable income/loss distributive share (→ Sch K line 1)",
+          "excerpt_text": "taxable income or loss, exclusive of items requiring separate computation under other paragraphs of this subsection.",
+          "summary_text": "§702(a)(8) is the residual ordinary trade-or-business income/loss — page-1 line 23 → Schedule K line 1.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§702(b) — character determined at the partnership level",
+          "excerpt_text": "The character of any item of income, gain, loss, deduction, or credit included in a partner's distributive share under paragraphs (1) through (7) of subsection (a) shall be determined as if such item were realized directly from the source from which realized by the partnership, or incurred in the same manner as incurred by the partnership.",
+          "summary_text": "The Schedule K separately-stated items (which Analysis line 1 combines) keep partnership-level character — the return side of the M-1 reconciliation.",
+          "is_key_excerpt": false
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_F1065",
+      "source_type": "official_form",
+      "source_rank": "implementation_official",
+      "jurisdiction_code": "FED",
+      "title": "Form 1065 (2025) page 6 — Schedule M-1 (book↔return reconciliation) + Schedule M-2 (partners' capital accounts)",
+      "citation": "Form 1065 (2025), Cat. No. 11390Z, page 6, Schedule M-1 lines 1-9 + Schedule M-2 lines 1-9",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Page 1 — deductions 9-22 + ordinary business income 23 (verbatim labels)",
+          "excerpt_text": "9 Salaries and wages (other than to partners) (less employment credits). 10 Guaranteed payments to partners. 11 Repairs and maintenance. 12 Bad debts. 13 Rent. 14 Taxes and licenses. 15 Interest (see instructions). 16a Depreciation (if required, attach Form 4562). 16b Less depreciation reported on Form 1125-A and elsewhere on return. 16c [balance]. 17 Depletion (Do not deduct oil and gas depletion.). 18 Retirement plans, etc. 19 Employee benefit programs. 20 Energy efficient commercial buildings deduction (attach Form 7205). 21 Other deductions (attach statement). 22 Total deductions. Add the amounts shown in the far right column for lines 9 through 21. 23 Ordinary business income (loss). Subtract line 22 from line 8.",
+          "summary_text": "Deductions: 16c = 16a − 16b; 22 = Σ lines 9-21; ORDINARY BUSINESS INCOME = line 23 = line 8 − line 22 → Schedule K line 1. (2025 face: 23 is ordinary income, NOT 22.)",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Page 1 — income lines 1a-8 (verbatim labels)",
+          "excerpt_text": "1a Gross receipts or sales. 1b Returns and allowances. 1c Balance. Subtract line 1b from line 1a. 2 Cost of goods sold (attach Form 1125-A). 3 Gross profit. Subtract line 2 from line 1c. 4 Ordinary income (loss) from other partnerships, estates, and trusts (attach statement). 5 Net farm profit (loss) (attach Schedule F (Form 1040)). 6 Net gain (loss) from Form 4797, Part II, line 17. 7 Other income (loss) (attach statement). 8 Total income (loss). Add lines 3 through 7.",
+          "summary_text": "Income: 1c = 1a − 1b; 3 = 1c − 2 (COGS ← 1125-A); 8 = Σ lines 3-7. Line 5 ← Schedule F, line 6 ← Form 4797 Part II line 17.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Schedule K (page 5) — distributive share items, Total amount column",
+          "excerpt_text": "1 Ordinary business income (loss). 2 Net rental real estate income (loss) (attach Form 8825). 3a Other gross rental income (loss). 3b Expenses from other rental activities. 3c Other net rental income (loss). 4a Guaranteed payments for services. 4b Guaranteed payments for capital. 4c Total guaranteed payments. 5 Interest income. 6a Ordinary dividends. 6b Qualified dividends. 6c Dividend equivalents. 7 Royalties. 8 Net short-term capital gain (loss) (attach Schedule D (Form 1065)). 9a Net long-term capital gain (loss). 9b Collectibles (28%) gain (loss). 9c Unrecaptured section 1250 gain. 10 Net section 1231 gain (loss) (attach Form 4797). 11 Other income (loss). 12 Section 179 deduction (attach Form 4562). 13a Contributions. 13b Investment interest expense. 13c Section 59(e)(2) expenditures. 13d Other deductions. 14a Net earnings (loss) from self-employment. 14b Gross farming or fishing income. 14c Gross nonfarm income. 15 Credits. 16 Schedule K-3 is attached if checked. 17 Alternative minimum tax (AMT) items. 18 Tax-exempt income and nondeductible expenses. 19 Distributions. 20 Other information. 21 Total foreign taxes paid or accrued.",
+          "summary_text": "The Schedule K distributive-share spine (Total amount col): income/loss 1-11, deductions 12-13, SE 14a-c, credits 15, K-3 checkbox 16, AMT 17, tax-exempt/nondeductible 18, distributions 19, other 20, foreign taxes 21. Line 16 is a K-3-attached CHECKBOX (all intl detail on K-2/K-3).",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Schedule M-1 lines 1-9 (verbatim, f1065 2025 p.6)",
+          "excerpt_text": "Schedule M-1 Reconciliation of Income (Loss) per Books With Analysis of Net Income (Loss) per Return. Note: The partnership may be required to file Schedule M-3. 1 Net income (loss) per books. 2 Income included on Schedule K, lines 1, 2, 3c, 5, 6a, 7, 8, 9a, 10, and 11, not recorded on books this year (itemize). 3 Guaranteed payments (other than health insurance). 4 Expenses recorded on books this year not included on Schedule K, lines 1 through 13e, and 21 (itemize): a Depreciation, b Travel and entertainment. 5 Add lines 1 through 4. 6 Income recorded on books this year not included on Schedule K, lines 1 through 11 (itemize): a Tax-exempt interest. 7 Deductions included on Schedule K, lines 1 through 13e, and 21, not charged against book income this year (itemize): a Depreciation. 8 Add lines 6 and 7. 9 Income (loss) (Analysis of Net Income (Loss) per Return, line 1). Subtract line 8 from line 5.",
+          "summary_text": "M-1: 5 = Σ(1-4); 8 = Σ(6-7); 9 = 5 − 8 = Analysis line 1. Face sublines 4a/4b, 6a, 7a (tts adds 4c/7b catch-alls).",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Schedule M-2 lines 1-9 (verbatim, f1065 2025 p.6)",
+          "excerpt_text": "Schedule M-2 Analysis of Partners' Capital Accounts. 1 Balance at beginning of year. 2 Capital contributed: a Cash, b Property. 3 Net income (loss) (see instructions). 4 Other increases (itemize). 5 Add lines 1 through 4. 6 Distributions: a Cash, b Property. 7 Other decreases (itemize). 8 Add lines 6 and 7. 9 Balance at end of year. Subtract line 8 from line 5.",
+          "summary_text": "M-2 (tax basis): 5 = Σ(1-4); 8 = Σ(6-7); 9 = 5 − 8 = ending capital. Line 3 '(see instructions)' = Analysis line 1 = M-1 line 9 (per return).",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_I1065",
+      "source_type": "official_instructions",
+      "source_rank": "implementation_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Instructions for Form 1065 — Schedule M-2 line 3 (= Analysis line 1) + the Schedule B Q4 small-partnership exemption + the M-3 threshold",
+      "citation": "Instructions for Form 1065 (2025), Cat. No. 11392V, Schedules M-1/M-2 + Schedule B question 4",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "partnership_1065_core"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Analysis of Net Income (Loss) per Return, line 1 (verbatim)",
+          "excerpt_text": "For each line item, combine the amounts on Schedule K, lines 1 through 11. From the result, subtract the sum of Schedule K, lines 12 through 13e, plus line 21.",
+          "summary_text": "Analysis of Net Income line 1 = (Σ Schedule K lines 1-11) − (Σ lines 12-13e + line 21). This equals Schedule M-1 line 9 / M-2 line 3.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "K → K-1 correspondence + §704/§706(d) allocation mechanics (verbatim)",
+          "excerpt_text": "Allocate to each partner a proportionate share of each item reported on Schedule K unless the partnership agreement provides for a special allocation. Specially allocated items are reported on the applicable line of the partner's Schedule K-1 and are included in the total on the corresponding line of Schedule K, not on the numbered lines of page 1. If a partner's interest changed during the year, figure the distributive share using the interim closing of the books method or, by agreement, the proration method (section 706(d)). Allocations of contributed property with a built-in gain or loss must be made under a reasonable method (section 704(c)).",
+          "summary_text": "Schedule K totals are allocated to partners per the agreement (special allocations go on the applicable K-1 line and into the Sch K total, not page 1); §706(d) governs mid-year interest changes; §704(c) built-in gain uses a reasonable method. The MATH is deferred to k1_allocator (Decision C).",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Schedule B Q4 — small-partnership exemption (verbatim)",
+          "excerpt_text": "Does the partnership satisfy all four of the following conditions? (a) The partnership's total receipts for the tax year were less than $250,000. (b) The partnership's total assets at the end of the tax year were less than $1 million. (c) Schedules K-1 are filed with the return and furnished to the partners on or before the due date (including extensions) for the partnership return. (d) The partnership is not filing and is not required to file Schedule M-3. If 'Yes,' the partnership is not required to complete Schedules L, M-1, and M-2; item F on page 1 of Form 1065; or item L on Schedule K-1.",
+          "summary_text": "Q4 all-four (receipts < $250k AND assets < $1M AND timely K-1s AND not-M-3) → Schedules L, M-1, M-2, item F, K-1 item L NOT required. Gating fact.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "TY2025 What's New — OBBBA (P.L. 119-21) partnership touches",
+          "excerpt_text": "Section 174A domestic research or experimental expenditures paid or incurred in tax years beginning after 2024 may be currently deducted (or amortized over not less than 60 months by election under section 174A(c)). Qualified sound recording production costs under section 181 may be elected as an expense and are reported on Schedule K/K-1 line 13e using code X. Gain on the sale of qualified farmland to a qualified farmer under section 1062 with a 4-installment election is reported on Schedule K/K-1 line 20c using code ZZ.",
+          "summary_text": "OBBBA 2025: §174A R&E current deduction (page-1 other deductions), §181 sound recording → Sch K line 13e code X, §1062 farmland → line 20c code ZZ. Flagged (D_1065P1_174A / notes) — coded-item detail is the K-1 leg.",
+          "is_key_excerpt": false
+        }
+      ]
+    }
+  ],
+  "state_conformity": null
+}

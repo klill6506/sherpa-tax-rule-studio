@@ -39,6 +39,31 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — 1065 core form 3: Schedule M-1 + M-2 (1065_M1 / 1065_M2) SEEDED + EXPORTED
+*Ken: "parallel session is working on 3800, you can start on something different" → form 3; walk (M2_3 + seed).*
+- **Authored** `load_1065_m1_m2.py` (two forms) from the FINAL 2025 **f1065 page 6** — downloaded f1065.pdf
+  (334 KB) + extracted pp. 5-6 via pymupdf (verbatim M-1/M-2 line maps; page-6 also has Schedule L for form
+  4). M-1: 5 = Σ(1-4), 8 = Σ(6-7), **9 = 5−8 = Analysis of Net Income line 1** (face literally labels it so —
+  validates the spine's R-SCHK-ANALYSIS). M-2 (tax basis, §705): 5 = Σ(1-4), 8 = Σ(6-7), 9 = 5−8; line 3 =
+  Analysis line 1 = M-1 line 9. Primary IRC §705(a)/§702 reused verbatim; f1065 p.6 + i1065 as filing
+  authority. All rules cited.
+- **Reconcile vs tts `FORMULAS_1065` M-1/M-2 (5 findings):** (1) 🔴 **M2_3 mis-source** — tts labels line 3
+  "Net income (loss) per books" + free data-entry (`compute.py` M2_5 sums it raw); the FINAL face line 3 =
+  "(see instructions)" = Analysis line 1 on the post-2020 **tax-basis** M-2. Ken: **"log + spawn a tts task"**
+  → `spawn_task` `task_4bf72675` (coupled to the unbuilt 1065 Analysis compute + M-1 line 9; the RS spec
+  stays correct per current law). (2) M1_9 ties to Analysis line 1 which tts doesn't compute (spine gap #6).
+  (3) M2_1 = Σ K-1 item-L begin capital but item-L roll-forward is RED-deferred (K-1 leg) → data-entry.
+  (4) tts adds catch-all M1_4c/M1_7b not on the face (benign). (5) Sch B Q4 small-partnership exemption →
+  gating fact (shared with L/K-1 item L).
+- **Seed + export:** hit a varchar(20) cap on a flow-assertion id (`GATE-SMALL-PARTNERSHIP` = 22 chars →
+  atomic rollback, no partial seed) → renamed `GATE-SMALL-PTNR`, re-seeded clean. 1065_M1 (5 rules / 11
+  facts / 10 lines / 2 diag / 3 scenarios) + 1065_M2 (6 rules / 12 facts / 11 lines / 3 diag / 3 scenarios)
+  + 3 flow assertions, all cited → **87 TaxForms / 416 FlowAssertions**. Both `lookup/{1065_M1,1065_M2}/
+  export/` = **HTTP 200** (exports/form_1065_m1/ + form_1065_m2/, ~32 KB each). Committed `0184c0a` (author)
+  + this seed. **Form 3 of 6 DONE. Next: form 4 — Schedule L + Schedule B.**
+
+---
+
 ## 2026-07-04 — 1065 core form 2: Schedule K-1 + allocation engine (SCHEDULE_K1_1065) SEEDED + EXPORTED
 *Ken: "start it" → author form 2; walk (coded-box depth + flip); "full ~200-code transcription now" + "flip seed export".*
 - **Reconcile-driven authoring.** Explore agent mapped tts `k1_allocator.py` + `compute_schedule_k1.py`
