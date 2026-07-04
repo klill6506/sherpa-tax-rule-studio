@@ -50,12 +50,12 @@ AUTHORITY QUOTING (CLAUDE.md Authoritative-Source Rule): §704(a)/(b), §706(d)(
 of the FINAL 2025 f1065sk1 (Cat. 11394R, form ID 651123, "Created 2/26/25") + i1065sk1 (filing
 authority, requires_human_review — re-verify at the walk).
 
-CODED BOXES (SCOPE — Ken to confirm at the walk): this leg encodes the box STRUCTURE (Part III
-boxes 1-23) + the LOAD-BEARING codes (box 15 the S3/S4 pass-through credits; box 20 §199A code Z /
-§704(c) AA / §751 AB / §163(j) N/AE/AF / §461(l) AJ; box 13 §181 code X; box 11 F / box 13 V =
-§743(b)). The EXHAUSTIVE ~200-code enumeration (every letter A-ZZ within boxes 11/13/15/17/18/19/20)
-is reference metadata not tied to the allocation math — flagged as a follow-up pending the Ken walk
-(full transcription needs the i1065sk1 code tables re-fetched verbatim).
+CODED BOXES (Ken: "full ~200-code transcription now"): the box STRUCTURE (Part III boxes 1-23) +
+the FULL verbatim code lists for boxes 11, 13, 14, 15, 17, 18, 19, 20 are encoded as AuthorityExcerpts
+on IRS_2025_I1065SK1 — extracted 2026-07-04 directly from the FINAL 2025 i1065sk1.pdf (pymupdf dump
+of pp. 33-36, "List of Codes for Schedule K-1 (Form 1065)"; Cat. 11394R), NOT from recollection. The
+excerpts ride into the export (authority_sources → excerpts), so the handed-off spec carries every
+letter code A-ZZ verbatim, grounded in the citation.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -81,9 +81,10 @@ from specs.models import (
 
 
 # FRESH-AUTHORED 2026-07-04 (Schedule K-1 + allocation leg). Per D-1: authored with
-# READY_TO_SEED=False; Ken walks the reconcile findings + the coded-box scope question,
-# THEN this flips to True and seeds. Held until the walk.
-READY_TO_SEED = False
+# READY_TO_SEED=False; Ken walked the reconcile findings + the coded-box scope question
+# (2026-07-04: "full ~200-code transcription now" → the box 11/13/14/15/17/18/19/20 code
+# lists are encoded verbatim as IRS_2025_I1065SK1 excerpts; "flip seed export" approved).
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "FED"
@@ -481,9 +482,9 @@ AUTHORITY_SOURCES: list[dict] = [
         "requires_human_review": True,
         "notes": "The coded-box code lists (boxes 11/13/15/17/18/19/20, ~200 codes) + the K→K-1 "
                  "correspondence + allocation mechanics (special allocations on the applicable K-1 line; "
-                 "§706(d) varying interest; §704(c) reasonable method) per the brief §4.2. LOAD-BEARING "
-                 "codes encoded this leg; the exhaustive enumeration is a flagged follow-up "
-                 "(requires_human_review — re-fetch the code tables verbatim at the walk).",
+                 "§706(d) varying interest; §704(c) reasonable method) per the brief §4.2. The FULL "
+                 "coded-box code lists (boxes 11/13/14/15/17/18/19/20) are transcribed verbatim as "
+                 "excerpts below, extracted 2026-07-04 from the FINAL i1065sk1.pdf pp. 33-36 (pymupdf).",
         "topics": ["partner_k1_allocation"],
         "excerpts": [
             {
@@ -521,7 +522,200 @@ AUTHORITY_SOURCES: list[dict] = [
                 ),
                 "summary_text": "The compute-relevant codes: box 15 S3/S4 pass-through credits (AY/AZ/AB/W); "
                                 "box 20 §199A (Z), §704(c) (AA), §751 (AB), §163(j) (N/AE/AF), §461(l) EBL "
-                                "(AJ); box 13 §181 (X), §743(b) (V). Full A-ZZ enumeration = follow-up.",
+                                "(AJ); box 13 §181 (X), §743(b) (V). Full A-ZZ lists below.",
+                "is_key_excerpt": True,
+            },
+            # ── FULL coded-box code lists (verbatim, i1065sk1 2025 pp. 33-36, extracted 2026-07-04) ──
+            {
+                "excerpt_label": "Box 11 — Other income (loss): full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.33, List of Codes, Box 11",
+                "excerpt_text": (
+                    "Code A. Other portfolio income (loss). Code B. Involuntary conversions. Code C. "
+                    "Section 1256 contracts and straddles. Code D. Mining exploration costs recapture. "
+                    "Code E. Cancellation of debt. Code F. Section 743(b) positive income adjustments. "
+                    "Codes G and H. Reserved for future use. Code I. Gain (loss) from disposition of oil, "
+                    "gas, geothermal, or other mineral properties (section 59(e)). Code J. Recoveries of "
+                    "tax benefit items. Code K. Gambling gains and losses. Code L. Any income, gain, or "
+                    "loss to the partnership from a distribution under section 751(b). Code M. Gain "
+                    "eligible for section 1045 rollover (replacement stock purchased by partnership). "
+                    "Code N. Gain eligible for section 1045 rollover (replacement stock not purchased by "
+                    "the partnership). Code O. Sale or exchange of QSB stock with section 1202 exclusion. "
+                    "Code P. Gain or loss on disposition of farm recapture property and other items to "
+                    "which section 1252 applies. Code Q. Gain or loss on Fannie Mae or Freddie Mac "
+                    "qualified preferred stock. Code R. Specially allocated ordinary gain (loss). Code S. "
+                    "Non-portfolio capital gain (loss). Codes T through X. Reserved for future use. Code "
+                    "ZZ. Other."
+                ),
+                "summary_text": "Box 11 codes A-S (+ reserved G/H, T-X) + ZZ. Load-bearing: F = §743(b) "
+                                "positive adjustment (the §754 tie); R = specially allocated ordinary gain.",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 13 — Other deductions: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.33, List of Codes, Box 13",
+                "excerpt_text": (
+                    "Code A. Cash contributions (60%). Code B. Cash contributions (30%). Code C. Noncash "
+                    "contributions (50%). Code D. Noncash contributions (30%). Code E. Capital gain "
+                    "property to a 50% organization (30%). Code F. Capital gain property (20%). Code G. "
+                    "Contributions (100%). Code H. Investment interest expense. Code I. Deductions—royalty "
+                    "income. Code J. Section 59(e)(2) expenditures. Code K. Excess business interest "
+                    "expense (EBIE). Code L. Deductions—portfolio income (other). Code M. Amounts paid for "
+                    "medical insurance. Code N. Educational assistance benefits. Code O. Dependent care "
+                    "benefits. Code P. Preproductive period expenses. Code Q. Reserved for future use. "
+                    "Code R. Pensions and IRAs. Code S. Reforestation expense deduction. Codes T through U. "
+                    "Reserved for future use. Code V. Section 743(b) negative income adjustments. Code W. "
+                    "Soil and water conservation. Code X. Qualified film, television, theatrical, and sound "
+                    "recording production expenses. Code Y. Expenditures for removal of barriers. Code Z. "
+                    "Itemized deductions. Code AA. Contributions to a capital construction fund (CCF). "
+                    "Code AB. Penalty on early withdrawal of savings. Code AC. Interest expense allocated "
+                    "to debt-financed distributions. Code AD. Interest expense on working interest in oil "
+                    "or gas. Code AE. Deductions—portfolio income. Codes AF through AJ. Reserved for future "
+                    "use. Code ZZ. Other."
+                ),
+                "summary_text": "Box 13 codes A-AE (+ reserved Q, T-U, AF-AJ) + ZZ. Load-bearing: K = EBIE "
+                                "(§163(j)); V = §743(b) negative adjustment; X = §181/film/sound-recording "
+                                "(OBBBA); J = §59(e)(2).",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 14 — Self-employment earnings (loss): full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.34, List of Codes, Box 14",
+                "excerpt_text": (
+                    "Code A. Net earnings (loss) from self-employment. Code B. Gross farming or fishing "
+                    "income. Code C. Gross nonfarm income."
+                ),
+                "summary_text": "Box 14: A net SE earnings (the 1065_SE spec), B gross farming/fishing, C "
+                                "gross nonfarm.",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 15 — Credits: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.34, List of Codes, Box 15",
+                "excerpt_text": (
+                    "Code A. Zero-emission nuclear power production credit. Code B. Credit for production "
+                    "from advanced nuclear power facilities. Code C. Low-income housing credit "
+                    "(section 42(j)(5)) from post-2007 buildings. Code D. Low-income housing credit "
+                    "(other) from post-2007 buildings. Code E. Qualified rehabilitation expenditures "
+                    "(rental real estate). Code F. Other rental real estate credits. Code G. Other rental "
+                    "credits. Code H. Undistributed capital gains credit. Code I. Biofuel producer credit. "
+                    "Code J. Work opportunity credit. Code K. Disabled access credit. Code L. Empowerment "
+                    "zone employment credit. Code M. Credit for increasing research activities. Code N. "
+                    "Credit for employer social security and Medicare taxes. Code O. Backup withholding. "
+                    "Code P. Unused investment credit from the qualifying advanced coal project credit or "
+                    "qualifying gasification project credit allocated from cooperatives. Code Q. Unused "
+                    "investment credit from the qualifying advanced energy project credit allocated from "
+                    "cooperatives. Code R. Unused investment credit from the advanced manufacturing "
+                    "investment credit allocated from cooperatives. Code S. Unused investment credit from "
+                    "the clean electricity investment credit allocated from cooperatives. Code T. Unused "
+                    "investment credit from the energy credit allocated from cooperatives. Code U. Unused "
+                    "investment credit from the rehabilitation credit allocated from cooperatives. Code V. "
+                    "Advanced manufacturing production credit. Code W. Clean electricity production credit. "
+                    "Code X. Clean fuel production credit. Code Y. Clean hydrogen production credit. Code "
+                    "Z. Orphan drug credit. Code AA. Enhanced oil recovery credit. Code AB. Renewable "
+                    "electricity production credit. Code AC. Biodiesel, renewable diesel, or sustainable "
+                    "aviation fuels credit. Code AD. New markets credit. Code AE. Small employer pension "
+                    "plan startup costs credit and contributions credit. Code AF. Small employer "
+                    "auto-enrollment credit. Code AG. Small employer military spouse participation credit. "
+                    "Code AH. Credit for employer-provided childcare facilities and services. Code AI. Low "
+                    "sulfur diesel fuel production credit. Code AJ. Qualified railroad track maintenance "
+                    "credit. Code AK. Credit for oil and gas production from marginal wells. Code AL. "
+                    "Distilled spirits credit. Code AM. Energy efficient home credit. Code AN. Reserved "
+                    "for future use. Code AO. Alternative fuel vehicle refueling property credit. Code AP. "
+                    "Clean renewable energy bond credit. Code AQ. New clean renewable energy bond credit. "
+                    "Code AR. Qualified energy conservation bond credit. Code AS. Qualified zone academy "
+                    "bond credit. Code AT. Qualified school construction bond credit. Code AU. Build "
+                    "America bond credit. Code AV. Credit for employer differential wage payments. Code "
+                    "AW. Carbon oxide sequestration credit. Code AX. Carbon oxide sequestration credit "
+                    "recapture. Code AY. New clean vehicle credit. Code AZ. Credit for qualified commercial "
+                    "clean vehicles. Code BA. Credit for small employer health insurance premiums. Code "
+                    "BB. Employer credit for paid family and medical leave. Code BC. Eligible credits from "
+                    "transferor(s) under section 6418. Codes BD through BG. Reserved for future use. Code "
+                    "ZZ. Other."
+                ),
+                "summary_text": "Box 15 codes A-BC (+ reserved AN, BD-BG) + ZZ. S3/S4 pass-through (the "
+                                "campaign tie): W clean electricity production (§45Y), AB renewable "
+                                "electricity production (8835/§45), AY new clean vehicle (8936), AZ "
+                                "commercial clean vehicle (8936 Part V); BC = §6418 transferred credits.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Box 17 — AMT items: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.35, List of Codes, Box 17",
+                "excerpt_text": (
+                    "Code A. Post-1986 depreciation adjustment. Code B. Adjusted gain or loss. Code C. "
+                    "Depletion (other than oil & gas). Code D. Oil, gas, & geothermal—gross income. Code "
+                    "E. Oil, gas, & geothermal—deductions. Code F. Other AMT items."
+                ),
+                "summary_text": "Box 17 AMT codes A-F (post-1986 depreciation, adjusted gain/loss, "
+                                "depletion, oil/gas/geothermal income/deductions, other).",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 18 — Tax-exempt income and nondeductible expenses: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.35, List of Codes, Box 18",
+                "excerpt_text": (
+                    "Code A. Tax-exempt interest income. Code B. Other tax-exempt income. Code C. "
+                    "Nondeductible expenses."
+                ),
+                "summary_text": "Box 18: A tax-exempt interest (→ M-1 line 6a / M-2), B other tax-exempt, "
+                                "C nondeductible expenses.",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 19 — Distributions: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) p.35, List of Codes, Box 19",
+                "excerpt_text": (
+                    "Code A. Cash and marketable securities. Code B. Distribution subject to section 737. "
+                    "Code C. Other property. Code D. Deemed distributions of money—decreases in partner's "
+                    "share of liabilities. Code E. Reserved for future use. Code F. Distributions of cash "
+                    "or marketable securities for performing services. Code G. Distributions of property "
+                    "other than cash or marketable securities for performing services."
+                ),
+                "summary_text": "Box 19 codes A-G (E reserved). A cash/marketable-securities → M-2 line 6a; "
+                                "C other property → M-2 line 6b; D §752 deemed distribution (liability "
+                                "decrease).",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Box 20 — Other information: full code list (verbatim)",
+                "location_reference": "i1065sk1 (2025) pp.35-36, List of Codes, Box 20",
+                "excerpt_text": (
+                    "Code A. Investment income. Code B. Investment expenses. Code C. Fuel tax credit "
+                    "information. Code D. Qualified rehabilitation expenditures (other than rental real "
+                    "estate). Code E. Basis of energy property. Code F. Recapture of low-income housing "
+                    "credit for section 42(j)(5) partnerships. Code G. Recapture of low-income housing "
+                    "credit for other partnerships. Code H. Recapture of investment credit. Code I. "
+                    "Recapture of other credits. Code J. Look-back interest—completed long-term contracts. "
+                    "Code K. Look-back interest—income forecast method. Code L. Dispositions of property "
+                    "with section 179 deductions. Code M. Recapture of section 179 deduction. Code N. "
+                    "Business interest expense (BIE). Code O. Section 453(l)(3) information. Code P. "
+                    "Section 453A(c) information. Code Q. Section 1260(b) information. Code R. Interest "
+                    "allocable to production expenditures. Code S. Capital construction fund (CCF) "
+                    "nonqualified withdrawals. Code T. Depletion information—oil and gas. Code U. Section "
+                    "743(b) basis adjustment. Code V. Unrelated business taxable income. Code W. "
+                    "Precontribution gain (loss). Code X. Payment obligations including guarantees and "
+                    "deficit obligations (DROs). Code Y. Net investment income (NII). Code Z. Section 199A "
+                    "information. Code AA. Section 704(c) information. Code AB. Section 751 gain (loss). "
+                    "Code AC. Section 1(h)(5) collectibles gain. Code AD. Section 1(h)(6) unrecaptured "
+                    "section 1250 gain. Code AE. Excess taxable income. Code AF. Excess business interest "
+                    "income. Code AG. Gross receipts for section 448(c). Code AH. Noncash charitable "
+                    "contributions. Code AI. Interest and tax on deferred compensation to partners. Code "
+                    "AJ. Excess business loss limitation. Code AK. Gain from mark-to-market election. Code "
+                    "AL. Section 721(c) partnership. Code AM. Section 1061 information. Code AN. Farming "
+                    "and fishing business. Code AO. PTP information. Code AP. Inversion gain. Code AQ. "
+                    "Conservation reserve program payments. Code AR. IRA disclosure. Code AS. Qualifying "
+                    "advanced coal project property and qualifying gasification project property. Code AT. "
+                    "Qualifying advanced energy project property. Code AU. Advanced manufacturing "
+                    "investment property. Code AV. Clean electricity investment property. Code AW. "
+                    "Reportable transactions. Code AX. Corporate alternative minimum tax (CAMT). Code AY. "
+                    "Foreign partners, Form 8990, Schedule A. Code AZ. Reimbursement of preformation "
+                    "expenditures. Codes BA through BD. Reserved for future use. Code ZZ. Other."
+                ),
+                "summary_text": "Box 20 codes A-AZ (+ reserved BA-BD) + ZZ. Load-bearing: Z §199A, AA "
+                                "§704(c), AB §751, AD §1(h)(6) unrecap §1250, N BIE / AE excess taxable "
+                                "income / AF excess business interest income (§163(j)), AG §448(c) gross "
+                                "receipts, AJ excess business loss (§461(l), partner-level), U §743(b) "
+                                "basis adjustment, AZ preformation-expenditure reimbursement (OBBBA).",
                 "is_key_excerpt": True,
             },
         ],
@@ -559,9 +753,10 @@ FORM_IDENTITY = {
         "compute (M-2 line 1 can't auto-derive — M-2 leg); items M/N (§704(c)) ABSENT. RED-DEFERRED per "
         "Ken Decision C (structure + cited authority + gating flag, MATH deferred): §704(c) built-in "
         "gain (M/N), §704(b) SEE, §706(d) varying interest, item-L roll-forward. Primary IRC verbatim "
-        "(§704(a)/(b), §706(d)(1), §752(a)/(b), §705(a); §702(b)/§707(c) reused). Coded boxes: STRUCTURE "
-        "+ load-bearing codes (box 15 S3/S4 credits; box 20 §199A/§704(c)/§163(j)/§461(l); box 13 §181; "
-        "§743(b)); exhaustive ~200-code enumeration flagged as a follow-up (Ken walk). READY_TO_SEED=False."
+        "(§704(a)/(b), §706(d)(1), §752(a)/(b), §705(a); §702(b)/§707(c) reused). Coded boxes: the FULL "
+        "A-ZZ code lists for boxes 11/13/14/15/17/18/19/20 are encoded verbatim as IRS_2025_I1065SK1 "
+        "excerpts (extracted from the FINAL i1065sk1.pdf pp. 33-36, 2026-07-04). READY_TO_SEED=True (Ken "
+        "walk done: coded-box full transcription + flip/seed/export approved)."
     ),
 }
 
@@ -701,8 +896,9 @@ RULES: list[dict] = [
                  "attached checkbox (international RED-deferred, Decision A). LOAD-BEARING codes encoded: "
                  "box 15 AY/AZ (8936) / AB (8835) / W (§45Y) — the S3/S4 pass-through credits; box 20 Z "
                  "(§199A) / AA (§704(c)) / AB (§751) / N,AE,AF (§163(j)) / AJ (§461(l) EBL, partner-level); "
-                 "box 13 X (§181) / V (§743(b)); box 11 F (§743(b)). Exhaustive ~200-code enumeration = "
-                 "flagged follow-up (Ken walk)."),
+                 "box 13 X (§181) / V (§743(b)); box 11 F (§743(b)). The FULL A-ZZ code lists for boxes "
+                 "11/13/14/15/17/18/19/20 are encoded verbatim as IRS_2025_I1065SK1 excerpts "
+                 "(i1065sk1 2025 pp. 33-36, extracted from the FINAL PDF)."),
      "inputs": [], "outputs": [],
      "description": "i1065sk1 K→K-1 correspondence + code lists. Reconcile target for compute_schedule_k1."},
     {"rule_id": "R-K1-ITEM-K", "title": "Item K — partner's share of liabilities (§752)",

@@ -39,6 +39,29 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — 1065 core form 2: Schedule K-1 + allocation engine (SCHEDULE_K1_1065) SEEDED + EXPORTED
+*Ken: "start it" → author form 2; walk (coded-box depth + flip); "full ~200-code transcription now" + "flip seed export".*
+- **Reconcile-driven authoring.** Explore agent mapped tts `k1_allocator.py` + `compute_schedule_k1.py`
+  read-only. Encoded: per-partner box = entity Sch K line × `profit_pct` (≥0) / `loss_pct` (<0), overridable
+  per-category by `PartnerAllocation` (Lacerte special allocations); GP (4a/b/c) + distributions (19a) DIRECT
+  per-partner; box 9c = LT_CAPITAL/`profit_pct` (reads K9c → writes box 9c) — **CONFIRMED, closes the box-9c
+  pass-through** (RECON-9C: 80k @ 60/40 → 48k/32k); box 14a = the `1065_SE` spec (cross-ref).
+- **RED-deferred (Decision C; engine absent):** §704(c) built-in gain (items M/N → D_K1_704C), §704(b) SEE
+  (D_K1_SPECIAL_ALLOC), §706(d) varying interest (D_K1_706D), item-L capital roll-forward (D_K1_ITEML — tts
+  stores the fields but doesn't compute; **M-2 line 1 can't auto-derive** → M-2 leg). Gap logged: `capital_pct`
+  defined but UNUSED by the allocator (D_K1_CAPPCT).
+- **Authority:** primary IRC verbatim — §704(a)/(b), §706(d)(1), §752(a)/(b), §705(a) (Cornell LII this
+  session); §702(b)/§707(c) reused. **FULL coded-box transcription (Ken decision):** downloaded the FINAL
+  i1065sk1.pdf (445 KB, 36 pp), extracted pp. 33-36 "List of Codes" via pymupdf → boxes 11/13/14/15/17/18/19/20
+  (every letter A-ZZ) encoded VERBATIM as 8 `IRS_2025_I1065SK1` AuthorityExcerpts (source-grounded, not
+  recalled; they ride into the export). WebFetch mangles dense code tables → direct PDF extraction.
+- **Seed + export:** READY_TO_SEED=True → SCHEDULE_K1_1065 (27 facts / 11 rules / 19 auth links / 17 lines /
+  7 diag / 8 scenarios / 4 flow assertions, all cited) → 85 TaxForms. `lookup/SCHEDULE_K1_1065/export/` =
+  **HTTP 200**, exports/form_schedule_k1_1065/ (80 KB; 8 code-list excerpts present). Committed `8673fdd`
+  (author) + this seed. **Form 2 of 6 DONE. Next: form 3 — Schedule M-1 / M-2.**
+
+---
+
 ## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine SEEDED + EXPORTED (+ a tts bug fixed)
 *Ken: "go" → author the first of 6 forms; walk (D-1); "dig into net-farm" → "fix now"; "flip seed export".*
 - **SEED + EXPORT (Ken: "flip seed export"):** flipped `READY_TO_SEED=True`, ran `load_1065_schedule_k`

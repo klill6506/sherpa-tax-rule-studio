@@ -12,11 +12,13 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **84 TaxForms / 404 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule K
-spine** (2026-07-04) — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both `lookup/…/export/` = 200);
-the reconcile that authored it CAUGHT + FIXED a tts net-farm compute bug (`f61cfec`). Prior: the **S3/S4
-MeF ATS unblock campaign** (2026-07-04) — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
+Active spec-authoring tool. RS Supabase holds **85 TaxForms / 413 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule K-1 +
+allocation engine** (`SCHEDULE_K1_1065`, 2026-07-04) — seeded + exported (200), with the full ~200-code
+K-1 coded-box lists transcribed verbatim from the FINAL i1065sk1; it confirmed + CLOSED the box-9c
+pass-through. Prior same day: the **Schedule K spine** (`1065_PAGE1` + `SCH_K_1065`, both endpoints 200;
+the reconcile that authored it CAUGHT + FIXED a tts net-farm compute bug `f61cfec`), and the **S3/S4
+MeF ATS unblock campaign** — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
 exported, **all four `lookup/<form>/export/` endpoints return 200** (verified live). Every rule cited;
 OBBBA gates verified verbatim off the FINAL 2025 IRS sources. Prior newest on the 1065 track:
 `1065_SE` **leg 2** (the 14a SE-base sub-spec, worksheet WS1a–WS5) seeded + exported 2026-07-02. Leg 1
@@ -55,23 +57,35 @@ B1–B7 pinned as pending-skips.
 **► 1065 CORE CAMPAIGN — IN FLIGHT.** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
 (form 1 of 6) DONE 2026-07-04** — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both endpoints 200).
-**► IMMEDIATE NEXT — form 2 of 6: Schedule K-1 (Form 1065) + the allocation engine.** This is the
-big one: reconcile against `k1_allocator.py` (the §704(b)/(c) allocation MATH — Decision C: confirm
-what it models vs. RED-defer) + `compute_schedule_k1.py` (the K→K-1 box-map consumers, `R-SCHK-KMAP`);
-transcribe the full ~200 K-1 coded-box code lists verbatim (brief §4.2, captured in the agent transcript);
-model Part II items J/K/L/M/N (profit/loss/capital %, liabilities, tax-basis capital, §704(c)) + Part III
-boxes 1-23. Fresh-author (READY_TO_SEED=False) → Ken walk → reconcile → seed (D-1). Also close the open
-**box-9c pass-through** verification here (STATUS item below). Order after: M-1/M-2 → L/B. Read the brief
-§4.2 + §2 + `1065_core_reconcile_log.md` first.
+**✅ form 2 of 6 DONE — Schedule K-1 (Form 1065) + allocation engine (`SCHEDULE_K1_1065`).** Seeded +
+exported (200), all rules cited. Reconciled against `k1_allocator.py`: encodes the engine's profit/
+loss-% allocation + `PartnerAllocation` category overrides; GP + distributions direct; box 9c LT-capital
+(CONFIRMED — box-9c pass-through CLOSED); box 14a = `1065_SE` cross-ref. RED-deferred per Decision C:
+§704(c) built-in gain (items M/N), §704(b) SEE, §706(d) varying interest, item-L capital roll-forward.
+FULL ~200-code coded-box lists (boxes 11/13/14/15/17/18/19/20) transcribed verbatim from the FINAL
+i1065sk1.pdf (pp. 33-36, pymupdf) as `IRS_2025_I1065SK1` excerpts. Committed `8673fdd` + the seed.
+**► IMMEDIATE NEXT — form 3 of 6: Schedule M-1 + M-2 (`1065_M1` / `1065_M2`).** M-1 book↔return
+reconciliation (line 9 = Analysis-of-Net-Income line 1); M-2 partners' capital (line 1 = Σ K-1 item L
+beginning tax-basis capital — but note item-L roll-forward is a tts RED-defer, so M-2 line 1 can't
+auto-derive yet; log it). Then form 4: Schedule L (balance sheet) + Schedule B (33 questions incl. the
+Q4 L/M-2 small-partnership exemption gating fact). 8825/4562/3800 already cover 1065. Brief §4.3 has the
+verbatim L/M-1/M-2 line maps + thresholds; read it + `1065_core_reconcile_log.md` first.
 **Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
 numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
-(2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new).
+(2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new). Plus the
+item-L capital roll-forward gap (M-2 line 1 can't auto-derive) surfaces at the M-2 leg.
 
-**► STILL OPEN (tts-side, Ken picked 2026-07-03, "knock out 1"): verify the K-1 box 9c pass-through.**
+**► BOX-9c PASS-THROUGH — CODE-PATH CONFIRMED + CLOSED 2026-07-04 (K-1 leg reconcile).** The K-1
+allocation-engine reconcile (this session) traced `k1_allocator`: it reads entity `"K9c"` → writes box
+`"9c"` via the **LT_CAPITAL category at `profit_pct`** (exactly the hypothesized ratio; `RECON-9C` in
+`SCHEDULE_K1_1065` asserts Σ partner 9c = entity K9c, e.g. 80k @ 60/40 → 48k/32k). The downstream
+allocation is verified at the code-path level. **Remaining (optional): the DB stamp** — a focused
+`test_4797_pipeline_leg.py` test can ride the eventual K-1 build leg to stamp it end-to-end (spec details
+below), but the pass-through itself is no longer an open question.
 The 2026-07-03 K9c fix (tts `f23dc54`) made `aggregate_dispositions` write the 1065 entity unrecaptured
 §1250 gain to Schedule K line **K9c**, and `k1_allocator` (server/apps/returns/k1_allocator.py: `"K9c"`→
-box **9c**, LT_CAPITAL category; the box map at ~line 159) distributes it to each partner's K-1. That
-downstream allocation was NOT separately re-verified — this task closes it.
+box **9c**, LT_CAPITAL category; the box map at ~line 159) distributes it to each partner's K-1 — now
+CONFIRMED. Optional DB-stamp spec:
 - **Where:** tts `server/tests/test_4797_pipeline_leg.py` (the DB stamp). Add 1–2 focused tests using
   `allocate_all_k1s(tr)` (already imported by the sibling `test_1065_se_pipeline_leg.py` via its
   `_k1_by_partner` helper — mirror that pattern: `{e["partner"].name: e["k1_data"] for e in allocate_all_k1s(tr)}`).
@@ -141,6 +155,18 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **1065 core — Schedule K-1 + allocation engine SEEDED + EXPORTED (`SCHEDULE_K1_1065`).**
+  Form 2 of 6. Fresh-authored + reconciled against tts `k1_allocator.py` (Explore agent survey): encodes
+  the engine's profit/loss-% allocation + `PartnerAllocation` category overrides (Lacerte special
+  allocations), GP + distributions direct per-partner, box 9c LT-capital ratio (**CONFIRMED — closes the
+  box-9c pass-through**), box 14a = `1065_SE` cross-ref. RED-deferred per Decision C (structure + cited
+  authority + gating flag, math deferred): §704(c) built-in gain (items M/N), §704(b) SEE, §706(d) varying
+  interest, item-L capital roll-forward (→ M-2 line 1 can't auto-derive). Primary IRC verbatim (§704/
+  §706(d)(1)/§752/§705/§707(c)). **Ken: "full ~200-code transcription now"** → downloaded the FINAL
+  i1065sk1.pdf + extracted pp. 33-36 via pymupdf → the box 11/13/14/15/17/18/19/20 code lists (A-ZZ)
+  encoded VERBATIM as `IRS_2025_I1065SK1` excerpts (source-grounded, not recalled). Seeded (27 facts / 11
+  rules / 17 lines / 7 diag / 8 scenarios / 4 flow assertions, all cited) → 85 TaxForms; exported HTTP 200
+  (exports/form_schedule_k1_1065/, 80 KB, all 8 code-list excerpts present). Next: form 3 (M-1/M-2).
 - 2026-07-04: **1065 core campaign — Schedule K spine SEEDED + EXPORTED (2 forms) + a tts bug fixed.**
   Ken said "go"; walked the 3 season-one scope decisions (K-2/K-3 defer, M-3 defer, §704 structure-only).
   Fresh-authored `load_1065_schedule_k.py` → `1065_PAGE1` (page-1 ordinary business income, line 23 → Sch K
