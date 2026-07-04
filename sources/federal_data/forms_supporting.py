@@ -178,11 +178,12 @@ SOURCES_SUPPORTING = [
                     "of the farm. If you materially participated, use Schedule F instead. Farm "
                     "rental income reported on Form 4835 is generally NOT subject to self-employment "
                     "tax (§1402(a)(1) excludes rentals from real estate from SE income). However, "
-                    "it may be subject to passive activity rules (§469). Income flows to Schedule E "
-                    "Part I, not Schedule F. Expenses include insurance, repairs, taxes, utilities, "
-                    "depreciation, and the landlord's share of production costs."
+                    "it may be subject to passive activity rules (§469). The NET (line 32) flows to "
+                    "Schedule E line 40, and the GROSS (line 7) to Schedule E line 42 (the farming/"
+                    "fishing reconciliation memo) — NOT to Schedule F. Expenses include insurance, "
+                    "repairs, taxes, utilities, depreciation, and the landlord's share of production costs."
                 ),
-                "summary_text": "Form 4835: farm rental without material participation. Not SE income. → Sch E Part I. Schedule F if participating.",
+                "summary_text": "Form 4835: farm rental without material participation. Not SE income. Net → Sch E line 40; gross → Sch E line 42. Schedule F if participating.",
                 "is_key_excerpt": True,
                 "topic_tags": ["farm_rental", "form_4835"],
             },

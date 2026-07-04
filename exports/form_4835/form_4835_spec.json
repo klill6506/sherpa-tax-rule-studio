@@ -1,0 +1,2169 @@
+{
+  "export_version": "1.0",
+  "exported_at": "2026-07-04T13:22:47.565325+00:00",
+  "metadata": {
+    "form_number": "4835",
+    "form_title": "Form 4835 — Farm Rental Income and Expenses (TY2025)",
+    "jurisdiction": "FED",
+    "entity_types": [
+      "1040"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft"
+  },
+  "facts": [
+    {
+      "fact_key": "f4835_activity_name",
+      "label": "Farm rental activity name/description",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 1,
+      "notes": "PER ACTIVITY. Metadata; each rental farm its own Form 4835."
+    },
+    {
+      "fact_key": "f4835_ein",
+      "label": "Employer ID number (EIN), if any",
+      "data_type": "string",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 2,
+      "notes": "PER ACTIVITY. Format NN-NNNNNNN or blank (MeF rule). Needed only for a qualified plan / employment/excise/etc. return."
+    },
+    {
+      "fact_key": "f4835_active_participation_A",
+      "label": "Line A — Did you actively participate in the operation of this farm during 2025? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 3,
+      "notes": "PER ACTIVITY. §469(i) ACTIVE-participation test (distinct from MATERIAL participation). Drives the Form 8582 $25,000 special-allowance eligibility. False if interest (incl. spouse) < 10% by value."
+    },
+    {
+      "fact_key": "f4835_material_participation",
+      "label": "Did the landowner MATERIALLY participate? (threshold form-selection question; Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 4,
+      "notes": "PER ACTIVITY. NOT a numbered line — the Purpose-of-Form threshold. True -> WRONG form -> D_4835_MATPART (use Schedule F). Default False (4835 presupposes non-material participation)."
+    },
+    {
+      "fact_key": "f4835_real_estate_professional",
+      "label": "Real estate professional materially participating in THIS activity? (Y/N)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 5,
+      "notes": "PER ACTIVITY. Page-3 exception: a real-estate-professional materially participating -> loss NOT subject to §469 -> escapes 8582 (D_4835_REPRO RED-defer; preparer-asserted)."
+    },
+    {
+      "fact_key": "f4835_livestock_crops_1",
+      "label": "Line 1 — Income from production of livestock, produce, grains, and other crops",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 10,
+      "notes": "PER ACTIVITY. Right column -> L7."
+    },
+    {
+      "fact_key": "f4835_coop_distributions_2a",
+      "label": "Line 2a — Cooperative distributions (Form(s) 1099-PATR, gross)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 11,
+      "notes": "PER ACTIVITY. 2a gross (memo); 2b taxable feeds L7."
+    },
+    {
+      "fact_key": "f4835_coop_distributions_taxable_2b",
+      "label": "Line 2b — Cooperative distributions, taxable amount",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 12,
+      "notes": "PER ACTIVITY. Into L7."
+    },
+    {
+      "fact_key": "f4835_ag_program_payments_3a",
+      "label": "Line 3a — Agricultural program payments (gross)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 13,
+      "notes": "PER ACTIVITY. 3a gross (memo); 3b taxable feeds L7."
+    },
+    {
+      "fact_key": "f4835_ag_program_payments_taxable_3b",
+      "label": "Line 3b — Agricultural program payments, taxable amount",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 14,
+      "notes": "PER ACTIVITY. Into L7."
+    },
+    {
+      "fact_key": "f4835_ccc_loans_election_4a",
+      "label": "Line 4a — CCC loans reported under election (§77)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 15,
+      "notes": "PER ACTIVITY. §77 election -> D_4835_CCC_ELECT (flag election); amount STILL flows into L7."
+    },
+    {
+      "fact_key": "f4835_ccc_loans_forfeited_4b",
+      "label": "Line 4b — CCC loans forfeited (memo)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 16,
+      "notes": "PER ACTIVITY. Memo; NOT in L7 (4c is)."
+    },
+    {
+      "fact_key": "f4835_ccc_loans_taxable_4c",
+      "label": "Line 4c — CCC loans forfeited, taxable amount",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 17,
+      "notes": "PER ACTIVITY. Into L7."
+    },
+    {
+      "fact_key": "f4835_crop_insurance_received_5a",
+      "label": "Line 5a — Crop insurance proceeds received in 2025 (memo)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 18,
+      "notes": "PER ACTIVITY. 5a received (memo); 5b taxable feeds L7."
+    },
+    {
+      "fact_key": "f4835_crop_insurance_taxable_5b",
+      "label": "Line 5b — Crop insurance proceeds, taxable amount",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 19,
+      "notes": "PER ACTIVITY. Into L7."
+    },
+    {
+      "fact_key": "f4835_crop_insurance_defer_election_5c",
+      "label": "Line 5c — Election to defer crop insurance to 2026 attached (checkbox)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 20,
+      "notes": "PER ACTIVITY. §451(f) deferral election -> D_4835_CROPINS_DEFER (flag election)."
+    },
+    {
+      "fact_key": "f4835_crop_insurance_deferred_prior_5d",
+      "label": "Line 5d — Amount deferred from 2024 (now recognized)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 21,
+      "notes": "PER ACTIVITY. Prior-year deferral now taxable; into L7."
+    },
+    {
+      "fact_key": "f4835_other_income_6",
+      "label": "Line 6 — Other income (incl. federal/state gasoline or fuel tax credit/refund)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 22,
+      "notes": "PER ACTIVITY. Into L7."
+    },
+    {
+      "fact_key": "f4835_car_truck_8",
+      "label": "Line 8 — Car and truck expenses (attach Form 4562)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 30,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_chemicals_9",
+      "label": "Line 9 — Chemicals",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 31,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_conservation_10",
+      "label": "Line 10 — Conservation expenses (≤25% gross farm income; §175)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 32,
+      "notes": "PER ACTIVITY. Instruction: deduction cannot exceed 25% of gross farm income (limit preparer-verified in v1)."
+    },
+    {
+      "fact_key": "f4835_custom_hire_11",
+      "label": "Line 11 — Custom hire (machine work)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 33,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_depreciation_179_12",
+      "label": "Line 12 — Depreciation and section 179 (from Form 4562)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 34,
+      "notes": "PER ACTIVITY. CALCULATED via the 4562 engine (carried/YELLOW)."
+    },
+    {
+      "fact_key": "f4835_employee_benefits_13",
+      "label": "Line 13 — Employee benefit programs other than on line 21",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 35,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_feed_14",
+      "label": "Line 14 — Feed",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 36,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_fertilizers_15",
+      "label": "Line 15 — Fertilizers and lime",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 37,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_freight_16",
+      "label": "Line 16 — Freight and trucking",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 38,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_gasoline_fuel_17",
+      "label": "Line 17 — Gasoline, fuel, and oil",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 39,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_insurance_18",
+      "label": "Line 18 — Insurance (other than health)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 40,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_interest_mortgage_19a",
+      "label": "Line 19a — Interest, mortgage (paid to banks, etc.)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 41,
+      "notes": "PER ACTIVITY. §163 interest could be limited (Form 8990) — preparer-handled in v1."
+    },
+    {
+      "fact_key": "f4835_interest_other_19b",
+      "label": "Line 19b — Interest, other",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 42,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_labor_20",
+      "label": "Line 20 — Labor hired (less employment credits)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 43,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_pension_21",
+      "label": "Line 21 — Pension and profit-sharing plans",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 44,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_rent_lease_vehicles_22a",
+      "label": "Line 22a — Rent or lease: vehicles, machinery, equipment",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 45,
+      "notes": "PER ACTIVITY. Lease-inclusion amount (30+ day vehicle) preparer-handled."
+    },
+    {
+      "fact_key": "f4835_rent_lease_other_22b",
+      "label": "Line 22b — Rent or lease: other (land, animals, etc.)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 46,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_repairs_23",
+      "label": "Line 23 — Repairs and maintenance",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 47,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_seeds_24",
+      "label": "Line 24 — Seeds and plants",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 48,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_storage_25",
+      "label": "Line 25 — Storage and warehousing",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 49,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_supplies_26",
+      "label": "Line 26 — Supplies",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 50,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_taxes_27",
+      "label": "Line 27 — Taxes",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 51,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_utilities_28",
+      "label": "Line 28 — Utilities",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 52,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_vet_29",
+      "label": "Line 29 — Veterinary, breeding, and medicine",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 53,
+      "notes": "PER ACTIVITY."
+    },
+    {
+      "fact_key": "f4835_other_expenses_30af",
+      "label": "Lines 30a-30f — Other expenses (specify; sum of a-f)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 54,
+      "notes": "PER ACTIVITY. Sum of the six 'other' specify lines 30a-30f (each a labeled input in the render leg)."
+    },
+    {
+      "fact_key": "f4835_capitalized_263a_30g",
+      "label": "Line 30g — §263A capitalized costs (entered in parentheses, negative)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 55,
+      "notes": "PER ACTIVITY. §263A uniform-capitalization amount that REDUCES total expenses (parenthetical). -> D_4835_263A."
+    },
+    {
+      "fact_key": "f4835_all_at_risk_34a",
+      "label": "Line 34a — All investment is at risk",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 60,
+      "notes": "PER ACTIVITY. Loss present + 34a -> skip Form 6198 (full loss goes to §469 passive step)."
+    },
+    {
+      "fact_key": "f4835_some_not_at_risk_34b",
+      "label": "Line 34b — Some investment is not at risk (Form 6198)",
+      "data_type": "boolean",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 61,
+      "notes": "PER ACTIVITY. Loss + 34b -> §465 at-risk limit (Form 6198) BEFORE §469 passive (Form 8582)."
+    },
+    {
+      "fact_key": "f4835_at_risk_amount",
+      "label": "§465 at-risk amount (Form 6198 input; when 34b)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 62,
+      "notes": "PER ACTIVITY. Amount at risk at year end (§465(b)) — caps the deductible loss when 34b checked."
+    },
+    {
+      "fact_key": "f4835_prior_year_unallowed_pal",
+      "label": "Prior-year unallowed passive activity loss for this activity (Form 8582 input)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 63,
+      "notes": "PER ACTIVITY. Suspended §469 loss carried into this year; combined on Form 8582 (may reduce net income too)."
+    },
+    {
+      "fact_key": "f4835_magi_for_pal",
+      "label": "Modified AGI for the §469(i) $25k special-allowance phaseout",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": "0",
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 64,
+      "notes": "PER RETURN (read by 8582). Allowance = 25,000 - 50%*(MAGI - 100,000); zero at 150,000."
+    },
+    {
+      "fact_key": "f4835_gross_income_l7",
+      "label": "Line 7 — gross farm rental income (output -> Sch E line 42)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 80,
+      "notes": "OUTPUT. = L1 + L2b + L3b + L4a + L4c + L5b + L5d + L6. -> Schedule E line 42 (reconciliation)."
+    },
+    {
+      "fact_key": "f4835_total_expenses_l31",
+      "label": "Line 31 — total expenses (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 81,
+      "notes": "OUTPUT. = Σ(8..30f) - 30g(§263A)."
+    },
+    {
+      "fact_key": "f4835_net_income_l32",
+      "label": "Line 32 — net farm rental income or (loss) (output -> Sch E line 40 when income)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 82,
+      "notes": "OUTPUT. = L7 - L31. Income -> Sch E line 40. Loss -> line 34 path. NEVER to Schedule SE (§1402(a)(1))."
+    },
+    {
+      "fact_key": "f4835_deductible_loss_l34c",
+      "label": "Line 34c — deductible loss after at-risk (6198) then passive (8582) (output -> Sch E line 40)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 83,
+      "notes": "OUTPUT (negative). = the §465-then-§469-allowed portion of the L32 loss. -> Schedule E line 40."
+    },
+    {
+      "fact_key": "f4835_suspended_pal",
+      "label": "Suspended passive loss carryforward (output)",
+      "data_type": "decimal",
+      "required": false,
+      "default_value": null,
+      "validation_rule": null,
+      "choices": null,
+      "sort_order": 84,
+      "notes": "OUTPUT. The §469-unallowed remainder (this activity's PAL carryforward). At-risk-suspended (§465) tracked separately."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "R-4835-GROSS",
+      "title": "Line 7 — gross farm rental income (verified right-column sum)",
+      "description": "PER ACTIVITY. VERIFIED verbatim against the 2025 face — 'Add amounts in the right column for lines 1 through 6': (1, 2b, 3b, 4a, 4c, 5b, 5d, 6). Includes BOTH 4a (CCC elected) and 4c (CCC forfeiture taxable), NOT 4b; 5b (crop-ins taxable) and 5d (prior-year deferral), NOT 5a/5c. -> Schedule E line 42 (farming/fishing reconciliation memo).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "L7 = L1 + L2b + L3b + L4a + L4c + L5b + L5d + L6.",
+      "inputs": [
+        "f4835_livestock_crops_1",
+        "f4835_coop_distributions_taxable_2b",
+        "f4835_ag_program_payments_taxable_3b",
+        "f4835_ccc_loans_election_4a",
+        "f4835_ccc_loans_taxable_4c",
+        "f4835_crop_insurance_taxable_5b",
+        "f4835_crop_insurance_deferred_prior_5d",
+        "f4835_other_income_6"
+      ],
+      "outputs": [
+        "7"
+      ],
+      "precedence": 1,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 7 right-column list (1, 2b, 3b, 4a, 4c, 5b, 5d, 6) -> Sch E line 42",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-DEPR",
+      "title": "Line 12 — depreciation and §179 (4562 engine reuse)",
+      "description": "PER ACTIVITY. Reuse depreciation_engine.py (aggregate_depreciation flow_to=form_4835 — the Schedule F line-14 / Schedule C line-13 precedent). Rental-farm assets attach to the 4835. Build-leg wiring.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "L12 = depreciation + §179 from the 4562 engine for this activity's assets (carried/YELLOW).",
+      "inputs": [],
+      "outputs": [
+        "12"
+      ],
+      "precedence": 2,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 12 depreciation/§179 (attach Form 4562)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_4835_INSTR",
+          "title": "Instructions for Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Line 12 — Form 4562 / Pub 225 chapter 7",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-EXPENSES",
+      "title": "Line 31 — total expenses (reduced by §263A on 30g)",
+      "description": "PER ACTIVITY. 'Add lines 8 through 30g.' Per the instructions, a §263A amount on 30g is entered in parentheses and REDUCES the total: L31 = Σ(8..30f) - 30g. No home-office line.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "L31 = (L8 + L9 + L10 + L11 + L12 + L13 + L14 + L15 + L16 + L17 + L18 + L19a + L19b + L20 + L21 + L22a + L22b + L23 + L24 + L25 + L26 + L27 + L28 + L29 + L30a..f) - L30g(§263A).",
+      "inputs": [],
+      "outputs": [
+        "31"
+      ],
+      "precedence": 3,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 31 = add 8 through 30g (30g §263A reduces)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_263A",
+          "title": "IRC §263A — Uniform Capitalization Rules (UNICAP)",
+          "citation": "26 U.S.C. §263A",
+          "source_type": "code_section",
+          "source_rank": "controlling",
+          "support_level": "secondary",
+          "relevance_note": "§263A capitalized costs on 30g reduce total expenses",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-NET",
+      "title": "Line 32 — net farm rental income/(loss) -> Schedule E line 40",
+      "description": "PER ACTIVITY. The topic's primary cross-form output. Net INCOME on line 32 flows to Schedule E (Form 1040) line 40 ('Net farm rental income or (loss) from Form 4835'). A LOSS is NOT entered directly on line 32 — it must run the line-34 at-risk/passive gauntlet first (R-4835-LOSS).",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "L32 = L7 - L31. If income -> Schedule E line 40. If loss -> line 34 path (at-risk then passive).",
+      "inputs": [
+        "f4835_gross_income_l7",
+        "f4835_total_expenses_l31"
+      ],
+      "outputs": [
+        "32"
+      ],
+      "precedence": 4,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 32 = line 7 - line 31; income -> Sch E line 40",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-SE-EXCLUSION",
+      "title": "SE-EXCLUSION INVARIANT — 4835 net NEVER enters the Schedule SE base (§1402(a)(1))",
+      "description": "PER ACTIVITY. THE DEFINING TRAIT (Ken decision, this session). §1402(a)(1) excludes rentals from real estate from self-employment earnings; the form subtitle is 'Income Not Subject to Self-Employment Tax.' Contrast Schedule F (materially-participated farming) whose L34 DOES feed Sch SE line 1a. Hard invariant: 4835 income AND loss both stay out of the SE base — standard method (1a/2) AND the farm optional gross-farm-income (WALK ITEM C).",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "ASSERT: no part of L32 / L34c / any 4835 line is included in the Schedule SE base (line 1a, line 2, or the farm-optional gross farm income). Fires D_4835_SE_GUARD if violated.",
+      "inputs": [
+        "f4835_net_income_l32"
+      ],
+      "outputs": [],
+      "precedence": 5,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRC_1402A1",
+          "title": "IRC §1402(a)(1) — CRP rental payments excluded from SE for SS retirees",
+          "citation": "26 U.S.C. §1402(a)(1)",
+          "source_type": "statute",
+          "source_rank": "primary_authority",
+          "support_level": "primary",
+          "relevance_note": "§1402(a)(1) — rentals from real estate excluded from SE earnings",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Form subtitle: 'Income Not Subject to Self-Employment Tax'",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-MATPART",
+      "title": "Material participation -> WRONG form (use Schedule F)",
+      "description": "PER ACTIVITY. Form-selection guard (Ken decision, this session). Purpose of Form: a landowner who MATERIALLY participated must use Schedule F, not Form 4835. Routes the preparer rather than silently computing a return on the wrong form.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If f4835_material_participation is True -> D_4835_MATPART; do not compute (the farm belongs on Schedule F).",
+      "inputs": [
+        "f4835_material_participation"
+      ],
+      "outputs": [],
+      "precedence": 6,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Purpose of Form: materially participated -> use Schedule F",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_4835_INSTR",
+          "title": "Instructions for Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Material participation definition (Pub 225 ch. 12)",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-LOSS",
+      "title": "Line 32 loss -> §465 at-risk (6198) BEFORE §469 passive (8582) -> line 34c",
+      "description": "PER ACTIVITY. Ken decision (this session): compute the FULL loss path for MeF, not RED-defer. Order VERIFIED off the face: 'If you checked box 34b, you must complete Form 6198 BEFORE going to Form 8582.' §465 caps the loss at the at-risk amount; §469 then applies the passive limitation — the 4835 activity feeds the EXISTING FORM_8582 spec as a rental activity (active participation -> the $25k special-allowance bucket, lines 1a-1d; else 'all other passive', lines 2a-2d). The 8582-allowed portion -> line 34c -> Sch E line 40; the §469-unallowed remainder is this activity's PAL carryforward; the §465-suspended remainder is a separate at-risk carryforward. WALK ITEMS A/B: the special-allowance figures + the rental-RE bucket.",
+      "rule_type": "calculation",
+      "conditions": {},
+      "formula": "If L7 - L31 < 0 (tentative loss T = L31 - L7): STEP 1 at-risk — if 34b: A = min(T, at_risk_amount) [§465, Form 6198]; else A = T. STEP 2 passive — if real_estate_professional: allowed = A (escapes §469); elif active_participation (Line A): allowance = max(0, 25000 - 0.5*max(0, MAGI - 100000)); allowed = min(A, allowance + passive_income_offset); else allowed = passive_income_offset (no special allowance). L34c = -allowed -> Schedule E line 40; suspended_pal = A - allowed; at-risk-suspended = T - A.",
+      "inputs": [
+        "f4835_net_income_l32",
+        "f4835_all_at_risk_34a",
+        "f4835_some_not_at_risk_34b",
+        "f4835_at_risk_amount",
+        "f4835_active_participation_A",
+        "f4835_real_estate_professional",
+        "f4835_magi_for_pal",
+        "f4835_prior_year_unallowed_pal"
+      ],
+      "outputs": [
+        "34a",
+        "34b",
+        "34c"
+      ],
+      "precedence": 7,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Line 34: 6198 (if 34b) before 8582; line 34c -> Sch E line 40",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_465",
+          "title": "IRC §465 — Deductions Limited to Amount at Risk",
+          "citation": "26 U.S.C. §465",
+          "source_type": "code_section",
+          "source_rank": "controlling",
+          "support_level": "primary",
+          "relevance_note": "§465 at-risk limitation (Form 6198)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_469",
+          "title": "IRC §469 — Passive Activity Losses and Credits Limited",
+          "citation": "26 U.S.C. §469 (passive activity loss; §469(i) the $25,000 offset; §469(c)(7) real estate professional; §469(g) disposition)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "§469 / §469(i) passive limitation + $25k special allowance (Form 8582)",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_6198_INSTR",
+          "title": "Instructions for Form 6198 — At-Risk Limitations",
+          "citation": "Form 6198 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Form 6198 at-risk computation (§465(b))",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_8582_INSTR",
+          "title": "Instructions for Form 8582 — Passive Activity Loss Limitations",
+          "citation": "Form 8582 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Form 8582 passive limitation + special allowance phaseout",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-REPRO",
+      "title": "Real estate professional (material participation) — §469 escape (RED-defer)",
+      "description": "PER ACTIVITY. Page-3 exception: a real-estate professional who materially participated is NOT subject to the passive-loss limitation. RED-defer: the REP determination (750-hour / >50% tests) is preparer-asserted, not modeled — flag it (the loss is captured).",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If f4835_real_estate_professional is True AND L32 < 0 -> D_4835_REPRO; the loss is not subject to §469 (fully deductible, enter on line 34c). v1 does not auto-assert REP status.",
+      "inputs": [
+        "f4835_real_estate_professional"
+      ],
+      "outputs": [],
+      "precedence": 8,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_INSTR",
+          "title": "Instructions for Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "primary",
+          "relevance_note": "Page 3: real-estate-professional §469 escape",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_469",
+          "title": "IRC §469 — Passive Activity Losses and Credits Limited",
+          "citation": "26 U.S.C. §469 (passive activity loss; §469(i) the $25,000 offset; §469(c)(7) real estate professional; §469(g) disposition)",
+          "source_type": "statute",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "§469(c)(7) real-estate-professional exception",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-ELECTIONS",
+      "title": "CCC §77 / crop-insurance §451(f) — capture income, flag the election",
+      "description": "PER ACTIVITY. The Schedule F walk-item-C precedent: capture the dollar amounts where they land (4a and 5b/5d into L7); the election machinery (attachments, multi-year binding effect of §77, the §451(f) deferral statement) is preparer-handled.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If L4a > 0 -> D_4835_CCC_ELECT; if 5c checked -> D_4835_CROPINS_DEFER. The dollar amounts STILL flow to line 7.",
+      "inputs": [
+        "f4835_ccc_loans_election_4a",
+        "f4835_crop_insurance_defer_election_5c"
+      ],
+      "outputs": [],
+      "precedence": 9,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRC_77",
+          "title": "IRC §77 — Commodity Credit Corporation loans (income election)",
+          "citation": "26 U.S.C. §77",
+          "source_type": "statute",
+          "source_rank": "primary_authority",
+          "support_level": "primary",
+          "relevance_note": "Line 4a CCC §77 loan-as-income election",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRC_451_EF",
+          "title": "IRC §451(e)/(f) — weather-related livestock sales / crop-insurance deferral",
+          "citation": "26 U.S.C. §451(e), §451(f)",
+          "source_type": "statute",
+          "source_rank": "primary_authority",
+          "support_level": "primary",
+          "relevance_note": "Line 5c §451(f) crop-insurance deferral election",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_PUB_225",
+          "title": "IRS Publication 225 — Farmer's Tax Guide",
+          "citation": "IRS Pub 225 (2024 ed.; 2025 ed. pending)",
+          "source_type": "official_publication",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Pub 225 CCC / crop-insurance election narratives",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-263A",
+      "title": "Line 30g — §263A capitalized costs (capture + flag)",
+      "description": "PER ACTIVITY. Instruction 'How to report': §263A uniform-capitalization amounts go on 30g in parentheses with '263A' to the left; they reduce total expenses. Flag that the capitalization determination is preparer-driven; the entered amount is honored.",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If L30g != 0 -> D_4835_263A. The amount reduces L31 (parenthetical) per R-4835-EXPENSES.",
+      "inputs": [
+        "f4835_capitalized_263a_30g"
+      ],
+      "outputs": [],
+      "precedence": 10,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRC_263A",
+          "title": "IRC §263A — Uniform Capitalization Rules (UNICAP)",
+          "citation": "26 U.S.C. §263A",
+          "source_type": "code_section",
+          "source_rank": "controlling",
+          "support_level": "primary",
+          "relevance_note": "§263A uniform capitalization on line 30g",
+          "excerpt": null
+        },
+        {
+          "source_code": "IRS_2025_4835_INSTR",
+          "title": "Instructions for Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 Instructions (2025)",
+          "source_type": "official_instruction",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "'How to report' — 30g parentheses, '263A' to the left",
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "rule_id": "R-4835-SCHJ",
+      "title": "Net income on line 32 -> Schedule J farm income averaging available (info)",
+      "description": "PER ACTIVITY. Purpose of Form: 'If you have net income on line 32, your tax may be less if you figure it using Schedule J.' Informational routing (Schedule J is its own form unit).",
+      "rule_type": "routing",
+      "conditions": {},
+      "formula": "If L32 > 0 -> D_4835_SCHJ (info): the tax may be lower using Schedule J farm income averaging.",
+      "inputs": [
+        "f4835_net_income_l32"
+      ],
+      "outputs": [],
+      "precedence": 11,
+      "exceptions": "",
+      "notes": "",
+      "authorities": [
+        {
+          "source_code": "IRS_2025_4835_FORM",
+          "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+          "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+          "source_type": "official_form",
+          "source_rank": "primary_official",
+          "support_level": "secondary",
+          "relevance_note": "Purpose of Form: net income on line 32 -> Schedule J may lower tax",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "line_map": [
+    {
+      "line_number": "A",
+      "description": "Did you actively participate in the operation of this farm during 2025? (§469(i))",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "1",
+      "description": "Income from production of livestock, produce, grains, and other crops",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2a",
+      "description": "Cooperative distributions (Form(s) 1099-PATR)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "2b",
+      "description": "Cooperative distributions — taxable amount",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3a",
+      "description": "Agricultural program payments",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "3b",
+      "description": "Agricultural program payments — taxable amount",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4a",
+      "description": "CCC loans reported under election (§77)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4b",
+      "description": "CCC loans forfeited (memo)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "4c",
+      "description": "CCC loans forfeited — taxable amount",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5a",
+      "description": "Crop insurance proceeds — amount received in 2025 (memo)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5b",
+      "description": "Crop insurance proceeds — taxable amount",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5c",
+      "description": "Election to defer crop insurance to 2026 attached (checkbox)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "5d",
+      "description": "Amount deferred from 2024 (now recognized)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "6",
+      "description": "Other income (incl. federal/state gasoline or fuel tax credit/refund)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "7",
+      "description": "Gross farm rental income. Add right column of 1-6 -> Sch E line 42",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "8",
+      "description": "Car and truck expenses (attach Form 4562)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "9",
+      "description": "Chemicals",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "10",
+      "description": "Conservation expenses (≤25% gross farm income)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "11",
+      "description": "Custom hire (machine work)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "12",
+      "description": "Depreciation and section 179 expense — from Form 4562",
+      "line_type": "calculated",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "13",
+      "description": "Employee benefit programs other than on line 21",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "14",
+      "description": "Feed",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "15",
+      "description": "Fertilizers and lime",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "16",
+      "description": "Freight and trucking",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "17",
+      "description": "Gasoline, fuel, and oil",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "18",
+      "description": "Insurance (other than health)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "19a",
+      "description": "Interest — mortgage (paid to banks, etc.)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "19b",
+      "description": "Interest — other",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "20",
+      "description": "Labor hired (less employment credits)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "21",
+      "description": "Pension and profit-sharing plans",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22a",
+      "description": "Rent or lease — vehicles, machinery, and equipment",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "22b",
+      "description": "Rent or lease — other (land, animals, etc.)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "23",
+      "description": "Repairs and maintenance",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "24",
+      "description": "Seeds and plants",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "25",
+      "description": "Storage and warehousing",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "26",
+      "description": "Supplies",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "27",
+      "description": "Taxes",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "28",
+      "description": "Utilities",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "29",
+      "description": "Veterinary, breeding, and medicine",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30a",
+      "description": "Other expenses (specify) — a",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30b",
+      "description": "Other expenses (specify) — b",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30c",
+      "description": "Other expenses (specify) — c",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30d",
+      "description": "Other expenses (specify) — d",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30e",
+      "description": "Other expenses (specify) — e",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30f",
+      "description": "Other expenses (specify) — f",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "30g",
+      "description": "Other expenses — §263A capitalized (parentheses; '263A' to the left)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "31",
+      "description": "Total expenses. Add lines 8 through 30g (30g reduces)",
+      "line_type": "subtotal",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "32",
+      "description": "Net farm rental income/(loss). Subtract line 31 from line 7 -> Sch E line 40 (income)",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "33",
+      "description": "Reserved for future use",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "34a",
+      "description": "All investment is at risk",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "34b",
+      "description": "Some investment is not at risk (Form 6198 before Form 8582)",
+      "line_type": "input",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    },
+    {
+      "line_number": "34c",
+      "description": "Deductible loss (after 6198 at-risk, 8582 passive) -> Sch E line 40",
+      "line_type": "total",
+      "calculation": "",
+      "source_facts": [],
+      "source_rules": [],
+      "destination_form": null,
+      "notes": ""
+    }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_id": "D_4835_263A",
+      "title": "§263A capitalized costs on line 30g",
+      "severity": "warning",
+      "condition": "f4835_capitalized_263a_30g != 0",
+      "message": "You entered §263A uniform-capitalization costs on line 30g (in parentheses). These reduce total expenses on line 31 as entered; the capitalization determination (which direct/indirect costs must be capitalized vs. deducted) is preparer-driven and not computed by the software."
+    },
+    {
+      "diagnostic_id": "D_4835_CCC_ELECT",
+      "title": "CCC loans reported as income (§77 election)",
+      "severity": "warning",
+      "condition": "f4835_ccc_loans_election_4a > 0",
+      "message": "You reported Commodity Credit Corporation loan proceeds as income (line 4a, IRC §77). The amount is included in gross farm rental income (line 7), but the §77 election itself (and its binding effect on later years) is not managed by the software — confirm the election is properly made."
+    },
+    {
+      "diagnostic_id": "D_4835_CROPINS_DEFER",
+      "title": "Crop insurance deferral to 2026 (§451(f) election)",
+      "severity": "warning",
+      "condition": "f4835_crop_insurance_defer_election_5c is True",
+      "message": "You checked the box to defer crop insurance proceeds to 2026 (line 5c, IRC §451(f)). The deferral election and the required statement are not generated by the software — the taxable amount on line 5b is reported as entered; prepare the deferral election manually. Deferral of any eligible proceeds defers ALL such proceeds (incl. federal crop disaster payments)."
+    },
+    {
+      "diagnostic_id": "D_4835_LOSS_LIMITED",
+      "title": "Net loss limited by at-risk (§465) and/or passive (§469)",
+      "severity": "info",
+      "condition": "line 32 < 0 AND deductible loss (line 34c) < the tentative loss",
+      "message": "This farm rental shows a net loss. Part of it is limited: the at-risk rules (Form 6198, if some investment is not at risk) cap the loss at your amount at risk, then the passive activity loss rules (Form 8582) limit the remainder to your passive income plus (with active participation) the $25,000 special allowance. The unallowed amounts carry forward."
+    },
+    {
+      "diagnostic_id": "D_4835_MATPART",
+      "title": "Materially participated — wrong form (use Schedule F)",
+      "severity": "error",
+      "condition": "f4835_material_participation is True",
+      "message": "This activity is on Form 4835, but you indicated you materially participated in the farm's operation or management. Form 4835 is only for landowners who did NOT materially participate — materially-participated farming (and its self-employment tax) belongs on Schedule F (Form 1040). Move this activity to Schedule F."
+    },
+    {
+      "diagnostic_id": "D_4835_REPRO",
+      "title": "Real estate professional — §469 passive-loss escape (preparer-asserted)",
+      "severity": "warning",
+      "condition": "f4835_real_estate_professional is True AND line 32 < 0",
+      "message": "You indicated real-estate-professional status materially participating in this activity, so the loss is not subject to the passive activity loss limitation (Form 8582 skipped). The software does NOT verify the real-estate-professional tests (more than 750 hours AND more than half of personal services in real property trades/businesses) — confirm the status; the loss is entered on line 34c."
+    },
+    {
+      "diagnostic_id": "D_4835_SCHJ",
+      "title": "Net farm rental income — Schedule J may lower tax",
+      "severity": "info",
+      "condition": "line 32 > 0",
+      "message": "This activity shows net farm rental income on line 32. Your tax may be lower if you use Schedule J (Form 1040) farm income averaging. Consider whether Schedule J applies."
+    },
+    {
+      "diagnostic_id": "D_4835_SE_GUARD",
+      "title": "SE-exclusion invariant violated — 4835 income reached the SE base",
+      "severity": "error",
+      "condition": "any Form 4835 amount (line 32 / line 34c) is included in the Schedule SE base (line 1a, line 2, or farm-optional gross farm income)",
+      "message": "Form 4835 farm rental income is NOT subject to self-employment tax (IRC §1402(a)(1); the form's own subtitle). It must never flow to Schedule SE. This diagnostic fires if any 4835 amount is detected in the SE base — a wiring bug. Remove it from Schedule SE."
+    }
+  ],
+  "tests": [
+    {
+      "scenario_name": "F4835-T1 — net income, simple (income -> Sch E line 40, NOT SE)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 50000,
+        "line_8": 12000,
+        "line_27": 8000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_7": 50000,
+        "line_31": 20000,
+        "line_32": 30000,
+        "feeds_schse": false,
+        "D_4835_SE_GUARD": false,
+        "writes_sche_line_40": true
+      }
+    },
+    {
+      "scenario_name": "F4835-T2 — multi-line income (2b/3b/4a/4c/5b/5d) verified L7 sum",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 20000,
+        "line_6": 500,
+        "line_27": 10000,
+        "line_2b": 3000,
+        "line_3b": 5000,
+        "line_4a": 4000,
+        "line_4c": 2000,
+        "line_5b": 6000,
+        "line_5d": 1000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_7": 41500,
+        "line_32": 31500
+      }
+    },
+    {
+      "scenario_name": "F4835-T3 — net loss, all at risk, active participation, MAGI<100k (full $25k allowance -> full loss)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 30000,
+        "line_27": 50000,
+        "tax_year": 2025,
+        "f4835_magi_for_pal": 90000,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_32": -20000,
+        "line_34c": -20000,
+        "D_4835_LOSS_LIMITED": false,
+        "f4835_suspended_pal": 0
+      }
+    },
+    {
+      "scenario_name": "F4835-T4 — net loss, active participation, MAGI phaseout (partial allowance, remainder suspended)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 10000,
+        "line_27": 50000,
+        "tax_year": 2025,
+        "f4835_magi_for_pal": 130000,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_32": -40000,
+        "line_34c": -10000,
+        "D_4835_LOSS_LIMITED": true,
+        "f4835_suspended_pal": 30000
+      }
+    },
+    {
+      "scenario_name": "F4835-T5 — net loss, some NOT at risk (6198 before 8582)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 10000,
+        "line_27": 50000,
+        "tax_year": 2025,
+        "f4835_magi_for_pal": 90000,
+        "f4835_at_risk_amount": 25000,
+        "f4835_some_not_at_risk_34b": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_32": -40000,
+        "line_34c": -25000,
+        "D_4835_LOSS_LIMITED": true,
+        "f4835_suspended_pal": 0
+      }
+    },
+    {
+      "scenario_name": "F4835-T6 — net loss, NO active participation (no special allowance, no passive income -> fully suspended)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 5000,
+        "line_27": 25000,
+        "tax_year": 2025,
+        "f4835_magi_for_pal": 90000,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": false,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_32": -20000,
+        "line_34c": 0,
+        "D_4835_LOSS_LIMITED": true,
+        "f4835_suspended_pal": 20000
+      }
+    },
+    {
+      "scenario_name": "F4835-T7 — material participation -> D_4835_MATPART (wrong form)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 60000,
+        "line_27": 20000,
+        "tax_year": 2025,
+        "f4835_material_participation": true
+      },
+      "expected_outputs": {
+        "line_32": null,
+        "D_4835_MATPART": true
+      }
+    },
+    {
+      "scenario_name": "F4835-T8 — CCC §77 election (D_4835_CCC_ELECT), amount in L7",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 20000,
+        "line_27": 10000,
+        "line_4a": 15000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_7": 35000,
+        "line_32": 25000,
+        "D_4835_CCC_ELECT": true
+      }
+    },
+    {
+      "scenario_name": "F4835-T9 — crop insurance deferral election (D_4835_CROPINS_DEFER)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 30000,
+        "line_27": 15000,
+        "line_5a": 12000,
+        "line_5b": 12000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false,
+        "f4835_crop_insurance_defer_election_5c": true
+      },
+      "expected_outputs": {
+        "line_7": 42000,
+        "line_32": 27000,
+        "D_4835_CROPINS_DEFER": true
+      }
+    },
+    {
+      "scenario_name": "F4835-T10 — §263A capitalized on 30g reduces L31 (D_4835_263A)",
+      "scenario_type": "normal",
+      "inputs": {
+        "line_1": 40000,
+        "line_26": 8000,
+        "line_27": 12000,
+        "line_30g": 3000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_31": 17000,
+        "line_32": 23000,
+        "D_4835_263A": true
+      }
+    },
+    {
+      "scenario_name": "F4835-T11 — SE-exclusion invariant (net income NOT in SE base)",
+      "scenario_type": "edge_case",
+      "inputs": {
+        "line_1": 80000,
+        "line_27": 30000,
+        "tax_year": 2025,
+        "f4835_all_at_risk_34a": true,
+        "f4835_active_participation_A": true,
+        "f4835_material_participation": false
+      },
+      "expected_outputs": {
+        "line_32": 50000,
+        "D_4835_SE_GUARD": false,
+        "feeds_schse_line_2": false,
+        "feeds_schse_line_1a": false,
+        "feeds_farm_optional_gross": false
+      }
+    },
+    {
+      "scenario_name": "F4835-T12 — two 4835 activities, each nets to its own Sch E line 40 contribution",
+      "scenario_type": "normal",
+      "inputs": {
+        "tax_year": 2025,
+        "activities": [
+          {
+            "line_32": 30000
+          },
+          {
+            "line_32": -12000,
+            "f4835_magi_for_pal": 80000,
+            "f4835_all_at_risk_34a": true,
+            "f4835_active_participation_A": true
+          }
+        ]
+      },
+      "expected_outputs": {
+        "sche_line_40_total": 18000
+      }
+    }
+  ],
+  "authority_sources": [
+    {
+      "source_code": "IRC_1402A1",
+      "source_type": "statute",
+      "source_rank": "primary_authority",
+      "jurisdiction_code": "FED",
+      "title": "IRC §1402(a)(1) — CRP rental payments excluded from SE for SS retirees",
+      "citation": "26 U.S.C. §1402(a)(1)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "schedule_f_farming"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§1402(a)(1) CRP exclusion (summary)",
+          "excerpt_text": "There shall be excluded from net earnings from self-employment payments under the Conservation Reserve Program (CRP) to an individual receiving social security benefits for old-age, survivors, or disability insurance.",
+          "summary_text": "CRP payments (in Sch F line 4b) -> Sch SE line 1b negative for SS retirement/disability recipients.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_263A",
+      "source_type": "code_section",
+      "source_rank": "controlling",
+      "jurisdiction_code": "FED",
+      "title": "IRC §263A — Uniform Capitalization Rules (UNICAP)",
+      "citation": "26 U.S.C. §263A",
+      "issuer": "Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "unicap",
+        "cost_of_goods_sold"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§263A(a)-(b) — Capitalization requirement",
+          "excerpt_text": "In the case of any property to which this section applies, any costs described in §263A(a)(2) shall be included in inventory costs (for property which is inventory) or capitalized (for other property). Applies to: real or tangible personal property produced by the taxpayer, and real or personal property acquired for resale. Small business exception: taxpayers with average annual gross receipts of $30 million or less for the 3 prior years are exempt. Farm exception under §263A(d): plants with a preproductive period of more than 2 years; taxpayer may elect out.",
+          "summary_text": "UNICAP: capitalize production/acquisition costs into inventory/basis. $30M exemption.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_451_EF",
+      "source_type": "statute",
+      "source_rank": "primary_authority",
+      "jurisdiction_code": "FED",
+      "title": "IRC §451(e)/(f) — weather-related livestock sales / crop-insurance deferral",
+      "citation": "26 U.S.C. §451(e), §451(f)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "schedule_f_farming"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§451(e)/(f) deferral elections (summary)",
+          "excerpt_text": "§451(e): a taxpayer whose principal trade or business is farming and who sells or exchanges livestock in excess of the number that would normally be sold because of drought, flood, or other weather-related conditions may ELECT to include the gain in the following taxable year. §451(f): a cash-method farmer who receives insurance proceeds as a result of destruction or damage to crops may ELECT to include the proceeds in income for the taxable year following the taxable year of the destruction or damage.",
+          "summary_text": "Sch F line 6c crop-insurance deferral (§451(f)) + weather livestock deferral (§451(e)). v1 captures the income; the elections are RED-defer.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_465",
+      "source_type": "code_section",
+      "source_rank": "controlling",
+      "jurisdiction_code": "FED",
+      "title": "IRC §465 — Deductions Limited to Amount at Risk",
+      "citation": "26 U.S.C. §465",
+      "issuer": "Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "at_risk"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§465(a)-(b) — At-risk limitation",
+          "excerpt_text": "A taxpayer engaged in an activity to which this section applies shall be allowed deductions only to the extent of the aggregate amount the taxpayer has at risk at the close of the taxable year. At-risk amount includes: (1) money contributed, (2) adjusted basis of property contributed, (3) amounts borrowed for which the taxpayer is personally liable, (4) amounts borrowed secured by property (other than property used in the activity) pledged as security. NOT at risk: nonrecourse financing (except qualified nonrecourse financing for real estate — §465(b)(6)).",
+          "summary_text": "Losses limited to at-risk amount. At-risk = cash + basis contributed + recourse debt.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_469",
+      "source_type": "statute",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRC §469 — Passive Activity Losses and Credits Limited",
+      "citation": "26 U.S.C. §469 (passive activity loss; §469(i) the $25,000 offset; §469(c)(7) real estate professional; §469(g) disposition)",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 10.0,
+      "topics": [
+        "passive_activity",
+        "rental_income",
+        "passive_activity_loss"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§469(a)-(c) — Passive activity loss limitation",
+          "excerpt_text": "Passive activity losses are not allowed against nonpassive income. A passive activity is any trade or business in which the taxpayer does not materially participate. Rental activities are generally treated as passive regardless of participation. Material participation: individual participates for more than 500 hours, or constitutes substantially all of the participation, or participates for more than 100 hours and no other individual participates more.",
+          "summary_text": "Passive losses only offset passive income. 500-hour material participation test. Rental = passive.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§469(i) — $25K rental exception",
+          "excerpt_text": "A natural person may offset up to $25,000 of nonpassive income with losses from rental real estate activities in which the taxpayer actively participates. The $25,000 allowance is reduced by 50% of the amount by which AGI exceeds $100,000 and is fully phased out at $150,000 AGI. Active participation requires a 10% or more ownership interest and involvement in management decisions (lower standard than material participation).",
+          "summary_text": "$25K rental loss allowance (active participation). Phases out at $100K-$150K AGI.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "§469(i) the $25,000 offset + phaseout",
+          "excerpt_text": "§469(i)(2): the $25,000 amount. §469(i)(3)(A): the $25,000 amount is reduced by 50% of the amount by which the adjusted gross income exceeds $100,000. §469(i)(5): in the case of a married individual filing separately who lived apart, $12,500 and $50,000 (substituted for $25,000 and $100,000); a married individual filing separately who did not live apart gets zero. §469(g): a fully taxable disposition of an entire interest releases the suspended loss.",
+          "summary_text": "§469(i): $25,000 offset reduced 50% of AGI over $100,000; MFS-apart $12,500/$50,000; MFS-together $0; §469(g) disposition releases the suspended loss.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRC_77",
+      "source_type": "statute",
+      "source_rank": "primary_authority",
+      "jurisdiction_code": "FED",
+      "title": "IRC §77 — Commodity Credit Corporation loans (income election)",
+      "citation": "26 U.S.C. §77",
+      "issuer": "U.S. Congress",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "schedule_f_farming"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "§77(a) election to treat CCC loans as income (verbatim)",
+          "excerpt_text": "Amounts received as loans from the Commodity Credit Corporation shall, at the election of the taxpayer, be considered as income and shall be included in gross income for the taxable year in which received.",
+          "summary_text": "Sch F line 5a = CCC loans elected as income. v1 captures the amount (-> line 9); the election is RED-defer.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_4835_FORM",
+      "source_type": "official_form",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "2025 Form 4835 — Farm Rental Income and Expenses",
+      "citation": "Form 4835 (2025); f4835.pdf; Attachment Sequence No. 37; Cat. No. 13117W; Created 1/7/26",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": false,
+      "trust_score": 9.5,
+      "topics": [
+        "farm_rental_4835"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Header + Line A + Part I Gross Farm Rental Income (lines 1-7, verbatim)",
+          "excerpt_text": "Farm Rental Income and Expenses. Crop and Livestock Shares (Not Cash) Received by Landowner (or Sub-Lessor). Income Not Subject to Self-Employment Tax. A Did you actively participate in the operation of this farm during 2025? Part I Gross Farm Rental Income—Based on Production. 1 Income from production of livestock, produce, grains, and other crops. 2a Cooperative distributions (Form(s) 1099-PATR); 2b Taxable amount. 3a Agricultural program payments; 3b Taxable amount. 4 Commodity Credit Corporation (CCC) loans: 4a CCC loans reported under election; 4b CCC loans forfeited; 4c Taxable amount. 5 Crop insurance proceeds and federal crop disaster payments: 5a Amount received in 2025; 5b Taxable amount; 5c If election to defer to 2026 is attached, check here; 5d Amount deferred from 2024. 6 Other income, including federal and state gasoline or fuel tax credit or refund. 7 Gross farm rental income. Add amounts in the right column for lines 1 through 6. Enter the total here and on Schedule E (Form 1040), line 42.",
+          "summary_text": "L7 (gross) = right-column sum of lines 1-6 = L1 + L2b + L3b + L4a + L4c + L5b + L5d + L6 (mirrors Sch F: 4a CCC-elected AND 4c CCC-forfeited-taxable, NOT 4b; 5b + 5d, NOT 5a/5c). L7 -> Schedule E line 42 (farming/fishing RECONCILIATION memo). Line A active participation = §469(i) special-allowance test (10% interest). Title: NOT SE income.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Part II Expenses + line 31/32 net + line 34 at-risk/loss (lines 8-34c, verbatim)",
+          "excerpt_text": "Part II Expenses—Farm Rental Property. 8 Car and truck expenses (attach Form 4562). 9 Chemicals. 10 Conservation expenses. 11 Custom hire (machine work). 12 Depreciation and section 179 expense deduction not claimed elsewhere. 13 Employee benefit programs other than on line 21. 14 Feed. 15 Fertilizers and lime. 16 Freight and trucking. 17 Gasoline, fuel, and oil. 18 Insurance (other than health). 19a Interest — Mortgage (paid to banks, etc.); 19b Other. 20 Labor hired (less employment credits). 21 Pension and profit-sharing plans. 22a Rent or lease — Vehicles, machinery, and equipment; 22b Other (land, animals, etc.). 23 Repairs and maintenance. 24 Seeds and plants. 25 Storage and warehousing. 26 Supplies. 27 Taxes. 28 Utilities. 29 Veterinary, breeding, and medicine. 30a-30g Other expenses (specify). 31 Total expenses. Add lines 8 through 30g. 32 Net farm rental income or (loss). Subtract line 31 from line 7. If the result is income, enter it here and on Schedule E (Form 1040), line 40. If the result is a loss, you must go to line 34. 33 Reserved for future use. 34 If line 32 is a loss, check the box that describes your investment in this activity: 34a All investment is at risk; 34b Some investment is not at risk. 34c You may have to complete Form 8582 to determine your deductible loss, regardless of which box you checked. If you checked box 34b, you must complete Form 6198 before going to Form 8582. In either case, enter the deductible loss here and on Schedule E (Form 1040), line 40.",
+          "summary_text": "L31 = Σ(lines 8-30f) reduced by 30g (§263A capitalized, entered in parentheses). L32 = L7 - L31. Income -> Sch E line 40. Loss -> line 34: 34a all-at-risk / 34b some-not-at-risk (Form 6198 BEFORE 8582); L34c deductible loss (after 8582/6198) -> Sch E line 40. NO line feeds Schedule SE (§1402(a)(1)).",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Purpose / who files — material participation & wrong-form routing (verbatim)",
+          "excerpt_text": "If you were the landowner (or sub-lessor) and did not materially participate (for self-employment tax purposes) in the operation or management of the farm, use Form 4835 to report farm rental income based on crops or livestock produced by the tenant. Use this form only if the activity was a rental activity for purposes of the passive activity loss limitations. If you have net income on line 32, your tax may be less if you figure it using Schedule J (Form 1040). Do not use Form 4835 if you were a/an: Tenant — instead use Schedule F; Landowner (or sub-lessor) and materially participated — instead use Schedule F; Landowner and received cash rent for pasture or farmland based on a flat charge — instead report on Schedule E, Part I; Estate or trust — Schedule E, Part I; Partnership or S corporation — Form 8825.",
+          "summary_text": "Materially participated -> WRONG form, use Schedule F (D_4835_MATPART). Must be a rental activity for §469 passive-loss purposes. Net income on line 32 -> Schedule J farm income averaging available. Cash-flat-rent -> Sch E Part I; estate/trust -> Sch E Part I; partnership/S-corp -> Form 8825 (all out of 1040 scope).",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_4835_INSTR",
+      "source_type": "official_instruction",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "Instructions for Form 4835 — Farm Rental Income and Expenses",
+      "citation": "Form 4835 Instructions (2025)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "form_4835",
+        "farm_rental",
+        "farm_income"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "Who files and how it differs from Schedule F",
+          "excerpt_text": "Use Form 4835 to report farm rental income and expenses if you are an individual who received rental income based on crops or livestock produced by a tenant, and you did NOT materially participate in the operation or management of the farm. If you materially participated, use Schedule F instead. Farm rental income reported on Form 4835 is generally NOT subject to self-employment tax (§1402(a)(1) excludes rentals from real estate from SE income). However, it may be subject to passive activity rules (§469). Income flows to Schedule E Part I, not Schedule F. Expenses include insurance, repairs, taxes, utilities, depreciation, and the landlord's share of production costs.",
+          "summary_text": "Form 4835: farm rental without material participation. Not SE income. → Sch E Part I. Schedule F if participating.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_6198_INSTR",
+      "source_type": "official_instruction",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "Instructions for Form 6198 — At-Risk Limitations",
+      "citation": "Form 6198 Instructions (2025)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "form_6198",
+        "at_risk"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "At-risk computation",
+          "excerpt_text": "Form 6198 determines the amount of loss you can deduct based on the amount you have at risk in the activity. Part I: Current year profit (loss) from the activity. Part II: Simplified computation of amount at risk (if only one activity and not a partnership/S-Corp with nonrecourse financing). Part III: Detailed computation. At-risk amount = adjusted basis of property contributed + money contributed + amounts borrowed for which you are personally liable or have pledged other property as security. NOT at risk: nonrecourse loans (except qualified nonrecourse financing on real estate — loans from a qualified lender secured by real estate used in the activity). Part IV: Deductible loss — limited to at-risk amount. Excess loss carries forward.",
+          "summary_text": "At-risk = contributions + recourse debt (+ qualified nonrecourse for realty). Loss limited to at-risk amount.",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_2025_8582_INSTR",
+      "source_type": "official_instruction",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "Instructions for Form 8582 — Passive Activity Loss Limitations",
+      "citation": "Form 8582 Instructions (2025)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.5,
+      "topics": [
+        "form_8582",
+        "passive_activity",
+        "rental_income"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "$25,000 rental real estate exception",
+          "excerpt_text": "If you actively participated in a rental real estate activity, you may be able to deduct up to $25,000 of loss against nonpassive income. Active participation requires: at least 10% ownership interest and involvement in management decisions (approving tenants, terms, repairs, expenditures) — a lower standard than material participation. The $25,000 allowance is reduced by 50% of AGI over $100,000 and fully phased out at $150,000 AGI. Married filing separately: generally $0 allowance (unless lived apart all year, then $12,500 phased out at $50,000-$75,000).",
+          "summary_text": "$25K rental exception: active participation + 10% ownership. Phases out $100K-$150K AGI.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Material participation tests",
+          "excerpt_text": "Material participation — you participate on a regular, continuous, and substantial basis. You materially participate if you meet ANY of these tests: (1) more than 500 hours during the year, (2) your participation constituted substantially all of the participation, (3) more than 100 hours and at least as much as any other individual, (4) significant participation activities aggregate to more than 500 hours, (5) materially participated in any 5 of the prior 10 years, (6) personal service activity — materially participated in any 3 prior years, (7) all facts and circumstances (more than 100 hours, no one else participated more). Grouping: taxpayers may group activities that form an appropriate economic unit for measuring participation.",
+          "summary_text": "7 material participation tests. 500+ hours is most common. Grouping of activities allowed.",
+          "is_key_excerpt": true
+        },
+        {
+          "excerpt_label": "Passive activity rules overview",
+          "excerpt_text": "Form 8582 is used by individuals, estates, and trusts that have passive activity losses or credits. A passive activity is any trade or business activity in which you did not materially participate during the year. Rental activities are treated as passive regardless of your participation, with two exceptions: (1) real estate professionals (§469(c)(7)), and (2) the $25,000 special allowance for active participation in rental real estate. Passive losses can only offset passive income. Disallowed losses are suspended and carried forward until you have passive income or completely dispose of the activity.",
+          "summary_text": "Passive losses only offset passive income. Rental = passive (exceptions: RE professional, $25K allowance).",
+          "is_key_excerpt": true
+        }
+      ]
+    },
+    {
+      "source_code": "IRS_PUB_225",
+      "source_type": "official_publication",
+      "source_rank": "primary_official",
+      "jurisdiction_code": "FED",
+      "title": "IRS Publication 225 — Farmer's Tax Guide",
+      "citation": "IRS Pub 225 (2024 ed.; 2025 ed. pending)",
+      "issuer": "IRS",
+      "current_status": "active",
+      "is_substantive_authority": true,
+      "trust_score": 9.0,
+      "topics": [
+        "schedule_f_farming",
+        "farm_optional_se"
+      ],
+      "excerpts": [
+        {
+          "excerpt_label": "CCC loans (§77 election) + crop-insurance/weather deferrals + farm optional SE (narrative)",
+          "excerpt_text": "Commodity Credit Corporation loans: generally a CCC loan is not income; however, you may ELECT to treat the loan proceeds as income in the year received (IRC §77). Once made, the election applies to all later years unless the IRS approves a change. Crop insurance and disaster payments: a cash-method farmer who receives crop insurance proceeds in the year of damage may ELECT to defer reporting to the following year if the income from the crops would normally have been reported in the following year (IRC §451(f)). Weather-related sales of livestock: you may ELECT to postpone reporting the gain from the additional animals sold because of weather-related conditions (IRC §451(e)). Optional method: a farmer with low net profit or a loss may use the farm optional method to figure net earnings from self-employment (to obtain Social Security coverage).",
+          "summary_text": "§77 CCC election, §451(f) crop-insurance deferral, §451(e) weather livestock deferral = ELECTIONS (RED-defer the election machinery; capture the dollar amounts where they land on the face). Farm optional SE method per Pub 225 + the Sch SE Part II face.",
+          "is_key_excerpt": true
+        }
+      ]
+    }
+  ],
+  "state_conformity": null
+}

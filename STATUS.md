@@ -12,11 +12,13 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **77 TaxForms / 371 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest on the 1065 track: `1065_SE`
-**leg 2** (the 14a SE-base sub-spec, worksheet WS1a–WS5) seeded + exported 2026-07-02, Ken-approved.
-Leg 1 (classification) was built into tts at `a8c7da4`; the leg-2 export is ingested in tts at
-`e5f2795` with B1–B7 pinned as pending-skips.
+Active spec-authoring tool. RS Supabase holds **79 TaxForms / 391 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest: **`4835`** (Form 4835 — Farm
+Rental Income and Expenses) authored + seeded + exported 2026-07-04 (Ken-approved), unblocking a parallel
+tts session's S3 resume pointer (its `lookup/4835/export/` 404 is now 200). Prior newest on the 1065 track:
+`1065_SE` **leg 2** (the 14a SE-base sub-spec, worksheet WS1a–WS5) seeded + exported 2026-07-02. Leg 1
+(classification) was built into tts at `a8c7da4`; the leg-2 export is ingested in tts at `e5f2795` with
+B1–B7 pinned as pending-skips.
 
 ## In progress
 
@@ -99,6 +101,16 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **`4835` (Form 4835 — Farm Rental Income and Expenses) authored + seeded + exported** —
+  pivot from a parallel tts session blocked on the missing 4835 spec (real 404). Source-verified the 2025
+  face verbatim (f4835.pdf pages 1-3). Ken walked 4 scope decisions (D-3): the LOSS PATH is FULLY COMPUTED
+  for MeF (§465 at-risk / Form 6198 BEFORE §469 passive / Form 8582 $25k special allowance → line 34c →
+  Sch E line 40), integrating the EXISTING RS 6198 + FORM_8582 specs; a HARD SE-EXCLUSION invariant
+  (§1402(a)(1); contrast Sch F); elections captured+flagged; a material-participation → Schedule F routing
+  guard; per-activity multi-instance. `load_1040_form_4835.py`: 54 facts / 11 rules (all cited) / 52 lines /
+  8 diagnostics / 12 scenarios / 9 flow assertions. Verified L7 gross = right-column sum; corrected the old
+  authority stub's "Sch E Part I" (→ net → line 40, gross → line 42). **`lookup/4835/export/` now returns
+  200** (was 404); 90 KB export saved to `exports/form_4835/`. The tts S3 pointer is unblocked.
 - 2026-07-04: **cross-repo housekeeping** (Ken's INSTRUCTION FOR CC, no spec/compute) — added the
   `RULE STUDIO AUTHORING TRACK` to tts-tax-app SEASON_CHECKLIST.md (`fde3655`); recorded **D-2 (1041
   Schedule I AMT RED-DEFERRED for season one)** in RS DECISIONS.md (`48e44cc`, cross-refs D-1

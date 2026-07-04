@@ -16,6 +16,46 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-04 — D-3: Form 4835 loss path FULLY COMPUTED (not RED-deferred); SE-exclusion is a hard invariant
+
+**Decision:** The Form 4835 (Farm Rental Income and Expenses) spec computes the full
+net-loss path — §465 at-risk (Form 6198) THEN §469 passive (Form 8582, incl. the
+$25,000 active-participation special allowance) — rather than RED-deferring a loss
+the way Schedule F does. It integrates with the EXISTING RS `FORM_8582` (Sch E loader)
+and `6198` (1120-S loader) specs; it does not re-author them. Two companion rulings in
+the same unit: (a) a HARD SE-EXCLUSION INVARIANT — no 4835 amount (line 32 income,
+line 34c loss) may ever enter the Schedule SE base (line 1a/2 or the farm-optional
+gross farm income); `R-4835-SE-EXCLUSION` + `FA-1040-4835-05` + `D_4835_SE_GUARD`
+enforce it (§1402(a)(1)); and (b) a material-participation FORM-SELECTION guard —
+`D_4835_MATPART` routes a materially-participating filer to Schedule F.
+
+**Context:** Ken directed the loss path be computed because Form 4835 is in the MeF
+(Modernized e-File) test set: an e-filed 4835 with a deductible loss must carry the
+correct line-34c value and the 8582/6198 linkage in the XML, so a RED-defer (which
+Schedule F uses for its own passive/at-risk loss) would leave the MeF case untestable.
+The discovery that both limiter forms already exist in RS made computing — not
+deferring — the cheaper correct option.
+
+**Alternatives considered:**
+- RED-defer the 4835 loss (the Schedule F precedent) — rejected: leaves the MeF
+  loss case uncomputable; and unlike Sch F (where 8582/6198 weren't yet wired) the
+  limiter specs are already available to integrate.
+- Re-author 8582/6198 inside the 4835 unit — rejected: duplicates existing specs and
+  would fork the passive/at-risk machinery. The 4835 activity registers as an input
+  activity into the shared computations instead (flow assertions are the contract).
+
+**Reasoning:** Computing through the existing limiters gives MeF-grade correctness at
+integration cost, not re-implementation cost. The SE-exclusion invariant is the form's
+defining trait (its subtitle is literally "Income Not Subject to Self-Employment Tax")
+and is exactly the wiring bug a copy-paste from the Schedule F SE feed would introduce
+— so it is asserted, not just documented.
+
+**Would reconsider if:** the FORM_8582 per-activity allocation (Parts IV-VIII) turns
+out not to accept a farm-rental activity in the active-rental-RE bucket (walk item B),
+or a future MeF schema change alters the 4835→Sch E line-40 / 8582 linkage.
+
+---
+
 ## 2026-07-04 — D-2: 1041 Schedule I (AMT) RED-DEFERRED for season one
 
 **Decision:** Do NOT author or build the Form 1041 Schedule I (Alternative Minimum
