@@ -364,6 +364,11 @@ SCHA_FACTS: list[dict] = [
     # ── Charity ──
     {"fact_key": "scha_charitable_cash", "label": "Line 11 — gifts by cash or check (60% bucket)",
      "data_type": "decimal", "default_value": "0", "sort_order": 15, "notes": "INPUT. Cash to 50%-limit (public) charities — 60% AGI limit."},
+    {"fact_key": "scha_qualified_contributions_cash", "label": "Line 11 — qualified §170 cash contributions (dotted-line annotation)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 15,
+     "notes": ("INPUT-ONLY. The portion of the line-11 cash gifts that are §170 QUALIFIED CONTRIBUTIONS — drives the "
+               "line-11 dotted-line annotation on the face + the e-file qualifiedContributionsAmt attribute. Affects "
+               "NO computed line. Mirrors tts scha_qualified_contributions_cash (mig 0159, S2 mapper leg).")},
     {"fact_key": "scha_charitable_noncash_fmv", "label": "Line 12 — gifts other than cash, FMV to 50%-orgs (50% bucket)",
      "data_type": "decimal", "default_value": "0", "sort_order": 16, "notes": "INPUT. Non-capital-gain property at FMV to 50%-limit orgs — 50% AGI limit. Form 8283 if > $500."},
     {"fact_key": "scha_charitable_capgain_50org", "label": "Line 12 — capital-gain property to 50%-orgs (30% bucket)",
