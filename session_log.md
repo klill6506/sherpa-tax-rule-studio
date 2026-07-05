@@ -4,6 +4,34 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — GA Form 700 + PTET AUTHORED + SEEDED + EXPORTED (August state track, form 4 — track COMPLETE)
+*Ken picked GA-700 + PTET as the next thread (AskUserQuestion). 1st partnership-entity state spec; GA600S
+(S-corp, load_remaining_1120s.py) is the closest GA entity precedent. Clear of the parallel session
+(explicit-path commits).*
+- **Research (subagent, verbatim from the FINAL 2025 GA DOR sources — Form 700 Rev. 09/11/25; IT-711
+  booklet; HB 149 PTET FAQ; Reg. 560-7-3-.03):** flat/PTET rate **5.19%** (2025; 2026→4.99%); PTET (HB 149)
+  = annual irrevocable page-1 election, entity-level base (federal taxable income → §48-7-27 → §48-7-31
+  apportionment, NOT a resident/nonresident split) × 5.19%; owners exclude via **PTEDED/PTEADD** on Form
+  500, no owner credit, credits/NOLs stay with the entity. **Single gross-receipts apportionment** (6
+  decimals, since 2008). GA decouples from §168(k)/OBBBA — add back federal depr (Sch 5 L7), subtract GA
+  Form 4562 depr (Sch 6 L4); **GA §179 $1.05M/$2.62M**. **4% nonresident withholding** (<$1,000 exempt,
+  G-2-A; displaced by PTET). Partnerships exempt from GA net worth tax.
+- **Caught two stale values in the existing GA600S loader** (research cross-check): PTET rate **5.49%**
+  (should be 5.19%) and **"property/payroll/sales" 3-factor** apportionment (GA is single-factor). GA700
+  pins the correct values; GA600S correction logged to DECISIONS D-8 + the 1120-S delta audit.
+- **Source brief** `ga700_source_brief.md` + **scope walk** (4 AskUserQuestion, all maximal — DECISIONS
+  **D-8**): A full PTET compute; B compute the §179 delta + structure, direct-entry the GA-4562 figures;
+  C compute Sch 4 partner allocation + 4% NRW; D direct-entry Sch 10 credits, RED-defer NOL/composite/UET.
+- **Authored `load_ga700.py`** (SC1040/NC-D400 pattern). **Validated on throwaway SQLite** via
+  `scratchpad/validate_ga.py` (CharField caps clean; all 11 rules cited). **Review walk (W1-W6)** — Jan 1
+  2024 conformity (re-verify the 2025 bill), 5.19% rate (+5.75% reg quirk in the RED-deferred UET),
+  entity-level PTET base, §179 figures, single-factor apportionment, Sch 4 partner model — all blessed.
+  Ken: "Approve — flip, seed, export."
+- **SEEDED + EXPORTED:** prod **92 → 93 TaxForms / 436 → 441 FlowAssertions** (+GA700, draft, entity
+  ['1065']); `lookup/GA700/export/` = **HTTP 200** (verified live). 22 facts / 11 rules / 20 lines / 10
+  diag / 7 tests / 5 FA; 5 GA sources. **The August state track (SC1040/AL-40/NC-D400/GA-700) is COMPLETE.**
+  Next: the 1120-S delta audit (incl. the GA600S 5.49%/3-factor correction).
+
 ## 2026-07-04 — RS spec cleanup handoff (5 forms brought to parity with tts builds)
 *Carried "RS follow-ups" from tts STATUS (twelfth session): tts code is already correct/self-consistent;
 this session brought the RS SPECS + the re-exported tts spec mirrors into parity. Ground rules: amend the

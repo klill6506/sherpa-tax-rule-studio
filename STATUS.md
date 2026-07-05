@@ -12,9 +12,9 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **92 TaxForms / 436 FlowAssertions** (was 88; +SC1040 +
-SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 seeded 2026-07-04 — the 1065 stub was earlier removed in the
-reconstructability cleanup; +FA-1040-8936-06 from the tts-parity cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+Active spec-authoring tool. RS Supabase holds **93 TaxForms / 441 FlowAssertions** (was 88; +SC1040 +
+SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 + GA700 seeded 2026-07-04/05 — the 1065 stub was earlier removed in
+the reconstructability cleanup; +FA-1040-8936-06 from the tts-parity cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
 batch) / 85 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
 via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅, AL Form 40 ✅, and NC D-400 ✅
 authored/seeded/exported (forms 1-3 of the state set; next: GA-700 + PTET). **The 1065-core
@@ -62,22 +62,25 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► IMMEDIATE NEXT — GA-700 + PTET (August state track, form 4).** The active work is the August RS state
-campaign: **SC1040 ✅ · AL Form 40 ✅ · NC D-400 ✅** done → **GA-700 + PTET next**, plus the 1120-S
-delta audit (Known-issues has its scope). **Follow the established state-spec pattern** (see
-`load_sc1040.py` + `load_al_form40.py` + `load_nc_d400.py` + `load_ga500_form_500.py`, and the
-`sc1040_source_brief.md` / `al_form40_source_brief.md` / `nc_d400_source_brief.md` briefs):
-  1. Dispatch a research subagent → verify TY2025 structure/rate/deductions VERBATIM against the GA DOR
-     final 2025 PDFs (Authoritative-Source Rule — never training memory).
-  2. Write the source brief → walk ~4 scope decisions with Ken (AskUserQuestion).
-  3. Author the loader with `READY_TO_SEED=False` (safety guard); validate on a throwaway SQLite DB
-     (monkeypatch the guard — see `scratchpad/validate_nc.py` as a reusable harness; it ALSO enforces the
-     CharField caps SQLite ignores). **Watch the Postgres varchar limits** — `topic_name` ≤ 255;
-     **`rule_id`/`diagnostic_id`/`assertion_id`/`line_number` ≤ 20** (`D_NCD400_179_PHASEOUT`=21 was
-     caught pre-seed by the harness and shortened to `D_NCD400_179LIMIT`). SQLite doesn't enforce; Postgres does.
+**► IMMEDIATE NEXT — 1120-S delta audit (the last named August item).** The August RS state campaign is
+DONE: **SC1040 ✅ · AL Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**. What remains from the August plan is
+the **1120-S delta audit** — the deferred reconstructability drift (Known issues §A/§B/§D): stale
+`8283/8949/8995/8995A` rules, `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 orphans, the spurious bare-
+`8582` loader duplicate — all trace to `load_1120s_complete`. **NEW for this audit (DECISIONS D-8):** the
+`GA600S` loader (`load_remaining_1120s.py`) carries a **stale PTET rate 5.49%** (should be **5.19%** for
+2025) and a **stale "property/payroll/sales" 3-factor apportionment note** (GA is single gross-receipts
+since 2008) — correct both to match GA700. This is an untangling job (per-loader reconcile), not fresh
+authoring. If more state forms are wanted first, the pattern is well-grooved (see below).
+  **State-spec pattern** (for any further state form — `load_sc1040.py` / `load_al_form40.py` /
+  `load_nc_d400.py` / `load_ga700.py` + their `*_source_brief.md`):
+  1. Research subagent → verify TY2025 VERBATIM against the state DOR final PDFs (never memory).
+  2. Source brief → ~4-decision scope walk with Ken (AskUserQuestion).
+  3. Author `load_<form>.py` with `READY_TO_SEED=False`; validate on throwaway SQLite (reusable harness
+     `scratchpad/validate_nc.py` / `validate_ga.py` — ALSO enforces the CharField caps SQLite ignores:
+     `topic_name` ≤ 255; **`rule_id`/`diagnostic_id`/`assertion_id`/`line_number` ≤ 20**).
   4. Ken's review walk → flip guard → seed to prod → verify export = 200 → commit.
   **Use explicit-path git commits, never `git add -A`** — a parallel session shares this working tree
-  (memory `rs-shared-worktree-explicit-commits`). Prod is at **92 TaxForms / 435 FAs / 7 approved**.
+  (memory `rs-shared-worktree-explicit-commits`). Prod is at **93 TaxForms / 441 FAs / 7 approved**.
 
 **► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
@@ -213,6 +216,24 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **GA Form 700 + PTET AUTHORED + SEEDED + EXPORTED (August state track, form 4 — track
+  COMPLETE).** 1st partnership-entity state spec. Research verified vs the FINAL 2025 GA DOR sources (Form
+  700 Rev. 09/11/25; IT-711 booklet; HB 149 PTET FAQ; Reg. 560-7-3-.03). Federal-income start (Sch 8) → GA
+  add/subtract (Sch 5/6) → **single gross-receipts apportionment** (Sch 7, 6 decimals) → GA net income
+  (Sch 2) → flat **5.19%** tax IF the **PTET election** is made (Sch 1). Scope walk (4 AskUserQuestion, all
+  maximal — DECISIONS **D-8**): A **compute the full PTET path** (5.19% entity-level + PTEDED/PTEADD owner
+  mechanics — the SALT-cap headline); B **compute the §179 GA-limit delta** ($1.05M/$2.62M, GA didn't adopt
+  OBBBA) + model the Sch 5 L7/Sch 6 L4 depreciation add-back/subtract structure, direct-entry the
+  asset-level GA-4562 figures; C **compute Sch 4 partner allocation** (resident full / nonresident
+  GA-source) + the **4% nonresident withholding** (<$1,000 exempt, displaced by PTET); D direct-entry Sch
+  10 credits, RED-defer GA NOL (Sch 9) / composite IT-CR / UET penalty / credit pass-through. Caught the
+  **GA600S loader's stale 5.49% rate + 3-factor apportionment** (GA700 pins 5.19% / single-factor; GA600S
+  correction logged to the 1120-S delta audit). Conformity Jan 1 2024 (no 2025 bill posted — re-verify).
+  Validated on throwaway SQLite (`scratchpad/validate_ga.py`, CharField caps clean). Ken approved the
+  W1-W6 walk ("Approve — flip, seed, export"). Seeded → **93 TaxForms / 441 FlowAssertions**;
+  `lookup/GA700/export/` = 200. 22 facts / 11 rules / 20 lines / 10 diag / 7 tests / 5 FA, every rule
+  cited to 5 GA sources. `ga700_source_brief.md`. **The August state track (SC1040/AL-40/NC-D400/GA-700)
+  is now COMPLETE.**
 - 2026-07-04: **RS spec cleanup handoff DONE — 5 forms brought to parity with tts builds.** Carried "RS
   follow-ups" from tts STATUS (tts code already correct; RS specs were stale). Amended the HOME loaders
   (reconstructable): (1) **FORM_8911** — retired D_8911_004 (Form 3800 built; error→info + RETIRED, the RS
