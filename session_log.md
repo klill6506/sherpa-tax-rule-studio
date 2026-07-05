@@ -4,6 +4,33 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — NC D-400 AUTHORED + SEEDED + EXPORTED (August state track, form 3)
+*Ken: "next up." 4th state individual spec (GA-500/SC1040/AL-40 precedents). NC starts from FEDERAL AGI
+(like GA-500) at a FLAT 4.25% rate — simpler than AL; complexity is the Schedule S depreciation add-back
+(Ken's specialty) + the child-deduction table. Clear of the parallel session (explicit-path commits).*
+- **Research (subagent, verbatim from the FINAL 2025 NCDOR PDFs — Form D-400 + Schedule S rev "Web-Fill
+  9-25"; D-401 booklet 2025; cited §105-153.5/.6/.7):** flat **4.25%** (0.0425; TY2026→3.99%); std ded
+  $12,750/$25,500/$19,125 (MFS $0 if spouse itemizes; no 65+/blind add-on); federal-AGI start (L6) →
+  Sch S Part A additions (L7) / Part B deductions (L9) → child deduction (AGI table $3,000→$0) + std/
+  itemized → NC taxable income (L14) → flat tax. **Depreciation:** NC decoupled — add back **85%** of
+  federal bonus (Part A L3) + 85% of the §179 excess over NC's **$25k/$200k** limits (L4); 20% recovery
+  over 5 years (L23/24 reference 2020-24 add-backs). Conformity frozen **Jan 1 2023** (OBBBA not adopted).
+- **Source brief** `nc_d400_source_brief.md` + **scope walk** (4 AskUserQuestion, all maximal — DECISIONS
+  **D-7**): A resident + **Schedule PN** proration (L13→L14); B **COMPUTE** the current-year 85% bonus +
+  85% §179-excess add-back, direct-entry the prior-year 20% installments (the $200k §179 phaseout is a
+  diagnostic, not silently computed); C **structured** Part B subtractions (L18 US-obligation / L19 SS-RR
+  / L20 Bailey / L21 military) with eligibility diagnostics; D direct-entry D-400TC/use-tax/contributions,
+  RED-defer Schedule PN-1 / amended lines / L26e underpayment / L39 NC NOL.
+- **Authored `load_nc_d400.py`** (AL-40/SC1040 pattern). **Validated on throwaway SQLite** via a reusable
+  `scratchpad/validate_nc.py` harness that ALSO enforces the Postgres CharField caps SQLite ignores — it
+  **CAUGHT `D_NCD400_179_PHASEOUT`=21 > the 20-char `diagnostic_id` cap** pre-seed (shortened to
+  `D_NCD400_179LIMIT`), and flagged 3 pure-arithmetic rules with no authority link (grounded them to the
+  D-400 face). **Review walk (W1-W6)** — flat rate, 85% add-back + limits, Jan-1-2023 conformity, std
+  ded, child table, statute-provenance — all blessed. Ken: "Approve — flip, seed, export."
+- **SEEDED + EXPORTED:** prod **91 → 92 TaxForms / 431 → 435 FlowAssertions** (+NC_D400, draft);
+  `lookup/NC_D400/export/` = **HTTP 200** (verified live). 29 facts / 11 rules / 21 lines / 8 diag /
+  8 tests / 4 flow assertions; 6 sources (5 NC + federal 1040), every rule cited. Next state form: GA-700 + PTET.
+
 ## 2026-07-04 — AL Form 40 AUTHORED + SEEDED + EXPORTED (August state track, form 2)
 *Ken: "kick off AL Form 40." 3rd state individual spec (GA-500/SC1040 precedents). The checklist
 flagged AL's federal-income-tax-deduction quirk as "the longest walk." Clear of the parallel session.*

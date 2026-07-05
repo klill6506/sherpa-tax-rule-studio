@@ -12,12 +12,12 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **91 TaxForms / 431 FlowAssertions** (was 88; +SC1040 +
-SC_SCHEDULE_NR + AL_FORM_40 seeded 2026-07-04 — the 1065 stub was earlier removed in the
+Active spec-authoring tool. RS Supabase holds **92 TaxForms / 435 FlowAssertions** (was 88; +SC1040 +
+SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 seeded 2026-07-04 — the 1065 stub was earlier removed in the
 reconstructability cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
-batch) / 84 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
-via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅ and AL Form 40 ✅ authored/
-seeded/exported (forms 1-2 of the state set; next: NC D-400). **The 1065-core
+batch) / 85 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
+via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅, AL Form 40 ✅, and NC D-400 ✅
+authored/seeded/exported (forms 1-3 of the state set; next: GA-700 + PTET). **The 1065-core
 campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
 multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
@@ -62,21 +62,22 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► IMMEDIATE NEXT — NC D-400 (August state track, form 3).** The active work is the August RS state
-campaign: **SC1040 ✅ · AL Form 40 ✅** done → **NC D-400 next**, then GA-700 + PTET, plus the 1120-S
-delta audit (Known-issues has its scope). North Carolina D-400 is a flat-rate return that starts from
-federal AGI (simpler than AL). **Follow the established state-spec pattern** (see `load_sc1040.py` +
-`load_al_form40.py` + `load_ga500_form_500.py`, and the `sc1040_source_brief.md` / `al_form40_source_
-brief.md` briefs):
-  1. Dispatch a research subagent → verify NC D-400 TY2025 structure/rate/deductions VERBATIM against
-     the NC DOR (ncdor.gov) final 2025 PDFs (Authoritative-Source Rule — never training memory).
-  2. Write `nc_d400_source_brief.md` → walk ~4 scope decisions with Ken (AskUserQuestion).
-  3. Author `load_nc_d400.py` with `READY_TO_SEED=False` (safety guard); validate on a throwaway SQLite
-     DB (monkeypatch the guard). **Watch the Postgres varchar(255) limits** — `AuthorityTopic.topic_name`
-     bit me on SC1040 (SQLite doesn't enforce; Postgres does). Keep topic names < 255.
-  4. Ken's review walk → flip guard → seed to prod → verify `lookup/NC_D400/export/` = 200 → commit.
+**► IMMEDIATE NEXT — GA-700 + PTET (August state track, form 4).** The active work is the August RS state
+campaign: **SC1040 ✅ · AL Form 40 ✅ · NC D-400 ✅** done → **GA-700 + PTET next**, plus the 1120-S
+delta audit (Known-issues has its scope). **Follow the established state-spec pattern** (see
+`load_sc1040.py` + `load_al_form40.py` + `load_nc_d400.py` + `load_ga500_form_500.py`, and the
+`sc1040_source_brief.md` / `al_form40_source_brief.md` / `nc_d400_source_brief.md` briefs):
+  1. Dispatch a research subagent → verify TY2025 structure/rate/deductions VERBATIM against the GA DOR
+     final 2025 PDFs (Authoritative-Source Rule — never training memory).
+  2. Write the source brief → walk ~4 scope decisions with Ken (AskUserQuestion).
+  3. Author the loader with `READY_TO_SEED=False` (safety guard); validate on a throwaway SQLite DB
+     (monkeypatch the guard — see `scratchpad/validate_nc.py` as a reusable harness; it ALSO enforces the
+     CharField caps SQLite ignores). **Watch the Postgres varchar limits** — `topic_name` ≤ 255;
+     **`rule_id`/`diagnostic_id`/`assertion_id`/`line_number` ≤ 20** (`D_NCD400_179_PHASEOUT`=21 was
+     caught pre-seed by the harness and shortened to `D_NCD400_179LIMIT`). SQLite doesn't enforce; Postgres does.
+  4. Ken's review walk → flip guard → seed to prod → verify export = 200 → commit.
   **Use explicit-path git commits, never `git add -A`** — a parallel session shares this working tree
-  (memory `rs-shared-worktree-explicit-commits`). Prod is at **91 TaxForms / 431 FAs / 7 approved**.
+  (memory `rs-shared-worktree-explicit-commits`). Prod is at **92 TaxForms / 435 FAs / 7 approved**.
 
 **► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
@@ -212,6 +213,22 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **NC D-400 AUTHORED + SEEDED + EXPORTED (August state track, form 3).** 4th state
+  individual spec. Research verified vs the FINAL 2025 NCDOR PDFs (Form D-400 + Schedule S rev "Web-Fill
+  9-25"; D-401 booklet 2025; §105-153.5/.6/.7). NC starts from **federal AGI** (like GA-500; contrast SC's
+  federal-taxable-income start, AL's from-scratch build) at a **flat 4.25%** rate. Scope walk (4
+  AskUserQuestion, all maximal/recommended — DECISIONS **D-7**): resident + **Schedule PN** proration
+  (L13→L14); **COMPUTE the 85% depreciation add-back** — 85% of federal bonus (Sch S Part A L3) + 85% of
+  the §179 excess over NC's **$25k/$200k** limits (L4), direct-entry the 20% prior-year (2020-24) recovery
+  installments (the §179 $200k investment phaseout is a diagnostic, not silently computed); **structured
+  Part B subtractions** (L18 US-obligation / L19 SS-RR / L20 Bailey / L21 military); direct-entry D-400TC/
+  use-tax/contributions, RED-defer Schedule PN-1 / amended lines / L26e underpayment / L39 NC NOL. Also
+  computed: the child-deduction AGI-banded table ($3,000→$0), std-ded election (MFS $0 if spouse
+  itemizes), NC itemized (Sch A $20k combined cap). Conformity frozen Jan 1 2023 (OBBBA not adopted).
+  Validated on throwaway SQLite via `scratchpad/validate_nc.py` (**which caught `D_NCD400_179_PHASEOUT`=21
+  > the 20-char `diagnostic_id` cap** pre-seed — shortened to `D_NCD400_179LIMIT`; SQLite doesn't enforce,
+  Postgres does). Ken approved the W1-W6 walk in-session ("Approve — flip, seed, export"). Seeded → **92
+  TaxForms / 435 FlowAssertions**; `lookup/NC_D400/export/` = 200. `nc_d400_source_brief.md`. Next: GA-700 + PTET.
 - 2026-07-04: **AL Form 40 AUTHORED + SEEDED + EXPORTED (August state track, form 2).** 3rd state
   individual spec. Research verified vs the FINAL 2025 AL DOR PDFs (Form 40, booklet incl. the p.31 FIT
   worksheet + p.8 std-ded chart, §40-18-5/§40-18-15). AL builds gross income from scratch (no federal-AGI
