@@ -113,7 +113,11 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     CRT qualification (5–50% payout / 10% remainder / 5% exhaustion) = diagnostic (funding-time, no §7520/
     mortality compute); §664(c)(2) **100% UBTI excise** COMPUTED (year-keyed post-2006) + Form 4720 route +
     Part VIII §4941/4943/4944/4945 screening diagnostics. One consolidated `5227` form.
-  - **DRAFTING leg:** author `load_5227.py` `READY_TO_SEED=False` → SQLite-validate → Ken review walk → seed → export.
+  - **✅ DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Approve — flip, seed, export"; W1-W4 blessed).
+    `load_5227.py`: 23 facts / 8 rules / 12 lines / 11 diag / 6 tests / 4 FA; all rules cited (5 sources);
+    SQLite-validated `scratchpad/validate_5227.py` 20/0. Seeded → **100 TaxForms / 475 FlowAssertions / 867 FormRules**;
+    `lookup/5227/export/` = 200. **Status: ✅ DONE (RS).** tts app build = [APP] lane. The 1041 family (S-11 + WO-10)
+    is now fully authored on the RS side. Carried [UNVERIFIED] clauses noted in the loader for re-pull if a deeper compute leg is scoped.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
