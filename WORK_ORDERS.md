@@ -66,7 +66,19 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
-- **In flight — none awaiting a Gate-1 decision.** Next SPINE authoring rock: **S-11 1041 (WO-09, Sept greenfield)**.
+- **▶ ACTIVE — [WO-09] S-11 · 1041 module · greenfield RS-first · status `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05).**
+  Gap-check run against live prod (96 forms) — **all five authoring surfaces are 404 GAPs**; the module is fully
+  greenfield (no `load_1041_*` loaders; the only on-disk `1041` refs are the boundary-diag Sch I note + the *receiving*
+  side in `load_1040_schedule_k1.py` where a 1040 imports a trust K-1). Required set from BUILD_ORDER S-11:
+  - **Spine** (`1041`) — entity types / 2025 §1(e) rate schedule / §642(b) exemptions → **GAP**
+  - **DNI / IDD / Schedule B** (`1041` or `1041_SCHB`) — §643(a) DNI, §651/§661 distribution deduction, tier/separate-share → **GAP**
+  - **Schedule G** (`1041_SCHG`) — tax computation, cap-gain rates, §1411 NIIT on trusts/estates → **GAP**
+  - **K-1 (Form 1041)** (`SCHEDULE_K1_1041`) — beneficiary distributive shares + character pass-through → **GAP**
+  - **GA Form 501** (`GA501`) — Georgia fiduciary income tax return → **GAP**
+  - **Schedule I (AMT)** — **RED-defer diagnostic only** (D-2, ruled 2026-07-04; do NOT author the compute).
+  - **Next:** research-verify TY2025 authorities VERBATIM vs FINAL IRS/GA sources (2025 Form 1041 + i1041; Sch B/Sch G/
+    K-1(1041) + instr; Rev. Proc. 2024-40 inflation figures; §643/§651/§661/§663(b)/§642(b)/§1(e)/§1411; GA DOR Form 501
+    + instr) → `f1041_source_brief.md` → Gate-1 scope walk (AskUserQuestion). **Research pass running.**
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
