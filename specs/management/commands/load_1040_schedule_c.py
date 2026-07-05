@@ -21,7 +21,8 @@ Creates FOUR TaxForms (one idempotent command, the load_1040_eic.py precedent):
     17-line face: per-business QBI (Sch C net profit reduced by attributable
     1/2-SE-tax / SEHI / SE-retirement) x 20%, the REIT/PTP component x 20%, the
     taxable-income-x-20% limitation -> Form 1040 line 13a. Below-threshold only;
-    above threshold -> RED "use Form 8995-A".
+    above threshold -> Form 8995-A (BUILT 2026-07-04, now computed; D_8995_001
+    retired-dormant — was the pre-8995-A RED-defer).
   - 8959 (Additional Medicare Tax) — Ken-expanded scope (Decision 4). Part I
     (Medicare wages over the filing-status threshold x 0.9%), Part II (SE income
     over the threshold REDUCED BY Medicare wages x 0.9%) -> Schedule 2 line 11;
@@ -1306,10 +1307,11 @@ F8995_RULES: list[dict] = [
                      "matching the TaxWise per-line convention (SPRINT_SCOPE quality rule 1). Form 8995-A remains "
                      "cents-chained (its own future convention ruling).")},
     {"rule_id": "R-8995-SCOPE", "title": "Scope gate — taxable income at/below threshold (else Form 8995-A)", "rule_type": "routing", "precedence": 0, "sort_order": 1,
-     "formula": "If qbi_taxable_income_before_qbi (line 11) > QBI_THRESHOLDS[year][status] -> D_8995_001 RED (use Form 8995-A); 8995 not used.",
+     "formula": "If qbi_taxable_income_before_qbi (line 11) > QBI_THRESHOLDS[year][status] -> route to Form 8995-A (BUILT; simplified 8995 not used). D_8995_001 retired-dormant (was the pre-8995-A RED).",
      "inputs": ["qbi_taxable_income_before_qbi", "qbi_threshold", "qbi_filing_status"], "outputs": [],
      "description": ("RETURN LEVEL. Simplified Form 8995 is valid only at/below the threshold; above it, Form 8995-A "
-                     "applies the W-2/UBIA and SSTB limitations (RED-defer). WALK ITEM 1: per-status 2026 table.")},
+                     "(BUILT 2026-07-04) applies the W-2/UBIA and SSTB limitations and is COMPUTED (was RED-deferred). "
+                     "WALK ITEM 1: per-status 2026 table.")},
     {"rule_id": "R-8995-QBI", "title": "Line 1 — per-business QBI (Sch C net profit reduced by 1/2-SE/SEHI/retirement)", "rule_type": "calculation", "precedence": 1, "sort_order": 2,
      "formula": ("Per business: QBI = Schedule C line 31 - attributable (Sch 1 L15 1/2-SE-tax + Sch 1 L17 SEHI + "
                  "Sch 1 L16 SE-retirement). Multi-business: allocate the three reductions pro-rata by net SE "
@@ -1372,12 +1374,15 @@ F8995_LINES: list[dict] = [
 ]
 
 F8995_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_8995_001", "title": "Taxable income above the §199A threshold — use Form 8995-A", "severity": "error",
+    {"diagnostic_id": "D_8995_001", "title": "Taxable income above the §199A threshold — routes to Form 8995-A (built)", "severity": "info",
      "condition": "qbi_taxable_income_before_qbi > QBI_THRESHOLDS[year][status]",
-     "message": ("Not supported — prepare manually: your taxable income before the QBI deduction exceeds the "
-                 "§199A threshold (${threshold}), so the simplified Form 8995 cannot be used. Form 8995-A "
-                 "(W-2 wages / UBIA limits, SSTB phase-out) is required and is not built this sprint."),
-     "notes": "Year-keyed threshold. WALK ITEM 1 (2026 MFS $25 split). RED-defer Form 8995-A."},
+     "message": ("RETIRED 2026-07-04 — Form 8995-A landed and now computes every above-threshold (and patron) "
+                 "return. Above the §199A threshold (${threshold}) the simplified Form 8995 still cannot be used, "
+                 "but the return is routed to the COMPUTED Form 8995-A (W-2 wages / UBIA limits, SSTB phase-out) — "
+                 "no longer a RED 'prepare manually' stop."),
+     "notes": ("RETIRED-DORMANT (was severity=error 'not built this sprint'). Mirrors tts rules_8995a.py: the "
+               "narrowed D_8995_001 (rules_schedule_c) is retired-dormant — 8995-A computes every above-threshold "
+               "and patron return. Year-keyed threshold; WALK ITEM 1 (2026 MFS $25 split).")},
     # D_8995_002 RETIRED at the Topic 9 (Schedule D) authoring leg (2026-06-13):
     # line 12 now carries the full net capital gain (L3a + the Schedule D
     # min(15,16) component) — the partial-L12 warning has nothing to warn about.
@@ -1424,10 +1429,11 @@ F8995_SCENARIOS: list[dict] = [
                 "qbi_taxable_income_before_qbi": 120000, "qbi_net_capital_gain": 0},
      "expected_outputs": {"line_8": 8000, "line_9": 1600, "line_10": 1600, "line_15": 1600},
      "notes": "REIT/PTP component L9=8,000 x 20%=1,600; income limit not binding -> L15=1,600 -> 1040 L13a."},
-    {"scenario_name": "8995-T5 — above threshold -> Form 8995-A RED (D_8995_001)", "scenario_type": "normal", "sort_order": 5,
+    {"scenario_name": "8995-T5 — above threshold -> routes to Form 8995-A (computed)", "scenario_type": "normal", "sort_order": 5,
      "inputs": {"tax_year": 2025, "filing_status": "single", "qbi_business_qbi": 100000, "qbi_taxable_income_before_qbi": 250000},
-     "expected_outputs": {"D_8995_001": True, "form_8995_used": False},
-     "notes": "Taxable income 250,000 > 197,300 (2025 other) -> Form 8995-A required; simplified 8995 not used (RED-defer)."},
+     "expected_outputs": {"form_8995_used": False, "D_8995_001": False},
+     "notes": ("Taxable income 250,000 > 197,300 (2025 other) -> simplified 8995 not used; routed to the COMPUTED "
+               "Form 8995-A. D_8995_001 retired-dormant (8995-A built 2026-07-04) so it no longer fires.")},
     {"scenario_name": "8995-T6 — net capital gain reduces the income limitation", "scenario_type": "normal", "sort_order": 6,
      "inputs": {"tax_year": 2025, "filing_status": "single", "qbi_business_qbi": 50000,
                 "qbi_taxable_income_before_qbi": 60000, "qbi_net_capital_gain": 20000},
@@ -1778,7 +1784,7 @@ FLOW_ASSERTIONS: list[dict] = [
      "sort_order": 9},
     {"assertion_id": "FA-1040-8995-03", "assertion_type": "table_invariant", "entity_types": ["1040"],
      "title": "8995-vs-8995A threshold is year-keyed; 20% rate is statutory",
-     "description": ("Pins QBI_THRESHOLDS both years (above -> Form 8995-A RED) and the statutory 20% rate. "
+     "description": ("Pins QBI_THRESHOLDS both years (above -> Form 8995-A, now COMPUTED) and the statutory 20% rate. "
                      "Bug it catches: a stale threshold, or year-keying the 20% rate. WALK ITEM 1: 2026 MFS $25 > other."),
      "definition": {"kind": "constants_check", "form": "8995",
                     "constants": {"2025": QBI_THRESHOLDS[2025], "2026": QBI_THRESHOLDS[2026],
