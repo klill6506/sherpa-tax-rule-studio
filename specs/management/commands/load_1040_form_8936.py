@@ -449,6 +449,18 @@ F8936_RULES: list[dict] = [
      "formula": "line 21 = line 19 (Σ Sch A Part V) + line 20 (pass-through) -> Form 3800 Part III line 1aa.",
      "inputs": ["f8936_commercial_l19", "f8936_commercial_passthrough_l20"], "outputs": ["21"],
      "description": "PER RETURN. §45W commercial credit is a general business credit -> Form 3800 (carryforward applies there)."},
+    {"rule_id": "R-8936-TRANSFER", "title": "Transferred credit STOP — a qualifying transferred credit never re-lands on Schedule 3", "rule_type": "routing", "precedence": 6, "sort_order": 6,
+     "formula": ("If f8936sa_transferred_to_dealer AND the vehicle QUALIFIES (not OBBBA-terminated per R-8936SA-OBBBA, "
+                 "not MAGI-denied per R-8936-MAGI, not resold/ineligible): the transferred amount was received at "
+                 "point of sale and STOPS on Schedule A (new lines 8c/8d, used lines 13b/13c) — it does NOT re-land "
+                 "on Schedule 3 line 6f (new) or 6m (used). ONLY a DENIED transfer repays: Schedule 2 line 1b (new "
+                 "§30D) / line 1c (used §25E). The qualifying-and-transferred state contributes NOTHING further to "
+                 "the return's credit."),
+     "inputs": ["f8936sa_transferred_to_dealer", "f8936sa_transferred_amount"], "outputs": [],
+     "description": ("FACE-VERIFIED off f8936 Schedule A lines 8c/8d (new) + 13b/13c (used): a dealer-transferred "
+                     "credit is already received as a POS price reduction, so on the qualifying branch it never "
+                     "re-lands on Schedule 3 — the complement of R-8936-MAGI's denied-transfer repayment (Sch 2 "
+                     "1b/1c). Was implicit in the transfer facts; made an explicit STOP rule 2026-07-04 to match tts.")},
 ]
 
 F8936_LINES: list[dict] = [
@@ -547,6 +559,8 @@ F8936_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8936-USED", "IRS_2025_8936_FORM", "primary", "Line 18 -> Schedule 3 line 6m (smaller of 14 or 17)"),
     ("R-8936-USED", "IRC_30D_25E_45W", "secondary", "§25E used credit lesser of $4,000 / 30% of price"),
     ("R-8936-COMM", "IRS_2025_8936_FORM", "primary", "Line 21 -> Form 3800 Part III line 1aa"),
+    ("R-8936-TRANSFER", "IRS_2025_8936_FORM", "primary", "Sch A transfer lines 8c/8d (new) + 13b/13c (used); a qualifying transfer received at POS never re-lands on Sch 3"),
+    ("R-8936-TRANSFER", "IRS_2025_8936_INSTR", "secondary", "transfer-election repayment applies only on denial -> Sch 2 line 1b/1c"),
 ]
 
 
@@ -683,12 +697,14 @@ F8936SA_DIAGNOSTICS: list[dict] = [
                  "after that date. A vehicle is 'acquired' when a written binding contract is entered into AND a "
                  "payment (including a nominal down payment or trade-in) is made. No credit for this vehicle."),
      "notes": "THE OBBBA GATE (VERIFIED verbatim). Per-vehicle, highest precedence. TY2026: credit gone entirely."},
-    {"diagnostic_id": "D_8936_004", "title": "Missing VIN or placed-in-service date on a claimed vehicle", "severity": "error",
-     "condition": "f8936sa_vin is blank OR f8936sa_placed_in_service_date is blank (with a claimed credit)",
-     "message": ("A clean vehicle credit is claimed but the VIN (line 2) and/or the placed-in-service date (line "
-                 "3) is missing. The VIN and placed-in-service date are required to substantiate the credit and "
-                 "are validated against the IRS seller-report database. Enter both."),
-     "notes": "Substantiation guard (MeF rejects a missing VIN)."},
+    {"diagnostic_id": "D_8936_004", "title": "Missing VIN, or placed-in-service date missing / not in the tax year", "severity": "error",
+     "condition": "f8936sa_vin is blank OR f8936sa_placed_in_service_date is blank OR f8936sa_placed_in_service_date.year != tax_year (with a claimed credit)",
+     "message": ("A clean vehicle credit is claimed but the VIN (line 2) is missing, or the placed-in-service date "
+                 "(line 3) is missing or falls outside this return's tax year. The VIN and placed-in-service date "
+                 "are required to substantiate the credit (validated against the IRS seller-report database), and "
+                 "the §30D/§25E credit is claimed for the YEAR the vehicle is placed in service — a prior/other-year "
+                 "placed-in-service date belongs on that year's return. Enter a valid VIN and an in-year PIS date."),
+     "notes": "Substantiation + claim-year guard (MeF rejects a missing VIN; the credit is a PIS-year credit). Extended 2026-07-04 to the wrong-year case — mirrors tts rules_8936.py d_8936_004 (blank VIN/PIS OR PIS not inside the return year)."},
     {"diagnostic_id": "D_8936_006", "title": "Used vehicle sales price over $25,000 — doesn't qualify", "severity": "error",
      "condition": "f8936sa_vehicle_type == 'used' AND f8936sa_sales_price > 25000",
      "message": ("This previously-owned clean vehicle has a sales price over $25,000 (line 13e). The §25E used "
@@ -701,6 +717,14 @@ F8936SA_DIAGNOSTICS: list[dict] = [
                  "components eligibility under §30D(b). The $3,750/$3,750/$7,500 tiers are statutory (§30D(b)) and "
                  "are NOT printed on Form 8936 — do not assume $7,500 for a given vehicle."),
      "notes": "WALK ITEM A. Tentative credit = seller report; §30D(b) tiers not on the form."},
+    {"diagnostic_id": "D_8936_008", "title": "Transferred credit already received at point of sale — does not re-land on Schedule 3", "severity": "info",
+     "condition": "f8936sa_transferred_to_dealer is True AND the vehicle qualifies (not OBBBA-terminated, not MAGI-denied, not resold/ineligible)",
+     "message": ("This clean vehicle credit was TRANSFERRED to the dealer at the point of sale (line 4a), so the "
+                 "buyer already received it as a price reduction. On a QUALIFYING vehicle the transferred amount "
+                 "STOPS on Schedule A (lines 8c/8d new, 13b/13c used) and does NOT re-land on Schedule 3 (line 6f "
+                 "new / 6m used) — there is nothing further to claim. Only a DENIED transfer (MAGI over the cap for "
+                 "both years) is repaid on Schedule 2 (line 1b new / 1c used)."),
+     "notes": "Companion to R-8936-TRANSFER. The 'nothing lands' state on a qualifying transfer, surfaced not silent."},
 ]
 
 F8936SA_SCENARIOS: list[dict] = [
@@ -824,6 +848,16 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "8936",
                     "invariant": "personal_unused_not_carried", "expect": {"carryforward": False}},
      "sort_order": 5},
+    {"assertion_id": "FA-1040-8936-06", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Form 8936 transferred credit STOP — a qualifying transfer never re-lands on Schedule 3",
+     "description": ("Validates R-8936-TRANSFER. A dealer-transferred credit (Sch A line 4a) on a QUALIFYING vehicle "
+                     "was received at point of sale and stops on Schedule A (8c/8d new, 13b/13c used) — it must NOT "
+                     "re-land on Schedule 3 line 6f/6m. Only a DENIED transfer repays via Schedule 2 line 1b/1c "
+                     "(FA-1040-8936-04). Bug it catches: a transferred-and-qualifying credit double-counted by also "
+                     "flowing to Schedule 3 (RS-canonical home for the tts transfer-STOP assertion)."),
+     "definition": {"kind": "gating_check", "form": "8936",
+                    "invariant": "qualifying_transfer_does_not_reland_sch3", "expect": {"relands_sch3": False}},
+     "sort_order": 6},
 ]
 
 
