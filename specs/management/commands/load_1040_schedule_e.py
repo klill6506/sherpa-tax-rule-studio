@@ -286,6 +286,134 @@ AUTHORITY_SOURCES: list[dict] = [
                 "summary_text": "§469(i): $25,000 offset reduced 50% of AGI over $100,000; MFS-apart $12,500/$50,000; MFS-together $0; §469(g) disposition releases the suspended loss.",
                 "is_key_excerpt": True,
             },
+            {
+                "excerpt_label": "§469(k) — publicly traded partnerships (separate application)",
+                "location_reference": "26 U.S.C. §469(k)(1),(3)",
+                "excerpt_text": (
+                    "§469(k)(1): This section shall be applied separately with respect to items attributable to "
+                    "each publicly traded partnership. §469(k)(2): a partnership is publicly traded if interests "
+                    "are traded on an established securities market or are readily tradable on a secondary market "
+                    "(or the substantial equivalent thereof). §469(k)(3): a taxpayer is not treated as having "
+                    "disposed of his entire interest in an activity of a PTP until he disposes of his entire "
+                    "interest in such partnership."
+                ),
+                "summary_text": "§469(k): §469 applied SEPARATELY to each PTP — a PTP passive loss offsets only that same PTP's passive income; suspended losses freed only on full disposition of the entire PTP interest.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§469(c)(7) — real estate professional (the two tests)",
+                "location_reference": "26 U.S.C. §469(c)(7)(A),(B),(C)",
+                "excerpt_text": (
+                    "§469(c)(7)(B): a taxpayer qualifies if (i) more than one-half of the personal services "
+                    "performed in trades or businesses during the taxable year are performed in real property "
+                    "trades or businesses in which the taxpayer materially participates, and (ii) such taxpayer "
+                    "performs more than 750 hours of services during the taxable year in real property trades or "
+                    "businesses in which the taxpayer materially participates. In the case of a joint return, the "
+                    "requirements are satisfied only if either spouse separately satisfies them. §469(c)(7)(C): "
+                    "'real property trade or business' means any real property development, redevelopment, "
+                    "construction, reconstruction, acquisition, conversion, rental, operation, management, "
+                    "leasing, or brokerage trade or business."
+                ),
+                "summary_text": "§469(c)(7): REP = (i) >½ personal services in real-property trades/businesses + (ii) >750 hours, BOTH met by one spouse alone (no combining). Qualifying removes the per-se-passive rule for rental RE; each rental still needs material participation unless the §1.469-9(g) election aggregates them.",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
+        "source_code": "TREAS_REG_469",
+        "source_type": "regulation",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "Treas. Reg. §1.469 — self-rental recharacterization, RE-professional grouping, at-risk ordering",
+        "citation": "26 CFR §1.469-2(f)(6) (self-rental); §1.469-9(e),(g) (RE-pro per-activity + aggregation election); §1.469-2T(d)(6) (at-risk before passive)",
+        "issuer": "U.S. Treasury / IRS",
+        "official_url": "https://www.law.cornell.edu/cfr/text/26/1.469-2",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "is_filing_authority": False,
+        "trust_score": 10.00,
+        "requires_human_review": False,
+        "notes": "The Treasury regs behind S-6 PAL deepening: (f)(6) self-rental net-income recharacterization; 1.469-9 the real-estate-professional per-activity material-participation rule + the (g) single-activity aggregation election; 1.469-2T(d)(6) the §465-before-§469 ordering.",
+        "topics": ["passive_activity_loss"],
+        "excerpts": [
+            {
+                "excerpt_label": "§1.469-2(f)(6) — property rented to a nonpassive activity (self-rental)",
+                "location_reference": "26 CFR §1.469-2(f)(6)",
+                "excerpt_text": (
+                    "An amount of the taxpayer's gross rental activity income for the taxable year from an item of "
+                    "property equal to the net rental activity income for the year from that item of property is "
+                    "treated as not from a passive activity if the property (i) is rented for use in a trade or "
+                    "business activity in which the taxpayer materially participates for the taxable year, and (ii) "
+                    "is not described in §1.469-2T(f)(5)."
+                ),
+                "summary_text": "Self-rental: net rental INCOME (item-by-item) from property rented to a business the taxpayer materially participates in is recharacterized NON-passive. Net income only — a net loss stays passive (the asymmetry).",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§1.469-9(e),(g) — RE-professional per-activity + aggregation election",
+                "location_reference": "26 CFR §1.469-9(e)(1),(g)",
+                "excerpt_text": (
+                    "§1.469-9(e)(1): a qualifying taxpayer's interests in rental real estate are each treated as a "
+                    "separate rental real estate activity, unless the taxpayer makes the election under paragraph "
+                    "(g) to treat all interests in rental real estate as a single rental real estate activity. "
+                    "§1.469-9(g): a qualifying taxpayer may make an election to treat all of the taxpayer's "
+                    "interests in rental real estate as one activity; material participation is then tested against "
+                    "the combined activity."
+                ),
+                "summary_text": "Qualifying as a REP removes rental RE's per-se-passive status, but each rental is tested for material participation separately UNLESS the §1.469-9(g) election aggregates all rental RE into one activity.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "§1.469-2T(d)(6) — passive loss determined after §465 at-risk",
+                "location_reference": "26 CFR §1.469-2T(d)(6)",
+                "excerpt_text": (
+                    "The passive activity deductions for a taxable year are determined after the application of the "
+                    "at-risk rules of section 465 (and the basis limitations). A deduction disallowed under section "
+                    "465 is not a passive activity deduction for the year and is carried over under section 465."
+                ),
+                "summary_text": "Ordering: §465 (at-risk) → §469 (passive) → §461(l) (EBL). A §465-limited loss never reaches Form 8582 that year.",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
+    {
+        "source_code": "IRC_465",
+        "source_type": "statute",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "entity_type_code": "1040",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "IRC §465 — Deductions Limited to Amount at Risk",
+        "citation": "26 U.S.C. §465(b)(1),(2),(6) (amounts at risk; personal liability; qualified nonrecourse financing)",
+        "issuer": "U.S. Congress",
+        "official_url": "https://www.law.cornell.edu/uscode/text/26/465",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "is_filing_authority": False,
+        "trust_score": 10.00,
+        "requires_human_review": False,
+        "notes": "The at-risk limitation (Form 6198) applied BEFORE §469 (Reg 1.469-2T(d)(6)) and before §461(l). S-6 R4 = diagnostic-only (route to 6198); the compute lives in the 6198 spec / tts.",
+        "topics": ["passive_activity_loss"],
+        "excerpts": [
+            {
+                "excerpt_label": "§465(b) — amounts considered at risk",
+                "location_reference": "26 U.S.C. §465(b)(1),(2),(6)",
+                "excerpt_text": (
+                    "§465(b)(1): a taxpayer is at risk for the amount of money and the adjusted basis of other "
+                    "property contributed to the activity, plus amounts borrowed with respect to the activity (as "
+                    "limited by (b)(2)). §465(b)(2): borrowed amounts count to the extent the taxpayer is personally "
+                    "liable for repayment, or has pledged property (other than property used in the activity) as "
+                    "security, to the net FMV of the interest. §465(b)(6): in the case of an activity of holding "
+                    "real property, the taxpayer is at risk for the taxpayer's share of qualified nonrecourse "
+                    "financing secured by real property used in the activity."
+                ),
+                "summary_text": "At risk = cash + adjusted basis of contributed property + personally-liable borrowings + qualified nonrecourse financing (real property). Applies before §469.",
+                "is_key_excerpt": True,
+            },
         ],
     },
 ]
@@ -297,6 +425,11 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRS_2025_F8582_INSTR", "FORM_8582", "governs"),
     ("IRC_469", "FORM_8582", "governs"),
     ("IRC_469", "SCHEDULE_E", "informs"),
+    # S-6 PAL deepening (2026-07-05)
+    ("TREAS_REG_469", "FORM_8582", "governs"),
+    ("TREAS_REG_469", "SCHEDULE_E", "informs"),
+    ("IRC_465", "FORM_8582", "informs"),
+    ("IRC_465", "6198", "governs"),
 ]
 
 
@@ -339,6 +472,13 @@ SCHE_FACTS: list[dict] = [
      "data_type": "decimal", "sort_order": 14, "notes": "OUTPUT. The 8582-allowed portion of the active-participation rental loss."},
     {"fact_key": "sche_net", "label": "Line 26 — total rental/royalty income or (loss) → Schedule 1 line 5",
      "data_type": "decimal", "sort_order": 15, "notes": "OUTPUT. Σ positive line-21 income + royalties + allowed line-22 losses → Schedule 1 line 5."},
+    # ── S-6 R1 self-rental recharacterization (§1.469-2(f)(6)) ──
+    {"fact_key": "sche_selfrental_matl_part_tenant", "label": "Self-rental — materially participate in the TENANT trade/business?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 16,
+     "notes": "INPUT (per type-7 property). §1.469-2(f)(6) gate: material participation in the activity the property is rented TO. Drives R-SCHE-SELFRENTAL."},
+    {"fact_key": "sche_selfrental_recharacterized_income", "label": "Self-rental net income recharacterized NON-passive",
+     "data_type": "decimal", "sort_order": 17,
+     "notes": "OUTPUT. For each type-7 (Self-Rental) property with NET INCOME and tenant material participation: that net income is non-passive (excluded from Form 8582 passive income). Net LOSS stays passive."},
 ]
 
 SCHE_RULES: list[dict] = [
@@ -370,6 +510,18 @@ SCHE_RULES: list[dict] = [
      "formula": "sche_net (line 26) → Schedule 1 (Form 1040) line 5 → 1040 line 8.",
      "inputs": ["sche_net"], "outputs": [],
      "description": "Schedule 1 line 5 is already a direct-entry feeder in tts-tax-app; Schedule E supplies the computed value (YELLOW)."},
+    {"rule_id": "R-SCHE-SELFRENTAL", "title": "Self-rental net income → non-passive (§1.469-2(f)(6))", "rule_type": "calculation",
+     "precedence": 5, "sort_order": 5,
+     "formula": ("For EACH Self-Rental (type-7) property, ITEM BY ITEM: if the property has NET INCOME (line 21 > 0) "
+                 "AND the taxpayer materially participates in the TENANT trade/business "
+                 "(sche_selfrental_matl_part_tenant), an amount of gross rental income equal to that net income is "
+                 "recharacterized as NON-passive (§1.469-2(f)(6)) → sche_selfrental_recharacterized_income. That "
+                 "amount is EXCLUDED from Form 8582 passive income (it may NOT absorb passive losses). A net LOSS "
+                 "on a self-rental stays PASSIVE (routes to 8582 like any rental). Applies only where not already "
+                 "caught by §1.469-2T(f)(5)."),
+     "inputs": ["sche_income_before_limit", "sche_selfrental_matl_part_tenant"],
+     "outputs": ["sche_selfrental_recharacterized_income"],
+     "description": "S-6 R1. The 'heads-the-IRS-wins' asymmetry — net income non-passive, net loss passive. Item-by-item, not netted across the activity."},
 ]
 
 SCHE_LINES: list[dict] = [
@@ -430,6 +582,13 @@ SCHE_DIAGNOSTICS: list[dict] = [
      "condition": "sche_net != 0",
      "message": ("The Schedule E Part I total (line 26) flows to Schedule 1 line 5 and into 1040 line 8."),
      "notes": "The flow confirmation."},
+    {"diagnostic_id": "D_SCHE_SELFRENTAL", "title": "Self-rental net income recharacterized as non-passive", "severity": "info",
+     "condition": "a type-7 (Self-Rental) property has line 21 > 0 AND sche_selfrental_matl_part_tenant is True",
+     "message": ("A self-rental property with net income is rented to a business you materially participate in. "
+                 "Under §1.469-2(f)(6) that net income is NON-passive — it cannot be offset by passive losses on "
+                 "Form 8582. (A self-rental net LOSS remains passive.) Confirm material participation in the "
+                 "tenant activity; the recharacterization is applied item-by-item."),
+     "notes": "S-6 R1. §1.469-2(f)(6). The compute lives in R-SCHE-SELFRENTAL; this surfaces it to the preparer."},
 ]
 
 SCHE_SCENARIOS: list[dict] = [
@@ -453,6 +612,21 @@ SCHE_SCENARIOS: list[dict] = [
                 "active_participation": False, "magi": 70000},
      "expected_outputs": {"sche_income_before_limit": 4200, "sche_net": 4200},
      "notes": "royalties 5,000 − 800 = 4,200 (not passive-limited) → line 26 = 4,200 → Schedule 1 line 5."},
+    {"scenario_name": "SCHE-T5 — self-rental net income recharacterized non-passive", "scenario_type": "edge_case", "sort_order": 5,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "property_type": 7, "rents": 36000, "expenses": 21000,
+                "selfrental_matl_part_tenant": True, "magi": 140000},
+     "expected_outputs": {"sche_income_before_limit": 15000, "sche_selfrental_recharacterized_income": 15000,
+                          "sche_net": 15000, "D_SCHE_SELFRENTAL": True},
+     "notes": ("Type-7 self-rental: 36,000 − 21,000 = 15,000 net income; materially participates in the tenant "
+               "business → §1.469-2(f)(6) recharacterizes the 15,000 as NON-passive (excluded from 8582 passive "
+               "income, cannot absorb passive losses). Still reported on line 26 → Schedule 1 line 5.")},
+    {"scenario_name": "SCHE-G1 — self-rental net LOSS stays passive", "scenario_type": "diagnostic", "sort_order": 6,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "property_type": 7, "rents": 12000, "expenses": 20000,
+                "selfrental_matl_part_tenant": True, "magi": 140000},
+     "expected_outputs": {"sche_income_before_limit": -8000, "sche_selfrental_recharacterized_income": 0},
+     "notes": ("Self-rental NET LOSS (12,000 − 20,000 = −8,000): the (f)(6) recharacterization does NOT apply to "
+               "losses → the 8,000 loss stays PASSIVE and routes to Form 8582 like any rental. No recharacterized "
+               "income; D_SCHE_SELFRENTAL does not fire (income branch only).")},
 ]
 
 SCHE_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -461,6 +635,8 @@ SCHE_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-SCHE-PASSIVE-ROUTE", "IRS_2025_SCHE_INSTR", "secondary", "Line 22 hook to Form 8582"),
     ("R-SCHE-8582-LIMIT", "IRS_2025_F8582_INSTR", "primary", "Line 22 = the 8582-allowed loss"),
     ("R-SCHE-TO-SCH1", "IRS_2025_SCHE_INSTR", "primary", "Line 26 → Schedule 1 line 5"),
+    ("R-SCHE-SELFRENTAL", "TREAS_REG_469", "primary", "§1.469-2(f)(6) self-rental net income → non-passive"),
+    ("R-SCHE-SELFRENTAL", "IRC_469", "secondary", "§469 passive character; the recharacterization rule"),
 ]
 
 
@@ -488,7 +664,13 @@ F8582_IDENTITY = {
         "line 3 loss - line 9), and each activity's allowed loss (Part VIII = its loss - its "
         "unallowed) flows back to its own schedule; the per-activity unallowed is THAT "
         "activity's carryforward. Part IX (a single activity's losses on 2+ forms / 28%-rate "
-        "/ section 1231 separate transaction) is RED-deferred (D_8582_MULTIFORM)."
+        "/ section 1231 separate transaction) is RED-deferred (D_8582_MULTIFORM). "
+        "AMENDED 2026-07-05 (S-6 PAL deepening, WO-03): R1 self-rental §1.469-2(f)(6) "
+        "net-income recharacterization (on Schedule E); R2 PTP §469(k) per-PTP "
+        "segregation off-8582; R3 real estate professional UPGRADED from RED-defer to a "
+        "checkbox + §1.469-9(g) aggregation-election flag (two tests preparer-asserted, "
+        "sanity-checked, not auto-computed); R4 §465 at-risk diagnostic (ordering "
+        "§465→§469→§461(l), routes to Form 6198). §461(l) EBL = the separate Form 461 spec."
     ),
 }
 
@@ -531,6 +713,24 @@ F8582_FACTS: list[dict] = [
      "data_type": "boolean", "default_value": "false", "sort_order": 22, "notes": "§469(g) — releases the prior-year suspended loss in full."},
     {"fact_key": "f8582_mfs_lived_apart", "label": "MFS — lived apart from spouse ALL year?",
      "data_type": "boolean", "default_value": "false", "sort_order": 23, "notes": "MFS-apart → $12,500 / $75k phaseout. (MFS not-apart → $0.)"},
+    # ── S-6 R3 real estate professional (checkbox + §1.469-9(g) election) ──
+    {"fact_key": "f8582_rep_agg_election", "label": "REP — §1.469-9(g) election to treat all rental RE as ONE activity?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 24,
+     "notes": "S-6 R3. §1.469-9(g). When elected, material participation is tested against the COMBINED rental RE activity; otherwise each rental is tested separately. Only relevant when f8582_real_estate_professional is True."},
+    {"fact_key": "f8582_rep_hours", "label": "REP — hours of services in real property trades/businesses",
+     "data_type": "decimal", "default_value": "0", "sort_order": 25,
+     "notes": "S-6 R3. OPTIONAL input for the D_8582_REP_TESTS sanity check (>750 hours, §469(c)(7)(B)(ii))."},
+    {"fact_key": "f8582_rep_services_majority", "label": "REP — more than ½ of personal services in real property trades/businesses?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 26,
+     "notes": "S-6 R3. OPTIONAL input for the D_8582_REP_TESTS sanity check (>½ personal services, §469(c)(7)(B)(i)). Per-spouse — not combined."},
+    # ── S-6 R2 publicly traded partnership (§469(k)) ──
+    {"fact_key": "f8582_ptp_present", "label": "Publicly traded partnership (PTP) passive item present?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 27,
+     "notes": "S-6 R2. §469(k). PTP passive items are NOT reported on this Form 8582 — computed separately per PTP. Drives R-8582-PTP + D_8582_PTP."},
+    # ── S-6 R4 at-risk (§465) diagnostic ──
+    {"fact_key": "f8582_at_risk_limited", "label": "A loss may be limited by the §465 at-risk rules (Form 6198)?",
+     "data_type": "boolean", "default_value": "false", "sort_order": 28,
+     "notes": "S-6 R4. §465 applies BEFORE §469 (Reg 1.469-2T(d)(6)). If set, compute Form 6198 first; only the at-risk-allowed loss reaches Form 8582. Drives D_8582_ATRISK."},
 ]
 
 F8582_RULES: list[dict] = [
@@ -571,13 +771,19 @@ F8582_RULES: list[dict] = [
                  "the activity's prior-year suspended loss is released in full (no 8582 limitation on it)."),
      "inputs": ["f8582_complete_disposition"], "outputs": [],
      "description": "§469(g). The spec's release rule — simple, kept in v1."},
-    {"rule_id": "R-8582-RE-PRO", "title": "Real estate professional → non-passive (RED-deferred)", "rule_type": "routing",
+    {"rule_id": "R-8582-RE-PRO", "title": "Real estate professional → non-passive (checkbox + §1.469-9(g) election)", "rule_type": "routing",
      "precedence": 6, "sort_order": 6,
-     "formula": ("If f8582_real_estate_professional: the 750-hour + >half-personal-services test (§469(c)(7)) "
-                 "reclassifies materially-participated rentals as NON-passive (bypassing 8582). v1 does NOT "
-                 "support this → D_8582_RE_PRO (RED, prepare manually)."),
-     "inputs": ["f8582_real_estate_professional"], "outputs": [],
-     "description": "Decision 3. RED-defer."},
+     "formula": ("If f8582_real_estate_professional (preparer-asserted checkbox): the §469(c)(7) two-test "
+                 "qualification removes the per-se-passive rule (§469(c)(2)) for rental real estate — "
+                 "materially-participated rentals are NON-passive and bypass the Form 8582 limitation. Each rental "
+                 "interest is tested for material participation SEPARATELY unless f8582_rep_agg_election "
+                 "(§1.469-9(g)) is made, which tests material participation against the COMBINED rental RE "
+                 "activity. v1 does NOT auto-compute the two tests (>750 hours AND >½ personal services, per "
+                 "spouse alone) — the preparer asserts qualification; D_8582_REP_TESTS sanity-checks if hours/"
+                 "services are entered; D_8582_REP_MATLPART reminds that each un-aggregated rental still needs "
+                 "material participation."),
+     "inputs": ["f8582_real_estate_professional", "f8582_rep_agg_election"], "outputs": [],
+     "description": "S-6 R3 (supersedes the 2026-06-13 RED-defer). Checkbox + §1.469-9(g) aggregation-election flag; the two tests are preparer-asserted, sanity-checked, not auto-computed."},
     # ── Per-activity amendment 2026-06-23 (Parts IV-VIII; Part IX RED) ──
     {"rule_id": "R-8582-WS-NET", "title": "Parts IV/V — per-activity netting into Part I", "rule_type": "calculation",
      "precedence": 7, "sort_order": 7,
@@ -634,6 +840,26 @@ F8582_RULES: list[dict] = [
                  "IV-VIII handle single-form activities."),
      "inputs": [], "outputs": [],
      "description": "Part IX RED-defer (Ken 2026-06-23). No new silent gap; the 1231/28% triggers defer upstream."},
+    # ── S-6 R2 PTP segregation (§469(k)) + R4 at-risk ordering (§465) ──
+    {"rule_id": "R-8582-PTP", "title": "PTP passive items segregated off Form 8582 (§469(k))", "rule_type": "routing",
+     "precedence": 13, "sort_order": 13,
+     "formula": ("If f8582_ptp_present: §469 is applied SEPARATELY to each publicly traded partnership (§469(k)(1)). "
+                 "PTP passive items are NOT entered on this Form 8582 (excluded from Parts I/IV/V). For each PTP: a "
+                 "net passive LOSS offsets ONLY that same PTP's net passive income; any excess is suspended and "
+                 "carried forward against THAT PTP's future income; PTP net income above the loss is treated as "
+                 "portfolio-like (included in MAGI). Suspended PTP losses are freed only on a fully taxable "
+                 "disposition of the ENTIRE interest in that PTP (§469(k)(3)/§469(g)). Tracked PER PTP, off-8582."),
+     "inputs": ["f8582_ptp_present"], "outputs": [],
+     "description": "S-6 R2. §469(k) — PTPs computed separately, per-PTP, and never mixed into the 8582 aggregate."},
+    {"rule_id": "R-8582-ATRISK-ORDER", "title": "§465 at-risk applies BEFORE §469 (route to Form 6198)", "rule_type": "routing",
+     "precedence": 14, "sort_order": 14,
+     "formula": ("Ordering (Reg §1.469-2T(d)(6)): §465 at-risk → §469 passive → §461(l) EBL. If f8582_at_risk_limited, "
+                 "the loss is limited on Form 6198 FIRST; only the at-risk-allowed portion becomes a passive "
+                 "deduction that reaches Form 8582. A §465-disallowed loss is suspended under §465 (not §469) and "
+                 "carried forward. v1 = diagnostic-only (D_8582_ATRISK); the at-risk COMPUTE lives in the Form 6198 "
+                 "spec / tts."),
+     "inputs": ["f8582_at_risk_limited"], "outputs": [],
+     "description": "S-6 R4. The at-risk-before-passive ordering; diagnostic-only, routes to 6198."},
 ]
 
 F8582_LINES: list[dict] = [
@@ -664,13 +890,40 @@ F8582_LINES: list[dict] = [
 ]
 
 F8582_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_8582_RE_PRO", "title": "Real estate professional — non-passive not supported", "severity": "error",
+    {"diagnostic_id": "D_8582_RE_PRO", "title": "Real estate professional asserted — rentals treated non-passive", "severity": "info",
      "condition": "f8582_real_estate_professional is True",
-     "message": ("Not supported — prepare manually: real estate professional status (§469(c)(7)) reclassifies "
-                 "materially-participated rentals as non-passive, bypassing the Form 8582 limitation. This "
-                 "software does not compute the 750-hour / material-participation determination. Figure the "
-                 "passive/non-passive split manually."),
-     "notes": "Decision 3. RED-defer."},
+     "message": ("Real estate professional status (§469(c)(7)) is asserted: materially-participated rental real "
+                 "estate is treated as NON-passive and bypasses the Form 8582 limitation. The two qualification "
+                 "tests (>750 hours AND >½ personal services in real property trades/businesses, met by one spouse "
+                 "alone) are preparer-asserted, not auto-computed — confirm they are met."),
+     "notes": "S-6 R3 (supersedes the RED-defer). Checkbox-asserted; sanity check via D_8582_REP_TESTS."},
+    {"diagnostic_id": "D_8582_REP_TESTS", "title": "REP claimed but a qualification test may fail", "severity": "warning",
+     "condition": "f8582_real_estate_professional is True AND (0 < f8582_rep_hours <= 750 OR f8582_rep_services_majority is False)",
+     "message": ("You claimed real estate professional status, but the entered figures do not meet a §469(c)(7)(B) "
+                 "test: services must exceed 750 hours AND more than one-half of ALL personal services must be in "
+                 "real property trades/businesses (each met by one spouse alone — hours may not be combined). "
+                 "Re-verify qualification or clear the REP checkbox."),
+     "notes": "S-6 R3. Sanity check only when the optional hours/services inputs are provided."},
+    {"diagnostic_id": "D_8582_REP_MATLPART", "title": "REP — each rental still needs material participation", "severity": "info",
+     "condition": "f8582_real_estate_professional is True AND f8582_rep_agg_election is False",
+     "message": ("You qualified as a real estate professional but did NOT make the §1.469-9(g) election to treat "
+                 "all rental real estate as one activity. Each rental interest must separately meet a material "
+                 "participation test to be non-passive; rentals you do not materially participate in remain "
+                 "passive. Consider the aggregation election if appropriate."),
+     "notes": "S-6 R3. §1.469-9(e)/(g)."},
+    {"diagnostic_id": "D_8582_PTP", "title": "PTP passive items computed separately (off Form 8582)", "severity": "info",
+     "condition": "f8582_ptp_present is True",
+     "message": ("Publicly traded partnership (PTP) passive items are NOT reported on Form 8582 (§469(k)). A PTP "
+                 "passive loss offsets only net passive income from that SAME PTP; the excess is suspended and "
+                 "carried forward against that PTP's future income, and is freed only on a fully taxable "
+                 "disposition of your entire interest in that PTP. Compute each PTP separately."),
+     "notes": "S-6 R2. §469(k)."},
+    {"diagnostic_id": "D_8582_ATRISK", "title": "At-risk (§465) applies before the passive limitation", "severity": "warning",
+     "condition": "f8582_at_risk_limited is True",
+     "message": ("A loss may be limited by the §465 at-risk rules. At-risk applies BEFORE the passive activity "
+                 "limitation (Reg §1.469-2T(d)(6)): figure Form 6198 first, and enter only the at-risk-allowed "
+                 "loss on Form 8582. A loss disallowed by §465 is carried over under §465, not §469."),
+     "notes": "S-6 R4. Diagnostic-only; the at-risk compute lives in Form 6198."},
     {"diagnostic_id": "D_8582_MFS_TOGETHER", "title": "MFS lived with spouse — no special allowance", "severity": "warning",
      "condition": "filing_status == 'mfs' AND not f8582_mfs_lived_apart",
      "message": ("Married filing separately and you did not live apart from your spouse all year: the $25,000 "
@@ -776,15 +1029,16 @@ F8582_SCENARIOS: list[dict] = [
                "10k-5k=5,000 (5,000 susp). +5,000 income reported in full. Sum allowed losses=25,000=line 11.")},
     {"scenario_name": "8582-PA3 — other-passive only (no special allowance), gain offsets", "scenario_type": "edge_case", "sort_order": 10,
      "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 200000,
-                "activities": [{"name": "PTP loss", "bucket": "V", "loss": 12000},
+                "activities": [{"name": "LP loss (non-PTP)", "bucket": "V", "loss": 12000},
                                {"name": "K-1 gain", "bucket": "V", "income": 4000}]},
      "expected_outputs": {"f8582_special_allowance": 0, "f8582_line_c": 8000,
                           "f8582_total_allowed": 4000, "f8582_suspended": 8000,
-                          "per_activity": [{"name": "PTP loss", "allowed": 4000, "suspended": 8000}]},
+                          "per_activity": [{"name": "LP loss (non-PTP)", "allowed": 4000, "suspended": 8000}]},
      "notes": ("No active rental -> line1d=0; line2d=4,000-12,000=(8,000); line3=(8,000). line1d>=0 -> skip Part "
                "II, line9=0. line C=8,000. Part VII pool [12,000] -> unallowed 8,000. Part VIII allowed 12k-8k="
                "4,000 (8,000 susp); +4,000 income full. Sum allowed=4,000=line 11 (=line9 0 + line10 income "
-               "4,000); the special allowance never applies to non-active-participation passive losses.")},
+               "4,000); the special allowance never applies to non-active-participation passive losses. NOTE: a "
+               "non-PTP passive interest (PTPs are segregated off-8582 per R-8582-PTP / 8582-PTP1).")},
     {"scenario_name": "8582-PG1 — passive losses on 2+ forms -> Part IX RED", "scenario_type": "diagnostic", "sort_order": 11,
      "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 100000,
                 "activities": [{"name": "K-1 mixed", "bucket": "V", "loss": 15000, "losses_on_multiple_forms": True}]},
@@ -792,6 +1046,31 @@ F8582_SCENARIOS: list[dict] = [
      "notes": ("A single activity reporting losses on 2+ forms/schedules (e.g. Sch E operating loss + a 4797 "
                "loss) requires Part IX -> RED-deferred (D_8582_MULTIFORM), prepare manually. The 1231/28% K-1 "
                "triggers are already RED-deferred upstream in the K-1 router.")},
+    # ── S-6 PAL deepening scenarios (2026-07-05) ──
+    {"scenario_name": "8582-REP1 — real estate professional asserted, no aggregation election", "scenario_type": "diagnostic", "sort_order": 12,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "real_estate_professional": True,
+                "rep_hours": 1600, "rep_services_majority": True, "rep_agg_election": False},
+     "expected_outputs": {"D_8582_RE_PRO": True, "D_8582_REP_MATLPART": True},
+     "notes": ("REP asserted (1,600 hrs > 750 AND >½ services): materially-participated rentals treated "
+               "non-passive (D_8582_RE_PRO info). No §1.469-9(g) election → D_8582_REP_MATLPART reminds each "
+               "rental still needs material participation. D_8582_REP_TESTS does NOT fire (both tests met).")},
+    {"scenario_name": "8582-REP2 — REP claimed but 750-hour test fails", "scenario_type": "diagnostic", "sort_order": 13,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "real_estate_professional": True,
+                "rep_hours": 600, "rep_services_majority": True, "rep_agg_election": True},
+     "expected_outputs": {"D_8582_REP_TESTS": True},
+     "notes": ("REP claimed but only 600 hours entered (<= 750) → D_8582_REP_TESTS warns the §469(c)(7)(B)(ii) "
+               "test is not met. Aggregation elected, so D_8582_REP_MATLPART does not fire.")},
+    {"scenario_name": "8582-PTP1 — PTP passive item segregated off 8582", "scenario_type": "diagnostic", "sort_order": 14,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 150000, "ptp_present": True},
+     "expected_outputs": {"D_8582_PTP": True},
+     "notes": ("A PTP passive item is present → D_8582_PTP: §469(k) computes each PTP separately, off Form 8582. "
+               "PTP loss offsets only same-PTP income; freed on full disposition. Not entered in Parts I/IV/V.")},
+    {"scenario_name": "8582-AR1 — at-risk may limit before passive", "scenario_type": "diagnostic", "sort_order": 15,
+     "inputs": {"tax_year": 2025, "filing_status": "mfj", "magi": 120000, "at_risk_limited": True,
+                "rental_loss": 20000, "active_participation": True},
+     "expected_outputs": {"D_8582_ATRISK": True},
+     "notes": ("A loss flagged as possibly at-risk-limited → D_8582_ATRISK: figure Form 6198 FIRST (§465 before "
+               "§469, Reg 1.469-2T(d)(6)); only the at-risk-allowed loss reaches Form 8582.")},
 ]
 
 F8582_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -816,6 +1095,11 @@ F8582_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8582-CARRYFWD", "IRS_2025_F8582_INSTR", "secondary", "per-activity prior-year unallowed (col c)"),
     ("R-8582-MULTIFORM", "IRS_2025_F8582_INSTR", "primary", "Part IX losses on 2+ forms"),
     ("R-8582-MULTIFORM", "IRC_469", "secondary", "469 per-activity loss character"),
+    # ── S-6 PAL deepening (2026-07-05) ──
+    ("R-8582-RE-PRO", "TREAS_REG_469", "secondary", "§1.469-9(e)/(g) per-activity material participation + aggregation election"),
+    ("R-8582-PTP", "IRC_469", "primary", "§469(k) separate application to each PTP; disposition rule"),
+    ("R-8582-ATRISK-ORDER", "IRC_465", "primary", "§465(b) amounts at risk"),
+    ("R-8582-ATRISK-ORDER", "TREAS_REG_469", "secondary", "§1.469-2T(d)(6) at-risk before passive"),
 ]
 
 
@@ -880,6 +1164,19 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"red_fires": True},
                     "blockers": ["losses_on_multiple_forms"]},
      "sort_order": 9},
+    # ── S-6 PAL deepening (2026-07-05) ──
+    {"assertion_id": "FA-1040-SCHE-03", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Self-rental net income recharacterized non-passive (§1.469-2(f)(6))",
+     "description": "Validates R-SCHE-SELFRENTAL. Bug it catches: self-rental net income leaking into Form 8582 passive income (where it could wrongly absorb passive losses), or a self-rental net LOSS being wrongly recharacterized (losses stay passive).",
+     "definition": {"kind": "formula_check", "form": "SCHEDULE_E",
+                    "formula": "type7 & line_21>0 & matl_part_tenant => recharacterized_income == line_21 (excluded from 8582 passive income); type7 & line_21<0 => recharacterized_income == 0 (loss stays passive)"},
+     "sort_order": 10},
+    {"assertion_id": "FA-1040-8582-08", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "PTP segregated off-8582 (§469(k)); at-risk routes to 6198 before passive",
+     "description": "Validates R-8582-PTP / R-8582-ATRISK-ORDER. Bug it catches: a PTP item entered in the 8582 aggregate (Parts I/IV/V) instead of computed per-PTP; or a §465-limited loss reaching 8582 without the 6198 pass first.",
+     "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"red_fires": False, "info_fires": True},
+                    "blockers": ["ptp_present", "at_risk_limited"]},
+     "sort_order": 11},
 ]
 
 

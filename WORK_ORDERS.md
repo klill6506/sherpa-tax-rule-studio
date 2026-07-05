@@ -66,12 +66,26 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
-- **In flight / awaiting a Gate-1 decision:** none.
-- **Next SPINE authoring rock:** after reconciliation, **S-4 (1065 core) RS authoring is DONE**
-  (Schedule K / K-1 / M-1·M-2 / L·B all seeded+exported = 200; 8825/4562/3800 confirmed cover
-  1065). The genuinely-open next authoring items on the SPINE are **S-5 Boundary diagnostics
-  (WO-04)** and **S-6 PAL/basis deepening (WO-03 — do BEFORE the regression bed locks)** —
-  awaiting Ken's pick. S-11 (1041, WO-09) is the greenfield Sept rock.
+- **In flight — none awaiting a Gate-1 decision.** (S-6 authored + seeded + exported 2026-07-05 — see AUTHORED
+  ledger below.) Next SPINE authoring rocks: **S-5 Boundary diagnostics (WO-04)**, **S-11 1041 (WO-09, Sept)**.
+- **✅ S-6 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
+  Scope (Ken-approved, all recommended): R1 self-rental + R2 PTP = COMPUTE; R3 REP = checkbox + §1.469-9(g)
+  election flag; R4 at-risk = diagnostic-only (route to 6198); R5 §461(l) = diagnostic, thresholds $313k/$626k.
+  Authored: R1-R4 amend `load_1040_schedule_e.py` (FORM_8582/SCHEDULE_E home loader; REP RED-defer→checkbox);
+  R5 = new `load_1040_form_461.py` (form `461`). SQLite-validated (`scratchpad/validate_pal.py`, ALL PASS) →
+  **seeded to prod (95 TaxForms / 454 FlowAssertions)** → `lookup/{FORM_8582,SCHEDULE_E,461}/export/` all **200**.
+  `pal_basis_source_brief.md`. Carried caveats: Form 461 face line-numbering mapped to the §461(l)(3) mechanic
+  (i461 `requires_human_review`); disallowed-EBL→NOL year-keyed (re-verify each season). **Next: tts app dispatch.**
+  Required set / gap-check (recorded at open):
+  - R1 self-rental recharacterization → **amend `FORM_8582`** (home `load_1040_schedule_e.py`, v1 bucket) — exists.
+  - R2 PTP per-entity segregation → **amend `FORM_8582`** — exists.
+  - R3 REP (real estate professional) tests/checkbox → **amend `FORM_8582` / `SCHEDULE_E`** — exists.
+  - R4 at-risk diagnostic → **`6198`** (exists; integrated by 4835) — amendment/diagnostic.
+  - R5 §461(l) excess-business-loss diagnostic → **NEW = the one real GAP**; 2025 thresholds need source-pinning (indexed, OBBBA-permanent).
+  - **Next:** research-verify authorities (§469 self-rental Reg. 1.469-2(f)(6); §469(k) PTP; §469(c)(7)
+    REP; §465 at-risk; §461(l) 2025 thresholds) → source brief → Gate-1 scope walk → author
+    `READY_TO_SEED=False` → validate on SQLite → seed → export.
+- **Other open SPINE authoring rocks:** S-5 Boundary diagnostics (WO-04); S-11 1041 (WO-09, Sept greenfield).
 
 ## Status reconciliation (against live STATUS.md + on-disk loaders, 2026-07-05)
 - **[WO-01]** 1040 ATS S3/S4 gaps — **✅ DONE (RS)** · 4835 + 8835 + 8936 (+8936_SCHA) all

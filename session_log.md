@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — S-6 PAL/basis deepening AUTHORED + SEEDED + EXPORTED (WO-03) — first full front-door loop
+*Ken opened S-6 through the new front door ("finish the new procedure implementation" → picked S-6 PAL/basis).
+The whole WORK_ORDERS pipeline ran once, end-to-end, as designed. No prod risk until the review-walk approval.*
+- **Front-door loop (all transitions logged in WORK_ORDERS.md):** GAP-CHECKED (R1-R4 = amendments to the
+  existing FORM_8582/SCHEDULE_E; R5 §461(l) = the one real gap) → research-verify (background agent, verbatim
+  vs primary sources) → `pal_basis_source_brief.md` → Gate-1 scope walk (4 AskUserQuestion) → author →
+  SQLite-validate → Ken review walk → flip + seed + export.
+- **Authorities verified (research pass, NOT memory):** R1 self-rental Treas. Reg. §1.469-2(f)(6); R2 PTP IRC
+  §469(k); R3 REP §469(c)(7) + Treas. Reg. §1.469-9; R4 at-risk §465 + Reg. §1.469-2T(d)(6) ordering; R5
+  §461(l) + Rev. Proc. 2024-40 + i461 (2025). 2025 EBL thresholds **$313,000 / $626,000** (Rev. Proc. 2024-40,
+  confirmed verbatim by i461). OBBBA made §461(l) permanent; disallowed EBL → NOL carryover (the "retest"
+  alternative was NON-enacted — flagged year-keyed).
+- **Scope (Ken, all recommended):** R1+R2 COMPUTE (self-rental net-income recharacterization item-by-item, loss
+  stays passive; PTP segregated off-8582, per-PTP, freed on full disposition); R3 REP **upgraded the 2026-06-13
+  RED-defer → checkbox + §1.469-9(g) election flag** (D_8582_RE_PRO error→info; the two tests preparer-asserted
+  + sanity-checked via D_8582_REP_TESTS; D_8582_REP_MATLPART reminds each un-aggregated rental needs material
+  participation); R4 at-risk = diagnostic-only (D_8582_ATRISK, ordering §465→§469→§461(l), route to 6198); R5
+  = new Form `461` diagnostic (computes EBL + flags; pinned thresholds; NOL described-not-built).
+- **Authored:** R1-R4 amend the HOME loader `load_1040_schedule_e.py` (reconstructable — replays in seed_all
+  phase 2); R5 = new `load_1040_form_461.py` (auto-discovered by seed_all). New authorities: TREAS_REG_469,
+  IRC_465, IRC_461, IRS_2025_F461_INSTR, REV_PROC_2024_40; §469(k)/§469(c)(7) excerpts added to IRC_469.
+- **Validated** on throwaway SQLite (`scratchpad/validate_pal.py`): 3 forms seeded, all new rules/diags present,
+  D_8582_RE_PRO upgraded, ALL rules cited, CharField caps introspected-and-clean, EBL math spot-checked. ALL PASS.
+- **Ken review walk (W1-W5) → "Approve — flip, seed, export."** Flipped Form 461 `READY_TO_SEED`, seeded both
+  loaders to prod (94→**95 TaxForms / 454 FlowAssertions / 825 FormRules**), verified `lookup/{FORM_8582,
+  SCHEDULE_E,461}/export/` all **200** (in-process test client, read-only). BUILD_ORDER S-6 ticked [RS]✅→[APP]⬜
+  (tts-tax-status), NEXT authoring advanced to S-5. Explicit-path commits (shared worktree).
+- **Two caveats carried to the tts build (flagged, not guessed):** (1) Form 461 FACE line-numbering was mapped
+  to the §461(l)(3) mechanic (BIZ-INC/BIZ-DED/THRESH/EBL/NOL), NOT the printed 2025 Part I-III positions —
+  i461 `requires_human_review`; confirm before the app build. (2) disallowed-EBL→NOL is year-keyed.
+
 ## 2026-07-05 — WORK_ORDERS front-door adopted + BUILD_ORDER-driven; caught a cross-session stale "author Schedule K" loop
 *Ken + chat were setting up "a more automated orderly process" (the WORK_ORDERS front door) and, across three
 prompts, kept instructing "author 1065 core, Schedule K first." A parallel tts/app session was editing the
