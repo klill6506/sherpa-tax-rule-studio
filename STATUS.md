@@ -13,7 +13,9 @@ last_updated: 2026-07-04
 ## Current state
 
 Active spec-authoring tool. RS Supabase holds **88 TaxForms / 420 FlowAssertions** (was 89; the empty
-`1065` stub was removed in the 2026-07-04 reconstructability cleanup — see Known issues). **The 1065-core
+`1065` stub was removed in the 2026-07-04 reconstructability cleanup — see Known issues). **Spec approval
+workflow live (2026-07-04):** 7 approved (the 1065-core batch) / 81 draft, recorded in
+`specs/approved_specs.py` + applied by `approve_specs` (reconstructable via `seed_all` phase 5). **The 1065-core
 campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
 multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
@@ -192,6 +194,14 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **draft→approved workflow begun — source-controlled approval + first batch (1065-core 7).**
+  July checklist item. `TaxForm.status` already existed; all 88 forms were `draft`. Built a
+  **reconstructable** approval mechanism (DECISIONS D-5): `specs/approved_specs.py` manifest +
+  `approve_specs` command + `seed_all` phase 5 — approval is source-controlled, NOT a DB edit (a DB-only
+  flip would vanish on rebuild, the anti-pattern the recon check just cleaned up). Ken approved the
+  1065-core 7 (1065_PAGE1, SCH_K_1065, SCHEDULE_K1_1065, 1065_M1/M2, 1065_L/B) → prod **7 approved / 81
+  draft**; held 1065_SE (requires_human_review) + in-flight S3/S4. Verified a fresh `seed_all` restores
+  the 7 approvals. Committed `00e6432` + `4a5508b` (explicit-path, clear of the parallel S3/S4 session).
 - 2026-07-04: **RS DB reconstructability check DONE + `seed_all` orchestrator built.** July checklist
   item. Built a throwaway SQLite DB, ran every loader via a new `seed_all` command, diffed vs production
   Supabase (form set + per-form rule_ids + entity-model counts). **Verdict: prod does NOT cleanly rebuild.**

@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — draft→approved workflow: source-controlled approval + first batch (1065-core 7)
+*Ken: "the next item, but there's a parallel session so let's not step on it." Next July item =
+"begin draft→approved workflow." Stayed clear of the parallel S3/S4 loader work (8835/8936/4835);
+used explicit-path commits, not `git add -A` (the 8835-sweep lesson).*
+- **State found:** `TaxForm.status` (draft/review/approved/archived) already exists + surfaces in
+  serializers/views/export/admin; loaders leave the default → **all 88 forms `draft`** (never exercised).
+  No model/migration change (zero collision risk).
+- **Design (DECISIONS D-5):** approval is **source-controlled**, reproducible — NOT a DB edit (that
+  vanishes on `seed_all` rebuild = the "lives only in Supabase" anti-pattern the recon check cleaned up).
+  Built `specs/approved_specs.py` (`APPROVED_FORMS` manifest) + `approve_specs` command (draft/review→
+  approved; reports drift both ways) + wired as **`seed_all` phase 5**. (commit `00e6432`)
+- **First batch (Ken: "1065-core batch (7)"):** approved 1065_PAGE1, SCH_K_1065, SCHEDULE_K1_1065,
+  1065_M1, 1065_M2, 1065_L, 1065_B → prod now **7 approved / 81 draft**. Held 1065_SE (case-law
+  requires_human_review) + the in-flight S3/S4 forms. **Verified reconstructable:** a fresh `seed_all`
+  restores exactly those 7 approvals via phase 5. (commit `4a5508b`)
+
 ## 2026-07-04 — Form 8835 loader homes for the J2/J3/J4 RED-defers + 2 FAs (the S4 arc; the tts session)
 - `load_1040_form_8835.py` AMENDED (amend-by-lookup, `update_or_create` — the fa-needs-rs-loader-home
   rule; the 8936 R-8936-TRANSFER precedent). Added the four scope-walk RED-defer diagnostics that the
