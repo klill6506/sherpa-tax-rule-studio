@@ -188,3 +188,9 @@ Schedule ATP additional taxes + penalties (L19/L31); NOL (Form NOL-85A, L17 alt)
 RED-deferred, or add Form 40NR; (B) the L12 FIT deduction — full worksheet + PY apportionment (the
 quirk); (C) the sliding-scale std deduction + dependent exemption — compute the AGI-keyed tables;
 (D) Schedule OC credits + Schedule ATP — direct-entry / RED-defer. Plus bless the §10 verify flags.
+
+**DONE 2026-07-04:** scope walk (all 4 recommended — A Form 40 full+part-year, B compute the FIT
+worksheet + PY apportionment, C compute the sliding scales, D direct-entry OC / RED-defer ATP);
+authored `load_al_form40.py`; review walk W1-W5 blessed ("seed now"); **seeded + exported** — prod 91
+TaxForms, `lookup/AL_FORM_40/export/` = 200. Commits 1fe6955 + 807af4f. Next August state form: **NC
+D-400**.

@@ -12,11 +12,12 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **90 TaxForms / 427 FlowAssertions** (was 88; +SC1040 +
-SC_SCHEDULE_NR seeded 2026-07-04 — the 1065 stub was earlier removed in the reconstructability cleanup).
-**Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core batch) / 83 draft, recorded in
-`specs/approved_specs.py` + applied by `approve_specs` (reconstructable via `seed_all` phase 5).
-**August state track started:** SC1040 + Schedule NR authored/seeded/exported (form 1 of the state set). **The 1065-core
+Active spec-authoring tool. RS Supabase holds **91 TaxForms / 431 FlowAssertions** (was 88; +SC1040 +
+SC_SCHEDULE_NR + AL_FORM_40 seeded 2026-07-04 — the 1065 stub was earlier removed in the
+reconstructability cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+batch) / 84 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
+via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅ and AL Form 40 ✅ authored/
+seeded/exported (forms 1-2 of the state set; next: NC D-400). **The 1065-core
 campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
 multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
@@ -195,6 +196,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **AL Form 40 AUTHORED + SEEDED + EXPORTED (August state track, form 2).** 3rd state
+  individual spec. Research verified vs the FINAL 2025 AL DOR PDFs (Form 40, booklet incl. the p.31 FIT
+  worksheet + p.8 std-ded chart, §40-18-5/§40-18-15). AL builds gross income from scratch (no federal-AGI
+  start). Scope walk (4 AskUserQuestion, all recommended): Form 40 full+part-year (40NR RED-defer);
+  **computed federal-income-tax deduction** (L12 = (1040 L22 + NIIT) − refundable credits, floored 0,
+  PY-apportioned — the AL quirk / "longest walk"); computed sliding-scale std deduction (formula, sidesteps
+  the OCR-suspect cell) + dependent exemption; 2/4/5% rate; §414(j)/SS/govt-pension exclusions; direct-entry
+  Schedule OC, RED-defer ATP/40NR/NOL. Ken approved the W1-W5 walk ("seed now"). Seeded → **91 TaxForms**;
+  `lookup/AL_FORM_40/export/` = 200. `al_form40_source_brief.md`. Commits 1fe6955 + 807af4f. Next: NC D-400.
 - 2026-07-04: **SC1040 + Schedule NR AUTHORED + SEEDED + EXPORTED (August state track, form 1).** 2nd
   state individual spec (GA-500 pattern). Two research passes verified everything against the FINAL 2025
   SC DOR PDFs (SC1040 Rev. 4/21/25; SC1040TT Rev. 6/17/25; Sch NR; Act 63/S.507 conformity). MAXIMAL v1

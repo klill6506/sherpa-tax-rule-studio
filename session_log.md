@@ -4,6 +4,26 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — AL Form 40 AUTHORED + SEEDED + EXPORTED (August state track, form 2)
+*Ken: "kick off AL Form 40." 3rd state individual spec (GA-500/SC1040 precedents). The checklist
+flagged AL's federal-income-tax-deduction quirk as "the longest walk." Clear of the parallel session.*
+- **Research (subagent, verbatim from the FINAL 2025 AL DOR PDFs — Form 40 25f40blk, booklet 25f40bk
+  incl. the p.31 FIT worksheet + p.8 std-ded chart, §40-18-5/§40-18-15):** AL builds gross income FROM
+  SCRATCH (no federal-AGI start; wages from AL Sch W-2). THE QUIRK = federal income tax deduction (L12)
+  = (1040 L22 + NIIT 8960 L17) − refundable credits (EIC/ACTC/AOC/refundable adoption/2439), floored 0,
+  apportioned AL-AGI/federal-AGI for part-year. 2/4/5% rate; sliding-scale std deduction + dependent
+  exemption ($1000/$500/$300); §414(j)/SS/govt-pension fully excluded (no age-65 exclusion).
+- **Source brief** `al_form40_source_brief.md` + **scope walk** (4 AskUserQuestion, all recommended):
+  A Form 40 (full + part-year) only, 40NR RED-defer; B COMPUTE the full FIT worksheet + PY apportionment;
+  C compute the AGI-keyed sliding scales; D direct-entry Schedule OC, RED-defer ATP/40NR/NOL.
+- **Authored `load_al_form40.py`** (SC1040/GA-500 pattern). **Review walk (W1-W5):** all handleable
+  (no blocking figure) — W1 std-ded encoded as a FORMULA (sidesteps the OCR-suspect MFJ cell, verified
+  at several AGI points); W2 rate via §40-18-5 + tax-table-confirmed; W3 FIT worksheet basis (§40-18-15
+  cited); W4 federal handoff; W5 OC caps / 40NR deferred. Ken: "seed + export now" → flipped guard.
+- **SEEDED + EXPORTED:** prod **90 → 91 TaxForms** (+AL_FORM_40, draft); `lookup/AL_FORM_40/export/` =
+  **HTTP 200** (verified live). 22 facts / 9 rules / 20 lines / 6 diag / 5 tests / 4 flow assertions;
+  4 cited AL DOR sources. Commits 1fe6955 (author) + 807af4f (seed/export). Next state form: NC D-400.
+
 ## 2026-07-04 — SC1040 + Schedule NR AUTHORED + SEEDED + EXPORTED (August state track, form 1)
 *Ken: "august." First August RS state item ("SC1040 — CC drafts, Ken walks — GA-500 pattern").
 2nd state individual spec (GA-500 is the precedent). Clear of the parallel S3/S4 federal work.*
