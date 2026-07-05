@@ -16,6 +16,45 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-04 — D-7: NC D-400 v1 scope is MAXIMAL — resident + Schedule PN, the 85% bonus/§179 add-back is COMPUTED, Schedule S subtractions modeled structured
+
+**Decision:** The NC D-400 (North Carolina individual, TY2025) v1 spec — the 4th state individual spec
+after GA Form 500, SC1040, AL Form 40 — is scoped MAXIMAL per Ken's 2026-07-04 walk (4 AskUserQuestion
+decisions, all recommended): (A) compute the full-year **resident** D-400 AND **Schedule PN** (part-year/
+nonresident taxable-percentage proration → D-400 line 13 → line 14 = line 12b × the PN decimal); (B)
+**COMPUTE** the current-year depreciation add-back — 85% of federal bonus depreciation (Schedule S Part A
+line 3) + 85% of the IRC §179 excess over NC's **$25,000/$200,000** limits (Part A line 4) — and
+**direct-entry** the 20% prior-year (2020-2024) recovery installments (Part B lines 23a-e/24a-e), which
+need historical records the spec cannot reach; (C) **model L18 (US-obligation interest) / L19 (SS/RR) /
+L20 (Bailey Settlement) / L21 (military retirement) as structured** Schedule S Part B line items with
+eligibility diagnostics, not a single collapsed total; (D) **direct-entry** D-400TC credits (L16) +
+consumer use tax (L18) + contributions (L30-32), and **RED-defer** Schedule PN-1, amended-return lines
+(L22/L24, Schedule AM), the L26e estimated-tax underpayment interest (Form D-422), and the NC NOL (L39).
+Structure/constants verified against the FINAL 2025 NCDOR PDFs (Form D-400 & Schedule S rev "Web-Fill
+9-25"; D-401 booklet 2025) — see [nc_d400_source_brief.md]; **flat rate 4.25% (0.0425)**, standard
+deduction $12,750/$25,500/$19,125, child-deduction AGI-banded table ($3,000→$0), conformity frozen at
+**Jan 1, 2023 (OBBBA not adopted)**.
+
+**Context:** August RS state track ("NC D-400 next" after SC1040 + AL Form 40). NC starts from FEDERAL
+AGI (like GA-500; contrast SC's federal-taxable-income start and AL's from-scratch build) and is a FLAT
+rate — the return's complexity is in the Schedule S conformity add-backs and the child-deduction table.
+Ken is a depreciation CPA, hence (B) computes the add-back rather than deferring it — consistent with
+SC1040 D-6's choice to compute the §168(k) add-back and diverging from GA-500 W1's direct-entry.
+
+**Divergence from precedent (called out):** GA-500 v1 took depreciation decoupling as preparer
+direct-entry (GA-500 W1). NC D-400 (B), like SC1040 (B), **computes** the current-year add-back. Unlike
+SC (a single §168(k) bonus add-back), NC needs BOTH the 85% bonus add-back AND the 85% §179-excess
+add-back (federal §179 − NC §179 at $25k/$200k), plus recognition that the 20% recovery installments are
+a separate, historical-record-dependent direct-entry surface.
+
+**What would change our mind:** if the add-back compute turns out to need asset-level data the spec
+can't reach cleanly (the §179-excess needs both the federal and NC §179 figures), (B) may fall back to
+direct-entry for v1 with the compute deferred to the depreciation-engine integration — a Ken call at the
+reconcile leg. If NC issues a mid-season conformity update (the booklet warns to check), the 85%/limits/
+rate constants are stale until re-verified.
+
+---
+
 ## 2026-07-04 — D-6: SC1040 v1 scope is MAXIMAL — full resident + Schedule NR, and the §168(k) depreciation add-back is COMPUTED
 
 **Decision:** The SC1040 (South Carolina individual, TY2025) v1 spec — the 2nd state individual
