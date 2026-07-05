@@ -109,8 +109,14 @@ from specs.models import (
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1-W5 above).
+#
+# FLIPPED 2026-07-04 — Ken APPROVED the review walk in-session ("seed + export
+# now"): W1 std-deduction sliding-scale formula (verified at several AGI points),
+# W2 the §40-18-5 rate (tax-table-confirmed), W3 the FIT worksheet basis, W4 the
+# federal handoff line numbers, W5 the OC caps / 40NR defer — all blessed as
+# in-spec re-verify flags. Validated on a throwaway DB.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "AL"
