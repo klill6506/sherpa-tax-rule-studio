@@ -12,8 +12,14 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **100 TaxForms / 475 FlowAssertions / 867 FormRules**
-(**+WO-10 Form 5227 2026-07-05** — split-interest trust info return (`5227`): §664(b) four-tier character
+Active spec-authoring tool. RS Supabase holds **103 TaxForms / 485 FlowAssertions / 891 FormRules**
+(**+WO-11 Form 1120 C-corp module 2026-07-05** — the first C-corporation entity type: `1120` compute spine
+(page-1 income/deductions → Schedule C DRD 50/65/100% + §246(b) limit/loss exception → §172 NOL 80% → §11 flat
+21% tax → Schedule J total tax; §163(j)/CAMT/PHC/AET/§59A/§1062 screen+route), `1120_SCHL` (Schedule L balance +
+M-1/M-2 ties + Sch K $250k/$10M-M-3 gates), `GA600` (GA 5.19% income tax + §168(k)/§179 depreciation delta @
+verified 2025 $1.25M/$3.13M + single-factor apportionment + net worth tax bracket table); all 3 seeded/exported
+(`lookup/{1120,1120_SCHL,GA600}/export/` = 200); 1125-A/1125-E/3800/4562/4797/8949/7004 confirmed already
+covering 1120; **+WO-10 Form 5227 2026-07-05** — split-interest trust info return (`5227`): §664(b) four-tier character
 engine (tier-level) + accumulation + §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure;
 `lookup/5227/export/` = 200; **+S-11 1041 MODULE COMPLETE 2026-07-05** — 3 new forms: `1041` spine (page-1 +
 Schedule B DNI/IDD engine + Schedule G tax), `SCHEDULE_K1_1041` (beneficiary K-1, full verbatim box codes),
@@ -252,6 +258,28 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **Form 1120 C-CORP MODULE AUTHORED + SEEDED + EXPORTED (WO-11 / S-13) — the first C-corporation entity type.**
+  Full front-door run: gap-check (8 gaps; 1125-A/1125-E/3800/4562/4797/8949/7004 confirmed already covering `1120`)
+  → **3 parallel research passes** (verbatim vs FINAL 2025 Form 1120 Created 9/26/25 + i1120 + IRC §11/§243/§245A/
+  §246/§172/§163(j)/§55/§541/§531 + GA Form 600 Rev. 07/31/25 / IT-611 / GA 4562 Rev. 08/01/25) → `f1120_source_brief.md`.
+  Research CAUGHT: OBBBA restructured Schedule J (one list to L23, page-1 total tax = Sch J **L12**, new §1062/Form 1062
+  line 32); **§163(j) EBITDA basis RESTORED for TY2025 (OBBBA)** — a stale EBIT assumption would be a TY2025 error;
+  **GA §179 2025 = $1.25M/$3.13M** (GA indexes — the $1.05M/$2.62M in CLAUDE.md is the stale 2021 figure).
+  **Gate-1 scope walk (4 AskUserQuestion, all recommended — DECISIONS D-13):** form shape = spine + 2; Sch C = domestic
+  DRD + §246(b) limit; federal = NOL 80% compute + §163(j)/CAMT/PHC/AET/§1062 screen+route; GA 600 = full (income +
+  net worth + depr delta). **Authored 3 forms:** `load_1120_spine.py` (`1120`, 35 facts / 11 rules / 11 lines / 10 diag
+  / 8 tests / 4 FA — page-1 → Sch C DRD 50/65/100% + §246(b) loss exception → §172 NOL 80% → §11 21% → Sch J total tax;
+  §163(j) >$31M / CAMT $1B / PHC / AET / §59A $500M / §1062 screens), `load_1120_schl.py` (`1120_SCHL`, 27 / 7 / 5 / 5
+  / 6 / 3 — Sch L balance L15==L28 + M-1 L10=page-1 L28 + M-2 L8 ties to L25 + Q13 $250k / $10M M-3 gates),
+  `load_ga600.py` (`GA600`, 15 / 6 / 6 / 5 / 8 / 3 — GA 5.19% (HB 111) + §168(k)/§179 delta $1.25M/$3.13M + single-factor
+  gross-receipts apportionment 6-dec + GA NOL 80% + net worth tax bracket table ≤$100k=$0/max $5,000). Validated on
+  throwaway SQLite (`scratchpad/validate_1120.py`, **55 pass / 0 fail** — caps clean 159 checked; all 24 rules cited;
+  DRD 50/65/100 + §246(b) limit + loss exception, NOL 80%, 21% tax, Sch L balance/M-1/M-2, GA income + §179 delta +
+  net worth table all green). Ken Gate-1: "Approve — flip, seed, export" (W1-W10 blessed). Seeded → **103 TaxForms /
+  485 FlowAssertions / 891 FormRules**; all 3 `lookup/{1120,1120_SCHL,GA600}/export/` = 200. Spun off the stale GA §179
+  fix (`task_1c8d891e`: CLAUDE.md + GA700/GA600S). **Caveats:** §246(b) combined 50/65 worksheet simplified (single
+  limit_pct); §163(j)/CAMT/PHC/AET/§1062 screen+route (compute deferred to 8990/4626/Sch PH/1062); §245A holding period
+  is §246(c)(5); TY2026 §163(j) capitalized-interest change not encoded; re-verify all constants at TY2026.
 - 2026-07-05: **Form 5227 split-interest module AUTHORED + SEEDED + EXPORTED (WO-10) — the 1041 family is complete.**
   Spun off from the 1041 module (D-10) as its own front-door run: gap-check (all keys GAP) → 3 research passes
   (verbatim vs FINAL 2025 Form 5227 Created 5/7/25 + i5227 Dec 3 2025 + IRC §664/§642(c)/§4947 + Reg §1.664-1(d);

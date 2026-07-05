@@ -118,15 +118,44 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     SQLite-validated `scratchpad/validate_5227.py` 20/0. Seeded → **100 TaxForms / 475 FlowAssertions / 867 FormRules**;
     `lookup/5227/export/` = 200. **Status: ✅ DONE (RS).** tts app build = [APP] lane. The 1041 family (S-11 + WO-10)
     is now fully authored on the RS side. Carried [UNVERIFIED] clauses noted in the loader for re-pull if a deeper compute leg is scoped.
-- **▶ NEXT ORDER — [WO-11] S-13 · 1120 C-corp module · greenfield RS-first · status `INTAKE` (added 2026-07-05, DECISIONS D-12).**
+- **▶ ACTIVE — [WO-11] S-13 · 1120 C-corp module · greenfield RS-first · status `INTAKE → GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05, DECISIONS D-12; Ken: "build 1120").**
   Ken added the **C corporation (Form 1120)** to the season-one plan (a scope-add beyond the original 1040/1120-S/1065/1041
-  set — a NEW entity type nothing else covers). **When picked up (Ken: "build 1120"): run the front door from step 1** —
-  gap-check the required set vs live prod (`lookup/<form>/export/`), then research-verify VERBATIM vs the FINAL 2025
-  Form 1120 + i1120 + IRC (§11 21% rate, §243/§245A DRD, §172 NOL 80%, §163(j), §55 CAMT) + GA Form 600, → `f1120_source_brief.md`
-  → Gate-1 scope walk → author. Required set (BUILD_ORDER S-13, the gap-check target): spine (page-1 → §11 21% tax);
-  Schedule C (DRD); Schedule J (tax comp); Schedule K + L; M-1/M-2; 1125-A (COGS) + 1125-E (officer comp); GA Form 600
-  (income + net worth tax). Confirm 4562/4797/3800 already cover 1120 (like the 1065-core 8825/4562/3800 confirmation).
-  Scope-walk items: NOL §172 / §163(j) / CAMT §55 (likely RED-defer) / PHC / accumulated-earnings tax.
+  set — a NEW entity type nothing else covers). Ran the front door from step 1.
+  **✅ GAP-CHECK (2026-07-05, live prod 100 forms):** required set (BUILD_ORDER S-13) vs coverage —
+  - **Spine** (`1120`, page-1 income L1–11 / deductions L12–29 / taxable income L30 / §11 21% tax L31) → **GAP**
+  - **Schedule C** (`1120_SCHC`, dividends + §243/§245A DRD) → **GAP**
+  - **Schedule J** (`1120_SCHJ`, tax computation Part I + payments Part II) → **GAP**
+  - **Schedule K** (other information) → **GAP**  ·  **Schedule L** (balance sheet) → **GAP**
+  - **Schedule M-1 / M-2** (book-tax recon / unappropriated R/E) → **GAP**
+  - **GA Form 600** (`GA600`, net income + net worth tax) → **GAP** (only the S-corp `GA600S` exists)
+  - **✅ CONFIRMED already cover C-corp `1120`** (no authoring): `1125A` `['1120S','1065','1120']` (COGS),
+    `1125E` `['1120S','1120']` (officer comp), `3800`, `4562`, `4797`, `8949`, `7004` — all carry `1120` in entity_types
+    (verified live, like the 1065-core 8825/4562/3800 confirmation).
+  - **➡ 8 gaps to author.**
+  - **✅ RESEARCH-VERIFIED (2026-07-05, 3 parallel passes, verbatim vs FINAL sources) → `f1120_source_brief.md`.**
+    Federal face: Form 1120 (2025) **Created 9/26/25**; caught OBBBA restructure — Sch J is now one continuous list
+    to L23 (no Part I/II), page-1 total tax = Sch J **L12**; new L25 (Form 7205), L32 (§1062/Form 1062). IRC: §11 21%,
+    §243 50/65/100% DRD, §246(b) TI-limit + loss exception, §172 80%/no-carryback/indefinite, **§163(j) EBITDA basis
+    RESTORED for TY2025 (OBBBA)** + $31M §448(c), §55 CAMT 15%/$1B/Form 4626, §541 PHC 20%, §531 AET 20%/$250k-$150k.
+    GA 600: rate **5.19%** (HB 111), net worth tax **Schedule 2** table (≤$100k=$0, max $5,000 over $22M), single-factor
+    gross-receipts (6 dec), conformity Jan 1 2025 (HB 290, OBBBA not adopted). **⚠ GA §179 2025 = $1,250,000/$3,130,000**
+    (GA indexes; the $1.05M/$2.62M in CLAUDE.md is the 2021 figure — STALE; flag + check GA700/GA600S).
+  - **✅ Gate-1 scope walk APPROVED 2026-07-05 (DECISIONS D-13, all 4 recommended):** form shape = spine + 2
+    (`1120` / `1120_SCHL` / `GA600`); Sch C = domestic DRD + §246(b) limit; federal = NOL 80% compute, §163(j)/
+    CAMT/PHC/AET/§1062 screen+route; GA 600 = full (income + net worth + depr delta).
+  - **✅ AUTHORED + SQLite-VALIDATED 2026-07-05 (READY_TO_SEED=False, awaiting Ken review walk W1-W10):**
+    `load_1120_spine.py` (`1120`, 35 facts / 11 rules / 11 lines / 10 diag / 8 tests / 4 FA),
+    `load_1120_schl.py` (`1120_SCHL`, 27 / 7 / 5 / 5 / 6 / 3), `load_ga600.py` (`GA600`, 15 / 6 / 6 / 5 / 8 / 3).
+    `scratchpad/validate_1120.py` = **55 pass / 0 fail** (caps clean 159 checked; all rules cited; DRD 50/65/100
+    + §246(b) limit + loss exception, §172 NOL 80%, §11 21%, Sch L balance/M-1/M-2 ties, GA 5.19% + §179 delta
+    + net worth table all green).
+  - **✅ DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Approve — flip, seed, export"; W1-W10 blessed).
+    Flipped all three guards → seeded to prod → **103 TaxForms**; `lookup/{1120,1120_SCHL,GA600}/export/` all = 200
+    (65 KB / 24 KB / 24 KB; facts/rules/line_map/diagnostics all present). Spun off the stale GA §179 fix
+    (`task_1c8d891e`: CLAUDE.md $1.05M/$2.62M → $1.25M/$3.13M + re-check GA700/GA600S). **Status: ✅ DONE (RS).**
+    tts app build = [APP] lane. Carried [UNVERIFIED] flags noted in the loaders (§11 label, §246(b) combined
+    50/65 worksheet, TY2026 §163(j) capitalized-interest) for re-pull if a deeper compute leg is scoped.
+    Confirmed covering 1120 (no authoring): 1125-A/1125-E/3800/4562/4797/8949/7004.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative

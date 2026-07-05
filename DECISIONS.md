@@ -16,6 +16,47 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-13: 1120 C-corp module (WO-11) v1 scope LOCKED — Gate-1 walk
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended options), the
+Form 1120 C-corp module v1 is scoped:
+- **(Q1) Form shape = spine + 2.** Three RS forms: **`1120`** = the compute spine (page-1 income/deductions +
+  Schedule C DRD + Schedule J tax computation → total tax); **`1120_SCHL`** = Schedule L balance sheet + M-1 +
+  M-2 + Schedule K other-info gates; **`GA600`** = Georgia. Mirrors the 1041 consolidated-spine precedent (not
+  the 1120-S full split).
+- **(Q2) Schedule C DRD = domestic + §246(b) limit.** COMPUTE the domestic DRD (L1/2/8/10/11 → 50/65/100%) +
+  the §246(b) taxable-income limitation with the §172 NOL loss-exception. DIAGNOSTIC/direct-entry: §246(c)
+  holding period, §246A debt-financed reduction, and the foreign/GILTI/§250 lines (13/17/22).
+- **(Q3) Federal = NOL compute, rest defer.** COMPUTE the §172 NOL **80%**-of-taxable-income limitation
+  (page-1 L29a; available carryover direct-entry from Sch K Q12). DIAGNOSTIC/RED-defer + route: §163(j) → gate
+  on Sch K Q24 (>$31M §448(c)) → Form 8990 (note OBBBA EBITDA-basis for TY2025); §55 CAMT → Form 4626
+  (Sch K Q29, $1B AFSI); §541 PHC → Schedule PH; §531 AET; §1062 farmland-deferral → Form 1062.
+- **(Q4) GA Form 600 = full.** COMPUTE both taxes: income tax (federal taxable income → Sch 4 additions incl.
+  §168(k) bonus add-back → Sch 5 GA-depreciation subtraction → Schedule 6 single-factor gross-receipts
+  apportionment, 6 decimals → **5.19%** → GA NOL 80%) AND the **net worth tax** bracket table (Schedule 2,
+  ≤$100k=$0, max $5,000 over $22M). Uses the verified **GA §179 2025 = $1,250,000 / $3,130,000** delta
+  (GA700/GA600S depreciation-delta pattern).
+
+**Context:** WO-11 front door: gap-check (8 gaps; 1125-A/1125-E/3800/4562/4797/8949/7004 confirmed covering
+1120) → 3 verbatim research passes → `f1120_source_brief.md` → this scope walk. Compute the headline mechanics
+(21% tax, DRD, NOL 80%, GA dual tax), screen + route the low-population special regimes.
+
+**⚠ Cross-cutting finding — GA §179 staleness.** The verified 2025 GA Form 4562 (Rev. 08/01/25) states GA §179
+= **$1,250,000 / $3,130,000** for 2025 (GA indexes its §179). The **$1,050,000 / $2,620,000** in CLAUDE.md's
+"Verified Rules — 2025" section is the **2021** figure and is STALE. GA600 uses the verified 2025 figure; the
+existing **GA700 / GA600S** specs (STATUS notes cite $1.05M/$2.62M) should be re-checked for the same staleness
+and CLAUDE.md corrected. Flagged to Ken.
+
+**Alternatives considered:** full 1120-S-style split (rejected — the 1041 consolidated spine is cleaner for the
+compute core); full Schedule C incl. §246A/foreign (rejected — low population, defer to re-verify); inline
+§163(j) compute (rejected — duplicates Form 8990); GA income-tax-only (rejected — the net worth tax is core GA
+C-corp compliance and cheap to table).
+
+**Would reconsider if:** C-corp population shows heavy foreign-dividend / debt-financed-portfolio activity
+(expand Sch C), frequent §163(j)-limited corporations (build the 8990 compute), or CAMT-scale clients ($1B AFSI).
+
+---
+
 ## 2026-07-05 — D-12: 1120 C-corp module ADDED to the season-one plan (S-13 / WO-11)
 
 **Decision:** Add the **C corporation (Form 1120)** federal module — plus its GA companion (Form 600) — to
