@@ -16,6 +16,45 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-8: GA-700 v1 scope is MAXIMAL — full PTET compute (5.19% entity-level), §179 delta computed, Schedule 4 + 4% NRW computed
+
+**Decision:** The GA Form 700 (Georgia partnership return, TY2025) v1 spec — the **1st partnership-entity
+state return** in RS (GA600S S-corp + GA Form 500 individual precede it) — is scoped MAXIMAL per Ken's
+2026-07-05 walk (4 AskUserQuestion decisions, all recommended): (A) **COMPUTE the full PTET path** (HB
+149 / §48-7-21) — the elective entity-level tax = GA taxable income × **5.19%** (Sch 1 L7), gated on the
+Form 700 page-1 election checkbox, plus the owner-side **PTEDED (Form 500 Sch 1 L12 subtraction) /
+PTEADD (L5 addition)** mechanics and the credits-and-NOLs-stay-with-the-entity rules; (B) **COMPUTE the
+§179 GA-limit difference** (GA **$1,050,000/$2,620,000**, not the federal OBBBA $2.5M/$4M) + model the Sch
+5 L7 (federal-depr add-back) / Sch 6 L4 (GA-depr subtraction) structure, and **direct-entry** the
+asset-level GA Form 4562 depreciation figures (the MACRS recompute the engine can't yet reach); (C)
+**COMPUTE Schedule 4 partner allocation** (resident reports full share / nonresident reports GA-apportioned
++ allocated, with guaranteed-payment handling — the IT-711 p.13 worked example is the test oracle) + the
+**4% nonresident withholding** (§48-7-129, <$1,000-share exemption, displaced when PTET is elected); (D)
+**direct-entry** Schedule 10 credits + intangible/REIT add-backs, **RED-defer** GA NOL (Sch 9, 80% limit),
+composite return (IT-CR), the UET underpayment penalty (Form 600UET, incl. its 5.75% prior-year quirk),
+and credit pass-through allocation (Sch 11). Structure/constants verified against the FINAL 2025 GA DOR
+sources (Form 700 Rev. 09/11/25; IT-711 booklet; HB 149 FAQ; Reg. 560-7-3-.03) — see [ga700_source_brief.md].
+
+**Context:** August RS state track ("GA-700 + PTET"). GA Form 700 starts from FEDERAL partnership income
+(Sch 8 ≈ federal Sch K), applies GA additions/subtractions (Sch 5/6), apportions by a **single
+gross-receipts factor** (Sch 7, 6 decimals — the GA600S loader's "3-factor" note was STALE), and taxes at
+the flat 5.19% only when the PTET election is made. PTET is the headline reason to build GA-700 now (the
+federal SALT-cap workaround). Ken is a depreciation CPA, hence (B) computes the §179 delta.
+
+**Divergence from precedent (called out):** the GA600S loader (`load_remaining_1120s.py`) records the PTET
+rate as **5.49%** and apportionment as "property/payroll/sales" 3-factor — BOTH stale. GA-700 pins the
+DOR-primary **5.19%** (2025) and the single gross-receipts factor. GA's PTET base is a **single
+entity-level number** (federal taxable income with C-corp limits → §48-7-27 GA adjustments → §48-7-31
+apportionment), NOT a resident/nonresident split (correcting the initial framing).
+
+**What would change our mind:** if the GA-4562 asset-level recompute is needed for a correct return the
+spec can't reach, (B)'s depreciation-subtraction stays direct-entry (as scoped). If the 2025 GA conformity
+bill (not yet posted — §10 flag 1) moved the §179 figures or the conformity date, those constants are
+stale until re-verified. If GA600S later needs the same 5.19%/single-factor correction, treat this as the
+precedent (its 5.49%/3-factor is a logged reconstructability-adjacent drift, not authority).
+
+---
+
 ## 2026-07-04 — D-7: NC D-400 v1 scope is MAXIMAL — resident + Schedule PN, the 85% bonus/§179 add-back is COMPUTED, Schedule S subtractions modeled structured
 
 **Decision:** The NC D-400 (North Carolina individual, TY2025) v1 spec — the 4th state individual spec
