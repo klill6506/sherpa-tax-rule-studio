@@ -1,6 +1,7 @@
 """Load the FORM_8911 spec — Alternative Fuel Vehicle Refueling Property
 Credit (§30C) + Schedule A (Form 8911) → Schedule 3 line 6j (personal part)
-and Form 3800 Part III line 1s (business part — RED-deferred, 3800 unbuilt).
+and Form 3800 Part III row 1s → Schedule 3 line 6a (business part — Form 3800
+BUILT 2026-07-04, so the business part now flows; was RED-deferred pre-3800).
 
 Trigger: MeF ATS Scenario 13 (William & Nancy Birch) — the smallest remaining
 1040 ATS scenario per Ken's 2026-07-02 smallest-first ruling. Every remaining
@@ -41,10 +42,11 @@ line 6b = 1040 line 19 + Sch 3 lines 2/3/4/5a/5b + the OTHER 6x credits
 EXCLUDING 6a (GBC), 6b (8801), 6k (bonds) — i.e. the credits ordered BEFORE
 8911. Ken must bless this reading at the review walk.
 
-v1 SCOPE BOUNDARIES (stated, not silent):
-  - Business/investment-use part (line 3) and K-1 passthrough (line 2)
-    compute on the form but CANNOT flow — Form 3800 is unbuilt → D_8911_004
-    RED "prepare Form 3800 manually". Scenario 13 is personal-only.
+SCOPE (stated, not silent):
+  - Business/investment-use part (line 3) and K-1 passthrough (line 2) flow to
+    Form 3800 Part III row 1s → Schedule 3 line 6a after the §38(c) limitation
+    (Form 3800 BUILT 2026-07-04 in tts; D_8911_004 RETIRED — was the pre-3800
+    RED-defer). Scenario 13 (Birch) is personal-only and exercises the 6j path.
   - Census-tract eligibility (Sch A line 6a) is a PREPARER ASSERTION; the
     software validates the GEOID format (11 digits) but does NOT adjudicate
     against i8911 Appendix A/B. Stated in D_8911_001/005 + the fact notes.
@@ -141,7 +143,7 @@ def refueling_property_qualifies(pis_date: date, tax_year: int) -> bool:
 
 AUTHORITY_TOPICS: list[tuple[str, str]] = [
     ("refueling_credit",
-     "Alternative Fuel Vehicle Refueling Property Credit (§30C) — Form 8911 + Schedule A -> Sch 3 line 6j / Form 3800"),
+     "Alternative Fuel Vehicle Refueling Property Credit (§30C) — Form 8911 + Schedule A -> Sch 3 line 6j (personal) / Form 3800 Part III row 1s -> Sch 3 line 6a (business)"),
 ]
 
 EXISTING_SOURCES_TO_REFERENCE: list[str] = [
@@ -399,8 +401,9 @@ F8911_IDENTITY = {
         "the InstallmentSale/LikeKindExchange row pattern); Form 8911 aggregates. "
         "Personal path FULL (30%/$1,000/item, main-home + census-tract gates, "
         "tax-and-TMT limitation, unused credit LOST) -> Schedule 3 line 6j. "
-        "Business path (6%/30%-PWA, $100,000/item, §179 backout) computes but "
-        "RED-defers to the unbuilt Form 3800 (D_8911_004). §30C(i) termination "
+        "Business path (6%/30%-PWA, $100,000/item, §179 backout) flows to Form "
+        "3800 Part III row 1s -> Schedule 3 line 6a after the §38(c) limitation "
+        "(Form 3800 BUILT 2026-07-04; D_8911_004 RETIRED). §30C(i) termination "
         "coded as an EXPLICIT window: PIS on/before 2026-06-30 AND within the "
         "return year — TY2025 full, TY2026 Jan-Jun, TY2027+ nothing."
     ),
@@ -443,11 +446,11 @@ F8911_FACTS: list[dict] = [
     # ── Return-level ──
     {"fact_key": "f8911_k1_credit", "label": "Line 2 — refueling credit from partnerships / S corporations (K-1)",
      "data_type": "decimal", "default_value": "0", "sort_order": 11,
-     "notes": "RETURN-LEVEL INPUT. Part of line 3 -> Form 3800 (unbuilt) -> D_8911_004 RED when present."},
+     "notes": "RETURN-LEVEL INPUT. Part of line 3 -> Form 3800 Part III row 1s (BUILT 2026-07-04) -> Schedule 3 line 6a after the §38(c) limitation."},
     # ── Outputs ──
     {"fact_key": "f8911_business_credit", "label": "Line 3 — business/investment use part (Σ Sch A line 16 + line 2)",
      "data_type": "decimal", "sort_order": 20,
-     "notes": "OUTPUT. -> Form 3800 Part III line 1s — RED-DEFERRED (D_8911_004); never lands on Sch 3."},
+     "notes": "OUTPUT. -> Form 3800 Part III row 1s (BUILT 2026-07-04) -> Schedule 3 line 6a after the §38(c) limitation."},
     {"fact_key": "f8911_personal_total", "label": "Line 4 — personal use part before limitation (Σ Sch A line 21)",
      "data_type": "decimal", "sort_order": 21, "notes": "OUTPUT."},
     {"fact_key": "f8911_net_regular_tax", "label": "Line 7 — net regular tax (line 5 − line 6c)",
@@ -491,12 +494,13 @@ F8911_RULES: list[dict] = [
          "Per QUALIFYING property: A-10 = cost × business_pct; A-11 = s179; A-12 = max(0, A-10 − A-11); "
          "rate = 0.30 if (pwa_met OR construction_began < 2023-01-29) else 0.06; A-14 = A-12 × rate "
          "(whole-dollar, half-up); A-15 = 100000; A-16 = min(A-14, A-15). Form 8911 line 1 = Σ A-16; "
-         "line 3 = line 1 + line 2 (K-1). Line 3 > 0 -> D_8911_004 RED (Form 3800 unbuilt — v1 "
-         "boundary); the amount NEVER lands on Schedule 3."),
+         "line 3 = line 1 + line 2 (K-1) -> Form 3800 Part III row 1s (BUILT 2026-07-04) -> Schedule 3 "
+         "line 6a after the §38(c) general-business-credit limitation (subject to the 3800 passive "
+         "assertion, D_3800_002/003)."),
      "inputs": ["f8911_cost", "f8911_business_pct", "f8911_s179", "f8911_pwa_met",
                 "f8911_construction_began", "f8911_k1_credit"],
      "outputs": ["f8911_business_credit"],
-     "description": "Computed for the form face + the future 3800 hookup; flow is RED-deferred, stated not silent."},
+     "description": "Computed for the form face + the Form 3800 hookup (BUILT 2026-07-04); line 3 flows to Form 3800 Part III row 1s -> Schedule 3 line 6a after the §38(c) limitation."},
     {"rule_id": "R-8911-TAXLIM",
      "title": "Part II lines 5-9 — the tax-liability + TMT limitation",
      "rule_type": "calculation", "precedence": 4, "sort_order": 4,
@@ -526,7 +530,7 @@ F8911_LINES: list[dict] = [
     {"line_number": "A", "description": "A Total number of qualified refueling properties (count of Schedule A rows)", "line_type": "calculated"},
     {"line_number": "1", "description": "1 Total business/investment credit from Part II of Schedule(s) A (Σ A-16)", "line_type": "calculated"},
     {"line_number": "2", "description": "2 Refueling property credit from partnerships and S corporations (K-1)", "line_type": "input"},
-    {"line_number": "3", "description": "3 Business/investment use part. Add lines 1 and 2 -> Form 3800 Part III 1s (RED-deferred v1)", "line_type": "total"},
+    {"line_number": "3", "description": "3 Business/investment use part. Add lines 1 and 2 -> Form 3800 Part III row 1s -> Schedule 3 line 6a (Form 3800 built 2026-07-04)", "line_type": "total"},
     {"line_number": "4", "description": "4 Total personal credit from Part III of Schedule(s) A (Σ A-21)", "line_type": "calculated"},
     {"line_number": "5", "description": "5 Regular tax before credits (1040 line 16 + Schedule 2 line 1z)", "line_type": "calculated"},
     {"line_number": "6a", "description": "6a Foreign tax credit (Schedule 3 line 1)", "line_type": "calculated"},
@@ -582,13 +586,14 @@ F8911_DIAGNOSTICS: list[dict] = [
                  "net regular tax minus tentative minimum tax). The unused portion is permanently lost — it "
                  "cannot be carried back or forward to other tax years (i8911 line 10)."),
      "notes": "Transparency on the lost excess (Birch/T1: 300 tentative -> 11 allowed, 289 lost)."},
-    {"diagnostic_id": "D_8911_004", "title": "Business/investment refueling credit — Form 3800 not supported", "severity": "error",
+    {"diagnostic_id": "D_8911_004", "title": "Business/investment refueling credit flows to Form 3800 (built)", "severity": "info",
      "condition": "line 3 > 0 (Σ Schedule A business parts + the K-1 passthrough)",
-     "message": ("Not supported — prepare manually: the business/investment use part of the refueling credit "
-                 "(Form 8911 line 3) flows to Form 3800 Part III line 1s, and Form 3800 is not yet built. "
-                 "The amount is computed on the form face but does NOT flow to the return — prepare Form "
-                 "3800 and the general business credit manually."),
-     "notes": "v1 RED-defer (the SPRINT no-silent-gap rule). Scenario 13 is personal-only and never fires this."},
+     "message": ("RETIRED 2026-07-04 — the Form 3800 unit landed; Form 8911 line 3 now flows to Form 3800 "
+                 "Part III row 1s and on to Schedule 3 line 6a after the §38(c) limitation (subject to the "
+                 "Form 3800 passive assertion, D_3800_002/003). No longer a RED stop — the business/"
+                 "investment refueling credit is carried through the general business credit."),
+     "notes": ("RETIRED (was severity=error 'Form 3800 not supported'). Mirrors tts rules_8911.py "
+               "is_active=False / rule body returns []. Kept as an info record for audit; fires nothing that blocks.")},
     {"diagnostic_id": "D_8911_005", "title": "Census tract GEOID missing or malformed", "severity": "error",
      "condition": "a property claims the credit (census_tract_ok True, credit > 0) and census_geoid is not exactly 11 digits",
      "message": ("The census tract GEOID (Schedule A line 6b) must be the 11-digit 2020-census GEOID for a "
@@ -657,16 +662,17 @@ F8911_SCENARIOS: list[dict] = [
      "expected_outputs": {"f8911_personal_total": 0, "f8911_allowed_personal": 0,
                           "D_8911_001": False, "D_8911_002": False},
      "notes": "An answered No excludes the property QUIETLY (the preparer followed the face's 'No. Stop here.')."},
-    {"scenario_name": "8911-T6 — business property, PWA met (RED-deferred to 3800)", "scenario_type": "diagnostic", "sort_order": 6,
+    {"scenario_name": "8911-T6 — business property, PWA met (flows to Form 3800)", "scenario_type": "normal", "sort_order": 6,
      "inputs": {"tax_year": 2025, "filing_status": "single",
                 "properties": [{"cost": 50000, "business_pct": 100, "main_home": False, "census_tract_ok": True,
                                 "census_geoid": "13059000100", "pis_date": "2025-08-01",
                                 "construction_began": "2025-03-01", "pwa_met": True}],
                 "f1040_line16": 20000, "sch2_1z": 0, "f1040_line19": 0, "sch3_before_6j": 0, "tmt": 0},
      "expected_outputs": {"A-14": 15000, "A-16": 15000, "f8911_business_credit": 15000,
-                          "f8911_personal_total": 0, "f8911_allowed_personal": 0, "D_8911_004": True},
-     "notes": ("HAND-COMPUTED. 50,000 × 30% (PWA) = 15,000 -> line 3; Form 3800 unbuilt -> D_8911_004 RED, "
-               "nothing lands on Sch 3 (100% business also skips the personal part per the line-16 stop).")},
+                          "f8911_personal_total": 0, "f8911_allowed_personal": 0},
+     "notes": ("HAND-COMPUTED. 50,000 × 30% (PWA) = 15,000 -> line 3 -> Form 3800 Part III row 1s -> "
+               "Schedule 3 line 6a after the §38(c) limitation (Form 3800 BUILT 2026-07-04; D_8911_004 "
+               "RETIRED). 100% business also skips the personal part per the line-16 stop.")},
     {"scenario_name": "8911-T7 — mixed-use property (both parts + the 6% arm)", "scenario_type": "normal", "sort_order": 7,
      "inputs": {"tax_year": 2025, "filing_status": "mfj",
                 "properties": [{"cost": 10000, "business_pct": 60, "main_home": True, "census_tract_ok": True,
@@ -675,9 +681,10 @@ F8911_SCENARIOS: list[dict] = [
                 "f1040_line16": 8000, "sch2_1z": 0, "f1040_line19": 0, "sch3_before_6j": 0, "tmt": 0},
      "expected_outputs": {"A-10": 6000, "A-14": 360, "A-16": 360, "A-18": 4000, "A-19": 1200, "A-21": 1000,
                           "f8911_business_credit": 360, "f8911_personal_total": 1000,
-                          "f8911_allowed_personal": 1000, "D_8911_004": True},
+                          "f8911_allowed_personal": 1000},
      "notes": ("HAND-COMPUTED. Business: 10,000 × 60% = 6,000 × 6% (no PWA, construction 2/2025 ≥ 1/29/2023) "
-               "= 360 (RED-deferred). Personal: 10,000 − 6,000 = 4,000 × 30% = 1,200 -> capped 1,000.")},
+               "= 360 -> line 3 -> Form 3800 Part III row 1s -> Schedule 3 line 6a (Form 3800 built "
+               "2026-07-04). Personal: 10,000 − 6,000 = 4,000 × 30% = 1,200 -> capped 1,000 -> Sch 3 6j.")},
     {"scenario_name": "8911-T8 — line 6b credits reduce the limitation (exact fit)", "scenario_type": "normal", "sort_order": 8,
      "inputs": {"tax_year": 2025, "filing_status": "mfj",
                 "properties": [{"cost": 1000, "business_pct": 0, "main_home": True, "census_tract_ok": True,
@@ -751,11 +758,15 @@ FLOW_ASSERTIONS: list[dict] = [
                                   "pwa_auto_yes_before": "2023-01-29", "geoid_length": 11}},
      "sort_order": 3},
     {"assertion_id": "FA-1040-8911-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Business part (line 3 > 0) fires D_8911_004 RED and never lands on Schedule 3 (no silent gap)",
-     "description": ("Validates R-8911-SCHA-BUS's v1 boundary: Form 3800 is unbuilt, so a business/K-1 "
-                     "refueling credit must surface RED and must NOT leak into Schedule 3 line 6j."),
-     "definition": {"kind": "gating_check", "form": "FORM_8911", "expect": {"red_fires": True},
-                    "blockers": ["business_credit_no_3800", "k1_passthrough_no_3800"]},
+     "title": "Business part (line 3) flows to Form 3800 Part III row 1s -> Schedule 3 line 6a (Form 3800 built 2026-07-04)",
+     "description": ("Form 3800 landed 2026-07-04: Form 8911 line 3 (Σ Schedule A business parts + the K-1 "
+                     "passthrough) flows to Form 3800 Part III row 1s and on to Schedule 3 line 6a after the "
+                     "§38(c) general-business-credit limitation (subject to the 3800 passive assertion, "
+                     "D_3800_002/003). Supersedes the pre-3800 RED-defer boundary (D_8911_004 retired). Bug "
+                     "it catches: the business/K-1 part failing to reach 3800 row 1s, or leaking to Sch 3 6j "
+                     "(the personal line) instead of 6a."),
+     "definition": {"kind": "flow_check", "form": "FORM_8911",
+                    "flow": "line_3 -> FORM_3800 Part III row 1s -> Schedule 3 line 6a (after the §38(c) limitation)"},
      "sort_order": 4},
 ]
 
