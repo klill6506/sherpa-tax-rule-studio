@@ -160,6 +160,16 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Known issues
 
+- **⚠ RECONSTRUCTABILITY DRIFT (2026-07-04, `reconstructability_check.md`):** production Supabase
+  does NOT cleanly rebuild from the loaders. **FIXED this session:** the `seed_all` orchestrator
+  (61/61 loaders, 0 problems) — resolves the one hard break (3800 amend ran before its base; now
+  amends-last). **STILL OPEN — needs Ken (all are prod-data changes):** (A) prod carries orphaned
+  legacy rules no loader reproduces — `4797` R001-R008/R010, `SCH_K_1120S` R010-R018, `SCHD_1120S`
+  R010-R012 (loaders refactored to new rule_ids; prod never cleaned) → delete if superseded; (B)
+  prod STALE vs loaders — `8283`/`8949`/`8995`/`8995A` (loaders ahead) → re-seed (additive, safe);
+  (C) `1065` empty stub (entity=[], 0 rules, mislabeled title "1065_SE") lives only in DB → delete;
+  (D) `FORM_8582` legacy naming vs the loader's bare `8582` → rename prod row. Authority sources
+  reproduce EXACTLY (0 delta). See the report for the remediation order.
 - **⚠ PUBLIC MIRROR (2026-07-04):** this `STATUS.md` and `session_log.md` are auto-copied into the
   **public** `klill6506/tts-tax-status` repo (`rule-studio/` subfolder) on every session-close sync,
   even though the RS repo itself is going private. Keep client PII and sensitive firm specifics OUT of
@@ -179,6 +189,19 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **RS DB reconstructability check DONE + `seed_all` orchestrator built.** July checklist
+  item. Built a throwaway SQLite DB, ran every loader via a new `seed_all` command, diffed vs production
+  Supabase (form set + per-form rule_ids + entity-model counts). **Verdict: prod does NOT cleanly rebuild.**
+  Root cause: no canonical orchestrator + prod mutated incrementally for months, never rebuilt-from-scratch.
+  **Fixed (code, zero prod risk):** `specs/management/commands/seed_all.py` — sources → specs → amends →
+  flow assertions, **61/61 loaders, 0 problems**; closes the one hard break (`load_1040_form_3800` amend
+  ran before its 1120-S base existed → now amends-last → 3800 rebuilds to 12 rules). **4 residual drifts
+  logged for Ken** (all prod-data changes — orphaned legacy rules on 4797/SCH_K_1120S/SCHD_1120S; stale
+  8283/8949/8995/8995A; `1065` empty stub; `FORM_8582`→`8582` naming). Sources reproduce EXACTLY. Full
+  writeup + remediation order → `reconstructability_check.md`. No prod mutation this session (89/420 intact).
+- 2026-07-04: **1065-core campaign CLOSED — forms 5 & 6 (8825/4562/3800) confirmed cover 1065.** Verified
+  vs the live DB: entity_types carry 1065 AND the routing is wired (4562 "§179 → Schedule K", 8825 "net
+  rental → K Line 2"). No fresh authoring. All 6 core forms done.
 - 2026-07-04: **1065 core — Schedule L + Schedule B SEEDED + EXPORTED (`1065_L` / `1065_B`).** Form 4 of 6.
   Fresh-authored from the FINAL 2025 f1065 (page 6 Sch L; pages 2-4 Sch B, 33 Qs; pymupdf verbatim) +
   primary IRC (§705 L21↔M-2 tie; §754/§743(b)/§734(b) Q10; §448(c) the $31M behind Q24; §6221(b) Q33 —

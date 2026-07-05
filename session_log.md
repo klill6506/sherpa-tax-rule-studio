@@ -4,6 +4,28 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — RS DB reconstructability check + `seed_all` orchestrator
+*Ken picked this July checklist item after the 1065-core close. "fresh DB + all loaders + diff vs
+production; if anything lives only in Supabase → fix now."*
+- **Method:** throwaway SQLite DB (`DATABASE_URL=sqlite://…`, guarded), ran every loader, diffed the
+  rebuilt DB vs production Supabase on form set + per-form rule_ids + all 11 entity-model counts.
+- **Found — deploy pipeline gap:** `build.sh` runs only `seed_sources` (feeds + topics). The 89 forms,
+  299 authority sources, and 420 flow assertions are ALL seeded by loaders deployment never runs → prod
+  was populated by running loaders manually, never verified rebuildable. There was **no orchestrator**.
+- **Fixed (code, zero prod risk):** `specs/management/commands/seed_all.py` — sources → specs `load_*`
+  → amends → flow assertions, dynamic loader discovery + explicit amends list. Fresh-DB run = **61/61
+  loaders, 0 problems**. `--dry-run` prints the plan. Closes the one hard break: `load_1040_form_3800`
+  is an amend loader that raised `CommandError` when run (alphabetically) before its 1120-S base 3800
+  existed; amends-last → 3800 rebuilds to the full 12 rules.
+- **4 residual drifts — logged for Ken (all prod-data changes, NOT touched this session):**
+  (A) orphaned legacy rules no loader reproduces — `4797` R001-R008/R010, `SCH_K_1120S` R010-R018,
+  `SCHD_1120S` R010-R012 (loaders refactored to new rule_ids; prod never cleaned); (B) prod stale vs
+  loaders — `8283`/`8949`/`8995`/`8995A` (re-seed, additive); (C) `1065` empty stub (entity=[], 0 rules,
+  mislabeled "1065_SE") lives only in DB; (D) `FORM_8582` vs the loader's bare `8582`. **Authority
+  sources reproduce EXACTLY (0 delta).** Full writeup + remediation order → `reconstructability_check.md`.
+- **No prod mutation** (verification only; 89 TaxForms / 420 FlowAssertions intact). Committed the
+  orchestrator + report + STATUS. Remediation (prod deletes/re-seed) awaits Ken's call.
+
 ## 2026-07-04 — 1065 core campaign CLOSED: forms 5 & 6 (8825/4562/3800) coverage confirmed
 *Ken: "check the status and continue." STATUS's IMMEDIATE NEXT was: confirm 8825/4562/3800 cover 1065
 (likely no fresh authoring). Verified against the LIVE RS DB — not just the brief table.*
