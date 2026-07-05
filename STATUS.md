@@ -12,10 +12,10 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **89 TaxForms / 420 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). **The 1065-core campaign is COMPLETE
-(2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed multi-entity, verified
-against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
+Active spec-authoring tool. RS Supabase holds **88 TaxForms / 420 FlowAssertions** (was 89; the empty
+`1065` stub was removed in the 2026-07-04 reconstructability cleanup — see Known issues). **The 1065-core
+campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
+multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
 (14 == 22 balance check + L21↔M-2 tax-basis tie), Sch B 33 questions with Q4 small-partnership gate +
 Q24 §163(j) $31M → Form 8990. Prior same day: the **1065-core Schedule M-1 + M-2** (`1065_M1` /
@@ -161,18 +161,18 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 ## Known issues
 
 - **⚠ RECONSTRUCTABILITY DRIFT (2026-07-04, `reconstructability_check.md`):** production Supabase
-  does NOT cleanly rebuild from the loaders. **FIXED this session:** the `seed_all` orchestrator
+  did NOT cleanly rebuild from the loaders. **FIXED this session:** (1) `seed_all` orchestrator
   (61/61 loaders, 0 problems) — resolves the one hard break (3800 amend ran before its base; now
-  amends-last). **STILL OPEN — needs Ken (all are prod-data changes):** (A) prod carries orphaned
-  legacy rules no loader reproduces. **Supersession assessed (read-only, 2026-07-04):** `4797`
-  R001-R010 = SUPERSEDED (pre-refactor naive version; R007 hardcodes §1250=0, the bug the nuance leg
-  fixed) → **safe to delete (9 rows)**; but `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 = **NOT
-  superseded — dropped line detail** (interest/dividends/meals/distributions/K18 reconciliation absent
-  from the current loader = a 1120-S loader regression) → **DO NOT delete; fold into the August 1120-S
-  delta audit.** (B) prod STALE vs loaders — `8283`/`8949`/`8995`/`8995A` (loaders ahead) → re-seed
-  (additive, safe); (C) `1065` empty stub (entity=[], 0 rules, mislabeled title "1065_SE") lives only
-  in DB → delete; (D) `FORM_8582` legacy naming vs the loader's bare `8582` → rename prod row.
-  Authority sources reproduce EXACTLY (0 delta). See `reconstructability_check.md` §A for the content diff.
+  amends-last); (2) **prod remediated (Ken "do all safe items"):** deleted the 9 `4797` orphan rules
+  (pre-refactor; R007 hardcoded §1250=0, the bug the nuance leg fixed — confirmed superseded) and the
+  `1065` empty stub (entity=[], mislabeled "1065_SE") → prod now **88 TaxForms / 420 FlowAssertions**;
+  4797 + 1065 now 0-delta, **authority sources 0-delta**. NOTE an initial `FORM_8582`→`8582` rename was
+  a MISDIAGNOSIS and was **reverted** — `FORM_8582` (12 rules) is the real passive-loss form (4835
+  references it); the bare `8582` is a spurious duplicate that `load_1120s_complete` fabricates.
+  **DEFERRED to the August 1120-S delta audit (all trace to `load_1120s_complete/specs`):** stale
+  `8283/8949/8995/8995A` (prod matches the 1040 primaries; the extra rules come from the 1120s loaders),
+  `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 orphans (dropped line detail = a 1120-S loader
+  regression — do NOT delete), and the spurious bare-`8582` loader duplicate. See the report §A/§B/§D.
 - **⚠ PUBLIC MIRROR (2026-07-04):** this `STATUS.md` and `session_log.md` are auto-copied into the
   **public** `klill6506/tts-tax-status` repo (`rule-studio/` subfolder) on every session-close sync,
   even though the RS repo itself is going private. Keep client PII and sensitive firm specifics OUT of
@@ -200,8 +200,11 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
   flow assertions, **61/61 loaders, 0 problems**; closes the one hard break (`load_1040_form_3800` amend
   ran before its 1120-S base existed → now amends-last → 3800 rebuilds to 12 rules). **4 residual drifts
   logged for Ken** (all prod-data changes — orphaned legacy rules on 4797/SCH_K_1120S/SCHD_1120S; stale
-  8283/8949/8995/8995A; `1065` empty stub; `FORM_8582`→`8582` naming). Sources reproduce EXACTLY. Full
-  writeup + remediation order → `reconstructability_check.md`. No prod mutation this session (89/420 intact).
+  8283/8949/8995/8995A; `1065` empty stub; and a spurious bare-`8582` loader duplicate). Sources reproduce
+  EXACTLY. **Prod remediated (Ken "do all safe items"):** deleted the 9 confirmed-superseded `4797` orphan
+  rules + the `1065` empty stub → prod 89→**88 TaxForms** (420 FA intact); an initial `FORM_8582` rename was
+  a misdiagnosis and was reverted (it's the real passive-loss form). The rest deferred to the August 1120-S
+  delta audit (all `load_1120s_complete/specs`). Full writeup → `reconstructability_check.md`.
 - 2026-07-04: **1065-core campaign CLOSED — forms 5 & 6 (8825/4562/3800) confirmed cover 1065.** Verified
   vs the live DB: entity_types carry 1065 AND the routing is wired (4562 "§179 → Schedule K", 8825 "net
   rental → K Line 2"). No fresh authoring. All 6 core forms done.

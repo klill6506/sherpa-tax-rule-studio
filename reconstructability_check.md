@@ -80,8 +80,12 @@ now would destroy data the audit needs.
 | `8995` | 9 | 14 | (5) |
 | `8995A` | 11 | 17 | (6) |
 
-→ **Safe/additive:** re-seed these in prod (e.g. `seed_all`, or the individual loaders) to
-catch prod up to source control. No data loss.
+**INVESTIGATED 2026-07-04:** prod **exactly matches the 1040 primary loaders** for all four
+(`load_1040_form_8283`→5, `load_1040_schedule_d`→5, `load_1040_schedule_c`→9,
+`load_1040_form_8995a`→11 — all MATCH prod). The extra rules in a full rebuild come **entirely
+from `load_1120s_complete` / `load_1120s_specs`**, which add a *second* rule set to these forms.
+So this is NOT a clean isolated re-seed — it is entangled with the 1120-S loader family (same
+loaders behind A and D). → **Fold into the August 1120-S delta audit**, not a quick prod re-seed.
 
 ### C. Cruft — a form that lives only in the DB
 
@@ -89,12 +93,17 @@ catch prod up to source control. No data loss.
   "1065_SE". No loader creates it. The real partnership forms are `1065_PAGE1`, `SCH_K_1065`,
   `1065_L/B/M1/M2`, `SCHEDULE_K1_1065`, `1065_SE`. → **Decide:** delete the stub from prod.
 
-### D. Form-number naming drift
+### D. Spurious `8582` duplicate from the 1120-S loader (was misdiagnosed as naming drift)
 
-- Production has **`FORM_8582`** (legacy prefixed name, `entity=['1040']`). The current loader
-  emits bare **`8582`**, per the established bare-number convention (cf. `6198`, `4835`). A
-  re-seed would create `8582` and leave `FORM_8582` orphaned. → **Decide:** rename the prod row
-  `FORM_8582` → `8582` (and confirm nothing references the old key), converging on the loader.
+**CORRECTED 2026-07-04:** `FORM_8582` (12 rules, `entity=['1040']`) is the **legitimate**
+Passive Activity Loss form — created by its proper loader and referenced by the 4835 spec
+("the EXISTING FORM_8582 spec"). It is correct in prod. The reconstructability "fresh-only
+`8582`" is a **separate, spurious bare-`8582` stub (6 rules) that `load_1120s_complete`
+creates** — it never existed in prod. So this is NOT a prod naming problem; it's a **code bug
+in `load_1120s_complete`** (it fabricates a duplicate 8582). → **Fix in the August 1120-S delta
+audit** (stop the 1120-S loader creating the duplicate). Do NOT rename `FORM_8582`.
+*(An initial rename of `FORM_8582`→`8582` was executed and immediately reverted once the diff
+revealed both forms exist in the rebuild — see "Executed" below.)*
 
 ## Count snapshot (prod → rebuilt, `seed_all` order)
 
@@ -110,13 +119,29 @@ AuthorityExcerpt  756 -> 723  (excerpts on the orphaned/stale forms; tracks A/B)
 AuthorityFormLink 431 -> 414
 ```
 
-## Recommended remediation order
+## Executed remediation — 2026-07-04 (Ken: "do all safe items")
 
-1. ✅ **Done:** `seed_all` orchestrator committed (fixes ordering + gives a repeatable rebuild).
-2. **Ken call — prod cleanup (deletions):** drop the `1065` stub (C); drop orphaned legacy rules
-   on 4797 / SCH_K_1120S / SCHD_1120S (A) once confirmed superseded; rename `FORM_8582`→`8582` (D).
-3. **Ken call — prod re-seed (additive):** run `seed_all` against prod to catch up the stale
-   forms (B). Idempotent; brings prod up to the loaders but does not remove orphans (do step 2 first).
-4. **Re-run this check** after remediation; target a clean 0-delta rebuild (modulo intended prod-only).
-5. **Standing:** wire `seed_all --dry-run` (or a periodic full rebuild+diff) into the season
-   cadence so prod never silently drifts from source control again.
+Snapshot-backed, transactional, against prod (`remediation_snapshot.json` holds the backup):
+
+- ✅ **Deleted the 9 `4797` orphan rules** (R001–R008, R010; + 13 cascaded authority links =
+  22 objects). Prod `4797` now = 8 rules, matching the loader. Confirmed superseded (§A).
+- ✅ **Deleted the `1065` empty stub** (entity=[], mislabeled "1065_SE"; + 2 cascaded FormLines).
+  `TaxForm` 89 → **88**. No loader creates it; not reproducible = correct to remove.
+- ↩️ **Reverted a mistaken `FORM_8582`→`8582` rename.** The re-diff showed the rebuild produces
+  BOTH `FORM_8582` (real) and a spurious bare `8582` (§D) — so `FORM_8582` was correct all along.
+  Renamed back immediately; `FORM_8582` (12 rules) intact.
+- ⏸ **Deferred to the August 1120-S delta audit:** the stale forms (B), the SCH_K_1120S/SCHD_1120S
+  orphans (A), and the spurious bare-`8582` loader duplicate (D) — all trace to
+  `load_1120s_complete/specs` and must be adjudicated together, not piecemeal.
+
+**Post-remediation diff:** the only residual prod↔rebuild deltas are the 1120-S-loader items above.
+`1065` and `4797` are resolved (0 delta); **authority sources match exactly**.
+
+## Remaining remediation order
+
+1. ✅ **Done:** `seed_all` orchestrator committed; 4797 orphans + 1065 stub removed from prod.
+2. **August 1120-S delta audit** (already on the checklist) — owns everything left: the stale
+   8283/8949/8995/8995A rule sets, the SCH_K_1120S/SCHD_1120S orphans + dropped line detail, and
+   the spurious bare-`8582` duplicate. Fix the `load_1120s_*` loaders, then re-seed/clean prod.
+3. **Standing:** run `seed_all` on a fresh DB + this diff periodically so prod never silently
+   drifts from source control again.

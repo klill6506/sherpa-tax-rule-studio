@@ -541,6 +541,39 @@ F8835_DIAGNOSTICS: list[dict] = [
                  "The rate for this tax year is not yet pinned in the software — the credit is not computed. "
                  "Re-pin the rate from the year's IRS inflation-adjustment notice."),
      "notes": "WALK ITEM B. 2026 unpublished -> RED + standing re-pin (the Sch F 2026-constant precedent)."},
+    # --- Ken's J2/J3/J4 scope-walk RED-defers (2026-07-04) + the missing-PIS
+    #     gap. The wiring point carries ONE (amount, "1f"|"4e") route per
+    #     return, so any routing ambiguity withholds the feed and defers the
+    #     split to the Form 3800 1zz/4z direct entries (the escape hatch). All
+    #     bridge-gated on compute_8835.form_8835_state in tts. ≤20 chars.
+    {"diagnostic_id": "D_8835_005", "title": "§45 components route to both Form 3800 rows 1f and 4e (J2)", "severity": "error",
+     "condition": "components include both a 1f-routed and a 4e-routed amount on one return",
+     "message": ("Not supported — prepare manually: this return's §45 components route to BOTH Form 3800 Part III "
+                 "line 4e (inside the 4-year placed-in-service window, a specified credit) AND line 1f (outside it). "
+                 "The software carries a single route per return, so NOTHING has been fed to Form 3800. Enter the "
+                 "split manually on the Form 3800 'other current-year' (1zz) and 'other specified' (4z) fields."),
+     "notes": "Ken's J2 ruling 2026-07-04. Whole feed withheld; escape hatch = 3800 1zz/4z. Bridge-gated on form_8835_state['mixed']."},
+    {"diagnostic_id": "D_8835_006", "title": "§45 specified window ends mid-year (straddle, J3)", "severity": "error",
+     "condition": "a facility's 4-year specified window ends inside the tax year",
+     "message": ("Not supported — prepare manually: this facility's 4-year specified-credit window "
+                 "(§38(c)(4)(B)(iv), measured from its placed-in-service date) ENDS during the tax year, so its "
+                 "production splits between Form 3800 line 4e (in-window) and line 1f (after). The software routes "
+                 "whole years only — this facility's credit has NOT been fed to Form 3800. Split the kilowatt-hours "
+                 "by period and enter the two amounts on the Form 3800 1zz/4z fields."),
+     "notes": "Ken's J3 ruling 2026-07-04. Facility feed withheld. Bridge-gated on form_8835_state['straddle']."},
+    {"diagnostic_id": "D_8835_007", "title": "Passthrough §45 credit with no placed-in-service date (J4)", "severity": "error",
+     "condition": "f8835_passthrough_credit > 0 and f8835_passthrough_pis_date is unanswered",
+     "message": ("A §45 renewable electricity credit from a passthrough entity is entered (Form 8835 line 14) but the "
+                 "source facility's placed-in-service date is unanswered, so the Form 3800 routing (line 4e inside "
+                 "the 4-year window vs line 1f) cannot be derived. The passthrough amount has NOT been fed to Form "
+                 "3800. Enter the placed-in-service date from the K-1 footnotes — or route it manually via 1zz/4z."),
+     "notes": "Ken's J4 ruling 2026-07-04. Nullable Taxpayer.f8835_passthrough_pis_date; unanswered + amount withholds. Bridge-gated on form_8835_state['passthrough_route']=='unknown'."},
+    {"diagnostic_id": "D_8835_008", "title": "Producing §45 facility missing its placed-in-service date", "severity": "error",
+     "condition": "f8835_kwh_produced > 0 and f8835_placed_in_service_date is blank (construction provably timely)",
+     "message": ("A facility reports kilowatt-hours produced but has no placed-in-service date (Form 8835 line 5). "
+                 "The date drives both the applicable-rate tier AND the Form 3800 4e-vs-1f routing window — the "
+                 "facility's credit is NOT computed until the date is entered."),
+     "notes": "No-silent-gap gap-filler (not a scope-walk item). Excluded until fixed. Bridge-gated on form_8835_state['unrouteable']. Distinct from D_8835_001 (OBBBA owns the exclusion when construction proves late)."},
 ]
 
 F8835_SCENARIOS: list[dict] = [
@@ -652,6 +685,36 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "formula_check", "form": "8835",
                     "formula": "line_10 == (line_9 * 0.10 if domestic_content else 0); line_11 == (line_9 * 0.10 if energy_community else 0); line_12 == line_9 + line_10 + line_11"},
      "sort_order": 4},
+    {"assertion_id": "FA-1040-8835-05", "assertion_type": "table_invariant", "entity_types": ["1040"],
+     "title": "Form 8835 routing RED-defers — mixed/straddle/unrouted withhold the feed (J2/J3/J4)",
+     "description": ("Pins Ken's 2026-07-04 scope rulings so they are never silently re-litigated. Mixed 1f-vs-4e "
+                     "components withhold the WHOLE feed (D_8835_005, J2); a facility whose 4-year window ENDS inside "
+                     "the tax year is a straddle and is withheld (D_8835_006, J3); a passthrough amount with its "
+                     "placed-in-service date unanswered is withheld (D_8835_007, J4); a producing facility with no "
+                     "placed-in-service date is excluded (D_8835_008). All four are errors, bridge-gated on "
+                     "compute_8835.form_8835_state (the same gatherer form_8835_credit reads). Escape hatch = the "
+                     "Form 3800 1zz/4z direct entries. Bug it catches: a routing conflict silently picking a side, or "
+                     "a diagnostic reading different state than the compute."),
+     "definition": {"kind": "gating_check", "form": "8835",
+                    "blockers": ["mixed_routing", "straddle_window", "passthrough_unrouted", "missing_pis"],
+                    "expect": {"red_fires": True, "feed_withheld": True, "escape_hatch": "3800 1zz/4z"}},
+     "sort_order": 5},
+    {"assertion_id": "FA-1040-8835-06", "assertion_type": "table_invariant", "entity_types": ["1040"],
+     "title": "Form 8835 constants — the 2025 rate tiers, the OBBBA cutoff, x5/10%/15%/90%, the 4-year window",
+     "description": ("Validates the verified constants: 2025 rates $0.006 tier-1 (wind/CLB/geo/solar/offshore) and "
+                     "$0.006 hydro/marine PIS after 2022, $0.003 tier-2, 3.0c/1.5c pre-2022 (form pre-print + i8835 "
+                     "2025, Fed. Reg. 2025-09366); construction-before-2025 (P.L. 119-21); §45(b)(6) x5; "
+                     "§45(b)(9)/(11) 10% bonuses; §45(b)(3) 15% bond cap; §6417 EPE 90%; the §38(c)(4)(B)(iv) 4-year "
+                     "window. Also asserts 2026 is NOT pinned (unpublished — D_8835_RATE_YEAR blocks, the Sch F 2026 "
+                     "precedent). Bug it catches: any drifted constant, or a 2026 rate invented before the IRS "
+                     "publishes it."),
+     "definition": {"kind": "constants_check", "form": "8835",
+                    "constants": {"rate_2025_tier1": 0.006, "rate_2025_tier2": 0.003,
+                                  "rate_2025_hydro_marine_post2022": 0.006, "rate_pre2022_full": 0.03,
+                                  "rate_pre2022_half": 0.015, "obbba_construction_cutoff": "2025-01-01",
+                                  "increased_multiplier": 5, "bonus_rate": 0.1, "bond_reduction_cap": 0.15,
+                                  "epe_2024_factor": 0.9, "sec45_specified_window_years": 4}},
+     "sort_order": 6},
 ]
 
 

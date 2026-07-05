@@ -29,8 +29,18 @@ production; if anything lives only in Supabase → fix now."*
   = **NOT superseded** — they encode line-level detail (interest, dividends, meals, distributions, K18
   reconciliation) the current 1120-S loader DROPPED → a loader regression; **do NOT delete, fold into
   the August 1120-S delta audit.** Recorded in `reconstructability_check.md` §A + STATUS Known-issues.
-- **No prod mutation** (verification only; 89 TaxForms / 420 FlowAssertions intact). Committed the
-  orchestrator + report + assessment + STATUS. Remediation (prod deletes/re-seed) awaits Ken's call.
+- **Prod remediation executed (Ken: "do all safe items"), snapshot-backed + transactional:** deleted
+  the 9 confirmed-superseded `4797` orphan rules (+13 cascaded authority links) and the `1065` empty stub
+  (+2 cascaded FormLines) → prod **89 → 88 TaxForms**, 420 FA intact; 4797 + 1065 now 0-delta vs the
+  rebuild, **authority sources 0-delta**. **CAUGHT MY OWN MISDIAGNOSIS:** an initial `FORM_8582`→`8582`
+  rename was executed, then the re-diff showed the rebuild produces BOTH `FORM_8582` (the real passive-loss
+  form, 12 rules, referenced by 4835) AND a spurious bare `8582` from `load_1120s_complete` — so I
+  **reverted** the rename immediately (FORM_8582 restored, 12 rules). Investigation also found the four
+  "stale" forms EXACTLY match their 1040 primary loaders — the extra rules come from `load_1120s_complete/
+  specs`, so item B is 1120-S-loader-entangled too. **All residual drift now traces to the 1120-S loader
+  family → deferred to the August 1120-S delta audit** (stale rule sets, SCH_K/SCHD orphans + dropped line
+  detail, spurious bare-8582 duplicate). No fresh authoring; report/STATUS corrected. `seed_all` + report
+  committed; the prod deletes are live in Supabase.
 
 ## 2026-07-04 — 1065 core campaign CLOSED: forms 5 & 6 (8825/4562/3800) coverage confirmed
 *Ken: "check the status and continue." STATUS's IMMEDIATE NEXT was: confirm 8825/4562/3800 cover 1065
