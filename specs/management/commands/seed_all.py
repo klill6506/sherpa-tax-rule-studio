@@ -11,6 +11,7 @@ Phases:
   2. Specs      — every specs `load_*` loader (forms/rules/lines/diagnostics/scenarios)
   3. Amends     — loaders that MUTATE a pre-existing base spec (must run after step 2)
   4. Flow       — flow assertions (reference forms across the whole DB)
+  5. Approve    — apply the source-controlled approval manifest (draft -> approved)
 
 Loaders are discovered dynamically, so new `load_*` commands are picked up
 automatically. AMEND loaders and non-seed commands are listed explicitly below.
@@ -29,12 +30,15 @@ from django.core.management.base import BaseCommand
 # Loaders that amend an existing base spec and must run AFTER all base forms exist.
 AMEND_LOADERS = ["load_1040_form_3800"]
 
-# specs commands that are NOT part of the seed rebuild.
-NON_SEED = {"export_flow_assertions", "seed_flow_assertions", "seed_all", *AMEND_LOADERS}
+# specs commands that are NOT part of the specs-loader phase (they run in their own phases).
+NON_SEED = {
+    "export_flow_assertions", "seed_flow_assertions", "seed_all", "approve_specs", *AMEND_LOADERS,
+}
 
-# Phase 1 (sources app) and phase 4 (flow assertions) — explicit, order matters.
+# Phase 1 (sources app), phase 4 (flow assertions), phase 5 (approval) — explicit, order matters.
 SOURCE_LOADERS = ["seed_sources", "load_all_federal", "load_1120s_family"]
 FLOW_LOADERS = ["seed_flow_assertions"]
+APPROVE_LOADERS = ["approve_specs"]
 
 
 class Command(BaseCommand):
@@ -59,6 +63,7 @@ class Command(BaseCommand):
             (f"2. specs ({len(specs_loaders)})", specs_loaders),
             ("3. amends", AMEND_LOADERS),
             ("4. flow assertions", FLOW_LOADERS),
+            ("5. approve", APPROVE_LOADERS),
         ]
 
         if opts["dry_run"]:

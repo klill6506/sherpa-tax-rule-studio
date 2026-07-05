@@ -16,6 +16,36 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-04 — D-5: Spec approval (draft→approved) is source-controlled via a manifest, not a DB edit
+
+**Decision:** A spec's approval state is recorded in **source control** — `specs/approved_specs.py`
+(`APPROVED_FORMS`, one entry per Ken-signed-off form) — and applied to the DB by the
+`approve_specs` management command, which `seed_all` runs as its final phase (5). Approval is
+NEVER set by a one-off DB edit. A from-scratch rebuild (`seed_all`) therefore restores every
+approval from the manifest. `approve_specs` also reports drift: manifest entries with no matching
+form, and forms approved in the DB but absent from the manifest (which would be lost on rebuild).
+
+**Context:** The `TaxForm.status` field (draft/review/approved/archived) already existed, and every
+loader seeds the model default `draft` (verified: all 88 forms were `draft`). The July checklist
+item "begin the draft→approved workflow" needs a way to mark Ken-approved specs. The 2026-07-04
+reconstructability check ([reconstructability_check.md]) had just proved that any state living only
+in Supabase (not reproducible from loaders) silently drifts and is lost on rebuild.
+
+**Alternatives considered:**
+- Flip `status` directly in the DB / via Django admin — rejected: approval would vanish on the next
+  `seed_all` (loaders re-seed `draft`); it is exactly the "lives only in Supabase" anti-pattern the
+  reconstructability check cleaned up.
+- Have each loader set its own `status=approved` — rejected: scatters approval across ~60 loaders,
+  couples a sign-off to a code edit of the spec loader, and gives no single audit of "what Ken
+  approved." A central manifest is one diffable list.
+
+**What would change our mind:** if approval needs per-version or per-jurisdiction granularity beyond
+what `form_number` (+ optional `jurisdiction`) gives, extend the manifest entry schema. If the app
+grows a UI-driven review workflow, the manifest becomes the export target of that UI rather than a
+hand-edited file.
+
+---
+
 ## 2026-07-04 — D-4: S3/S4 unblock campaign — Schedule A (8936) is a separate spec (key 8936_SCHA); OBBBA gates are first-class year-keyed gates
 
 **Decision:** Authoring the four MeF-ATS-blocking specs (4835, 8835, 8936, Schedule A
