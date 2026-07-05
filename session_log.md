@@ -4,6 +4,25 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — GA-500 military-exclusion reconciliation debt CLOSED (RS side) — spec authoritative, app over-inclusive
+*Picked up the BUILD_ORDER "open reconciliation debt" as a bounded close after S-5/S-6. The debt framed it as
+"the app should not stay ahead of the law" — the gap-check + research showed the REVERSE.*
+- **Gap-check:** `load_ga500_form_500.py` already fully models the military exclusion — `GA_MILITARY_RIE_BASE
+  {2025:17500}` / `GA_MILITARY_RIE_MAX {2025:35000}` + a verbatim IT-511 Sch 1 p3 worksheet excerpt (under-62;
+  base $17,500; +$17,500 once GA earned income ≥ $17,501; max $35,000). The RS spec was NOT behind.
+- **Research-verified (2025 IT-511 p.21, Form 500 Sch 1 p3, O.C.G.A. §48-7-27(a)(5.1)(A)):** the RS rule is
+  correct. The app's 7/5 `min(mret, 35000)` is OVER-inclusive — wrong 3 ways: ignores the under-62 age gate
+  (grants it at any age), ignores the earned-income condition on the second $17,500, and the base tranche
+  alone caps at $17,500 not $35,000. A 62+ taxpayer's military pay is handled by the GENERAL retirement
+  exclusion ($35k 62-64 / $65k 65+), not the military one — the two are age-segregated, never stacked.
+- **SB 31 year-keyed find:** GA SB 31 (2025 session) fully exempts military retirement regardless of age/income
+  for **taxable years beginning on/after Jan 1, 2026** — does NOT reach TY2025. So the RS spec correctly keeps
+  the HB 1064 structure for 2025; the loader's 2026 military placeholder (17,500/35,000) is STALE for TY2026.
+- **Resolution (spec-first):** no RS TY2025 spec change (already correct); annotated the loader with a
+  year-keyed SB 31 warning (comment only — no seeded field changed, so no reseed); **spawned tts task
+  `task_f550dfd2`** to fix the app compute to the worksheet logic. Closed the debt in BUILD_ORDER.
+  Reinforces the front-door value: the spec-vs-app reconciliation caught that the APP had drifted, not the spec.
+
 ## 2026-07-05 — S-5 boundary diagnostics AUTHORED + SEEDED + EXPORTED (WO-04) — consolidated ENTITY_BOUNDARY form
 *Ken opened S-5 right after S-6. Second full front-door loop the same day. PRODUCT_MAP §17: Core never goes
 silent at a module boundary — it must DETECT and throw a loud RED diagnostic.*

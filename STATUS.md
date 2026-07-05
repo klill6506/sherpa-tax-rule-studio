@@ -244,6 +244,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **GA-500 military-exclusion reconciliation debt CLOSED (RS side) — spec was RIGHT, app was wrong.**
+  Closed a BUILD_ORDER "open reconciliation debt." Research-verified (2025 IT-511 p.21 + Form 500 Sch 1 p3 +
+  O.C.G.A. §48-7-27(a)(5.1)) that the **RS GA-500 spec is correct and authoritative**: under-62 gate; $17,500
+  base + $17,500 only if GA earned income > $17,500; max $35,000; 62+ handled by the general retirement
+  exclusion. The **app's 7/5 `min(mret, 35000)` was OVER-inclusive** (ignored the age gate, the earned-income
+  condition, and the $17,500 base ceiling) — the app was BEHIND the law, not ahead. No RS TY2025 change needed;
+  **tts app fix handed off (`task_f550dfd2`).** Annotated `load_ga500_form_500.py` with a year-keyed **SB 31**
+  flag: SB 31 fully exempts military retirement for **TY2026+** (not 2025) — the loader's 2026 military
+  placeholder (17,500/35,000) is stale; re-verify the enrolled SB 31 text before the TY2026 build.
 - 2026-07-05: **S-5 boundary diagnostics AUTHORED + SEEDED + EXPORTED (WO-04) — consolidated ENTITY_BOUNDARY form.**
   Second full front-door loop (same day as S-6). PRODUCT_MAP §17 mandate: Core never goes silent at a module
   boundary. Gap-check found 4 of 5 boundaries already exist as on-form RED-defers (D_L_M3, D_SCHK_K3,

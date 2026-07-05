@@ -212,8 +212,13 @@ GA_TIPS_OT_LAST_YEAR: int = 2028          # "shall stand repealed and reserved o
 GA_RIE_62_64: dict[int, int] = {2025: 35000, 2026: 35000}            # age 62-64 or perm. disabled <62
 GA_RIE_65: dict[int, int] = {2025: 65000, 2026: 65000}              # age 65+
 GA_RIE_EARNED_CAP: dict[int, int] = {2025: 5000, 2026: 5000}        # RIE worksheet line 4
-GA_MILITARY_RIE_BASE: dict[int, int] = {2025: 17500, 2026: 17500}  # Military worksheet line 2
-GA_MILITARY_RIE_MAX: dict[int, int] = {2025: 35000, 2026: 35000}   # base + additional
+GA_MILITARY_RIE_BASE: dict[int, int] = {2025: 17500, 2026: 17500}  # Military worksheet line 2 (under-62; +17,500 if GA earned income > 17,500)
+GA_MILITARY_RIE_MAX: dict[int, int] = {2025: 35000, 2026: 35000}   # base + additional; TY2025 verified vs IT-511/§48-7-27(a)(5.1)
+# ⚠ YEAR-KEYED — TY2026 military exclusion is STALE here. GA SB 31 (2025 session) FULLY exempts military
+# retirement income regardless of age/earned-income for taxable years beginning on/after Jan 1, 2026. The
+# 2026 values above (17,500/35,000) are the OLD HB 1064 structure and are WRONG for TY2026. Re-verify the
+# ENROLLED SB 31 text and rebuild the TY2026 military variant (full exemption) before any TY2026 GA-500 build.
+# (TY2025 unaffected — SB 31 does not reach 2025. Research-verified 2026-07-05.)
 GA_PATH2COLLEGE_CAP: dict[int, int] = {2025: 4000, 2026: 4000}     # per beneficiary
 GA_PATH2COLLEGE_CAP_MFJ: dict[int, int] = {2025: 8000, 2026: 8000}
 GA_LIC_FAGI_CEILING: dict[int, int] = {2025: 20000, 2026: 20000}   # < this to qualify
