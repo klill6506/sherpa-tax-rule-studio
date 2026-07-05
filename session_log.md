@@ -23,8 +23,14 @@ production; if anything lives only in Supabase → fix now."*
   loaders — `8283`/`8949`/`8995`/`8995A` (re-seed, additive); (C) `1065` empty stub (entity=[], 0 rules,
   mislabeled "1065_SE") lives only in DB; (D) `FORM_8582` vs the loader's bare `8582`. **Authority
   sources reproduce EXACTLY (0 delta).** Full writeup + remediation order → `reconstructability_check.md`.
+- **Supersession investigation (Ken chose "investigate orphans first", read-only content diff):**
+  `4797` orphans R001-R010 = SUPERSEDED (pre-refactor naive rules; R007 hardcodes §1250 recap = 0, the
+  exact bug the nuance leg fixed) → safe to delete. But `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012
+  = **NOT superseded** — they encode line-level detail (interest, dividends, meals, distributions, K18
+  reconciliation) the current 1120-S loader DROPPED → a loader regression; **do NOT delete, fold into
+  the August 1120-S delta audit.** Recorded in `reconstructability_check.md` §A + STATUS Known-issues.
 - **No prod mutation** (verification only; 89 TaxForms / 420 FlowAssertions intact). Committed the
-  orchestrator + report + STATUS. Remediation (prod deletes/re-seed) awaits Ken's call.
+  orchestrator + report + assessment + STATUS. Remediation (prod deletes/re-seed) awaits Ken's call.
 
 ## 2026-07-04 — 1065 core campaign CLOSED: forms 5 & 6 (8825/4562/3800) coverage confirmed
 *Ken: "check the status and continue." STATUS's IMMEDIATE NEXT was: confirm 8825/4562/3800 cover 1065

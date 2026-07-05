@@ -164,12 +164,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
   does NOT cleanly rebuild from the loaders. **FIXED this session:** the `seed_all` orchestrator
   (61/61 loaders, 0 problems) — resolves the one hard break (3800 amend ran before its base; now
   amends-last). **STILL OPEN — needs Ken (all are prod-data changes):** (A) prod carries orphaned
-  legacy rules no loader reproduces — `4797` R001-R008/R010, `SCH_K_1120S` R010-R018, `SCHD_1120S`
-  R010-R012 (loaders refactored to new rule_ids; prod never cleaned) → delete if superseded; (B)
-  prod STALE vs loaders — `8283`/`8949`/`8995`/`8995A` (loaders ahead) → re-seed (additive, safe);
-  (C) `1065` empty stub (entity=[], 0 rules, mislabeled title "1065_SE") lives only in DB → delete;
-  (D) `FORM_8582` legacy naming vs the loader's bare `8582` → rename prod row. Authority sources
-  reproduce EXACTLY (0 delta). See the report for the remediation order.
+  legacy rules no loader reproduces. **Supersession assessed (read-only, 2026-07-04):** `4797`
+  R001-R010 = SUPERSEDED (pre-refactor naive version; R007 hardcodes §1250=0, the bug the nuance leg
+  fixed) → **safe to delete (9 rows)**; but `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 = **NOT
+  superseded — dropped line detail** (interest/dividends/meals/distributions/K18 reconciliation absent
+  from the current loader = a 1120-S loader regression) → **DO NOT delete; fold into the August 1120-S
+  delta audit.** (B) prod STALE vs loaders — `8283`/`8949`/`8995`/`8995A` (loaders ahead) → re-seed
+  (additive, safe); (C) `1065` empty stub (entity=[], 0 rules, mislabeled title "1065_SE") lives only
+  in DB → delete; (D) `FORM_8582` legacy naming vs the loader's bare `8582` → rename prod row.
+  Authority sources reproduce EXACTLY (0 delta). See `reconstructability_check.md` §A for the content diff.
 - **⚠ PUBLIC MIRROR (2026-07-04):** this `STATUS.md` and `session_log.md` are auto-copied into the
   **public** `klill6506/tts-tax-status` repo (`rule-studio/` subfolder) on every session-close sync,
   even though the RS repo itself is going private. Keep client PII and sensitive firm specifics OUT of

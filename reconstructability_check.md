@@ -44,6 +44,33 @@ not reproduce them:
 so it matches the clean rebuild. If any are still meaningful, they are unversioned data at
 risk and the loader must be updated to reproduce them.
 
+**SUPERSESSION ASSESSMENT (2026-07-04, read-only content diff — Ken chose "investigate first"):**
+
+- **`4797` — SUPERSEDED, safe to delete.** The current loader produces the refactored `R-4797-*`
+  set (CHARCLASS = §1245/§1250 by property character; ADDLDEPR = computed line 26a; 1231NET =
+  5-yr lookback; RECAP; ROUTE; GAIN; ORD; PART4). The orphaned `R001–R010` are the *pre-refactor*
+  naive version — holding-period routing, `min(gain, depr)` recapture, and **`R007` hardcodes
+  §1250 recapture = 0**, the exact bug the 4797 nuance leg fixed (RS `03a5606`). Stale duplicates
+  of superseded (and partly wrong) logic. → **DELETE the 9 orphaned rows from prod.**
+
+- **`SCH_K_1120S` — NOT cleanly superseded, DO NOT blind-delete.** The current loader produces only
+  8 high-level routing rules (ordinary / rental-8825 / capgain / §1231 / §179 / charitable / QBI /
+  pro-rata base). The orphaned `R010–R018` include line-level detail the current loader **dropped**:
+  `R011` interest, `R012` dividends (5a/5b), `R016` nondeductible meals, `R017` total distributions,
+  `R018` K18 income/loss reconciliation — none of which appear in the fresh set. `R010/R013/R014/R015`
+  (K1←Page1, K7/K8a←Sch D, K9←4797) overlap the fresh routing. → **DO NOT delete. This is dropped
+  detail — the current 1120-S loader regressed vs the earlier richer version.** Fold into the
+  **August "1120-S delta audit"** (already on the checklist).
+
+- **`SCHD_1120S` — borderline.** `R011/R012` (Sch D Part I L5 → K7, Part II L12 → K8a) overlap the
+  fresh `R004` "flow to Schedule K"; `R010` (validation: Sch D excludes §1231) is unique and worth
+  keeping. → **Hold with SCH_K_1120S in the 1120-S delta audit; do not delete piecemeal.**
+
+**Net:** only the `4797` orphans are confirmed safe to delete. The `SCH_K_1120S` / `SCHD_1120S`
+orphans surface a real regression in the 1120-S family loaders (line detail present in prod, absent
+from the current loaders) — this is exactly what the August 1120-S delta audit is for; deleting them
+now would destroy data the audit needs.
+
 ### B. Production is stale — current loaders produce newer rules prod doesn't have
 
 | Form | prod rules | rebuilt | new rule_ids the loader adds |
