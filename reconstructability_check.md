@@ -1,5 +1,35 @@
 # RS DB Reconstructability Check — 2026-07-04
 
+## ✅ UPDATE — August 1120-S delta audit COMPLETE (2026-07-05): prod ↔ rebuild is now 0-delta
+
+The residual drift below is **fully resolved**. A fresh `seed_all` rebuild now matches production
+**exactly** — 92 form_numbers, 0 form-set difference, **0 rule-level diff** across every form. Root
+causes + fixes:
+
+- **§A (SCH_K_1120S / SCHD_1120S "orphans") — ORDERING BUG, not orphans.** `load_1120s_full` *amends*
+  those forms (adds R010-R018 / R010-R012) but wasn't in `seed_all`'s `AMEND_LOADERS`, so it ran
+  alphabetically in phase 2 **before** its base `load_1120s_specs`; its `.first()` lookup returned None
+  and the flow-detail rules were silently dropped on rebuild. **Fix:** moved `load_1120s_full` to
+  `AMEND_LOADERS` (phase 3). Rebuild now reproduces 17/8 rules. **Zero prod change** — prod already had them.
+- **§B / §D (8283/8949/8995/8995A double sets + bare-8582) — LOADER POLLUTION.** `load_1120s_complete`
+  (`_load_8995/_load_8995a/_load_8582/_load_8283`) and `load_1120s_specs` (`_load_form_8949`) re-seeded
+  1040-owned forms with a duplicate rule set (R001-R00x) prod never had, and fabricated a bare `8582`.
+  **Fix:** removed those blocks. The 1040 primaries own the forms with correct multi-entity types.
+  **Zero prod change** — prod was already clean; the pollution was rebuild-only.
+- **§C-new (4797 v1 empty stub) — the last prod cruft.** Deleting 4797's orphan rules on 2026-07-04 left
+  an emptied v1 version row (0 rules) that no loader reproduces (the export serves v2, 8 rules).
+  **Fix:** deleted the v1 stub from prod (snapshot `remediation_snapshot_4797_v1.json`). Prod 93 → **92**.
+- **BONUS (GA600S content, DECISIONS D-8):** the GA S-corp spec (`load_remaining_1120s`) carried a stale
+  **5.49% PTET rate (live compute `* 0.0549`)** and a **3-factor apportionment formula** — both wrong for
+  2025. Corrected to **5.19%** (Form 600S Rev. 09/11/25) and the **single gross-receipts factor**
+  (§48-7-31), verified via the GA-700 research; reseeded to prod.
+
+Loader fixes: commit `5f46311`. Verification method: `scratchpad/rebuild_diff.py` + a per-form rule_id diff
+(`dump_rules.py`) — repeatable for the standing check (item 3 below).
+
+---
+
+
 *July Rule Studio checklist item: "fresh DB + all loaders + diff vs. production; document
 result in RS STATUS (if anything lives only in Supabase → fix now)." This is the documented
 result. Method: built a throwaway SQLite DB, ran every loader via the new `seed_all`
@@ -140,8 +170,8 @@ Snapshot-backed, transactional, against prod (`remediation_snapshot.json` holds 
 ## Remaining remediation order
 
 1. ✅ **Done:** `seed_all` orchestrator committed; 4797 orphans + 1065 stub removed from prod.
-2. **August 1120-S delta audit** (already on the checklist) — owns everything left: the stale
-   8283/8949/8995/8995A rule sets, the SCH_K_1120S/SCHD_1120S orphans + dropped line detail, and
-   the spurious bare-`8582` duplicate. Fix the `load_1120s_*` loaders, then re-seed/clean prod.
-3. **Standing:** run `seed_all` on a fresh DB + this diff periodically so prod never silently
-   drifts from source control again.
+2. ✅ **Done 2026-07-05 (the August 1120-S delta audit — see the banner at top):** the ordering bug
+   (`load_1120s_full` → `AMEND_LOADERS`), the pollution removal (8283/8949/8995/8995A/bare-8582), the
+   4797 v1 stub deletion, and the GA600S 5.49%/3-factor correction. **prod ↔ rebuild = 0-delta.**
+3. **Standing:** run `seed_all` on a fresh DB + the rule_id diff (`scratchpad/rebuild_diff.py` +
+   `dump_rules.py`) periodically so prod never silently drifts from source control again.

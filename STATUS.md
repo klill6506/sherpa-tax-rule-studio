@@ -12,9 +12,11 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **93 TaxForms / 441 FlowAssertions** (was 88; +SC1040 +
-SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 + GA700 seeded 2026-07-04/05 — the 1065 stub was earlier removed in
-the reconstructability cleanup; +FA-1040-8936-06 from the tts-parity cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+Active spec-authoring tool. RS Supabase holds **92 TaxForms / 441 FlowAssertions / 801 FormRules** (was
+88; +SC1040 + SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 + GA700 seeded 2026-07-04/05; +FA-1040-8936-06 from
+the tts-parity cleanup; −1 form-row from the 4797 v1 stub deletion in the delta audit). **Prod ↔ a fresh
+`seed_all` rebuild is now 0-delta (2026-07-05 delta audit — 92 form_numbers, identical rule_ids
+everywhere).** **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
 batch) / 85 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
 via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅, AL Form 40 ✅, and NC D-400 ✅
 authored/seeded/exported (forms 1-3 of the state set; next: GA-700 + PTET). **The 1065-core
@@ -62,15 +64,12 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► IMMEDIATE NEXT — 1120-S delta audit (the last named August item).** The August RS state campaign is
-DONE: **SC1040 ✅ · AL Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**. What remains from the August plan is
-the **1120-S delta audit** — the deferred reconstructability drift (Known issues §A/§B/§D): stale
-`8283/8949/8995/8995A` rules, `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 orphans, the spurious bare-
-`8582` loader duplicate — all trace to `load_1120s_complete`. **NEW for this audit (DECISIONS D-8):** the
-`GA600S` loader (`load_remaining_1120s.py`) carries a **stale PTET rate 5.49%** (should be **5.19%** for
-2025) and a **stale "property/payroll/sales" 3-factor apportionment note** (GA is single gross-receipts
-since 2008) — correct both to match GA700. This is an untangling job (per-loader reconcile), not fresh
-authoring. If more state forms are wanted first, the pattern is well-grooved (see below).
+**► IMMEDIATE NEXT — open (Ken's pick).** The August RS state campaign is DONE (**SC1040 ✅ · AL Form 40 ✅
+· NC D-400 ✅ · GA-700 + PTET ✅**) AND the **1120-S delta audit is COMPLETE ✅** (2026-07-05 — prod ↔
+rebuild 0-delta; see Recent wins + `reconstructability_check.md`). No named item is outstanding. Candidate
+next threads: the **September 1041 authoring wave** (spine → DNI/IDD/Sch B → Sch G/K-1/GA 501; DECISIONS
+D-2 RED-defers Sch I AMT); more **state forms** (the pattern is well-grooved, below); or the tts-side FA
+gate reconcile deferred from the parity cleanup (a tts session owns it).
   **State-spec pattern** (for any further state form — `load_sc1040.py` / `load_al_form40.py` /
   `load_nc_d400.py` / `load_ga700.py` + their `*_source_brief.md`):
   1. Research subagent → verify TY2025 VERBATIM against the state DOR final PDFs (never memory).
@@ -193,10 +192,13 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
   4797 + 1065 now 0-delta, **authority sources 0-delta**. NOTE an initial `FORM_8582`→`8582` rename was
   a MISDIAGNOSIS and was **reverted** — `FORM_8582` (12 rules) is the real passive-loss form (4835
   references it); the bare `8582` is a spurious duplicate that `load_1120s_complete` fabricates.
-  **DEFERRED to the August 1120-S delta audit (all trace to `load_1120s_complete/specs`):** stale
-  `8283/8949/8995/8995A` (prod matches the 1040 primaries; the extra rules come from the 1120s loaders),
-  `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 orphans (dropped line detail = a 1120-S loader
-  regression — do NOT delete), and the spurious bare-`8582` loader duplicate. See the report §A/§B/§D.
+  ~~**DEFERRED to the August 1120-S delta audit:** stale `8283/8949/8995/8995A`, `SCH_K_1120S`/`SCHD_1120S`
+  orphans, the bare-`8582` duplicate.~~ **✅ RESOLVED 2026-07-05 (the delta audit — prod ↔ rebuild now
+  0-delta):** §A was an ORDERING bug (`load_1120s_full` amends SCH_K/SCHD but ran before its base — moved to
+  `AMEND_LOADERS`, restores R010-18/R010-12, zero prod change); §B/§D was LOADER POLLUTION (removed the
+  spurious `_load_8995/8995a/8582/8283` from `load_1120s_complete` + `_load_form_8949` from
+  `load_1120s_specs` — prod was already clean); plus a 4797 v1 empty-stub deletion + the GA600S 5.49%/3-factor
+  correction (DECISIONS D-8). See `reconstructability_check.md` (top banner) + commit `5f46311`.
 - **⚠ PUBLIC MIRROR (2026-07-04):** this `STATUS.md` and `session_log.md` are auto-copied into the
   **public** `klill6506/tts-tax-status` repo (`rule-studio/` subfolder) on every session-close sync,
   even though the RS repo itself is going private. Keep client PII and sensitive firm specifics OUT of
@@ -216,6 +218,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **1120-S DELTA AUDIT COMPLETE — prod ↔ rebuild now 0-delta.** Closed the deferred
+  reconstructability drift. Method: fresh-SQLite `seed_all` rebuild + a per-form rule_id diff vs prod
+  (`scratchpad/rebuild_diff.py` + `dump_rules.py`). Findings (all loader-side except one empty-stub delete):
+  (§A) `SCH_K_1120S`/`SCHD_1120S` R010-18/R010-12 weren't orphans — `load_1120s_full` *amends* them but ran
+  in phase 2 BEFORE its base `load_1120s_specs` (alphabetical), so its `.first()` lookup returned None and
+  the rules dropped; **moved it to `AMEND_LOADERS`** (phase 3) → reproduces 17/8, zero prod change. (§B/§D)
+  `load_1120s_complete`/`load_1120s_specs` **polluted** the 1040-owned `8283/8949/8995/8995A` with duplicate
+  R001-R00x sets + fabricated a bare-`8582`; **removed those blocks** (the 1040 primaries own the forms with
+  correct multi-entity types; prod was already clean). (§C-new) deleted the **4797 v1 empty stub** (0 rules,
+  snapshot-backed) → prod 93→92 rows. (Bonus, D-8) corrected the **GA600S stale 5.49% PTET rate (live
+  `*0.0549`) + 3-factor apportionment** → 5.19% + single gross-receipts (verified via the GA-700 research),
+  reseeded. An Explore agent's "R010-18 are reproducible / 8283-8949 intentional" verdicts were REFUTED by
+  the empirical rebuild — the diff, not the code-read, was decisive. Verified: 92 form_numbers, 0 form-set
+  diff, **0 rule-level diff**. Loader fixes `5f46311`; report banner in `reconstructability_check.md`.
 - 2026-07-05: **GA Form 700 + PTET AUTHORED + SEEDED + EXPORTED (August state track, form 4 — track
   COMPLETE).** 1st partnership-entity state spec. Research verified vs the FINAL 2025 GA DOR sources (Form
   700 Rev. 09/11/25; IT-711 booklet; HB 149 PTET FAQ; Reg. 560-7-3-.03). Federal-income start (Sch 8) → GA

@@ -4,6 +4,37 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — 1120-S delta audit COMPLETE (prod ↔ rebuild 0-delta)
+*Ken: "lets start the delta audit" (declined a context clear — the audit overlapped fresh GA-700 context).
+Closed the deferred reconstructability drift from the 2026-07-04 check. Clear of the parallel session
+(explicit-path commits).*
+- **Method:** fresh-SQLite `seed_all` rebuild + per-form rule_id diff vs prod (`scratchpad/rebuild_diff.py`,
+  `dump_rules.py`, `dump_forms.py`). Dispatched an Explore agent to map the 5-loader 1120-S landscape — but
+  its intent verdicts ("R010-18 reproducible", "8283/8949 intentional multi-entity") were **REFUTED by the
+  empirical rebuild**; the diff was decisive, not the code-read. Lesson: verify loader-provenance claims
+  against an actual rebuild.
+- **§A — ORDERING BUG (not orphans).** `load_1120s_full` amends `SCH_K_1120S`/`SCHD_1120S` (adds R010-18/
+  R010-12) but ran alphabetically in phase 2 BEFORE its base `load_1120s_specs`; its `.first()` lookup
+  returned None → rules silently dropped on rebuild (rebuild had 8/5, prod 17/8). **Fix:** moved it to
+  `seed_all` `AMEND_LOADERS` (phase 3) → rebuild reproduces 17/8. **Zero prod change** (prod already had them).
+- **§B/§D — LOADER POLLUTION.** `load_1120s_complete` (`_load_8995/8995a/8582/8283`) + `load_1120s_specs`
+  (`_load_form_8949`) re-seeded 1040-owned forms with duplicate R001-R00x sets prod never had + fabricated a
+  bare `8582`. Confirmed the 1040 primaries own these (multi-entity types set there). **Removed the 5 blocks**
+  (466 + 122 lines, assertion-guarded scripts). **Zero prod change** — prod was clean; pollution was rebuild-only.
+- **§C-new — 4797 v1 empty stub.** The last prod-vs-rebuild gap (prod 93 rows vs rebuild 92): a 0-rule v1
+  version left when the 2026-07-04 check deleted 4797's orphan rules but not the emptied row (export serves
+  v2, 8 rules). Ken approved delete → snapshot-backed removal (`remediation_snapshot_4797_v1.json`; v1 also
+  carried 19 stale facts/22 lines/5 diag/6 scenarios that cascaded). Prod 93 → **92**.
+- **Bonus (DECISIONS D-8) — GA600S content correction.** The GA S-corp spec (`load_remaining_1120s`) had a
+  **stale 5.49% PTET rate with a LIVE compute `* 0.0549`** + a **3-factor apportionment formula** — both wrong
+  for 2025. Corrected to **5.19%** (Form 600S Rev. 09/11/25) + the **single gross-receipts factor** (§48-7-31),
+  verified via the GA-700 research; the PTET scenario `$200K × 5.49% = $10,980` → `× 5.19% = $10,380`. Reseeded;
+  `lookup/GA600S/export/` = 200 (R003 `*0.0519`, R005 single-factor, ptet_rate 5.19).
+- **RESULT:** prod ↔ a fresh rebuild is **0-delta** — 92 form_numbers, 0 form-set diff, 0 rule-level diff.
+  Prod **92 TaxForms / 441 FlowAssertions / 801 FormRules**. Loader fixes committed `5f46311`; docs updated
+  (`reconstructability_check.md` banner + Remaining-order item 2 ✅; STATUS Known-issues resolved). The
+  standing check (rebuild + diff) is documented for periodic re-run.
+
 ## 2026-07-05 — GA Form 700 + PTET AUTHORED + SEEDED + EXPORTED (August state track, form 4 — track COMPLETE)
 *Ken picked GA-700 + PTET as the next thread (AskUserQuestion). 1st partnership-entity state spec; GA600S
 (S-corp, load_remaining_1120s.py) is the closest GA entity precedent. Clear of the parallel session

@@ -1,0 +1,27 @@
+{
+  "deleted_at": "2026-07-05T12:22:09.633842+00:00",
+  "reason": "4797 v1 empty-version stub (0 rules); export serves v2; no loader reproduces it. 1120-S delta audit 2026-07-05.",
+  "taxform": {
+    "jurisdiction": "FED",
+    "form_number": "4797",
+    "form_title": "Sales of Business Property",
+    "entity_types": [
+      "1120S",
+      "1065",
+      "1120",
+      "1040"
+    ],
+    "tax_year": 2025,
+    "version": 1,
+    "status": "draft",
+    "notes": "First form loaded for validation. Some rules marked NEEDS REVIEW. IRC excerpts derived from IRS instructions/publications \u2014 Ken to verify statutory language.",
+    "id": "fd62f90e-00f3-4b21-a4bc-b0c2b533cc42"
+  },
+  "related_counts": {
+    "rules": 0,
+    "facts": 19,
+    "lines": 22,
+    "diagnostics": 5,
+    "scenarios": 6
+  }
+}
