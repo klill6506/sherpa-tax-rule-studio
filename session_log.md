@@ -4,6 +4,36 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — S-5 boundary diagnostics AUTHORED + SEEDED + EXPORTED (WO-04) — consolidated ENTITY_BOUNDARY form
+*Ken opened S-5 right after S-6. Second full front-door loop the same day. PRODUCT_MAP §17: Core never goes
+silent at a module boundary — it must DETECT and throw a loud RED diagnostic.*
+- **Gap-check finding:** 4 of 5 boundaries already existed as on-form RED-defers (D_L_M3 on 1065_L; D_SCHK_K3
+  + D_SCHK_704C on SCH_K_1065; Sch B Q10 §754 on 1065_B). But D_SCHK_K3 was a **blanket "international out of
+  scope" flag** — PRODUCT_MAP makes the **DFE determination** ("record WHY K-2/K-3 aren't required") Core season
+  one. Real gaps = the K-2/K-3 DFE gate + a multistate-apportionment indicator.
+- **Authorities verified (research pass, NOT memory):** M-3 (Instr. Sch. M-3 1065 Rev. 11/2023 = $10M assets /
+  $35M receipts / 50% REP; 1120-S Rev. 12/2019 = $10M assets single test); K-2/K-3 DFE 4 criteria (2025 i1065
+  K-2/K-3); §704(c)/Treas. Reg. §1.704-3; §754/§743(d)/§734(d) ($250k substantial built-in loss / basis
+  reduction); P.L. 86-272 (15 U.S.C. §381). OBBBA changed none of these.
+- **Scope (Ken, all recommended):** SHAPE = a **new consolidated `ENTITY_BOUNDARY` form** (single completeness
+  critic, not scattered amendments); K-2/K-3 = **COMPUTE the 4-criteria DFE gate** (RED D_EB_K2K3 on fail +
+  D_EB_DFE_OK info recording the basis); apportionment = **indicator** (+ P.L. 86-272 note, state-specific);
+  M-3/§754/§704(c) = **re-encode with pinned thresholds** (existing on-form flags remain).
+- **Authored** `load_entity_boundary.py` — form `ENTITY_BOUNDARY` (entity_types 1065/1120S), 23 facts / 5 rules
+  / 5 lines / 6 diagnostics / 10 scenarios / 3 FA. **6 self-owned authority sources** (IRS_2025_M3_1065,
+  IRS_2025_M3_1120S, IRS_2025_K2K3_1065, TREAS_REG_704_3, IRC_754_743_734, PL_86_272) so it reconstructs
+  standalone (no cross-loader source dependency). Auto-discovered by seed_all phase 2.
+- **Validated** on throwaway SQLite (`scratchpad/validate_boundary.py`): form seeded, all rules/diags present,
+  ALL rules cited, CharField caps introspected-and-clean, M-3 (both entity branches) + DFE (all-met / K-3-request
+  / foreign-tax>$300) logic spot-checked. ALL PASS.
+- **Ken review walk → "Approve — flip, seed, export."** Flipped READY_TO_SEED, seeded to prod (95→**96 TaxForms
+  / 457 FlowAssertions / 830 FormRules**), verified `lookup/ENTITY_BOUNDARY/export/` = **200**. BUILD_ORDER S-5
+  ticked [RS]✅→[APP]⬜, NEXT authoring advanced to S-11 (1041). Explicit-path commits.
+- **Caveats carried to the tts build:** (1) M-3 instruction sets aren't reissued annually (1065 Rev 11/2023,
+  1120-S Rev 12/2019 control TY2025 — thresholds unchanged; re-confirm each season). (2) B5 apportionment is
+  state-specific — P.L. 86-272 is the only federal anchor; per-state nexus thresholds pulled/verified per state.
+- **RS authoring spine now clear to S-11:** S-4 (1065 core), S-5 (boundary diagnostics), S-6 (PAL/basis) all DONE.
+
 ## 2026-07-05 — S-6 PAL/basis deepening AUTHORED + SEEDED + EXPORTED (WO-03) — first full front-door loop
 *Ken opened S-6 through the new front door ("finish the new procedure implementation" → picked S-6 PAL/basis).
 The whole WORK_ORDERS pipeline ran once, end-to-end, as designed. No prod risk until the review-walk approval.*
