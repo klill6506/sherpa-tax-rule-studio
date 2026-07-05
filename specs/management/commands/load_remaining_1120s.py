@@ -214,13 +214,13 @@ FRESH_SOURCES = [
             },
             {
                 "excerpt_label": "PTET election and rate",
-                "excerpt_text": "Georgia Pass-Through Entity Tax (PTET) is an elective entity-level tax at 5.49%. Applies to the entity's Georgia-source taxable income allocated to electing shareholders. This is an entity-level election, not automatic.",
-                "summary_text": "PTET: 5.49% elective entity-level tax on GA-source income.",
+                "excerpt_text": "Georgia Pass-Through Entity Tax (PTET) is an elective entity-level tax at 5.19% (the TY2025 flat rate). Applies to the entity's Georgia-source taxable income allocated to electing shareholders. This is an entity-level election, not automatic.",
+                "summary_text": "PTET: 5.19% (TY2025) elective entity-level tax on GA-source income.",
                 "is_key_excerpt": True,
             },
             {
                 "excerpt_label": "GA-600S schedule structure",
-                "excerpt_text": "Schedule 1: Georgia taxable income (federal income +/- GA additions/subtractions). Schedule 2: PTET computation. Schedule 3: Net worth tax (based on net worth, year = income year + 1). Schedule 4: Apportionment (property/payroll/sales factors). Schedules 5-8: Credits, balance sheet, shareholder info, other.",
+                "excerpt_text": "Schedule 1: Georgia taxable income (federal income +/- GA additions/subtractions). Schedule 2: PTET computation. Schedule 3: Net worth tax (based on net worth, year = income year + 1). Schedule 4: Apportionment (single gross-receipts factor, §48-7-31). Schedules 5-8: Credits, balance sheet, shareholder info, other.",
                 "summary_text": "8 schedules: income adjustments, PTET, net worth tax, apportionment, credits, balance sheet, shareholders, other.",
                 "is_key_excerpt": True,
             },
@@ -288,7 +288,7 @@ class Command(BaseCommand):
             defaults={
                 "conformity_type": "partial",
                 "authority_source": sources.get("GA_2025_600S_INSTR"),
-                "summary": "Georgia partially conforms to federal tax law. Does NOT conform to IRC 168(k) bonus depreciation or OBBBA. Georgia Section 179 limit is $1,050,000/$2,620,000 (vs federal $2,500,000/$4,000,000). PTET at 5.49% is elective.",
+                "summary": "Georgia partially conforms to federal tax law. Does NOT conform to IRC 168(k) bonus depreciation or OBBBA. Georgia Section 179 limit is $1,050,000/$2,620,000 (vs federal $2,500,000/$4,000,000). PTET at 5.19% (TY2025) is elective.",
                 "decoupled_items": [
                     {"item": "IRC 168(k) bonus depreciation", "treatment": "Full addback required on Schedule 1"},
                     {"item": "OBBBA provisions (P.L. 119-21)", "treatment": "Georgia has NOT adopted OBBBA"},
@@ -773,7 +773,7 @@ class Command(BaseCommand):
     def _load_ga600s(self, sources):
         form = self._upsert_form("GA600S", "GA-600S — Georgia S-Corporation Tax Return", ["1120S"],
                                   jurisdiction="GA",
-                                  notes="Georgia S-Corp return. GA does NOT conform to federal bonus or OBBBA. PTET at 5.49% is elective.")
+                                  notes="Georgia S-Corp return. GA does NOT conform to federal bonus or OBBBA. PTET at 5.19% (TY2025) is elective.")
         self._upsert_facts(form, [
             # Schedule 1 — GA Taxable Income
             {"fact_key": "federal_taxable_income", "label": "Federal taxable income (from 1120-S Page 1 Line 21)", "data_type": "decimal", "required": True, "sort_order": 1},
@@ -785,7 +785,7 @@ class Command(BaseCommand):
             {"fact_key": "ga_taxable_income", "label": "Georgia taxable income (Schedule 1 result)", "data_type": "decimal", "sort_order": 6},
             # Schedule 2 — PTET
             {"fact_key": "ptet_elected", "label": "PTET election made?", "data_type": "boolean", "sort_order": 7},
-            {"fact_key": "ptet_rate", "label": "PTET rate", "data_type": "decimal", "default_value": "5.49", "sort_order": 8},
+            {"fact_key": "ptet_rate", "label": "PTET rate", "data_type": "decimal", "default_value": "5.19", "sort_order": 8},
             {"fact_key": "ptet_taxable_income", "label": "Income subject to PTET", "data_type": "decimal", "sort_order": 9},
             {"fact_key": "ptet_tax", "label": "PTET computed tax", "data_type": "decimal", "sort_order": 10},
             # Schedule 3 — Net Worth Tax
@@ -811,20 +811,20 @@ class Command(BaseCommand):
              "inputs": ["federal_bonus_depreciation"], "outputs": ["ga_addition_bonus_depr"], "precedence": 0, "sort_order": 2,
              "description": "Georgia does NOT conform to IRC 168(k). ALL federal bonus depreciation must be added back on Schedule 1. Georgia computes its own depreciation under pre-bonus rules."},
             {"rule_id": "R003", "title": "Schedule 2 — PTET computation", "rule_type": "calculation",
-             "formula": "ptet_tax = ptet_taxable_income * 0.0549",
+             "formula": "ptet_tax = ptet_taxable_income * 0.0519",
              "inputs": ["ptet_taxable_income", "ptet_rate"], "outputs": ["ptet_tax"], "precedence": 2, "sort_order": 3,
-             "description": "Pass-Through Entity Tax = GA taxable income * 5.49%. Elective entity-level tax.",
-             "notes": "NEEDS REVIEW: verify 5.49% is the current rate from GA DOR."},
+             "description": "Pass-Through Entity Tax = GA taxable income * 5.19% (the flat rate for TY2025). Elective entity-level tax (HB 149).",
+             "notes": "Rate CORRECTED 2026-07-05 (was 5.49%): Form 600S Rev. 09/11/25 hardcodes 5.19% for 2025 (same as Form 700; verified in the GA-700 research). Year-keyed — 2026 steps to 4.99%."},
             {"rule_id": "R004", "title": "Schedule 3 — Net worth tax", "rule_type": "calculation",
              "formula": "net_worth = total_assets - total_liabilities; tax = bracket_lookup(net_worth)",
              "inputs": ["total_assets", "total_liabilities"], "outputs": ["net_worth", "net_worth_tax"], "precedence": 3, "sort_order": 4,
              "description": "Net worth tax based on total assets minus liabilities. Bracket table applies. Net worth tax year = income tax year + 1.",
              "notes": "NEEDS REVIEW: Georgia net worth tax brackets not fetched (GA DOR site returned 404). Bracket table needs manual entry."},
-            {"rule_id": "R005", "title": "Schedule 4 — Apportionment", "rule_type": "calculation",
-             "formula": "ga_apportionment_pct = (property_factor + payroll_factor + sales_factor) / 3, or single_sales_factor if elected",
-             "inputs": ["property_factor", "payroll_factor", "sales_factor"], "outputs": ["ga_apportionment_pct"],
+            {"rule_id": "R005", "title": "Schedule 4 — Apportionment (single gross-receipts factor)", "rule_type": "calculation",
+             "formula": "ga_apportionment_pct = ga_gross_receipts / total_gross_receipts (to six decimals)",
+             "inputs": ["ga_gross_receipts", "total_gross_receipts"], "outputs": ["ga_apportionment_pct"],
              "precedence": 1, "sort_order": 5,
-             "description": "Three-factor formula (or single sales factor if elected). Most single-state GA S-Corps = 100%."},
+             "description": "CORRECTED 2026-07-05 (was a 3-factor property/payroll/sales average): Georgia apportions by a SINGLE gross-receipts factor for all taxpayers since 2008 (§48-7-31; IT-611 S-corp booklet, same rule as Form 700 Sch 7). Most single-state GA S-Corps = 100%."},
             {"rule_id": "R006", "title": "Georgia Section 179 limits", "rule_type": "validation",
              "formula": "ga_179_limit = 1050000; ga_179_phaseout = 2620000",
              "inputs": ["section_179_elected"], "outputs": [], "precedence": 0, "sort_order": 6,
@@ -833,9 +833,9 @@ class Command(BaseCommand):
         self._upsert_links(rules, sources, [
             ("R001", "GA_2025_600S_INSTR", "primary", "Schedule 1 GA taxable income computation"),
             ("R002", "GA_2025_600S_INSTR", "primary", "GA does NOT conform to IRC 168(k) bonus"),
-            ("R003", "GA_2025_600S_INSTR", "primary", "PTET at 5.49% — elective"),
+            ("R003", "GA_2025_600S_INSTR", "primary", "PTET at 5.19% (TY2025) — elective"),
             ("R004", "GA_2025_600S_INSTR", "primary", "Net worth tax — bracket lookup"),
-            ("R005", "GA_2025_600S_INSTR", "primary", "Three-factor apportionment"),
+            ("R005", "GA_2025_600S_INSTR", "primary", "single gross-receipts factor apportionment (§48-7-31)"),
             ("R006", "GA_2025_600S_INSTR", "primary", "GA Section 179: $1,050,000/$2,620,000"),
         ])
         self._upsert_lines(form, [
@@ -853,8 +853,8 @@ class Command(BaseCommand):
              "condition": "federal_bonus > 0 AND ga_addition_bonus_depr == 0",
              "message": "Federal return has bonus depreciation but no Georgia addback. GA does NOT conform to IRC 168(k)."},
             {"diagnostic_id": "D002", "title": "PTET rate verification", "severity": "info",
-             "condition": "ptet_rate != 5.49", "message": "PTET rate is not 5.49%. Verify current Georgia rate.",
-             "notes": "NEEDS REVIEW: rate should be verified from current GA DOR instructions."},
+             "condition": "ptet_rate != 5.19", "message": "PTET rate is not 5.19% (the TY2025 Georgia flat rate). Verify against the current GA DOR Form 600S.",
+             "notes": "Rate is year-keyed: 2024 = 5.39%, 2025 = 5.19%, 2026 = 4.99%. Re-verify each season."},
             {"diagnostic_id": "D003", "title": "Net worth tax year", "severity": "warning",
              "condition": "nw_tax_year != income_tax_year + 1", "message": "Net worth tax year should equal income tax year + 1."},
             {"diagnostic_id": "D004", "title": "100% apportionment but out-of-state activity", "severity": "warning",
@@ -874,9 +874,9 @@ class Command(BaseCommand):
              "expected_outputs": {"ga_taxable_income": 135714}, "sort_order": 2,
              "notes": "Federal took $100K bonus. GA adds back $100K, subtracts $14,286 GA depreciation (7yr SL year 1). GA income much higher."},
             {"scenario_name": "PTET election", "scenario_type": "normal",
-             "inputs": {"ptet_elected": True, "ptet_taxable_income": 200000, "ptet_rate": 5.49},
-             "expected_outputs": {"ptet_tax": 10980}, "sort_order": 3,
-             "notes": "$200K * 5.49% = $10,980 PTET."},
+             "inputs": {"ptet_elected": True, "ptet_taxable_income": 200000, "ptet_rate": 5.19},
+             "expected_outputs": {"ptet_tax": 10380}, "sort_order": 3,
+             "notes": "$200K * 5.19% = $10,380 PTET (TY2025 rate)."},
             {"scenario_name": "Multi-state — 60% GA apportionment", "scenario_type": "edge",
              "inputs": {"federal_taxable_income": 200000, "ga_apportionment_pct": 60},
              "expected_outputs": {"ga_apportioned_income": 120000}, "sort_order": 4,
