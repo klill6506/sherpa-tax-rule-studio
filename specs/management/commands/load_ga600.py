@@ -83,7 +83,7 @@ from specs.models import (
 READY_TO_SEED = True
 
 
-FORM_JURISDICTION = "georgia"
+FORM_JURISDICTION = "GA"  # matches GA500/GA501/GA600S/GA700 (never "georgia")
 FORM_TAX_YEAR = 2025
 FORM_VERSION = 1
 FORM_STATUS = "draft"
