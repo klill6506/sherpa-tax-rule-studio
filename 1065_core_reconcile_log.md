@@ -66,3 +66,22 @@ survey 2026-07-04 via Explore agent): `compute.py` Schedule L totals (~L313-329)
 
 **On the Ken walk + "flip seed export": set `READY_TO_SEED=True` → seed → export → verify
 `lookup/{1065_L,1065_B}/export/` 200.**
+
+---
+
+# 1065 Core — CAMPAIGN CLOSE (forms 5 & 6 coverage confirmation)
+
+*2026-07-04. Forms 5 & 6 = 8825 / 4562 / 3800. Per the brief §1 these already exist as multi-entity;
+this leg CONFIRMED that against the LIVE RS DB (not just the brief table) — both the entity tag AND the
+actual 1065 routing wiring.*
+
+| Form | `entity_types` (live DB) | 1065 routing wired? | Verdict |
+|---|---|---|---|
+| 3800 | `['1120S','1065','1120','1040']` | GBC entity-agnostic aggregation (12 rules) | ✅ covers 1065, no fresh authoring |
+| 4562 | `['1120S','1065','1120','1040']` | **R004** "§179 flows to Schedule K (not Page 1)" + R014 line-12 §179 | ✅ covers 1065, no fresh authoring |
+| 8825 | `['1120S','1065']` | **R003** "Total net rental → K Line 2" (exact 1065 Sch K line 2 handoff) | ✅ covers 1065, no fresh authoring |
+
+**Campaign COMPLETE (6/6):** spine (`1065_PAGE1`+`SCH_K_1065`), K-1+alloc (`SCHEDULE_K1_1065`), M-1/M-2
+(`1065_M1`/`1065_M2`), L/B (`1065_L`/`1065_B`) fresh-authored + seeded + exported (all endpoints 200);
+8825/4562/3800 pre-existing, confirmed 1065-wired. RS side CLOSED. Remaining items are all tts-side build
+gaps (logged above + STATUS Next-up) — none are RS blockers.

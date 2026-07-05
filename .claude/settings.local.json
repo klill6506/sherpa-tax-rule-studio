@@ -17,7 +17,8 @@
       "Read(//g/My Drive/sherpa-memory/sherpa-tax-rule-studio/**)",
       "Bash(mkdir -p \"G:/My Drive/sherpa-memory/sherpa-tax-rule-studio/\")",
       "Read(//d/dev/**)",
-      "Bash(echo \"=== tts-tax-app/SEASON_CHECKLIST.md \\(tail for STANDING\\) ===\"; grep -n \"STANDING\\\\|^## \\\\|^# \" \"D:/dev/tts-tax-app/SEASON_CHECKLIST.md\" | head -40; echo; echo \"=== tts-tax-status/SEASON_CHECKLIST.md ===\"; grep -n \"STANDING\\\\|^## \\\\|^# \" \"D:/dev/tts-tax-status/SEASON_CHECKLIST.md\" | head -40)"
+      "Bash(echo \"=== tts-tax-app/SEASON_CHECKLIST.md \\(tail for STANDING\\) ===\"; grep -n \"STANDING\\\\|^## \\\\|^# \" \"D:/dev/tts-tax-app/SEASON_CHECKLIST.md\" | head -40; echo; echo \"=== tts-tax-status/SEASON_CHECKLIST.md ===\"; grep -n \"STANDING\\\\|^## \\\\|^# \" \"D:/dev/tts-tax-status/SEASON_CHECKLIST.md\" | head -40)",
+      "Bash(poetry run python manage.py shell -c ' *)"
     ]
   }
 }

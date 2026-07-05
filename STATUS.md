@@ -13,7 +13,9 @@ last_updated: 2026-07-04
 ## Current state
 
 Active spec-authoring tool. RS Supabase holds **89 TaxForms / 420 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule L +
+seeding too — check the index, not this line, for exact counts). **The 1065-core campaign is COMPLETE
+(2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed multi-entity, verified
+against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
 (14 == 22 balance check + L21↔M-2 tax-basis tie), Sch B 33 questions with Q4 small-partnership gate +
 Q24 §163(j) $31M → Form 8990. Prior same day: the **1065-core Schedule M-1 + M-2** (`1065_M1` /
@@ -56,7 +58,7 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► 1065 CORE CAMPAIGN — IN FLIGHT.** `1065_core_source_brief.md` has the gap map (6 forms fresh —
+**► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
 (form 1 of 6) DONE 2026-07-04** — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both endpoints 200).
 **✅ form 2 of 6 DONE — Schedule K-1 (Form 1065) + allocation engine (`SCHEDULE_K1_1065`).** Seeded +
@@ -83,10 +85,15 @@ reconcile_log.md` L/B section): 2 MATCH (L-totals; tts's DepreciationAsset EOY r
 **5 tts build-gaps caught** (no balance check; Q4 gate stored-but-dead; no $31M/M-3 threshold; L21↔M-2
 not reconciled; **tts Sch L numbered L1-L24 offset one from the face + tts Sch B condensed to 18 vs 33**).
 None are RS blockers — the export drives them tts-side.
-**► IMMEDIATE NEXT — forms 5 & 6: 8825 / 4562 / 3800 ALREADY cover 1065** (brief §1 table: `8825`
-entity=['1120S','1065']; 4562/3800 multi-entity). So the 6 fresh-authored core forms (spine, K-1+alloc,
-M-1/M-2, L/B) are DONE — **campaign near-complete**; confirm 8825/4562/3800 1065 coverage is sufficient
-(likely no fresh authoring). Read the brief + `1065_core_reconcile_log.md` first.
+**► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** Forms 5 & 6 (8825/4562/3800) CONFIRMED to cover
+1065 — verified against the LIVE RS DB (not just the brief table): `entity_types` for `3800` =
+`['1120S','1065','1120','1040']`, `4562` = `['1120S','1065','1120','1040']`, `8825` = `['1120S','1065']`;
+AND the 1065 routing is actually wired, not just entity-tagged — `4562` R004 "§179 flows to Schedule K
+(not Page 1)", `8825` R003 "Total net rental → K Line 2" (the exact Sch K line 2 handoff), `3800` GBC
+entity-agnostic aggregation. **No fresh authoring needed.** All 6 core forms done: 4 fresh (spine,
+K-1+alloc, M-1/M-2, L/B — seeded/exported/200) + 3 pre-existing multi-entity (8825/4562/3800). RS side of
+the campaign is CLOSED. What remains are tts-side build items (below) + the optional box-9c DB stamp — none
+are RS blockers.
 **Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
 numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
 (2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new). Plus the

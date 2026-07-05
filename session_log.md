@@ -4,6 +4,25 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — 1065 core campaign CLOSED: forms 5 & 6 (8825/4562/3800) coverage confirmed
+*Ken: "check the status and continue." STATUS's IMMEDIATE NEXT was: confirm 8825/4562/3800 cover 1065
+(likely no fresh authoring). Verified against the LIVE RS DB — not just the brief table.*
+- **Entity coverage (live DB query):** `3800` = `['1120S','1065','1120','1040']`, `4562` =
+  `['1120S','1065','1120','1040']`, `8825` = `['1120S','1065']` — all three carry `1065`.
+- **Routing wiring confirmed (not just tags):** `4562` R004 "§179 flows to Schedule K (not Page 1)"
+  (the 1065/1120S §179 pass-through) + R014 line-12 §179; `8825` R003 "Total net rental → K Line 2"
+  (the exact 1065 Sch K line 2 handoff); `3800` = 12 rules, entity-agnostic GBC aggregation driven by
+  the entity tag. So forms 5 & 6 are genuinely wired for 1065, not merely tagged.
+- **Verdict: no fresh authoring.** The 1065-core campaign is COMPLETE — 6/6 forms covered (4 fresh-
+  authored this week: spine `1065_PAGE1`+`SCH_K_1065`, K-1 `SCHEDULE_K1_1065`, M-1/M-2 `1065_M1`/`1065_M2`,
+  L/B `1065_L`/`1065_B`; + 3 pre-existing multi-entity 8825/4562/3800). RS side CLOSED. No DB change this
+  session (verification only) → still **89 TaxForms / 420 FlowAssertions**.
+- **Still open (tts-side, NOT RS blockers):** (1) page-1 off-by-one field numbering (tts internal
+  deductions="21"/ordinary="22" vs face 22/23); (2) 1065 Analysis-of-Net-Income build-gap (`R-SCHK-ANALYSIS`
+  new; ties M-1 line 9 / M-2 line 3 — tts `task_4bf72675`); (3) item-L capital roll-forward (M-2 line 1);
+  (4) the 5 Sch L/B build-gaps logged in `1065_core_reconcile_log.md`; (5) optional box-9c DB stamp
+  (`test_4797_pipeline_leg.py`). All drive tts-side from the exports.
+
 ## 2026-07-04 — 1065 core form 4: Schedule L + Schedule B authored + SEEDED + EXPORTED
 *Ken: "continue the 1065-core campaign — form 4 (Schedule L + Schedule B)." Fresh-authored per D-1.*
 - **Sourced verbatim** off the FINAL 2025 f1065.pdf (re-downloaded; page 6 = Schedule L, pages 2-4 =
