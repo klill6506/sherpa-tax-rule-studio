@@ -1494,6 +1494,10 @@ F8949_FACTS: list[dict] = [
      "notes": "PER TRANSACTION. Decision 2: code M auto-applies; columns (b)/(c) blank; one row per broker per box."},
     {"fact_key": "ct_statement_attached", "label": "Summary row — broker statement attached", "data_type": "boolean", "default_value": "false", "sort_order": 11,
      "notes": "PER TRANSACTION (summary rows). Exception 2 requires the statement (Form 8453 if e-filing); D_8949_004 reminds."},
+    {"fact_key": "ct_import_confirmed", "label": "Imported summary row confirmed by preparer (Exception 2)", "data_type": "boolean", "default_value": "false", "sort_order": 12,
+     "notes": ("PER TRANSACTION. YELLOW/imported provenance: a brokerage-imported Exception-2 summary row starts "
+               "UNCONFIRMED (False) and must be preparer-reviewed before filing — D_8949_006. Manually-entered "
+               "(GREEN) rows are created confirmed. Mirrors tts CapitalTransaction.import_confirmed (brokerage_1099b.py, mig 0160).")},
     # ── The i8949 column-(f) code table (Decision 5 — cited data list) ──
     {"fact_key": "adj_code_B", "label": "B — Basis shown on Form 1099-B/1099-DA is incorrect", "data_type": "string", "sort_order": 20,
      "notes": "DATA LIST. Basis NOT reported (B/E/H/K): correct (e), 0 in (g). Basis reported (A/D/G/J): keep reported (e), adjust in (g) per the Basis Adjustments worksheet. Sign: either."},
@@ -1625,6 +1629,14 @@ F8949_DIAGNOSTICS: list[dict] = [
      "message": ("A per-transaction row needs both dates (column (b) accepts VARIOUS or INHERITED). Only "
                  "Exception-2 summary rows leave the date columns blank."),
      "notes": "MeF-readiness: structured dates on per-lot rows."},
+    {"diagnostic_id": "D_8949_006", "title": "Imported 8949 summary row not yet confirmed", "severity": "error",
+     "condition": "ct_is_summary AND the row is imported (YELLOW provenance) AND NOT ct_import_confirmed",
+     "message": ("A brokerage-imported Exception-2 summary row (code M) has not been confirmed by the preparer. "
+                 "An imported summary row starts UNCONFIRMED and must be reviewed against the broker statement "
+                 "before the return is filed. Imported (YELLOW) rows only — manually-entered (GREEN) rows are "
+                 "untouched. Review the row and set the confirmation flag."),
+     "notes": ("Mandatory pre-file confirm gate (SEASON_PLAN item 5; tts c25635f, mig 0160). Ref brokerage_1099b.py, "
+               "CapitalTransaction.import_confirmed. Imported/YELLOW provenance rows only; GREEN manual rows untouched.")},
 ]
 
 F8949_SCENARIOS: list[dict] = [
