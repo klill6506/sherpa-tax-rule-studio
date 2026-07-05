@@ -12,10 +12,11 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **97 TaxForms / 463 FlowAssertions / 845 FormRules**
-(**+S-11 1041 spine leg (a) 2026-07-05** — new consolidated `1041` form: page-1 + Schedule B (DNI/IDD
-engine) + Schedule G (tax); 35 facts / 15 rules / 39 lines / 11 diag / 9 tests / 6 FA; `lookup/1041/
-export/` = 200; **+S-5 boundary diagnostics 2026-07-05** — new consolidated `ENTITY_BOUNDARY` form; **+S-6 PAL/basis
+Active spec-authoring tool. RS Supabase holds **99 TaxForms / 471 FlowAssertions / 859 FormRules**
+(**+S-11 1041 MODULE COMPLETE 2026-07-05** — 3 new forms: `1041` spine (page-1 + Schedule B DNI/IDD
+engine + Schedule G tax), `SCHEDULE_K1_1041` (beneficiary K-1, full verbatim box codes), `GA501` (GA
+fiduciary, resident-only); all 3 seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200);
+**+S-5 boundary diagnostics 2026-07-05** — new consolidated `ENTITY_BOUNDARY` form; **+S-6 PAL/basis
 deepening 2026-07-05** — new Form `461` (§461(l) EBL) + FORM_8582/SCHEDULE_E amendments;
 was 94 TaxForms / 449 FA after the SC entity track; was
 92 after the delta audit; **+SC1065 + SC1120S seeded 2026-07-05** — the SC pass-through ENTITY track,
@@ -246,7 +247,7 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
-- 2026-07-05: **1041 MODULE STARTED (S-11/WO-09) — front door run + leg (a) 1041 spine SEEDED + EXPORTED.**
+- 2026-07-05: **1041 MODULE COMPLETE (S-11/WO-09) — all 3 legs authored + SEEDED + EXPORTED in one session.**
   The greenfield federal fiduciary module. Ran the full front door: gap-check (all 5 surfaces 404 GAP) →
   4 research passes (verbatim vs FINAL 2025 IRS/GA sources; Rev. Proc. 2025-32 confirmed = TY2026, 2024-40
   governs) → `f1041_source_brief.md` → **Gate-1 scope walk (DECISIONS D-10):** core 4 + ESBT computed;
@@ -259,11 +260,19 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
   (§1(e) 10/24/35/37% rate schedule top $15,650, exemptions $600/$300/$100/QDisT $5,100, cap-gain $3,250/$15,900,
   ESBT L4, §1411 NIIT $15,650 L5). Validated on throwaway SQLite (`scratchpad/validate_1041.py`, **17 pass / 0 fail**
   — CharField caps clean after catching a 290-char topic_name; DNI/IDD/§662-tier/rate-schedule oracles all green).
-  Ken Gate-1: "Approve — flip, seed, export." Seeded → **97 TaxForms / 463 FlowAssertions / 845 FormRules**;
-  `lookup/1041/export/` = 200. 35 facts / 15 rules / 39 lines / 11 diag / 9 tests / 6 FA, every rule cited to 6
-  TY2025-verified sources. BUILD_ORDER S-11 spine+SchB+SchG ticked. **Next: leg (b) `SCHEDULE_K1_1041`, leg (c) `GA501`.**
+  Each leg: author `READY_TO_SEED=False` → SQLite-validate → Ken Gate-1 ("Approve — flip, seed, export") → seed → export 200.
+  **Leg (a) `1041` spine** (35 facts / 15 rules / 39 lines / 11 diag / 9 tests / 6 FA; `validate_1041.py` 17/0): page-1
+  + Sch B DNI (§643(a)) / IDD (§651/§661 smaller-of-DNI) engine + §662 tiers/§663(c) separate-share/§663(b) 65-day;
+  Sch G (§1(e) 10/24/35/37% top $15,650, exemptions $600/$300/$100/QDisT $5,100, cap-gain $3,250/$15,900, ESBT L4,
+  §1411 NIIT $15,650). **Leg (b) `SCHEDULE_K1_1041`** (29 facts / 7 rules / 17 lines / 6 diag / 6 tests / 4 FA;
+  `validate_1041_k1.py` 18/0): beneficiary K-1, boxes 1-8 character retention, box 11 final-year §642(h) gate,
+  full verbatim box 9/11/12/13/14 code lists, Σ shares = entity DNI recon. **Leg (c) `GA501`** (19 facts / 7 rules
+  / 14 lines / 8 diag / 5 tests / 4 FA; `validate_ga501.py` 16/0): GA fiduciary resident-only, fed 1041 ATI (L17)
+  → beneficiary-share-at-L4 (no IDD double-count) → 5.19% → $1,350/$2,700; §168(k)/§179 add-back + Sch 4 nonresident
+  RED-deferred. Prod: **99 TaxForms / 471 FlowAssertions / 859 FormRules**; all 3 exports 200. BUILD_ORDER S-11 [RS]✅.
+  **Next 1041-family authoring: [WO-10] Form 5227** (split-interest PIF/CRT/CLT, §664 4-tier — own research pass).
   **Caveats:** W4 ESBT = simplified top-rate tax on direct-entered S-portion (full ESBT Tax Worksheet deferred);
-  §1062 (OBBBA farmland installment) = structure+flag; re-verify all constants at TY2026 (2026 breakpoints known).
+  §1062 (OBBBA farmland installment) = structure+flag; GA501 resident-only; re-verify all constants at TY2026.
 - 2026-07-05: **GA-500 military-exclusion reconciliation debt CLOSED (RS side) — spec was RIGHT, app was wrong.**
   Closed a BUILD_ORDER "open reconciliation debt." Research-verified (2025 IT-511 p.21 + Form 500 Sch 1 p3 +
   O.C.G.A. §48-7-27(a)(5.1)) that the **RS GA-500 spec is correct and authoritative**: under-62 gate; $17,500

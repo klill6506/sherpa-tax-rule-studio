@@ -88,12 +88,16 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   - **Authoring legs (this order):** (a) `1041` spine+SchB+SchG · (b) `SCHEDULE_K1_1041` · (c) `GA501`. Each:
     author `READY_TO_SEED=False` → SQLite-validate (CharField caps: rule/diagnostic/assertion_id ≤ 20) → Ken review
     walk → seed → export = 200.
-  - **✅ leg (a) `1041` spine DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Approve — flip, seed, export";
-    W1-W5 blessed incl. W4 ESBT simplification). `load_1041_spine.py`: 35 facts / 15 rules / 39 lines / 11 diag /
-    9 tests / 6 FA; all rules cited (25 links / 6 sources); SQLite-validated `scratchpad/validate_1041.py` 17/0.
-    Seeded → **97 TaxForms / 463 FlowAssertions / 845 FormRules**; `lookup/1041/export/` = 200.
-  - **◀ NEXT — leg (b) `SCHEDULE_K1_1041`** (beneficiary boxes 1-14 + full verbatim codes 9/11/12/13/14; character/tier
-    pass-through; reuse IRS_2025_F1041/I1041 sources + F1041SK1). Then **leg (c) `GA501`** (resident fiduciary, fed ATI → 5.19%).
+  - **✅ ALL 3 LEGS DONE — S-11 1041 module RS authoring COMPLETE 2026-07-05** (Ken Gate-1 approved each; every
+    guard flipped after its review walk). Prod: **99 TaxForms / 471 FlowAssertions / 859 FormRules**.
+    - **(a) `1041` spine** — `load_1041_spine.py`; 35 facts / 15 rules / 39 lines / 11 diag / 9 tests / 6 FA;
+      `validate_1041.py` 17/0; `lookup/1041/export/` = 200. (page-1 + Sch B DNI/IDD engine + Sch G tax.)
+    - **(b) `SCHEDULE_K1_1041`** — `load_1041_schedule_k1.py`; 29 facts / 7 rules / 17 lines / 6 diag / 6 tests /
+      4 FA; full verbatim box codes; `validate_1041_k1.py` 18/0; `lookup/SCHEDULE_K1_1041/export/` = 200.
+    - **(c) `GA501`** — `load_ga501.py`; 19 facts / 7 rules / 14 lines / 8 diag / 5 tests / 4 FA; resident-only;
+      `validate_ga501.py` 16/0; `lookup/GA501/export/` = 200.
+  - **Status: ✅ DONE (RS).** Sch I AMT RED-defer (D-2) satisfied via `D_1041_AMT`. **tts app build = the [APP] lane
+    (dispatch when CC has a lane).** Next 1041-family authoring order: **[WO-10] Form 5227** split-interest trusts.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
