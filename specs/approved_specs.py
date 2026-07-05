@@ -23,6 +23,14 @@ Keep this list alphabetized by form_number for easy diffing.
 """
 
 APPROVED_FORMS: list[dict] = [
-    # Populated on Ken's sign-off. Example shape (commented until approved):
-    # {"form_number": "4797", "approved": "2026-07-04", "note": "4797 campaign closed; nuance leg DB-verified"},
+    # --- 1065-core campaign (closed 2026-07-04) — Ken's first approval batch. ---
+    # Holds 1065_SE (case-law authority requires_human_review) and the in-flight S3/S4
+    # forms (4835/8835/8936/8936_SCHA) out of this batch.
+    {"form_number": "1065_PAGE1", "approved": "2026-07-04", "note": "1065-core spine: page-1 ordinary business income -> Sch K line 1"},
+    {"form_number": "SCH_K_1065", "approved": "2026-07-04", "note": "1065-core: Schedule K distributive-share spine 1-21 + Analysis"},
+    {"form_number": "SCHEDULE_K1_1065", "approved": "2026-07-04", "note": "1065-core: Schedule K-1 + allocation engine; full coded-box lists"},
+    {"form_number": "1065_M1", "approved": "2026-07-04", "note": "1065-core: Schedule M-1 book-tax reconciliation"},
+    {"form_number": "1065_M2", "approved": "2026-07-04", "note": "1065-core: Schedule M-2 tax-basis partners' capital"},
+    {"form_number": "1065_L", "approved": "2026-07-04", "note": "1065-core: Schedule L balance sheet (14==22 + L21<->M-2 tie)"},
+    {"form_number": "1065_B", "approved": "2026-07-04", "note": "1065-core: Schedule B 33 questions (Q4 small-ptnr gate, Q24 $31M)"},
 ]
