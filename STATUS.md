@@ -12,8 +12,12 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **103 TaxForms / 485 FlowAssertions / 891 FormRules**
-(**+WO-11 Form 1120 C-corp module 2026-07-05** — the first C-corporation entity type: `1120` compute spine
+Active spec-authoring tool. RS Supabase holds **106 TaxForms / 493 FlowAssertions / 908 FormRules**
+(**+WO-12 state C-corp batch 2026-07-05** — GA's income-tax neighbors' C-corp returns, extending the 1120
+module: `SC1120` (5% + §168(k) decouple/§179 $1.25M/$3.13M + license fee; ⚠ H.3368/OBBBA live-wire flag),
+`AL_FORM_20C` (6.5% + constitutional FIT deduction Amendment 662 + AL conforms to §168(k)/§179 + GILTI/§174
+decouples), `NC_CD405` (2.25% income S.B. 105 + net-worth franchise tax + 85% bonus add-back/§179 $25k/$200k);
+all 3 seeded/exported (`lookup/{SC1120,AL_FORM_20C,NC_CD405}/export/` = 200); **+WO-11 Form 1120 C-corp module 2026-07-05** — the first C-corporation entity type: `1120` compute spine
 (page-1 income/deductions → Schedule C DRD 50/65/100% + §246(b) limit/loss exception → §172 NOL 80% → §11 flat
 21% tax → Schedule J total tax; §163(j)/CAMT/PHC/AET/§59A/§1062 screen+route), `1120_SCHL` (Schedule L balance +
 M-1/M-2 ties + Sch K $250k/$10M-M-3 gates), `GA600` (GA 5.19% income tax + §168(k)/§179 depreciation delta @
@@ -258,6 +262,26 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **STATE C-CORP BATCH AUTHORED + SEEDED + EXPORTED (WO-12) — SC1120 + AL 20C + NC CD-405, extending the 1120 module.**
+  Ken: "state C corp rules", batch the reuse-states (GA's income-tax neighbors AL/NC/SC on the C-corp side; each
+  reuses conformity research + consumes the WO-11 federal 1120 output). Front door: gap-check (all 3 GAP) →
+  **3 parallel research passes** (verbatim vs FINAL 2025 SCDOR/ALDOR/NCDOR) → `state_ccorp_batch_source_brief.md`.
+  **Two premises OVERTURNED by the research** (Authoritative-Source Rule in action): (1) the AL C-corp **federal
+  income tax deduction is NOT repealed** — constitutionally protected (Amendment 662), on Form 20C L11a/Sch E;
+  (2) the NC franchise tax base is **net-worth-only** (the three-way "greatest of" test was repealed TY2017). Also:
+  **AL fully CONFORMS to §168(k)/§179** (no add-back — opposite of SC/NC/GA); the AL decouples are GILTI/§174.
+  **Gate-1 scope walk (4 AskUserQuestion, all recommended — DECISIONS D-14):** full compute all three; AL FIT
+  deduction = compute apportioned (federal tax × AL ratio); SC = author current 12/31/2024 law + prominent H.3368
+  OBBBA-live-wire flag; AL GILTI/§174 = diagnostic + direct-entry. **Authored:** `load_sc1120.py` (SC1120, 5% +
+  §168(k) decouple + §179 pre-OBBBA $1.25M/$3.13M + §12-20-50 license fee $15+capital×.001 min $25; reuses SC1120S
+  structure), `load_al_form20c.py` (AL_FORM_20C, 6.5% + apportioned FIT deduction + GILTI §40-18-35.2/§174
+  §40-18-62; BPT separate; due May 15), `load_nc_cd405.py` (NC_CD405, combined 2.25% income + net-worth franchise
+  tax [$500 first-$1M cap, $200 min, $150k holding cap] + 85% bonus/§179 $25k/$200k add-back). Validated on
+  throwaway SQLite (`scratchpad/validate_state_ccorp.py`, **41 pass / 0 fail** — SC/AL/NC arithmetic all green,
+  caps clean, all 17 rules cited). Ken Gate-1: "Seed all three now." Seeded → **106 TaxForms / 493 FlowAssertions
+  / 908 FormRules**; all 3 exports 200; auto-discovered by seed_all. **⚠ SC caveat:** authored to enacted
+  12/31/2024 law + D_SC1120_H3368 flag — needs a §179/bonus amend if H.3368 adopts OBBBA retroactively (Ken
+  accepted). **Next state C-corp:** FL F-1120 / TN FAE 170 (greenfield). Re-verify all state rates/§179 at TY2026.
 - 2026-07-05: **Form 1120 C-CORP MODULE AUTHORED + SEEDED + EXPORTED (WO-11 / S-13) — the first C-corporation entity type.**
   Full front-door run: gap-check (8 gaps; 1125-A/1125-E/3800/4562/4797/8949/7004 confirmed already covering `1120`)
   → **3 parallel research passes** (verbatim vs FINAL 2025 Form 1120 Created 9/26/25 + i1120 + IRC §11/§243/§245A/

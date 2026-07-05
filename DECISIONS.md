@@ -16,6 +16,43 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-14: State C-corp batch (WO-12) v1 scope LOCKED — SC1120 + AL 20C + NC CD-405
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), the reuse-state
+C-corp batch (extends the federal 1120 module WO-11 to GA's income-tax neighbors) is scoped:
+- **(Q1) Full compute all three.** SC1120: 5% flat + §168(k) decouple / §179 $1.25M/$3.13M delta + license fee
+  ($15 + capital×.001, min $25). NC CD-405: 2.25% income (S.B. 105 phase-down) + 85% bonus add-back / §179
+  $25k/$200k + franchise tax ($1.50/$1,000 net worth, first-$1M cap $500, min $200, holding cap $150k). AL 20C:
+  6.5% + NO depreciation add-back (AL conforms). All single-sales-factor apportionment. Federal-TI start.
+- **(Q2) AL FIT deduction = compute apportioned.** federal income tax × AL apportionment ratio (Schedule E line 9),
+  subtracted at L11a. NOTE the constitutional basis (Amendment 662) so it isn't "corrected" away.
+- **(Q3) SC = author current law + prominent flag.** Author SC to the enacted 12/31/2024 conformity (§168(k)
+  decouple, §179 $1.25M/$3.13M) with a prominent year-keyed diagnostic on the **H.3368/OBBBA live wire**
+  (retroactive TY2025 risk; SCDOR extended the SC deadline to Oct 15 2026). **RE-VERIFY H.3368 before seeding SC**;
+  AL/NC seed independently.
+- **(Q4) AL GILTI/§174 = diagnostic + direct-entry.** Since AL conforms on depreciation, the AL-specific decouples
+  are GILTI (§40-18-35.2: §951A subtract / §250 add-back) and §174 R&E (§40-18-62): model as Schedule A lines +
+  diagnostics, direct-entry the amounts (no full GILTI compute).
+
+**Context — two premises OVERTURNED by the research (Authoritative-Source Rule in action):**
+(1) The AL C-corp federal income tax deduction is **NOT repealed** — it is constitutionally protected (Amendment
+662) and computed on the 2025 Form 20C (L11a/Schedule E). The Act-2021-1-repeal assumption was false; both AL
+Form 40 and Form 20C keep the FIT deduction. (2) The NC franchise tax base is **net-worth-only** (the "greatest of
+net worth / 55% ad valorem / NC tangible investment" three-way test was repealed effective TY2017). Also: **AL
+fully CONFORMS to §168(k)/§179** (rolling conformity, OBBBA flows through — the opposite of SC/NC/GA).
+
+**Reuse:** each loader re-declares its state conformity/statute sources (by source_code, idempotent) + a new
+state-form source. SC §179 $1.25M/$3.13M (as SC1040/SC1120S); NC §179 $25k/$200k + 85% add-back (as NC D-400).
+
+**Alternatives considered:** hold SC entirely until H.3368 resolves (rejected — author + flag is lower-friction,
+matches SC1040/SC1120S; re-verify gate before the SC seed); compute AL GILTI/§174 inline (rejected — low
+population); structure-only companion taxes (rejected — license fee / franchise tax are core and cheap to compute).
+
+**Would reconsider if:** H.3368 is enacted (flip SC §168(k)/§179 to OBBBA retroactively for TY2025); NC's rate
+changes on the next phase-down step; AL GILTI/§174 activity proves common in the C-corp population.
+
+---
+
 ## 2026-07-05 — D-13: 1120 C-corp module (WO-11) v1 scope LOCKED — Gate-1 walk
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended options), the

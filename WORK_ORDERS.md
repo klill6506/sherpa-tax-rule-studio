@@ -156,6 +156,40 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     tts app build = [APP] lane. Carried [UNVERIFIED] flags noted in the loaders (§11 label, §246(b) combined
     50/65 worksheet, TY2026 §163(j) capitalized-interest) for re-pull if a deeper compute leg is scoped.
     Confirmed covering 1120 (no authoring): 1125-A/1125-E/3800/4562/4797/8949/7004.
+- **▶ ACTIVE — [WO-12] State C-corp batch · SC1120 + AL Form 20C + NC CD-405 · greenfield RS-first · status
+  `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05; Ken: "state C corp rules", batch the reuse-states).**
+  Extends the federal 1120 module (WO-11) to GA's income-tax neighbors' C-corp returns. **✅ GAP-CHECK (live prod
+  103 forms):** all three are GAPs — SC has `SC1120S` (S-corp) but no `SC1120` (C-corp); AL/NC have only their
+  individual returns (`AL_FORM_40`, `NC_D400`). Ken picked SC1120 first + BATCH the three reuse-states (each reuses
+  conformity sources already seeded: SC ← `load_sc1040`/`load_sc_passthrough`, AL ← `load_al_form40`, NC ←
+  `load_nc_d400`; via `EXISTING_SOURCES_TO_REFERENCE`). FL F-1120 / TN FAE 170 = later greenfield orders.
+  - **SC1120** — SC C-corp income tax (5% flat) + license fee (capital × .001 + $15, min $25); federal-TI start;
+    single-factor apportionment; §168(k)/§179 non-conformity. Reuses SC1120S structure. → **GAP**
+  - **AL Form 20C** — AL corporate income tax (6.5%); federal-TI start; apportionment; the AL federal-income-tax
+    deduction question (verify C-corp treatment); §168(k)/§179. → **GAP**
+  - **NC CD-405** — NC C-corp income tax (phasing down — verify TY2025 rate); federal-TI start; single sales-factor
+    apportionment; NC 85% bonus add-back (Jan 1 2023 conformity freeze). → **GAP**
+  - **✅ RESEARCH-VERIFIED (2026-07-05, 3 parallel passes, verbatim vs FINAL 2025 sources) → `state_ccorp_batch_source_brief.md`.**
+    SC1120 (Rev. 7/2/25): 5% flat + license fee ($15 + capital×.001, min $25) + §168(k) decouple + §179
+    $1.25M/$3.13M (12/31/2024 conformity); **⚠ H.3368 OBBBA-pending = live wire, retroactive TY2025 risk, SC
+    deadline extended to Oct 15 2026**. AL 20C: 6.5% + **⚠ FIT deduction NOT repealed** (Amendment 662, L11a/Sch E —
+    premise overturned) + **AL CONFORMS to §168(k)/§179** (no add-back; GILTI §40-18-35.2 + §174 §40-18-62 are the
+    real decouples) + single sales factor; due May 15 (1 mo after federal). NC CD-405: income **2.25%** (S.B. 105
+    phase-down) + **franchise tax** ($1.50/$1,000 net worth, first $1M cap $500, min $200, **net-worth-only base** —
+    3-way test repealed 2017) + 85% bonus add-back + §179 $25k/$200k + single sales factor 4-dec (Jan 1 2023 conformity).
+  - **✅ Gate-1 scope walk APPROVED 2026-07-05 (DECISIONS D-14, all 4 recommended):** full compute all three;
+    AL FIT deduction = compute apportioned; SC = author current law + H.3368 flag; AL GILTI/§174 = diagnostic+direct-entry.
+  - **✅ AUTHORED + SQLite-VALIDATED 2026-07-05 (READY_TO_SEED=False, awaiting Ken review walk W1-W9):**
+    `load_sc1120.py` (`SC1120`, 11 facts / 6 rules / 5 lines / 5 diag / 6 tests / 3 FA), `load_al_form20c.py`
+    (`AL_FORM_20C`, 12 / 5 / 5 / 6 / 4 / 2), `load_nc_cd405.py` (`NC_CD405`, 12 / 6 / 4 / 5 / 6 / 3).
+    `scratchpad/validate_state_ccorp.py` = **41 pass / 0 fail** (caps clean 88; all rules cited; SC 5%+license+§179,
+    AL 6.5%+apportioned FIT+GILTI, NC 2.25%+net-worth franchise table+85% bonus/§179 all green).
+  - **✅ DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Seed all three now"; W1-W9 blessed). Flipped all three
+    guards → seeded → **106 TaxForms**; `lookup/{SC1120,AL_FORM_20C,NC_CD405}/export/` all = 200 (22/20/19 KB).
+    Auto-discovered by `seed_all` (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane.
+    **⚠ SC carried caveat:** authored to the ENACTED 12/31/2024 law + `D_SC1120_H3368` flag; if H.3368 passes
+    (adopting OBBBA retroactively for TY2025), SC1120 needs a §179/bonus amend ($2.5M/$4M, drop the add-back) —
+    Ken accepted. FL F-1120 / TN FAE 170 = later greenfield orders.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
