@@ -81,8 +81,14 @@ from specs.models import (
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1-W4 above).
+#
+# FLIPPED 2026-07-05 — Ken APPROVED the review walk in-session ("Approve — flip,
+# seed, export"): W1 the tier-level §664(b) four-tier ordering, W2 the category-
+# isolation netting, W3 the §664(c)(2) 100% UBTI excise (year-keyed post-2006),
+# W4 the qualification diagnostics + flat Part I-IX layout — all blessed. Validated
+# on throwaway SQLite (scratchpad/validate_5227.py, 20 pass / 0 fail).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "federal"
