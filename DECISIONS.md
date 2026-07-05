@@ -16,6 +16,49 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-11: Form 5227 (WO-10) v1 scope — CRAT/CRUT compute the §664 tier engine (tier-level), PIF/CLT/§4947 = structure, quals = diagnostic, UBTI excise computed
+
+**Decision:** The Form 5227 (Split-Interest Trust Information Return) v1 spec — spun off from the 1041
+module (D-10) as its own greenfield order — is scoped per Ken's 2026-07-05 Gate-1 walk (4 AskUserQuestion):
+- **(Q1) Entity types:** COMPUTE the §664(b) tier engine for **CRAT (§664(d)(1)) + CRUT (§664(d)(2))**;
+  model **pooled income funds (§642(c)(5)), charitable lead trusts, and other §4947(a)(2)** trusts as
+  STRUCTURE + diagnostics (PIF = the §642(c)(5) statement-path / no-Sch-B note; CLT = grantor vs
+  non-grantor routing, non-grantor also files Form 1041; other = catch-all).
+- **(Q2) Four-tier engine = TIER-LEVEL:** COMPUTE the four §664(b) tiers (ordinary → capital gain →
+  other/tax-exempt → corpus, worst-first) and the year-to-year undistributed **accumulation carryforward**
+  (Part II), with the **category-isolation netting** (a loss in one category cannot reduce another; carries
+  within-category). Treat **capital gain as ONE class** — do NOT split within Tier 2 into the ST/28%/
+  unrecaptured-§1250/regular-LT rate groups (that within-tier detail is preparer-entered). Chosen over the
+  full within-tier engine to keep v1 tractable; the rate-group split is a later refinement.
+- **(Q3) CRT qualification = DIAGNOSTIC:** flag the 5%–50% payout range, the 10% minimum remainder, and the
+  5% probability-of-exhaustion test (Rev. Rul. 77-374; Rev. Proc. 2016-42 safe harbor) with the rule cited,
+  but do NOT build the §7520 / 2000CM-mortality actuarial compute — these are established at trust FUNDING
+  (and re-checked with specialized planning software), not recomputed on the annual return.
+- **(Q4) UBTI + §4947 = COMPUTE the excise, screen the rest:** COMPUTE the §664(c)(2) **100% excise tax on
+  any UBTI** (year-keyed **post-2006** rule: the trust KEEPS its exemption and pays 100% of UBTI as a
+  Chapter 42 excise — NOT the pre-2007 total loss of exemption) and route to **Form 4720**; model Part VIII
+  §4941 (self-dealing) / §4943 (excess business holdings) / §4944 (jeopardy) / §4945 (taxable expenditures)
+  as screening diagnostics (→ Form 4720 if triggered; §4940 does NOT apply).
+
+**Context:** WO-10, spun off from S-11 (D-10) because the §664 split-interest family is a distinct body of
+law. All facts verified verbatim vs FINAL 2025 Form 5227 (Created 5/7/25) + i5227 (Dec 3 2025) + IRC §664/
+§642(c)/§4947/§170(f)(2) + Reg §1.664-1(d)(1) — see [f5227_source_brief.md]. Form 5227 REPLACES Form 1041-A
+for split-interest trusts; a CRT is income-tax exempt (§664(c)(1)) and files 5227 as its return.
+
+**Alternatives considered:** All-types-computed (rejected — PIF §642(c)(5)/(3) valuation + CLT §170(f)(2)/
+§642(c) deduction mechanics roughly double the module for low frequency). Full within-Tier-2 rate-group
+engine (rejected for v1 — ST/28%/§1250/regular ordering by dynamic rate is a heavy refinement; tier-level
+covers the character carry-out). Compute the qualification actuarials (rejected — §7520/mortality belongs to
+funding-time planning software, not the annual information return). UBTI diagnostic-only (rejected — the
+excise is literally 100% of UBTI, trivial to compute).
+
+**What would change our mind:** if returns need the beneficiary's LT rate-group detail, add the within-Tier-2
+split (Q2 upgrade). If PIF/CLT frequency warrants, compute their deduction mechanics (Q1 upgrade). Re-pull the
+[UNVERIFIED] verbatim clauses (§1.664-1(d)(1)(iv) netting; §642(c)(2)/(3); §4947(b)(3) 60%) before any deeper
+compute leg. The SNIIC election (Schedule A Part II) is PROPOSED reg only — do not build on it. Re-verify at TY2026.
+
+---
+
 ## 2026-07-05 — D-10: 1041 module (S-11/WO-09) v1 scope — core 4 + ESBT computed, FULL distribution engine, cap-gains-in-DNI direct-entry, GA 501 resident-only, Form 5227 spun off as its own leg
 
 **Decision:** The greenfield federal 1041 fiduciary module (S-11 spine → DNI/IDD/Sch B → Sch G → K-1 →

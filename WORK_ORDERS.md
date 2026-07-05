@@ -104,8 +104,16 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   greenfield (only on-disk ref = the spine's `D_1041_PIF` routing note). Covers the §664 split-interest family:
   charitable remainder trusts (CRAT §664(d)(1) / CRUT §664(d)(2)), pooled income funds (§642(c)(5)), and
   §4947(a)(2) split-interest trusts; the **§664(b) four-tier character-ordering** of CRT distributions is the
-  compute heart. **Next:** research-verify VERBATIM vs FINAL Form 5227 + instructions + IRC §664/§642(c)/§4947 +
-  Reg §1.664-1(d) → `f5227_source_brief.md` → Gate-1 scope walk. **Research pass running (3 agents).**
+  compute heart. **✅ Research-verified** (3 passes, verbatim vs FINAL 2025 Form 5227 Created 5/7/25 + i5227
+  Dec 3 2025 + IRC §664/§642(c)/§4947 + Reg §1.664-1(d)) → **`f5227_source_brief.md`**. Caught the stale
+  Part IV-A/IV-B layout (2025 = flat Part I–IX + Schedule A I–V).
+  - **✅ Gate-1 scope LOCKED (2026-07-05, DECISIONS D-11):** CRAT + CRUT compute the §664(b) tier engine
+    (**tier-level** — ordinary→capgain→other→corpus + accumulation carryforward + category-isolation netting;
+    capital gain as ONE class, no within-Tier-2 rate split); PIF/CLT/§4947-other = structure + diagnostics;
+    CRT qualification (5–50% payout / 10% remainder / 5% exhaustion) = diagnostic (funding-time, no §7520/
+    mortality compute); §664(c)(2) **100% UBTI excise** COMPUTED (year-keyed post-2006) + Form 4720 route +
+    Part VIII §4941/4943/4944/4945 screening diagnostics. One consolidated `5227` form.
+  - **DRAFTING leg:** author `load_5227.py` `READY_TO_SEED=False` → SQLite-validate → Ken review walk → seed → export.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
