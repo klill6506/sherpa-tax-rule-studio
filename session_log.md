@@ -4,6 +4,46 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — RS spec cleanup handoff (5 forms brought to parity with tts builds)
+*Carried "RS follow-ups" from tts STATUS (twelfth session): tts code is already correct/self-consistent;
+this session brought the RS SPECS + the re-exported tts spec mirrors into parity. Ground rules: amend the
+HOME loader's data lists + re-run (reconstructable), keep id fields ≤ 20 chars, extend the enumerated
+lists. Item 6 (3800 J4 §6417/§6418) = NO ACTION (documented intentional divergence). Clear of the
+parallel session (explicit-path commits).*
+- **Item 1 — FORM_8911 (Form 3800 now built).** Retired D_8911_004 (FormDiagnostic has no is_active field
+  → severity error→info + RETIRED reword, the RS equivalent of tts is_active=False); repointed
+  FA-1040-8911-04 from the gating red_fires check to the new flow_check (line 3 → 3800 Part III row 1s →
+  Sch 3 line 6a after §38(c)); rewrote R-8911-SCHA-BUS + line 3 + fact notes + metadata + topic + docstring
+  from "unbuilt/RED-deferred" to the built flow; dropped the now-retired D_8911_004:True from scenarios
+  8911-T6/T7. Historical 2026-07-02 review-walk records left intact. Reseeded; export 200. Commit 14c7b5d.
+- **Item 2 — 8936 / 8936_SCHA.** Extended D_8936_004 (on 8936_SCHA) from blank-VIN/PIS to also fire on a
+  PIS date not in the return tax year (PIS-year credit); added R-8936-TRANSFER (FORM_8936, cited) — a
+  qualifying dealer-transferred credit was received at POS, stops on Sch A (8c/8d/13b/13c), never re-lands
+  on Sch 3, only a DENIED transfer repays (Sch 2 1b/1c); + D_8936_008 info + FA-1040-8936-06 (RS home for
+  the transfer-STOP). Reseeded; exports 200; FA 435→436. Commit 0deee03.
+- **Item 3 — 8949 (via load_1040_schedule_d).** Added D_8949_006 (error) — imported/YELLOW Exception-2
+  summary rows start unconfirmed and must be preparer-reviewed pre-file (manual/GREEN untouched) + the
+  grounding fact ct_import_confirmed (mirrors tts CapitalTransaction.import_confirmed, mig 0160). The
+  loader's retire-stale prune keeps both. Reseeded; export 200. Commit 39dbb10.
+- **Item 4 — SCHEDULE_A.** Added scha_qualified_contributions_cash — input-only, drives the line-11
+  dotted annotation + the e-file qualifiedContributionsAmt attribute, affects no computed line (tts mig
+  0159). Reseeded; export 200. Commit 30f73ff.
+- **Item 5 — 8995 (via load_1040_schedule_c).** Recorded D_8995_001's retirement (8995-A now computes
+  every above-threshold + patron return): severity error→info + RETIRED-DORMANT reword; R-8995-SCOPE
+  formula/description + docstring + FA-1040-8995-03 from RED-defer → routes to the COMPUTED 8995-A;
+  scenario 8995-T5 expected D_8995_001 True→False. Reseeded; export 200. Commit 5647024.
+- **tts spec mirrors REFRESHED + COMMITTED + PUSHED** (tts 2ab9dae): re-exported 8911_spec / 8936_spec /
+  8936_scha_spec / 8949_spec / schedule_a_spec / 8995_spec into tts-tax-app/server/specs/, format matched
+  per file (5 compact from the RS endpoint; 8949 is indent=1/CRLF — regenerated to match, clean 23+/5− diff).
+- **DEFERRED to a tts session (flagged, not done):** (1) tts `flow_assertions_1040.json` FA gate reconcile
+  (FA-1040-8911-04 update + FA-1040-8936-06 insert) — the file is CRLF/no-trailing-newline/hand-managed
+  (its assertion_count already drifts from length) and feeds test_flow_assertions.py; the FA HOME (the RS
+  loaders) is updated + committed, so the tts session should regenerate it with its own tooling. Also the
+  duplicate `form_8949_spec.json` (export_rule_studio.py 1120-S tool, pretty). (2) Run the tts test suite
+  to reconcile any paired seed-leg/diagnostic-count assertions (tts owns the suite + the DB-collision
+  playbook). Note: RS FA-1040-8936-05 = "unused personal LOST" (matches tts -05); the transfer STOP is the
+  new -06 (the handoff's "-05 pins it" was imprecise).
+
 ## 2026-07-04 — NC D-400 AUTHORED + SEEDED + EXPORTED (August state track, form 3)
 *Ken: "next up." 4th state individual spec (GA-500/SC1040/AL-40 precedents). NC starts from FEDERAL AGI
 (like GA-500) at a FLAT 4.25% rate — simpler than AL; complexity is the Schedule S depreciation add-back

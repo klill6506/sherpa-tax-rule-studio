@@ -12,9 +12,9 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **92 TaxForms / 435 FlowAssertions** (was 88; +SC1040 +
+Active spec-authoring tool. RS Supabase holds **92 TaxForms / 436 FlowAssertions** (was 88; +SC1040 +
 SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 seeded 2026-07-04 — the 1065 stub was earlier removed in the
-reconstructability cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+reconstructability cleanup; +FA-1040-8936-06 from the tts-parity cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
 batch) / 85 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
 via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅, AL Form 40 ✅, and NC D-400 ✅
 authored/seeded/exported (forms 1-3 of the state set; next: GA-700 + PTET). **The 1065-core
@@ -213,6 +213,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **RS spec cleanup handoff DONE — 5 forms brought to parity with tts builds.** Carried "RS
+  follow-ups" from tts STATUS (tts code already correct; RS specs were stale). Amended the HOME loaders
+  (reconstructable): (1) **FORM_8911** — retired D_8911_004 (Form 3800 built; error→info + RETIRED, the RS
+  equivalent of tts is_active=False), repointed FA-1040-8911-04 to the new flow (line 3 → 3800 row 1s → Sch
+  3 6a), rewrote the business-flow rule/line/facts/scenarios off "unbuilt"; (2) **8936/8936_SCHA** —
+  extended D_8936_004 to the wrong-PIS-year case, added R-8936-TRANSFER (qualifying transfer STOP, never
+  re-lands on Sch 3) + D_8936_008 + FA-1040-8936-06; (3) **8949** — added D_8949_006 (imported-summary
+  confirm gate) + ct_import_confirmed fact; (4) **SCHEDULE_A** — added scha_qualified_contributions_cash
+  (input-only); (5) **8995** — recorded D_8995_001's retirement (8995-A now computes above-threshold).
+  Item 6 (3800 J4 §6417/§6418) = no action (documented divergence). All reseeded, exports 200; prod 92
+  TaxForms / 436 FAs. **tts spec mirrors refreshed + committed + pushed** (tts 2ab9dae: 8911/8936/8936_scha/
+  8949/schedule_a/8995_spec.json, format-matched per file). Commits 14c7b5d/0deee03/39dbb10/30f73ff/5647024.
+  **Deferred to a tts session:** the `flow_assertions_1040.json` FA-gate reconcile (CRLF/hand-managed, feeds
+  test_flow_assertions.py; the FA home = the RS loaders is already updated) + running the tts suite to
+  reconcile paired seed-leg/count assertions.
 - 2026-07-04: **NC D-400 AUTHORED + SEEDED + EXPORTED (August state track, form 3).** 4th state
   individual spec. Research verified vs the FINAL 2025 NCDOR PDFs (Form D-400 + Schedule S rev "Web-Fill
   9-25"; D-401 booklet 2025; §105-153.5/.6/.7). NC starts from **federal AGI** (like GA-500; contrast SC's
