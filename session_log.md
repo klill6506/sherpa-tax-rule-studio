@@ -4,6 +4,21 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — SC1040 spec hygiene fix (promote to active + correct the $50k test pin)
+During the tts-app SC1040 build (S-7), two hygiene issues surfaced in `load_sc1040.py`:
+- **`FORM_STATUS` `draft` → `active`** — the spec was fully authored + Ken-approved 2026-07-04
+  (`READY_TO_SEED = True`), only the status label lagged.
+- **Test scenario "SC resident, wages only, single, no dependents" pin corrected** — the
+  `expected_outputs` L6 was the rough placeholder string `"SC1040TT lookup (~6% marginal at top;
+  ≈ $2,533)"`, which is WRONG. The published **SC1040TT_2025 row for $50,000-$50,050 = $2,360**
+  (the table applies the 3-bracket structure to each $50-bracket MIDPOINT: 6%×$50,025 − 642 =
+  2359.50 → $2,360 half-up). The tts engine reproduces the published table **138/138 rows, zero
+  mismatches** (verified vs the SCDOR PDF). Pin is now numeric `2360` + an explanatory note.
+- **Re-seeded RS Supabase** (`manage.py load_sc1040`, idempotent update_or_create) — deployed
+  `lookup/SC1040/export/` now returns `status: active` + `L6: 2360` (verified live, HTTP 200).
+- No tax-law change; the rules/line_map/diagnostics were already correct (the tts four-leg app was
+  built from them). `SC_SCHEDULE_NR` re-seeded alongside (unchanged).
+
 ## 2026-07-05 — GA-500 military-exclusion reconciliation debt CLOSED (RS side) — spec authoritative, app over-inclusive
 *Picked up the BUILD_ORDER "open reconciliation debt" as a bounded close after S-5/S-6. The debt framed it as
 "the app should not stay ahead of the law" — the gap-check + research showed the REVERSE.*

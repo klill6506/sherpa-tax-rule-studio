@@ -135,7 +135,7 @@ READY_TO_SEED = True
 FORM_JURISDICTION = "SC"
 FORM_TAX_YEAR = 2025
 FORM_VERSION = 1
-FORM_STATUS = "draft"
+FORM_STATUS = "active"
 FORM_ENTITY_TYPES = ["1040"]
 
 
@@ -643,8 +643,8 @@ SC1040_DIAGNOSTICS: list[dict] = [
 SC1040_SCENARIOS: list[dict] = [
     {"scenario_name": "SC resident, wages only, single, no dependents", "scenario_type": "normal", "sort_order": 1,
      "inputs": {"federal_taxable_income": 50000, "filing_status": "single", "is_part_year_or_nonresident": False},
-     "expected_outputs": {"L5": 50000, "L6": "SC1040TT lookup (~6% marginal at top; ≈ $2,533)"},
-     "notes": "Table lookup for <$100k. Exact L6 from SC1040TT; approximate = (50000-17830)*.06 + (17830-3560)*.03 = 1930.20+428.10 = 2358 (rate-schedule equiv; table rounds to bracket midpoints)."},
+     "expected_outputs": {"L5": 50000, "L6": 2360},
+     "notes": "Table lookup for <$100k. L6 = the published SC1040TT_2025 row for $50,000-$50,050 = $2,360 (verified 138/138 vs the SCDOR table by the tts engine 2026-07-05). The table applies the 3-bracket structure to each $50-bracket MIDPOINT ($50,025): 6%*50025 - 642 = 2359.50 -> $2,360 (half-up). The rate-schedule-at-exact-$50,000 (6%*50000-642 = 2358) is NOT the table value. (Prior pin '≈$2,533' was a wrong placeholder.)"},
     {"scenario_name": "SC resident ≥$100k — rate schedule", "scenario_type": "normal", "sort_order": 2,
      "inputs": {"federal_taxable_income": 101000, "filing_status": "single", "is_part_year_or_nonresident": False},
      "expected_outputs": {"L5": 101000, "L6": 5418},
