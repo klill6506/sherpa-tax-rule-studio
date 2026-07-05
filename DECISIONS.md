@@ -16,6 +16,36 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-04 — D-6: SC1040 v1 scope is MAXIMAL — full resident + Schedule NR, and the §168(k) depreciation add-back is COMPUTED
+
+**Decision:** The SC1040 (South Carolina individual, TY2025) v1 spec — the 2nd state individual
+spec after GA Form 500 — is scoped MAXIMAL per Ken's 2026-07-04 walk (4 AskUserQuestion decisions):
+(A) compute the full-year **resident** form AND **Schedule NR** (part-year/nonresident 3-column
+SC-source proration → Sch NR line 48 → SC1040 line 5); (B) **COMPUTE** the line-e IRC §168(k)
+bonus-depreciation add-back (SC non-conformity), NOT preparer direct-entry; (C) compute the full
+**retirement / military / age-65 deduction stack** (the interacting reductions — SC's center of
+gravity); (D) **RED-defer** the niche items (I-335 active-trade 3% election L8/line-l, SC4972
+lump-sum L7, catastrophe-savings L9) each as a "prepare manually" diagnostic, and **direct-entry**
+SC1040TC other credits (L13). Structure/constants verified against the final 2025 SC DOR PDFs
+(SC1040 Rev. 4/21/25; SC1040TT Rev. 6/17/25) — see [sc1040_source_brief.md]; top rate 6% (down from
+6.4%), 3 brackets 0/3/6% at $3,560/$17,830, $642 rate-schedule constant.
+
+**Context:** August RS state track ("SC1040 — CC drafts, Ken walks — GA-500 pattern"). SC starts from
+FEDERAL TAXABLE INCOME (contrast GA-500's federal AGI start). Ken is a depreciation CPA, hence the
+choice to COMPUTE the §168(k) add-back rather than defer it.
+
+**Divergence from precedent (called out):** GA-500 v1 took its depreciation/conformity decoupling as
+**preparer direct-entry** (GA-500 W1). SC1040 (B) instead **computes** the §168(k) add-back. This
+requires pinning SC's TY2025 IRC conformity date + the bonus add-back formula (federal depr − depr-
+without-bonus), §179 conformity, and the future-year subtraction/basis-difference mechanics — a
+follow-up research pass was dispatched 2026-07-04 to verify these against SC sources before authoring.
+
+**What would change our mind:** if SC's conformity/bonus mechanics turn out to need asset-level data
+the spec can't yet reach cleanly, (B) may fall back to direct-entry for v1 (matching GA-500) with the
+compute deferred to the depreciation-engine integration — a Ken call at the reconcile leg.
+
+---
+
 ## 2026-07-04 — D-5: Spec approval (draft→approved) is source-controlled via a manifest, not a DB edit
 
 **Decision:** A spec's approval state is recorded in **source control** — `specs/approved_specs.py`

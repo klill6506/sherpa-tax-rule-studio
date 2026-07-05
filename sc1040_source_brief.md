@@ -151,24 +151,36 @@ in SC1040TT (Rev. 6/17/25). Three brackets, **same for all filing statuses**:
 
 ---
 
-## 9. Proposed v1 scope (mirrors the GA-500 COMPUTES / DIRECT-ENTRY / RED-DEFER framework) — FOR KEN'S WALK
+## 9. v1 scope — LOCKED (Ken's walk, 2026-07-04, AskUserQuestion — MAXIMAL)
 
-**COMPUTES (proposed):** the resident main form L1→L34; the 3-bracket tax (L6, table + ≥$100k
-schedule); the **retirement / military / age-65 deduction stack** (p/q with the interacting
-reductions — the SC center of gravity, like GA's RIE); the 44% capital-gain deduction (i); SS
-subtraction (o); dependent exemption (w) + under-6 (t); child-care (L11) & two-wage-earner (L12)
-credits; withholding/payments → refund/balance.
+**Decisions (all 4 answered):**
+- **A. Residency = FULL resident + Schedule NR.** Compute BOTH the resident main form AND Schedule
+  NR (the 3-column SC-source proration → line 48 → SC1040 L5). Matches GA-500's maximal v1. → needs
+  the Schedule NR structure (follow-up research dispatched 2026-07-04).
+- **B. Line-e §168(k) depreciation add-back = COMPUTE.** Ken (depreciation CPA) wants it computed,
+  not preparer direct-entry. → needs SC's TY2025 IRC conformity date + the bonus add-back formula
+  (federal depr − depr-without-bonus) + §179 conformity + the future-year subtraction/basis-diff
+  mechanics (follow-up research dispatched). Contrast GA-500 v1 (which took this as direct-entry).
+- **C. Retirement / military / age-65 stack = COMPUTE the full interacting worksheet** (retirement
+  $3k/$10k, military 100%, age-65 $15k reduced by the prior two). SC center of gravity.
+- **D. Niche items = RED-DEFER + direct-entry.** RED-defer I-335 active-trade 3% election (L8/line-l),
+  SC4972 lump-sum (L7), catastrophe-savings (L9) — each its own "prepare manually" diagnostic, no
+  silent gap. Direct-entry SC1040TC other credits (L13) + tuition inputs (L21).
 
-**DIRECT-ENTRY (line exists, diagnostic prompts, preparer keys the SC-vs-federal figure):** line-e
-§168(k) depreciation add-back (W-dep, engine auto-populates later); other a–e / f–w niche
-add/subtracts; SC1040TC other credits (L13); tuition credit inputs (L21).
+**Verify-before-lock flags (§7) — Ken blessed proceeding under re-verify notes:** bracket thresholds
+$3,560/$17,830 (corroborated; re-verify SC Code §12-6-510); tuition cap $1,500/50% (RR24-3; re-verify
+I-319_2025). The 6% top rate + $642 constant are primary-verified.
 
-**RED-DEFER (each its own "prepare manually" RED — no silent gap):** Schedule NR part-year/
-nonresident (if not in v1 — see decision A); Active Trade/Business 3% election (I-335, L8/line-l);
-lump-sum (SC4972, L7) + catastrophe-savings (L9); SC2210 underpayment (L33).
+**COMPUTES (v1):** resident main form L1→L34; Schedule NR proration (A); 3-bracket tax (L6, table +
+≥$100k schedule); the line-e §168(k) bonus add-back (B) + its subtraction/basis mechanics; retirement/
+military/age-65 stack (C); 44% cap-gain deduction (i); SS subtraction (o); dependent exemption (w) +
+under-6 (t); child-care (L11) + two-wage-earner (L12) credits; withholding/payments → refund/balance.
 
-**Open decisions for the walk:** (A) residency scope — resident-only v1 with NR RED-deferred, or
-full resident + Schedule NR like GA-500; (B) the line-e depreciation add-back — preparer direct-
-entry (GA-500 W1 precedent) or computed; (C) the p/q retirement-deduction stack depth; (D) I-335
-active-trade-business + special taxes (SC4972 / catastrophe) — RED-defer or compute. Plus bless the
-§7 verify-before-lock flags.
+**DIRECT-ENTRY:** SC1040TC other credits (L13); tuition inputs (L21); niche a–e/f–w items.
+
+**RED-DEFER (each its own "prepare manually" RED):** I-335 (L8/line-l); SC4972 (L7); catastrophe
+savings (L9); SC2210 underpayment (L33).
+
+**Next:** await the follow-up research (Schedule NR + SC depreciation conformity), then author
+`load_sc1040.py` with `READY_TO_SEED=False` (safety guard, GA-500 precedent) → reconcile → Ken
+confirms → seed → export.
