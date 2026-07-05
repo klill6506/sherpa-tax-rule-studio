@@ -4,6 +4,25 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — Form 8835 loader homes for the J2/J3/J4 RED-defers + 2 FAs (the S4 arc; the tts session)
+- `load_1040_form_8835.py` AMENDED (amend-by-lookup, `update_or_create` — the fa-needs-rs-loader-home
+  rule; the 8936 R-8936-TRANSFER precedent). Added the four scope-walk RED-defer diagnostics that the
+  tts 8835 unit built this session (Ken's 2026-07-04 J2/J3/J4 rulings + the missing-PIS gap): **D_8835_005**
+  mixed 1f/4e routing (whole feed withheld), **D_8835_006** straddle window (facility feed withheld),
+  **D_8835_007** passthrough with no PIS date (feed withheld), **D_8835_008** producing facility missing
+  its PIS date (excluded). All severity=error, ≤20 chars, bridge-gated in tts on `form_8835_state`; escape
+  hatch = the Form 3800 1zz/4z direct entries. Added **FA-1040-8835-05** (the J2/J3/J4 routing gating_check,
+  pins the rulings) + **FA-1040-8835-06** (the constants_check — 2025 rate tiers / OBBBA cutoff / ×5 / 10% /
+  15% bond cap / 90% EPE / 4-yr window; 2026 NOT pinned). Both transcribed verbatim from the tts gate file
+  (the canonical set per Ken's 2026-07-01 "tts file stays canonical" ruling).
+- SEEDED to RS Supabase: 8835 now 9 diagnostics (was 5) + 6 flow assertions (was 4); all rules keep authority
+  links. DB totals: FlowAssertions 422, FormDiagnostics 533.
+- ⏳ Cached tts `server/specs/8835_spec.json` refresh + deployed-export id-level verify FOLLOW the RS Render
+  redeploy (this push). tts gate file (`flow_assertions_1040.json`, FA-1040-8835-01..06) is canonical and
+  already green (flow gate 397). No id drift expected — the loader block is a verbatim transcription.
+
+---
+
 ## 2026-07-04 — RS DB reconstructability check + `seed_all` orchestrator
 *Ken picked this July checklist item after the 1065-core close. "fresh DB + all loaders + diff vs
 production; if anything lives only in Supabase → fix now."*
