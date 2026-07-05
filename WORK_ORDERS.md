@@ -87,7 +87,13 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     dedicated leg with its own research pass + source brief, AFTER the 1041 core. Enters this queue as a new order when reached.
   - **Authoring legs (this order):** (a) `1041` spine+SchB+SchG · (b) `SCHEDULE_K1_1041` · (c) `GA501`. Each:
     author `READY_TO_SEED=False` → SQLite-validate (CharField caps: rule/diagnostic/assertion_id ≤ 20) → Ken review
-    walk → seed → export = 200. **DRAFTING leg (a).**
+    walk → seed → export = 200.
+  - **⏳ AWAITING KEN — leg (a) `1041` spine authored + SQLite-validated ALL PASS (17/0).** `load_1041_spine.py`:
+    35 facts / 15 rules / 39 lines / 11 diag / 9 tests / 6 FA; all rules cited (25 links / 6 sources);
+    `scratchpad/validate_1041.py` green (caps clean, arithmetic oracles DNI/IDD/tiers/rate all match). `READY_TO_SEED=False`
+    (guard closed — cannot touch prod). Gate-1 review walk W1-W5 pending Ken: W1 TY2025 constants, W2 the full §662/§663
+    engine, W3 cap-gains-in-DNI direct-entry, W4 the ESBT simplification, W5 line numbering. On "approve" → flip → seed →
+    `lookup/1041/export/` = 200. **Then legs (b) K-1 + (c) GA 501.**
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
