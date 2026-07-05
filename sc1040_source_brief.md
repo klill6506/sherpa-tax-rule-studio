@@ -181,6 +181,8 @@ under-6 (t); child-care (L11) + two-wage-earner (L12) credits; withholding/payme
 **RED-DEFER (each its own "prepare manually" RED):** I-335 (L8/line-l); SC4972 (L7); catastrophe
 savings (L9); SC2210 underpayment (L33).
 
-**Next:** await the follow-up research (Schedule NR + SC depreciation conformity), then author
-`load_sc1040.py` with `READY_TO_SEED=False` (safety guard, GA-500 precedent) → reconcile → Ken
-confirms → seed → export.
+**DONE 2026-07-04:** follow-up research landed (Schedule NR + SC depreciation conformity); authored
+`load_sc1040.py`; Ken's review walk closed (W1 §179 = COMPUTE, confirmed $1,250,000/$3,130,000 pre-OBBBA;
+W2-W5 blessed as re-verify flags); **seeded + exported** — prod 90 TaxForms, both `lookup/{SC1040,
+SC_SCHEDULE_NR}/export/` = 200. Commits a588cc8 + 2fdbc06. Next August state form: **AL Form 40** (watch
+the federal-income-tax-deduction quirk — the checklist flags it as the longest walk).

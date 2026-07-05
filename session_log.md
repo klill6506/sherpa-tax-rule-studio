@@ -4,6 +4,29 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — SC1040 + Schedule NR AUTHORED + SEEDED + EXPORTED (August state track, form 1)
+*Ken: "august." First August RS state item ("SC1040 — CC drafts, Ken walks — GA-500 pattern").
+2nd state individual spec (GA-500 is the precedent). Clear of the parallel S3/S4 federal work.*
+- **Two research passes (subagents, verbatim from FINAL 2025 SC DOR PDFs):** (1) SC1040 line map +
+  the TY2025 rate (6%, down from 6.4%; 3 brackets 0/3/6% at $3,560/$17,830; $642 rate-sched constant),
+  additions/subtractions, credits, dependent exemption $4,930; (2) Schedule NR (Col A/B, line-45
+  proration, L48→SC1040 L5) + SC depreciation conformity (IRC through 12/31/2024 per Act 63/S.507;
+  SC did NOT adopt OBBBA; §168(k) bonus add-back line e / line v verbatim; §179 conforms at pre-OBBBA).
+- **Source brief** `sc1040_source_brief.md` + **scope walk** (4 AskUserQuestion, MAXIMAL, DECISIONS
+  D-6): A full resident + Schedule NR; B COMPUTE the §168(k) add-back (Ken's depreciation-CPA call,
+  diverges from GA-500 direct-entry); C compute the retirement/military/age-65 stack; D RED-defer
+  I-335/SC4972/catastrophe, direct-entry SC1040TC.
+- **Authored `load_sc1040.py`** (GA-500 pattern; READY_TO_SEED guard). **Review walk (W1-W5):** W1
+  §179 — Ken chose COMPUTE + confirmed the pre-OBBBA figures **$1,250,000 / $3,130,000** (Rev. Proc.
+  2024-40; SC's 12/31/2024 conformity) → added R-SC-179-ADDBACK (phaseout-aware excess → line e);
+  W2-W5 blessed as in-spec re-verify flags. Flipped READY_TO_SEED=True.
+- **Caught a Postgres-only bug:** AuthorityTopic.topic_name >255 (SQLite didn't enforce; the atomic
+  txn rolled back clean). Shortened → re-seeded.
+- **SEEDED + EXPORTED:** prod **88 → 90 TaxForms** (+SC1040 +SC_SCHEDULE_NR, draft status); both
+  `lookup/{SC1040,SC_SCHEDULE_NR}/export/` = **HTTP 200** (verified live). SC1040: 32 facts / 15 rules
+  / 27 lines / 6 diag / 8 tests; Sch NR: 5/4/9/1/2; 5 flow assertions; 6 cited SC DOR sources.
+  Commits a588cc8 (author) + 2fdbc06 (W1 + seed/export). Next August state form: AL Form 40.
+
 ## 2026-07-04 — draft→approved workflow: source-controlled approval + first batch (1065-core 7)
 *Ken: "the next item, but there's a parallel session so let's not step on it." Next July item =
 "begin draft→approved workflow." Stayed clear of the parallel S3/S4 loader work (8835/8936/4835);
