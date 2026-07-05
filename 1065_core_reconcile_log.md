@@ -29,3 +29,40 @@ flipping to seed. tts reconcile targets (read-only survey 2026-07-04):
   `k1_st/lt_capgain_total`, `k1_section_1231_total`, `k1_qbi_total`, …) at the K-1 leg.
 - **Box 16 → K-3 checkbox** (Decision A RED-defer): `D_SCHK_K3` / `GATE-K2K3-DEFER` mark the
   international scope boundary.
+
+---
+
+# 1065 Core — L/B Leg Reconcile (form 4: Schedule L + Schedule B)
+
+*Authored 2026-07-04, `READY_TO_SEED=False`. `load_1065_l_b.py` seeds `1065_L` + `1065_B`, fresh
+from the FINAL 2025 f1065 (page 6 Schedule L; pages 2-4 Schedule B, 33 Qs, pymupdf verbatim) +
+primary IRC (§705/§754/§448(c)/§6221, Cornell LII verbatim). tts reconcile targets (read-only
+survey 2026-07-04 via Explore agent): `compute.py` Schedule L totals (~L313-329) +
+`compute_schedule_l()` (~L1619-1715) + `seed_1065.py` (L/B field seed).*
+
+| # | RS L/B formula | tts compute | Status | Ken call |
+|---|---|---|---|---|
+| L1 | Sch L **line 14 total assets = Σ asset lines** (2a−2b, 9a−9b, 10a−10b, 12a−12b netted); **line 22 = Σ 15-21** (`R-L-14` / `R-L-22`) | `compute.py:313-329`: `L15` = Σ net asset lines; `L24` = Σ(L16..L23). BOY(a)+EOY(d) | ✅ **MATCH** (arithmetic identical) | none |
+| L2 | Sch L **numbering = the 2025 face 1-22** | tts uses **L1-L24** — splits face 7a/7b→L7/L8 and 19a/19b→L20/L21, shifting the tail one (tts L15=face14, L23=face21, L24=face22) | ⚠ **LABEL MISMATCH (off-by-one, same shape as page-1)** | **Decision D:** author RS to the FACE (1-22); map tts L1-L24→face at build, OR renumber tts. RECOMMEND face. |
+| L3 | **R-L-BALANCE** — line 14 == line 22 (both cols) + `D_L_BALANCE_{BOY,EOY}` | tts computes L15 + L24 but **NEVER compares** them; no out-of-balance diagnostic | 🔨 **GAP — build item** | Add the balance check to tts (new studio validation `RECON-L-BALANCE`). |
+| L4 | **R-L-21-TIE** — line 21 partners' capital EOY = M-2 line 9; BOY = M-2 line 1 (tax basis) | tts `L23d` (=face 21) is **data-entry**; `M2_9` computed; **no reconciliation** between them | 🔨 **GAP — build item** | Reconcile L21↔M-2 in tts (carries the M-2 leg tie home; `D_L_21_M2_TIE`). |
+| L5 | Sch L **9b/12b EOY accum. depreciation/amortization** = data-entry or computed-pull (YELLOW) | `compute_schedule_l()`: **L10d/L10e + L13d/L13e AUTO-COMPUTED** from `DepreciationAsset` (BOY + additions − dispositions; accum + current-yr − disposed) | ✅ **MATCH-plus** (tts AHEAD) | none — RS models 9b/12b EOY as computed-pull (YELLOW), consistent with tts's roll-forward. |
+| B1 | Sch B **Q4 = 4a AND 4b AND 4c AND 4d** → the `m_schb_q4_small` gate suppressing L/M-1/M-2/item F/K-1 item L (`R-B4-SMALL`) | tts seeds `B6` (=face Q4) as a **data-entry boolean**; **NO gating logic** auto-suppresses L/M | 🔨 **GAP — build item** | Make Q4 a computed gate in tts + wire the suppression (`GATE-SMALL-PTNR-B`). THE load-bearing gap. |
+| B2 | Sch B **Q24 = 24a OR 24b OR 24c** ($31M §448(c)) → Form 8990 (`R-B24-8990`) | tts seeds `B16` (=face Q24) data-entry; **no $31M threshold logic** | 🔨 **GAP — build item** | Compute the §163(j)/§448(c) $31M trigger in tts (`GATE-8990-163J`). |
+| B3 | Sch B **33 questions** (2025 face, verbatim) | tts seeds **18 condensed questions** (`B1-B18`); B6=Q4, B16=Q24 | ⚠ **COVERAGE MISMATCH** | Face-only Qs absent from tts's 18: Q22 §267A, Q25 QOF (8996), Q26 §864(c)(8), Q27 Reg 1.707-8, Q29 Form 7208. Expand tts to 33 or keep the condensed map. RS authored to the full face (authority). |
+| B4 | **Q10 §754/§743(b)/§734(b)** — election + amounts captured + flagged; basis-adjust **MATH RED-deferred** (`R-B10-754`, `D_B10_754`) | tts `B12a`/`B12b` data-entry booleans; no basis-adjust compute | ⚠ **Decision E RED-defer** | Confirm §743(b)/§734(b) basis-adjustment math is out of season-one scope (structure/flag only). |
+| B5 | **M-3 threshold** L14 ≥ $10M / receipts ≥ $35M → M-3 replaces M-1 (`R-L-M3`, `D_L_M3`, flag only) | tts has no M-3 threshold logic | ⚠ **Decision F RED-defer** | Confirm Schedule M-3 (+ B-1/B-2/B-3 sub-schedules) stay RED-deferred; flag + attachment-triggers only. |
+
+## Scope decisions proposed for the Ken walk (carry the spine A/B/C posture)
+
+- **D — Schedule L numbering:** author RS to the 2025 FACE (1-22); log tts's L1-L24 offset (L2) as a
+  build remap. RECOMMEND face (RS is the authority spec).
+- **E — §754/§743(b)/§734(b) basis-adjustment MATH (Q10):** RED-defer — structure + cited authority
+  (§754 verbatim) + flag only; the basis-adjustment computation is a future leg (brief §4.1 concurs).
+- **F — Schedule M-3 + B-1/B-2/B-3 sub-schedules:** RED-defer (carries Decision B). M-3 threshold
+  surfaces as an INFO/warning diagnostic (`R-L-M3`); B-1/B-2/PR modeled as attachment-trigger flags.
+- **G — Schedule L depth:** FULL a/b sub-lines (2a/2b, 9a/9b, 10a/10b, 12a/12b) — matches the
+  1120S_SCHL precedent + tts + Ken's depreciation focus (accum. depreciation on 9b is load-bearing).
+
+**On the Ken walk + "flip seed export": set `READY_TO_SEED=True` → seed → export → verify
+`lookup/{1065_L,1065_B}/export/` 200.**

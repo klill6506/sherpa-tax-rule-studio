@@ -12,10 +12,12 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **87 TaxForms / 416 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule M-1 +
-M-2** (`1065_M1` / `1065_M2`, 2026-07-04) — seeded + exported (both 200); M-1 line 9 = Analysis line 1,
-M-2 tax-basis capital. Prior same day (all 200): **Schedule K-1 + allocation** (`SCHEDULE_K1_1065`, full
+Active spec-authoring tool. RS Supabase holds **89 TaxForms / 420 FlowAssertions** (other tracks are
+seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule L +
+Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
+(14 == 22 balance check + L21↔M-2 tax-basis tie), Sch B 33 questions with Q4 small-partnership gate +
+Q24 §163(j) $31M → Form 8990. Prior same day: the **1065-core Schedule M-1 + M-2** (`1065_M1` /
+`1065_M2`) — M-1 line 9 = Analysis line 1, M-2 tax-basis capital. Prior same day (all 200): **Schedule K-1 + allocation** (`SCHEDULE_K1_1065`, full
 ~200-code K-1 coded-box lists verbatim; CLOSED the box-9c pass-through) and the **Schedule K spine**. Prior same day: the **Schedule K spine** (`1065_PAGE1` + `SCH_K_1065`, both endpoints 200;
 the reconcile that authored it CAUGHT + FIXED a tts net-farm compute bug `f61cfec`), and the **S3/S4
 MeF ATS unblock campaign** — `4835` (S3), plus `8835` + `8936` + `8936_SCHA` (S4), all authored/seeded/
@@ -69,12 +71,22 @@ rules cited. M-1 line 9 = Analysis line 1 (face verbatim); M-2 tax-basis capital
 from the FINAL f1065 page 6 (pymupdf verbatim). Reconcile finding: **tts M2_3 mis-source** (labeled "per
 books" data-entry; should tie to Analysis line 1 on a tax-basis M-2) → **spawned tts task `task_4bf72675`**
 (coupled to the unbuilt 1065 Analysis compute). Small-partnership exemption (Q4) encoded as a gating fact.
-**► IMMEDIATE NEXT — form 4 of 6: Schedule L (balance sheet) + Schedule B (33 questions).** Schedule L
-(assets 1-14, liab/capital 15-22; L21 partners' capital ties to M-2 line 9; L14/L22 the balance check);
-Schedule B (the 33 Yes/No questions incl. Q4 small-partnership exemption — already a gating fact in
-1065_M1/M2/L; Q10 §754; Q23/24 §163(j) $31M; Q30 digital asset). Brief §4.3 (L verbatim) + §4.1 (Sch B
-33 Qs) have the maps; the f1065.pdf is already downloaded (page 6 = Schedule L). Then 8825/4562/3800
-already cover 1065 → campaign near-complete. Read the brief + `1065_core_reconcile_log.md` first.
+**✅ form 4 of 6 DONE — Schedule L + Schedule B (`1065_L` / `1065_B`).** Seeded + exported (both 200),
+all rules cited. Sch L: full BOY/EOY balance sheet (assets 1-14, liab/capital 15-22, a/b contra
+sub-lines), computed 14/22 both cols, **R-L-BALANCE (14==22)** + **R-L-21-TIE (partners' capital ↔ M-2
+line 9, tax basis)** + small-partnership suppression + M-3 threshold flag. Sch B: all **33 questions**
+verbatim, two computed gates — **R-B4-SMALL (Q4 all-four → the `m_schb_q4_small` gate)** + **R-B24-8990
+(Q24 §163(j)/§448(c) $31M → Form 8990)**; §754 flag, PR designation, digital asset. Ken walked 4 scope
+calls (2026-07-04, all approved): D=author to the 2025 face; **E=§754/§743(b)/§734(b) basis-adjust MATH
+RED-defer**; F=M-3/B-1/B-2 RED-defer; G=full a/b Sch L sub-lines. Reconcile (9 items, `1065_core_
+reconcile_log.md` L/B section): 2 MATCH (L-totals; tts's DepreciationAsset EOY roll-forward is AHEAD),
+**5 tts build-gaps caught** (no balance check; Q4 gate stored-but-dead; no $31M/M-3 threshold; L21↔M-2
+not reconciled; **tts Sch L numbered L1-L24 offset one from the face + tts Sch B condensed to 18 vs 33**).
+None are RS blockers — the export drives them tts-side.
+**► IMMEDIATE NEXT — forms 5 & 6: 8825 / 4562 / 3800 ALREADY cover 1065** (brief §1 table: `8825`
+entity=['1120S','1065']; 4562/3800 multi-entity). So the 6 fresh-authored core forms (spine, K-1+alloc,
+M-1/M-2, L/B) are DONE — **campaign near-complete**; confirm 8825/4562/3800 1065 coverage is sufficient
+(likely no fresh authoring). Read the brief + `1065_core_reconcile_log.md` first.
 **Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
 numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
 (2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new). Plus the
@@ -160,6 +172,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **1065 core — Schedule L + Schedule B SEEDED + EXPORTED (`1065_L` / `1065_B`).** Form 4 of 6.
+  Fresh-authored from the FINAL 2025 f1065 (page 6 Sch L; pages 2-4 Sch B, 33 Qs; pymupdf verbatim) +
+  primary IRC (§705 L21↔M-2 tie; §754/§743(b)/§734(b) Q10; §448(c) the $31M behind Q24; §6221(b) Q33 —
+  all Cornell LII verbatim). Sch L = full BOY/EOY balance sheet with the balance check (14==22) + the
+  tax-basis L21↔M-2 line 9 tie; Sch B = all 33 questions with the Q4 small-partnership gate (feeds
+  `m_schb_q4_small` on L/M-1/M-2) + the Q24 §163(j) $31M → Form 8990 gate. Ken walked 4 scope calls
+  (AskUserQuestion): E=§754 basis-adjust math RED-defer, D=author to the face, F=M-3/B-1/B-2 RED-defer,
+  G=full a/b sub-lines — all approved; "flip seed export". **D-1 reconcile (9 items)** vs tts Schedule L
+  totals + `compute_schedule_l()` + `seed_1065` B1-B18 → **caught 5 tts build-gaps** (no balance check;
+  Q4 gate stored-but-not-enforced; no $31M/M-3 threshold; L21↔M-2 unreconciled; tts Sch L L1-L24 numbering
+  offset one from the 2025 face + tts Sch B condensed to 18 vs the face's 33). Seeded (1065_L: 59 facts /
+  6 rules / 28 lines / 5 diag / 5 scenarios; 1065_B: 51 facts / 5 rules / 32 lines / 5 diag / 5 scenarios
+  / 4 flow assertions, all cited) → **89 TaxForms / 420 FlowAssertions**; both `lookup/{1065_L,1065_B}/
+  export/` = 200 (exports/form_1065_l/, form_1065_b/). Next: 8825/4562/3800 already cover 1065 → campaign
+  near-complete.
 - 2026-07-04: **1065 core — Schedule M-1 + M-2 SEEDED + EXPORTED (`1065_M1` / `1065_M2`).** Form 3 of 6.
   Authored from the FINAL f1065 page 6 (pymupdf verbatim) + primary IRC (§705 tax-basis capital, §702
   book-tax). M-1: 9 = 5−8 = **Analysis of Net Income line 1** (face verbatim — validates the spine's

@@ -4,6 +4,33 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — 1065 core form 4: Schedule L + Schedule B authored + SEEDED + EXPORTED
+*Ken: "continue the 1065-core campaign — form 4 (Schedule L + Schedule B)." Fresh-authored per D-1.*
+- **Sourced verbatim** off the FINAL 2025 f1065.pdf (re-downloaded; page 6 = Schedule L, pages 2-4 =
+  Schedule B's 33 questions; pymupdf) — confirmed the brief §4.3/§4.1 transcription. Primary IRC fetched
+  verbatim off Cornell LII: §754 (Q10 election), §448(c) (the $25M base → $31M inflation-adjusted behind
+  Q24 §163(j)), §6221(b) (Q33 audit election out); §705 re-used (L21↔M-2 tax-basis tie).
+- **D-1 reconcile** (Explore agent, read-only tts survey): `compute.py` Sch L totals (~L313-329) +
+  `compute_schedule_l()` (DepreciationAsset EOY roll-forward) + `seed_1065.py` B1-B18. **9 items logged**
+  (`1065_core_reconcile_log.md` L/B section): 2 MATCH (L-totals arithmetic; tts's 9b/12b EOY roll-forward
+  is AHEAD), **5 tts build-gaps caught** — (L3) no balance check; (B1) Q4 gate stored-but-not-enforced;
+  (B2) no $31M/M-3 threshold; (L4) L21↔M-2 unreconciled; (L2/B3) **tts Sch L numbered L1-L24 offset one
+  from the 2025 face** (splits 7a/7b, 19a/19b) + **tts Sch B condensed to 18 questions vs the face's 33**.
+- **Scope walk (AskUserQuestion, 4 calls, all approved):** D = author RS to the 2025 face (log the tts
+  L1-L24 remap as a build item); **E = §754/§743(b)/§734(b) basis-adjustment MATH RED-defer** (structure +
+  cited authority + flag only; Ken's basis-specialty call); F = Schedule M-3 + B-1/B-2/B-3 RED-defer
+  (threshold flag + attachment triggers); G = full a/b Sch L sub-lines. → "flip seed export."
+- **Authored `load_1065_l_b.py`** (READY_TO_SEED=False → flipped True post-walk): `1065_L` (59 facts / 6
+  rules R-L-14/22/BALANCE/21-TIE/EXEMPT/M3 / 28 lines / 5 diag / 5 scenarios) + `1065_B` (51 facts / 5
+  rules R-B4-SMALL/B24-8990/B10-754/B33-PR/B30-DIGITAL / 32 lines / 5 diag / 5 scenarios) + 4 flow
+  assertions (GATE-SMALL-PTNR-B, RECON-L-BALANCE, RECON-L21-M2, GATE-8990-163J). All rules cited. 6
+  authority sources (IRC_705/754/448C/6221 + F1065/I1065 face). Load-bearing computed gates: R-B4-SMALL
+  (Q4 all-four → `m_schb_q4_small` suppresses L/M-1/M-2/item F/K-1 item L) + R-B24-8990 (Q24 §163(j) $31M).
+- **Seeded + exported:** → **89 TaxForms / 420 FlowAssertions**; both `lookup/{1065_L,1065_B}/export/`
+  = HTTP 200 (verified live on 127.0.0.1:8137); exports/form_1065_l/ (48 KB) + form_1065_b/ (51 KB),
+  all load-bearing rules + verbatim excerpts present. The 6 fresh 1065-core forms are DONE; 8825/4562/3800
+  already cover 1065 → campaign near-complete.
+
 ## 2026-07-04 — Form 3800 1040-side AMENDMENT authored + SEEDED (the S4 arc; the tts session)
 *Ken: "should you go ahead and build the 3800?" → spec-first. The deployed 3800 spec was the
 1120-S-era draft (10-line generic sketch, K-1-box-13 routing — unusable for the 1040/S4 build).*
