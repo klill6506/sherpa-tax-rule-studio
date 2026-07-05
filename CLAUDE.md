@@ -51,6 +51,20 @@ staticfiles/     — WhiteNoise collected static files (gitignored)
 - Rules with zero authority links should show a warning badge
 - Export produces self-contained JSON spec packages
 
+## Boot
+- At boot: pull tts-tax-status; read BUILD_ORDER.md (order), SEASON_PLAN.md (gates),
+  PRODUCT_MAP.md (scope). BUILD_ORDER is the single source of sequence for both lanes.
+
+## Work Order Process (WORK_ORDERS.md is the RS front-door mechanism)
+- `WORK_ORDERS.md` (RS repo root) holds the gap-check, the transition states, and Gate-1
+  approval for the CURRENT order only. It does NOT keep its own ordered backlog — it takes
+  the next authoring order FROM the BUILD_ORDER SPINE (canonical in tts-tax-status).
+- Update WORK_ORDERS.md at EVERY transition (GAP-CHECKED → DRAFTING → AWAITING KEN →
+  APPROVED → DISPATCHED → DONE). No silent authoring; the queue is the record.
+- Two human gates are non-negotiable: Gate 1 = draft→published spec (Ken); Gate 2 =
+  published→compute (the existing gated ingest in tts). A law change or Ken may START a
+  draft; nothing CROSSES a gate unattended.
+
 ## Color System (Data Entry Fields)
 - RED — Error, incomplete, or incorrectly formatted value
 - YELLOW — Value pulled from another source (calculated, imported)
