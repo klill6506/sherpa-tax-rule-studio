@@ -57,17 +57,15 @@ RED-DEFERS (each its own "prepare manually" RED — no silent gap):            [
 ═══════════════════════════════════════════════════════════════════════════
 requires_human_review WALK ITEMS (for Ken's in-session review before seeding)
 ═══════════════════════════════════════════════════════════════════════════
-W1. §179 CONFORMITY (Ken = depreciation CPA). §179 is NOT on SC's non-adopted
-    list (§12-6-50 excludes only §168(k), §163(j), §199A), so SC conforms to
-    §179 AT THE 12/31/2024 IRC LEVEL — i.e. the PRE-OBBBA limit (~$1,250,000 /
-    $3,130,000 phaseout inflation-adjusted), NOT OBBBA's $2,500,000/$4,000,000.
-    BUT SC DOR does not print the exact 2025 §179 figure — it is inferred from
-    the federal pre-OBBBA inflation adjustments SC adopts by reference. v1 does
-    NOT hardcode a §179 dollar limit: the §179-excess add-back (if federal §179 >
-    SC's limit) is captured as a FLAGGED DIRECT-ENTRY on line e (D_SC1040_179),
-    NOT silently computed. CONFIRM the exact 2025 SC §179 amount + whether to
-    compute or direct-enter the excess. (Do NOT cross-apply the GA $1,050,000
-    figure from CLAUDE.md — SC has its own regime.)
+W1. §179 CONFORMITY — RESOLVED 2026-07-04 (Ken confirmed the figure). §179 is
+    NOT on SC's non-adopted list (§12-6-50 excludes only §168(k), §163(j),
+    §199A), so SC conforms to §179 AT THE 12/31/2024 IRC LEVEL — the PRE-OBBBA
+    limit $1,250,000 / phaseout $3,130,000 (Rev. Proc. 2024-40), NOT OBBBA's
+    $2,500,000/$4,000,000. Ken (depreciation CPA) confirmed these figures and
+    chose COMPUTE: the §179-excess add-back is now computed on line e by
+    R-SC-179-ADDBACK (SC_179_LIMIT / SC_179_PHASEOUT constants), recovered via SC
+    depreciation over the asset life. Business-income limit not modeled (noted).
+    (Do NOT cross-apply the GA $1,050,000 figure from CLAUDE.md — SC's own regime.)
 W2. BRACKET THRESHOLDS. The $3,560 / $17,830 dollar breakpoints are corroborated
     by the primary SC1040TT table + the $642 rate-schedule constant, but were
     not printed as round numbers in a DOR PDF (a third-party site supplied the
@@ -124,8 +122,14 @@ from specs.models import (
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1-W5 above).
+#
+# FLIPPED 2026-07-04 — Ken APPROVED the review walk in-session ("seed + export
+# now"): W1 §179 conformity RESOLVED (confirmed $1,250,000/$3,130,000 pre-OBBBA,
+# COMPUTE via R-SC-179-ADDBACK); W2 bracket thresholds $3,560/$17,830, W3 tuition
+# cap, W4 the federal-taxable-income handoff, W5 OBBBA non-adoption re-verify —
+# all blessed to proceed as in-spec re-verify flags. Validated on a throwaway DB.
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "SC"
@@ -161,11 +165,16 @@ SC_SALT_ADDBACK_CAP: dict[int, int] = {2025: 40000}       # line a, federal SALT
 SC_TUITION_CREDIT_PCT: dict[int, str] = {2025: "0.50"}    # ⚠ W3 — RR24-3, re-verify I-319_2025
 SC_TUITION_CREDIT_CAP: dict[int, int] = {2025: 1500}      # ⚠ W3
 
-# SC IRC conformity (Act 63 / S.507, signed 2026... no — signed 2025-05-22):
-SC_CONFORMITY_DATE: str = "2024-12-31"                    # IRC "as amended through December 31, 2024"
-SC_ADOPTED_OBBBA: bool = False                            # conformity date predates OBBBA (7/4/2025)
-# §179: SC conforms at the 12/31/2024 level (pre-OBBBA), NOT $2.5M/$4M. Exact
-# 2025 SC figure UNCONFIRMED by DOR → W1, NOT hardcoded here (direct-entry excess).
+# SC IRC conformity (Act 63 / S.507, signed 2025-05-22): "IRC as amended through
+# December 31, 2024" → SC did NOT adopt OBBBA (7/4/2025).
+SC_CONFORMITY_DATE: str = "2024-12-31"
+SC_ADOPTED_OBBBA: bool = False
+# §179: SC conforms at the 12/31/2024 (pre-OBBBA) level, NOT OBBBA's $2.5M/$4M.
+# W1 RESOLVED 2026-07-04 — Ken confirmed the 2025 pre-OBBBA figures (Rev. Proc.
+# 2024-40, adopted by SC's 12/31/2024 conformity): limit $1,250,000 / phaseout
+# threshold $3,130,000. The SC §179-excess add-back is COMPUTED on line e (below).
+SC_179_LIMIT: dict[int, int] = {2025: 1250000}           # pre-OBBBA 2025 §179 dollar limit (SC conforms)
+SC_179_PHASEOUT: dict[int, int] = {2025: 3130000}        # pre-OBBBA 2025 §179 phaseout threshold
 
 
 def _yk_int(d: dict[int, int], year: int) -> int:
@@ -182,10 +191,8 @@ def _yk_str(d: dict[int, str], year: int) -> str:
 # ═══════════════════════════════════════════════════════════════════════════
 
 AUTHORITY_TOPICS: list[tuple[str, str]] = [
-    ("sc_income_tax", "South Carolina SC1040 — individual income tax: federal-taxable-income start, "
-     "SC additions/subtractions, the 3-bracket rate, the retirement/military/age-65 deduction stack, "
-     "the 44% capital-gain deduction, §168(k) bonus-depreciation decoupling, and Schedule NR part-year/"
-     "nonresident proration."),
+    ("sc_income_tax", "South Carolina SC1040 individual income tax: federal-taxable-income start, "
+     "SC add/subtract, 3-bracket rate, retirement/age-65 stack, §168(k)/§179 decoupling, Schedule NR."),
 ]
 
 EXISTING_SOURCES_TO_REFERENCE: list[str] = [
@@ -467,6 +474,10 @@ SC1040_FACTS: list[dict] = [
      "notes": "Dec B: SC deduction = regular MACRS on the full (non-bonus-reduced) basis, same recovery period."},
     {"fact_key": "sc_prior_year_bonus_catchup", "label": "Later-year additional SC depreciation (line v subtraction)", "data_type": "decimal", "required": False, "sort_order": 12,
      "notes": "SC basis > federal after the PIS-year add-back → extra SC depreciation in later years."},
+    {"fact_key": "federal_179_deducted", "label": "Federal §179 expense deducted (this year)", "data_type": "decimal", "required": False, "sort_order": 13,
+     "notes": "W1. Under OBBBA the federal §179 can reach $2.5M; SC's limit is the pre-OBBBA $1.25M."},
+    {"fact_key": "section_179_property_total", "label": "Total cost of §179 property placed in service", "data_type": "decimal", "required": False, "sort_order": 14,
+     "notes": "Drives the SC §179 phaseout (limit reduced $-for-$ over $3,130,000)."},
     {"fact_key": "state_tax_addback", "label": "State income tax deducted on federal Schedule A (line a)", "data_type": "decimal", "required": False, "sort_order": 13,
      "notes": "Only if itemized federally; federal SALT cap referenced $40,000 / $20,000 MFS."},
     {"fact_key": "other_additions", "label": "Other SC additions (b/c/d and non-modeled line e items)", "data_type": "decimal", "required": False, "sort_order": 14},
@@ -500,9 +511,15 @@ SC1040_RULES: list[dict] = [
      "formula": "line_e_depr_addback = max(0, federal_bonus_depreciation - depreciation_without_bonus)",
      "inputs": ["federal_bonus_depreciation", "depreciation_without_bonus"], "outputs": ["line_e_depr_addback"], "sort_order": 10,
      "description": "Dec B. SC does not recognize §168(k); PIS-year add-back = federal depreciation − depreciation without bonus (same recovery period). SC basis then exceeds federal (see line v subtraction + disposition basis adj). Does NOT cover the §179-excess add-back (W1 — direct-entry)."},
+    {"rule_id": "R-SC-179-ADDBACK", "title": "§179-excess add-back (line e) — SC conforms at pre-OBBBA $1.25M (W1)", "rule_type": "calculation",
+     "formula": ("sc_179_limit = max(0, 1250000 - max(0, section_179_property_total - 3130000)) ; "
+                 "sc_179_allowed = min(federal_179_deducted, sc_179_limit) ; "
+                 "line_e_179_addback = max(0, federal_179_deducted - sc_179_allowed)"),
+     "inputs": ["federal_179_deducted", "section_179_property_total"], "outputs": ["line_e_179_addback"], "sort_order": 10,
+     "description": "W1 RESOLVED (Ken confirmed 2026-07-04). SC conforms to §179 at the 12/31/2024 IRC level — limit $1,250,000, phaseout threshold $3,130,000 (Rev. Proc. 2024-40), NOT OBBBA's $2.5M/$4M. Add back federal §179 in excess of the SC-allowed amount on line e; the added-back basis is recovered via SC depreciation over the asset life (line v style). Also subject to the business-income limit (not modeled — note)."},
     {"rule_id": "R-SC-ADDITIONS", "title": "Total additions (L2) and L3", "rule_type": "calculation",
-     "formula": "L2 = state_tax_addback + line_e_depr_addback + other_additions ; L3 = L1 + L2",
-     "inputs": ["federal_taxable_income", "state_tax_addback", "line_e_depr_addback", "other_additions"], "outputs": ["L2", "L3"], "sort_order": 11},
+     "formula": "L2 = state_tax_addback + line_e_depr_addback + line_e_179_addback + other_additions ; L3 = L1 + L2",
+     "inputs": ["federal_taxable_income", "state_tax_addback", "line_e_depr_addback", "line_e_179_addback", "other_additions"], "outputs": ["L2", "L3"], "sort_order": 11},
     {"rule_id": "R-SC-CAPGAIN", "title": "44% net long-term capital gain deduction (line i)", "rule_type": "calculation",
      "formula": "line_i = 0.44 * max(0, net_long_term_capital_gain)",
      "inputs": ["net_long_term_capital_gain"], "outputs": ["line_i"], "sort_order": 20,
@@ -561,6 +578,8 @@ SC1040_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-SC-DEPR-ADDBACK", "SC_2025_SC1040_INSTR", "primary", "§168(k) add-back verbatim, line e"),
     ("R-SC-DEPR-ADDBACK", "SC_ACT63_2025_CONFORMITY", "primary", "SC conformity 12/31/2024; §12-6-50 decouples §168(k)"),
     ("R-SC-DEPR-ADDBACK", "SC_RR_05_2_DEPR", "interpretive", "separate SC depreciation schedule + disposition basis"),
+    ("R-SC-179-ADDBACK", "SC_ACT63_2025_CONFORMITY", "primary", "SC conforms to §179 at 12/31/2024 (pre-OBBBA); not on the §12-6-50 non-adopted list"),
+    ("R-SC-179-ADDBACK", "SC_2025_SC1040_INSTR", "secondary", "line e additions carry the depreciation/§179 conformity difference"),
     ("R-SC-CAPGAIN", "SC_2025_FORM_SC1040", "primary", "44% net LT capital gain deduction, line i"),
     ("R-SC-RETIRE-STACK", "SC_2025_SC1040_INSTR", "primary", "retirement/military/age-65 stack verbatim rules"),
     ("R-SC-SS", "SC_2025_FORM_SC1040", "primary", "Social Security fully exempt, line o"),
@@ -603,10 +622,10 @@ SC1040_LINES: list[dict] = [
 ]
 
 SC1040_DIAGNOSTICS: list[dict] = [
-    {"diagnostic_id": "D_SC1040_179", "title": "§179 excess over SC limit — prepare manually (W1)", "severity": "warning",
-     "condition": "federal §179 expense may exceed SC's pre-OBBBA §179 limit (~$1.25M, unconfirmed)",
-     "message": "SC conforms to §179 at the 12/31/2024 IRC level (NOT OBBBA's $2.5M). If federal §179 exceeds SC's 2025 limit, add back the excess on line e. The exact SC 2025 §179 figure is unconfirmed — verify before entering.",
-     "notes": "W1. Ken (depreciation CPA) to adjudicate compute-vs-direct-entry at the review walk."},
+    {"diagnostic_id": "D_SC1040_179", "title": "§179 add-back computed at SC's pre-OBBBA $1.25M limit", "severity": "info",
+     "condition": "federal §179 deducted exceeds SC's $1,250,000 limit (phaseout over $3,130,000)",
+     "message": "SC conforms to §179 at the 12/31/2024 IRC level — limit $1,250,000 / phaseout $3,130,000 (NOT OBBBA's $2.5M/$4M). The excess of federal §179 over the SC-allowed amount is added back on line e and recovered via SC depreciation over the asset life. Verify against the business-income limit.",
+     "notes": "W1 RESOLVED — Ken confirmed the figure 2026-07-04; computed by R-SC-179-ADDBACK."},
     {"diagnostic_id": "D_SC1040_ATB", "title": "Active Trade/Business 3% election (I-335) — prepare manually", "severity": "info",
      "condition": "taxpayer elects the I-335 active-trade-or-business 3% flat rate",
      "message": "The I-335 Active Trade or Business Income 3% election (L8 tax + line-l deduction) is not computed in v1. Prepare I-335 manually and enter L8.",
@@ -638,6 +657,14 @@ SC1040_SCENARIOS: list[dict] = [
      "inputs": {"federal_bonus_depreciation": 40000, "depreciation_without_bonus": 8000},
      "expected_outputs": {"line_e_depr_addback": 32000},
      "notes": "Dec B: 40000 − 8000 = 32000 added back on line e (SC basis then higher; extra SC depreciation later on line v)."},
+    {"scenario_name": "§179 add-back — federal $2M vs SC $1.25M limit (W1)", "scenario_type": "edge", "sort_order": 7,
+     "inputs": {"federal_179_deducted": 2000000, "section_179_property_total": 2000000},
+     "expected_outputs": {"line_e_179_addback": 750000},
+     "notes": "SC limit $1,250,000 (property $2M < $3.13M phaseout → no reduction); allowed = min(2000000, 1250000) = 1250000; add-back = 2000000 − 1250000 = 750000."},
+    {"scenario_name": "§179 phaseout reduces the SC limit", "scenario_type": "edge", "sort_order": 8,
+     "inputs": {"federal_179_deducted": 1250000, "section_179_property_total": 3630000},
+     "expected_outputs": {"line_e_179_addback": 500000},
+     "notes": "phaseout: SC limit = 1250000 − (3630000 − 3130000 = 500000) = 750000; allowed = min(1250000, 750000) = 750000; add-back = 1250000 − 750000 = 500000."},
     {"scenario_name": "Two-wage-earner credit cap", "scenario_type": "edge", "sort_order": 5,
      "inputs": {"filing_status": "MFJ", "taxpayer_sc_earned_income": 80000, "spouse_sc_earned_income": 60000},
      "expected_outputs": {"L12": 350},
