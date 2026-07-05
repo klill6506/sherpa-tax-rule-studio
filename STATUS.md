@@ -77,9 +77,12 @@ B1–B7 pinned as pending-skips.
 **WORK_ORDERS front door** is live: WORK_ORDERS.md is the RS MECHANISM (gap-check + transitions + Gate-1)
 and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent backlog here. At boot, pull
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
-checkboxes). Per the reconciled SPINE, the next open **RS authoring** rocks are **S-5 boundary diagnostics
-(WO-04)** and **S-6 PAL/basis deepening (WO-03 — before the regression bed locks)**; **S-11 1041 (WO-09)**
-is the greenfield Sept rock. (S-4 1065-core RS authoring is DONE — see the front-door win below.)
+checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
+S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227). **The next RS authoring order is
+`[WO-11] S-13 · 1120 C-corp module`** — ADDED 2026-07-05 (DECISIONS D-12), status INTAKE. Ken will prompt
+"build 1120"; run the WORK_ORDERS front door from step 1 (gap-check → research-verify → source brief →
+Gate-1 scope walk → author). Required set: 1120 spine (§11 21%), Sch C (DRD), Sch J, Sch K/L, M-1/M-2,
+1125-A/1125-E, GA Form 600.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the

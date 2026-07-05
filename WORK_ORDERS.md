@@ -118,6 +118,15 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     SQLite-validated `scratchpad/validate_5227.py` 20/0. Seeded → **100 TaxForms / 475 FlowAssertions / 867 FormRules**;
     `lookup/5227/export/` = 200. **Status: ✅ DONE (RS).** tts app build = [APP] lane. The 1041 family (S-11 + WO-10)
     is now fully authored on the RS side. Carried [UNVERIFIED] clauses noted in the loader for re-pull if a deeper compute leg is scoped.
+- **▶ NEXT ORDER — [WO-11] S-13 · 1120 C-corp module · greenfield RS-first · status `INTAKE` (added 2026-07-05, DECISIONS D-12).**
+  Ken added the **C corporation (Form 1120)** to the season-one plan (a scope-add beyond the original 1040/1120-S/1065/1041
+  set — a NEW entity type nothing else covers). **When picked up (Ken: "build 1120"): run the front door from step 1** —
+  gap-check the required set vs live prod (`lookup/<form>/export/`), then research-verify VERBATIM vs the FINAL 2025
+  Form 1120 + i1120 + IRC (§11 21% rate, §243/§245A DRD, §172 NOL 80%, §163(j), §55 CAMT) + GA Form 600, → `f1120_source_brief.md`
+  → Gate-1 scope walk → author. Required set (BUILD_ORDER S-13, the gap-check target): spine (page-1 → §11 21% tax);
+  Schedule C (DRD); Schedule J (tax comp); Schedule K + L; M-1/M-2; 1125-A (COGS) + 1125-E (officer comp); GA Form 600
+  (income + net worth tax). Confirm 4562/4797/3800 already cover 1120 (like the 1065-core 8825/4562/3800 confirmation).
+  Scope-walk items: NOL §172 / §163(j) / CAMT §55 (likely RED-defer) / PHC / accumulated-earnings tax.
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative

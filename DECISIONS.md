@@ -16,6 +16,40 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-12: 1120 C-corp module ADDED to the season-one plan (S-13 / WO-11)
+
+**Decision:** Add the **C corporation (Form 1120)** federal module — plus its GA companion (Form 600) — to
+the season-one build plan as **BUILD_ORDER S-13 / WORK_ORDERS WO-11**, greenfield RS-first. This is a scope
+ADD beyond the original season-one compliance set (which was 1040 / 1120-S / 1065 / 1041 federal + GA/SC/AL/NC
+states). PRODUCT_MAP compliance line updated to include 1120.
+
+**Context:** Ken's call 2026-07-05, after the RS authoring spine came in clear (S-1..S-11 + WO-10 all DONE a
+month ahead of the Sept–Oct plan). The C corporation is a **genuinely new entity type** — nothing in the
+current form set computes it (1120-S is the S-corp; 4562/4797/3800 carry '1120' in entity_types for
+depreciation/disposition/GBC but there is no 1120 income-tax spine). Ken intends to build it next: he will
+clear context and prompt "build 1120", at which point the fresh session runs the WORK_ORDERS front door from
+step 1 (gap-check → research-verify → source brief → Gate-1 scope walk → author).
+
+**Required set (the gap-check target, BUILD_ORDER S-13):** 1120 spine (page-1 income → deductions → taxable
+income → §11 flat 21% tax); Schedule C (dividends-received deduction §243/§245A); Schedule J (tax computation);
+Schedule K (other info) + Schedule L (balance sheet); M-1/M-2 (book-tax reconcile + retained earnings; M-3
+$10M threshold); 1125-A (COGS) + 1125-E (officer compensation); GA Form 600 (GA C-corp income + net worth
+tax). Depreciation/disposition/GBC (4562/4797/3800) are expected to already cover 1120 — confirm at gap-check
+(the 1065-core 8825/4562/3800 precedent). The v1 compute-vs-defer scope (NOL §172 80% limit, §163(j), the §55
+corporate AMT / CAMT, PHC and accumulated-earnings taxes) is a Gate-1 scope-walk decision at build time, NOT
+pre-decided here.
+
+**Alternatives considered:** leave 1120 out of season one (rejected — the practice has C-corp clients and the
+runway opened up); fold it into the adjacent-state entity track as just FL F-1120 (rejected — the federal 1120
+is the core need; FL F-1120 / other state C-corp returns are companions that reuse the federal 1120 flow).
+
+**What would change our mind:** if the TaxWise forms-usage report shows the firm's C-corp population is
+negligible, the module can be deferred; if a specific C-corp complexity (consolidated returns §1501, CAMT) is
+common, that expands the Gate-1 scope. CAMT (§55, 15% on $1B+ AFSI) is expected to be RED-deferred as
+out-of-population, decided at the scope walk.
+
+---
+
 ## 2026-07-05 — D-11: Form 5227 (WO-10) v1 scope — CRAT/CRUT compute the §664 tier engine (tier-level), PIF/CLT/§4947 = structure, quals = diagnostic, UBTI excise computed
 
 **Decision:** The Form 5227 (Split-Interest Trust Information Return) v1 spec — spun off from the 1041
