@@ -1,7 +1,7 @@
 ---
 type: project-status
 project: sherpa-tax-rule-studio
-last_updated: 2026-07-04
+last_updated: 2026-07-05
 ---
 
 # STATUS — sherpa-tax-rule-studio
@@ -12,11 +12,12 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **92 TaxForms / 441 FlowAssertions / 801 FormRules** (was
-88; +SC1040 + SC_SCHEDULE_NR + AL_FORM_40 + NC_D400 + GA700 seeded 2026-07-04/05; +FA-1040-8936-06 from
-the tts-parity cleanup; −1 form-row from the 4797 v1 stub deletion in the delta audit). **Prod ↔ a fresh
-`seed_all` rebuild is now 0-delta (2026-07-05 delta audit — 92 form_numbers, identical rule_ids
-everywhere).** **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+Active spec-authoring tool. RS Supabase holds **94 TaxForms / 449 FlowAssertions / 818 FormRules** (was
+92 after the delta audit; **+SC1065 + SC1120S seeded 2026-07-05** — the SC pass-through ENTITY track,
+adjacent-state extension of GA-700 + PTET; +8 FA, +17 FormRules). **Prod ↔ a fresh `seed_all` rebuild
+was 0-delta at the 2026-07-05 delta audit; `load_sc_passthrough` is auto-discovered by `seed_all`
+(phase 2, after `load_sc1040`, verified via `--dry-run`), so the two new SC entity forms stay
+reconstructable — no orchestrator edit needed.** **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
 batch) / 85 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
 via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅, AL Form 40 ✅, and NC D-400 ✅
 authored/seeded/exported (forms 1-3 of the state set; next: GA-700 + PTET). **The 1065-core
@@ -64,12 +65,21 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► IMMEDIATE NEXT — open (Ken's pick).** The August RS state campaign is DONE (**SC1040 ✅ · AL Form 40 ✅
-· NC D-400 ✅ · GA-700 + PTET ✅**) AND the **1120-S delta audit is COMPLETE ✅** (2026-07-05 — prod ↔
-rebuild 0-delta; see Recent wins + `reconstructability_check.md`). No named item is outstanding. Candidate
-next threads: the **September 1041 authoring wave** (spine → DNI/IDD/Sch B → Sch G/K-1/GA 501; DECISIONS
-D-2 RED-defers Sch I AMT); more **state forms** (the pattern is well-grooved, below); or the tts-side FA
-gate reconcile deferred from the parity cleanup (a tts session owns it).
+**► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
+Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
+**adjacent-state ENTITY track has begun** — **SC1065 + SC1120S + SC PTET ✅ (2026-07-05, DECISIONS D-9)**.
+Candidate next threads on the adjacent-state entity track (the individual returns for GA's income-tax
+neighbors AL/NC/SC are all done; FL/TN have no individual income tax):
+  - **SC follow-ups (small):** the SC1120S multi-state Schedule G/E/H apportionment + license-fee
+    apportionment + Schedule D Annual Report were RED-deferred in v1 (D-9 Q4) — build if demand warrants.
+  - **NC pass-through** (D-403 partnership / CD-401S S-corp + the NC Taxed PTE election) — reuses NC D-400
+    conformity (Jan 1 2023 freeze, 85% add-back).
+  - **AL pass-through** (Form 65 / 20S + Alabama's Electing PTE tax, Act 2021-1) — reuses AL Form 40 research.
+  - **FL F-1120** (corporate income — a NEW C-corp entity type, no 1120 authored yet) or **TN FAE 170**
+    (franchise & excise) — the two neighbors with no individual income tax / no PTET.
+Other open threads: the **September 1041 authoring wave** (spine → DNI/IDD/Sch B → Sch G/K-1/GA 501;
+DECISIONS D-2 RED-defers Sch I AMT); or the tts-side FA gate reconcile deferred from the parity cleanup
+(a tts session owns it).
   **State-spec pattern** (for any further state form — `load_sc1040.py` / `load_al_form40.py` /
   `load_nc_d400.py` / `load_ga700.py` + their `*_source_brief.md`):
   1. Research subagent → verify TY2025 VERBATIM against the state DOR final PDFs (never memory).
@@ -79,7 +89,12 @@ gate reconcile deferred from the parity cleanup (a tts session owns it).
      `topic_name` ≤ 255; **`rule_id`/`diagnostic_id`/`assertion_id`/`line_number` ≤ 20**).
   4. Ken's review walk → flip guard → seed to prod → verify export = 200 → commit.
   **Use explicit-path git commits, never `git add -A`** — a parallel session shares this working tree
-  (memory `rs-shared-worktree-explicit-commits`). Prod is at **93 TaxForms / 441 FAs / 7 approved**.
+  (memory `rs-shared-worktree-explicit-commits`). Prod is at **94 TaxForms / 449 FAs / 7 approved**.
+  For pass-through ENTITY state forms, `load_ga700.py` (partnership + PTET) and `load_sc_passthrough.py`
+  (two forms in one loader: SC1065 + SC1120S) are the precedents; verify each state's PTET is NOT a GA
+  clone (SC's is a 3% ATB election, annual/non-binding, owner EXCLUSION via I-335 — not GA's 5.19%
+  irrevocable PTEDED). Reuse the SC/NC/AL conformity authority sources already seeded by the individual
+  loaders via `EXISTING_SOURCES_TO_REFERENCE`.
 
 **► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
@@ -218,6 +233,30 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **SC1065 + SC1120S + SC PTET AUTHORED + SEEDED + EXPORTED — adjacent-state ENTITY track
+  begun (DECISIONS D-9).** Ken: "states adjacent to Georgia" → the individual returns for GA's income-tax
+  neighbors (AL/NC/SC) were already done, so the frontier is the pass-through ENTITY returns + PTET. Ken
+  picked SC. Research pass verified everything vs the FINAL 2025 SCDOR PDFs (I-435 Rev. 1/30/25; SC1065
+  Rev. 6/18/25; SC1120S Rev. 6/17/25; I-335 Rev. 6/17/25; SC1120I; §12-6-545) — NEVER memory. The SC PTET
+  is the **§12-6-545(G) Active Trade or Business (ATB) elective entity-level tax**: flat **3%** (I-435
+  L17) on **active trade/business income ONLY**, an **annual NON-BINDING** page-1 checkbox (contrast GA's
+  5.19% irrevocable), owner side an **EXCLUSION not a credit** (I-335 L6 subtracts SC1065 K-1 L14 /
+  SC1120S K-1 L13; §12-6-545(G)(3)); entity-taxed ATB also exempt from the 5% nonresident withholding
+  (L6 = L1−L2). Scope walk (4 AskUserQuestion, all maximal — D-9): Q1 **BOTH** SC1065 + SC1120S in one
+  loader (`load_sc_passthrough.py`); Q2 **COMPUTE** the §168(k) bonus add-back + the §179 delta
+  (direct-entry the asset-level SC-4562 figures); Q3 §179 = **indexed $1.25M/$3.13M** (Reading A, pending
+  SCDOR confirmation — matches the SC1040 pin); Q4 **COMPUTE** apportionment methods 1&2 (sales-only TPP /
+  gross-receipts service, 4 decimals) + the 5% NRW with the full exemption set, RED-defer special/
+  individualized apportionment + composite (I-348/I-338) + SC1120S license-fee apportionment + Schedule D.
+  SC1120S adds a general **5%** SC income tax on non-ATB net (L9) + the **license fee** (capital × .001 +
+  $15, min $25). Validated on throwaway SQLite (`scratchpad/validate_sc.py` — **caught a topic_name 349 >
+  255 overflow** SQLite ignores, shortened pre-seed; every rule cited, 0 orphan rules). Ken approved the
+  W1-W5 walk ("Approve — flip, seed, export"). Seeded → **94 TaxForms / 449 FlowAssertions**; both
+  `lookup/{SC1065,SC1120S}/export/` = 200 (40 KB / 31 KB, facts/rules/line_map/diagnostics/tests all
+  present). SC1065: 25 facts / 8 rules / 16 lines / 10 diag / 7 tests; SC1120S: 14 facts / 9 rules / 13
+  lines / 6 diag / 6 tests; 8 FA. Reuses the SC conformity sources from `load_sc1040.py`. Auto-discovered
+  by `seed_all` (verified `--dry-run`) → reconstructable. `sc1065_source_brief.md`. **W2 live wire:**
+  SC H.3368 (pending) would conform SC to OBBBA mid-season → §179 $1.25M/$3.13M → $2.5M/$4M — re-verify.
 - 2026-07-05: **1120-S DELTA AUDIT COMPLETE — prod ↔ rebuild now 0-delta.** Closed the deferred
   reconstructability drift. Method: fresh-SQLite `seed_all` rebuild + a per-form rule_id diff vs prod
   (`scratchpad/rebuild_diff.py` + `dump_rules.py`). Findings (all loader-side except one empty-stub delete):

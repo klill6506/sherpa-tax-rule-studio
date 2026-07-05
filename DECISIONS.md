@@ -16,6 +16,53 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-9: SC1065 + SC1120S v1 — BOTH authored; SC PTET = the §12-6-545(G) 3% ATB entity election (owner EXCLUSION, not credit); §179 = indexed $1.25M/$3.13M (Reading A)
+
+**Decision:** Extend the GA-700 + PTET work to Georgia's neighbors (Ken: "states adjacent to
+Georgia" — the individual returns AL/NC/SC are already done, so the frontier is the pass-through
+*entity* returns + PTET). Ken picked **SC pass-through + PTET**; the 2026-07-05 walk (4
+AskUserQuestion) locked v1 as: (Q1) **author BOTH SC1065 (partnership) and SC1120S (S-corp)** this
+session in one loader (`load_sc_passthrough.py`), SC1065 being the cleaner PTET vehicle and ~80% of
+its SC-K/apportionment/I-435 engine ported to SC1120S; (Q2) **COMPUTE** the §168(k) bonus add-back
+structure (year-1 add-back + remaining-life SC-basis subtraction) AND the §179 conformity delta,
+direct-entering the asset-level SC-4562 figures the engine can't reach (GA-700 (B) precedent — Ken
+is a depreciation CPA); (Q3) the SC §179 2025 cap = the **INDEXED $1,250,000 / $3,130,000**
+(Reading A: conformed IRC §179 incl. its indexing provision; Rev. Proc. 2024-40), NOT the
+conservative 2024 $1,220,000/$3,050,000 — matching the SC1040 pin; (Q4) **COMPUTE** apportionment
+methods 1 (sales-only, TPP dealers) & 2 (gross-receipts, service/financial) via a business-type
+selector (4 decimals) + the 5% nonresident withholding with the full exemption set (residents /
+I-309 / composite / 501(a) / entity-taxed ATB), **RED-defer** special/individualized apportionment
++ the composite return (I-348/I-338) + the SC1120S multi-state license-fee apportionment + Schedule
+D Annual Report. Structure/constants verified against the FINAL 2025 SCDOR sources (I-435 Rev.
+1/30/25; SC1065 Rev. 6/18/25; SC1120S Rev. 6/17/25; I-335 Rev. 6/17/25; SC1120I; §12-6-545) — see
+[sc1065_source_brief.md].
+
+**Context:** SC's PTET is NOT a GA-700 clone. It is the **Active Trade or Business (ATB) elective
+entity-level tax** (§12-6-545(G), Act 61 of 2021), computed on **Form I-435** at a **flat 3%** on
+**active trade or business income ONLY** (excludes passive/investment income, capital gains,
+§707(c) service payments). The election is **annual and NON-BINDING** (contrast GA's irrevocable
+5.19%), a page-1 checkbox. The owner side is an **EXCLUSION, not a credit** (§12-6-545(G)(3)): the
+owner SUBTRACTS the entity-taxed amount on **I-335 line 6** (partner ← SC1065 K-1 line 14;
+shareholder ← SC1120S K-1 line 13). Entity-taxed ATB is also exempt from the 5% nonresident
+withholding (SC1065 L6 = L1 − L2). SC1120S additionally carries a general **5%** SC income tax on
+non-ATB net (L9) and a **license fee** (capital × .001 + $15, min $25) with no partnership analog.
+
+**Divergence from precedent (called out):** GA-700's PTET is 5.19%, irrevocable, on the entity's
+whole GA taxable income, with a PTEDED/PTEADD owner subtraction/addition on Form 500. SC's is 3%,
+annual/non-binding, on ATB income only, with the owner exclusion via I-335 L6. The §179 Reading-A
+pin ($1.25M/$3.13M) is **not SCDOR-stated** (the booklets defer to conformed IRC §179) — cited to
+Rev. Proc. 2024-40 pending SCDOR confirmation, and stale if **H.3368** (pending) conforms SC to
+OBBBA mid-season.
+
+**What would change our mind:** if H.3368 is enacted, the §179 figures jump to $2.5M/$4M and bonus
+treatment changes — all depreciation/§179 logic is stale until re-verified (W2). If an SCDOR source
+later pins a different 2025 §179 figure, switch Reading A → the stated figure. If the ATB
+active/passive segregation (I-435 Col C, W4) needs to be computed rather than direct-entered, that
+is a later reconcile-leg call. SC1120S multi-state Schedule G/E/H apportionment + the license-fee
+apportionment were RED-deferred for v1 and can be built if demand warrants.
+
+---
+
 ## 2026-07-05 — D-8: GA-700 v1 scope is MAXIMAL — full PTET compute (5.19% entity-level), §179 delta computed, Schedule 4 + 4% NRW computed
 
 **Decision:** The GA Form 700 (Georgia partnership return, TY2025) v1 spec — the **1st partnership-entity
