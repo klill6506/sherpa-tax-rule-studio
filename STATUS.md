@@ -65,6 +65,14 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
+**► SEQUENCE NOW LIVES IN BUILD_ORDER.md (canonical in `tts-tax-status`).** As of 2026-07-05 the
+**WORK_ORDERS front door** is live: WORK_ORDERS.md is the RS MECHANISM (gap-check + transitions + Gate-1)
+and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent backlog here. At boot, pull
+tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
+checkboxes). Per the reconciled SPINE, the next open **RS authoring** rocks are **S-5 boundary diagnostics
+(WO-04)** and **S-6 PAL/basis deepening (WO-03 — before the regression bed locks)**; **S-11 1041 (WO-09)**
+is the greenfield Sept rock. (S-4 1065-core RS authoring is DONE — see the front-door win below.)
+
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
 **adjacent-state ENTITY track has begun** — **SC1065 + SC1120S + SC PTET ✅ (2026-07-05, DECISIONS D-9)**.
@@ -233,6 +241,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **WORK_ORDERS front door adopted (BUILD_ORDER-driven) + caught a cross-session stale
+  "author Schedule K" loop.** Process-plumbing session (no spec authored). Ken + chat were standing up a
+  more orderly authoring process and thrice instructed "author 1065 core, Schedule K first" — but the
+  gap-check (step 1 of the front door) returned **exists (200)**: 1065-core RS authoring has been COMPLETE
+  since 2026-07-04 (all 6 forms; verified on-disk `load_1065_*.py` + `exports/form_sch_k_1065/` + live
+  STATUS). The stale instruction traced to **BUILD_ORDER.md** (canonical in `tts-tax-status`, placed by the
+  parallel tts session `b54c111`) carrying an unreconciled `S-4 · 1065 core … untouched beyond SE` +
+  `▶ NEXT authoring = Schedule K`. **Fixed the canonical source** (tts-tax-status `5c57886`): S-4 →
+  `[RS]✅→[APP]⬜` (schedules ticked; remaining = issuer-side K-1 persistence + tts compute build), NEXT
+  advanced to **S-5 boundary diagnostics / S-6 PAL·basis**. **RS repo `9a062cb`:** WORK_ORDERS.md replaced
+  with the front-door MECHANISM (gap-check + transitions + Gate-1; no independent backlog — sequence lives
+  in the SPINE), reconciled (WO-01 4835 + WO-02 1065-core DONE; SC1040/AL40/NC-D400/GA700 AUTHORED);
+  CLAUDE.md boot line + "update WORK_ORDERS at every transition" rule. Memory `rs-1065-core-done-buildorder-stale`
+  added. Left SEASON_PLAN.md as re-cut by the parallel session (not replaced).
 - 2026-07-05: **SC1065 + SC1120S + SC PTET AUTHORED + SEEDED + EXPORTED — adjacent-state ENTITY track
   begun (DECISIONS D-9).** Ken: "states adjacent to Georgia" → the individual returns for GA's income-tax
   neighbors (AL/NC/SC) were already done, so the frontier is the pass-through ENTITY returns + PTET. Ken

@@ -4,6 +4,35 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — WORK_ORDERS front-door adopted + BUILD_ORDER-driven; caught a cross-session stale "author Schedule K" loop
+*Ken + chat were setting up "a more automated orderly process" (the WORK_ORDERS front door) and, across three
+prompts, kept instructing "author 1065 core, Schedule K first." A parallel tts/app session was editing the
+shared brain concurrently. No spec authored this session — it was process plumbing + a reconciliation fix.*
+- **Root finding — the instruction was stale, thrice.** 1065-core RS authoring is COMPLETE (2026-07-04): all
+  6 forms seeded+exported (200) — Schedule K spine (`1065_PAGE1`+`SCH_K_1065`), K-1+alloc, M-1/M-2, L/B;
+  8825/4562/3800 cover 1065; 7-form batch in `approved_specs.py`. Verified on-disk (`load_1065_*.py` +
+  `exports/form_sch_k_1065/`) + live STATUS. Running the gap-check on Schedule K returned "exists (200)" —
+  the front door working as designed (it CAUGHT the would-be duplicate). Same over-completion on WO-01 (4835/
+  8835/8936 all done) + the four state specs.
+- **The drift's source.** BUILD_ORDER.md (canonical in `tts-tax-status`) — placed by the parallel session
+  (`b54c111`) — carried a stale `S-4 · 1065 core … untouched beyond SE`, all schedule boxes unticked, and a
+  `▶ NEXT authoring = Schedule K [RS/Ken]` line, *despite* a header claiming the marks were reconciled to live
+  STATUS. Both sessions inherited the stale line and talked past each other through it.
+- **Files placed/edited (RS repo, `9a062cb`):** replaced WORK_ORDERS.md with the provided BUILD_ORDER-driven
+  version (front-door MECHANISM only — gap-check + transitions + Gate-1; NO independent backlog, sequence
+  lives in the SPINE), reconciled to live STATUS (WO-01 4835 + WO-02 1065-core DONE; SC1040/AL40/NC-D400/GA700
+  AUTHORED). CLAUDE.md: boot line (pull tts-tax-status; BUILD_ORDER=order / SEASON_PLAN=gates / PRODUCT_MAP=scope)
+  + standing rule "update WORK_ORDERS at every transition; the queue is the record."
+- **Fixed the canonical source (tts-tax-status `5c57886`).** BUILD_ORDER S-4 → `[RS]✅→[APP]⬜` (schedules
+  ticked DONE 2026-07-04; remaining = issuer-side 1065 K-1 persistence → 1040 import + tts compute build);
+  `▶ NEXT authoring` advanced off Schedule K to **S-5 boundary diagnostics / S-6 PAL·basis** (S-6 before the
+  regression bed locks). Zip's BUILD_ORDER/PRODUCT_MAP were already committed by the parallel session; left
+  SEASON_PLAN.md as re-cut by that session (not replaced).
+- **Coordination risk noted:** the tts session is only paused mid-migration; the S-4 fix is on origin so a
+  pull-before-edit there carries it, but watch for a re-cut reverting it.
+- **Memory:** added `rs-1065-core-done-buildorder-stale` (don't re-author Schedule K; seed SPINE status from
+  live STATUS, not draft checkboxes) + MEMORY.md index line. Explicit-path commits throughout (shared worktree).
+
 ## 2026-07-05 — 1120-S delta audit COMPLETE (prod ↔ rebuild 0-delta)
 *Ken: "lets start the delta audit" (declined a context clear — the audit overlapped fresh GA-700 context).
 Closed the deferred reconstructability drift from the 2026-07-04 check. Clear of the parallel session
