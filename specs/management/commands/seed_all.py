@@ -28,7 +28,10 @@ from django.core.management import call_command, get_commands
 from django.core.management.base import BaseCommand
 
 # Loaders that amend an existing base spec and must run AFTER all base forms exist.
-AMEND_LOADERS = ["load_1040_form_3800"]
+# load_1120s_full amends SCH_K_1120S / SCHD_1120S (adds R010-R018 / R010-R012) — it must run
+# after load_1120s_specs creates those bases, else it skips (its .first() lookup returns None)
+# and the flow-detail rules are silently dropped on a fresh rebuild (2026-07-05 delta audit).
+AMEND_LOADERS = ["load_1040_form_3800", "load_1120s_full"]
 
 # specs commands that are NOT part of the specs-loader phase (they run in their own phases).
 NON_SEED = {

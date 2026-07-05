@@ -36,7 +36,6 @@ class Command(BaseCommand):
             self._load_schedule_k(sources)
             self._load_k1(sources)
             self._load_schedule_d(sources)
-            self._load_form_8949(sources)
             self._load_form_4562(sources)
         self._report_totals()
 
@@ -665,127 +664,6 @@ class Command(BaseCommand):
         ])
 
         self.stdout.write(self.style.SUCCESS("  Schedule D complete."))
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # Form 4: Form 8949
-    # ─────────────────────────────────────────────────────────────────────────
-
-    def _load_form_8949(self, sources):
-        form = self._upsert_form(
-            "8949",
-            "Form 8949 — Sales and Other Dispositions of Capital Assets",
-            ["1120S", "1065", "1120", "1040"],
-            notes="Per-transaction detail for capital asset sales. Feeds Schedule D.",
-        )
-
-        self._upsert_facts(form, [
-            {"fact_key": "description", "label": "Description of property", "data_type": "string", "required": True, "sort_order": 1},
-            {"fact_key": "date_acquired", "label": "Date acquired", "data_type": "date", "required": True, "sort_order": 2},
-            {"fact_key": "date_sold", "label": "Date sold or disposed of", "data_type": "date", "required": True, "sort_order": 3},
-            {"fact_key": "proceeds", "label": "Proceeds (sales price)", "data_type": "decimal", "required": True, "validation_rule": "must be >= 0", "sort_order": 4},
-            {"fact_key": "cost_basis", "label": "Cost or other basis", "data_type": "decimal", "required": True, "sort_order": 5},
-            {"fact_key": "adjustment_code", "label": "Adjustment code(s)", "data_type": "choice", "choices": ["B", "T", "W", "O"], "sort_order": 6},
-            {"fact_key": "adjustment_amount", "label": "Amount of adjustment", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "gain_or_loss", "label": "Gain or (loss)", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "reporting_category", "label": "Reporting category", "data_type": "choice",
-             "choices": ["A", "B", "C", "D", "E", "F"], "required": True, "sort_order": 9,
-             "notes": "A=ST basis reported, B=ST not reported, C=ST no 1099-B, D=LT basis reported, E=LT not reported, F=LT no 1099-B"},
-            {"fact_key": "basis_reported_to_irs", "label": "Was basis reported to IRS on 1099-B?", "data_type": "boolean", "sort_order": 10},
-        ])
-
-        rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "Determine reporting category", "rule_type": "classification",
-             "formula": 'category based on (1) ST vs LT holding period, (2) whether basis reported on 1099-B',
-             "inputs": ["date_acquired", "date_sold", "basis_reported_to_irs"],
-             "outputs": ["reporting_category"],
-             "description": "Category A/B/C (short-term) or D/E/F (long-term) based on holding period and 1099-B basis reporting.",
-             "sort_order": 1, "precedence": 1},
-            {"rule_id": "R002", "title": "Calculate gain or loss per transaction", "rule_type": "calculation",
-             "formula": "proceeds - cost_basis + adjustment_amount",
-             "inputs": ["proceeds", "cost_basis", "adjustment_amount"],
-             "outputs": ["gain_or_loss"],
-             "description": "Gain/loss = proceeds minus cost basis plus/minus adjustments (adjustments can be positive or negative).",
-             "sort_order": 2, "precedence": 5},
-            {"rule_id": "R003", "title": "Adjustment codes", "rule_type": "classification",
-             "formula": "code depends on type of adjustment",
-             "inputs": ["adjustment_code"], "outputs": ["adjustment_treatment"],
-             "description": "Code B = basis incorrect on 1099-B (correction amount). Code T = wash sale (loss disallowed under §1091). Code W = collectibles (28% rate). Code O = other.",
-             "sort_order": 3, "precedence": 1},
-            {"rule_id": "R004", "title": "Aggregate to Schedule D", "rule_type": "routing",
-             "formula": "Part I totals → Schedule D Part I; Part II totals → Schedule D Part II",
-             "inputs": ["reporting_category", "gain_or_loss"],
-             "outputs": ["schedule_d_part_i", "schedule_d_part_ii"],
-             "description": "Part I (ST categories A/B/C) totals → Schedule D Part I lines 1a/1b/1c. Part II (LT categories D/E/F) totals → Schedule D Part II lines 7a/7b/7c.",
-             "sort_order": 4, "precedence": 10},
-        ])
-
-        self._upsert_links(rules, sources, [
-            ("R001", "IRS_2025_8949_INSTR", "primary", "Form 8949 instructions — reporting category determination"),
-            ("R001", "IRC_1222", "secondary", "§1222 — ST vs LT holding period definitions"),
-            ("R002", "IRS_2025_8949_INSTR", "primary", "Column (h) instructions — gain/loss computation"),
-            ("R003", "IRS_2025_8949_INSTR", "primary", "Column (f)/(g) instructions — adjustment codes"),
-            ("R004", "IRS_2025_8949_INSTR", "primary", "Totals flow to Schedule D"),
-            ("R004", "IRS_2025_1120S_SCHD_INSTR", "secondary", "Schedule D receives 8949 totals"),
-        ])
-
-        self._upsert_lines(form, [
-            {"line_number": "1a_col_d", "description": "Part I, Column (d) — Proceeds", "line_type": "input", "source_facts": ["proceeds"], "sort_order": 1},
-            {"line_number": "1a_col_e", "description": "Part I, Column (e) — Cost or other basis", "line_type": "input", "source_facts": ["cost_basis"], "sort_order": 2},
-            {"line_number": "1a_col_f", "description": "Part I, Column (f) — Adjustment code", "line_type": "input", "source_facts": ["adjustment_code"], "sort_order": 3},
-            {"line_number": "1a_col_g", "description": "Part I, Column (g) — Amount of adjustment", "line_type": "input", "source_facts": ["adjustment_amount"], "sort_order": 4},
-            {"line_number": "1a_col_h", "description": "Part I, Column (h) — Gain or (loss) = (d) - (e) + (g)", "line_type": "calculated", "source_rules": ["R002"], "calculation": "proceeds - cost_basis + adjustment_amount", "sort_order": 5},
-            {"line_number": "2", "description": "Part I totals — Short-term", "line_type": "subtotal", "source_rules": ["R004"], "destination_form": "Schedule D Part I (lines 1a-1c by category)", "sort_order": 6},
-            {"line_number": "3a_col_d", "description": "Part II, Column (d) — Proceeds", "line_type": "input", "source_facts": ["proceeds"], "sort_order": 10},
-            {"line_number": "3a_col_e", "description": "Part II, Column (e) — Cost or other basis", "line_type": "input", "source_facts": ["cost_basis"], "sort_order": 11},
-            {"line_number": "3a_col_f", "description": "Part II, Column (f) — Adjustment code", "line_type": "input", "source_facts": ["adjustment_code"], "sort_order": 12},
-            {"line_number": "3a_col_g", "description": "Part II, Column (g) — Amount of adjustment", "line_type": "input", "source_facts": ["adjustment_amount"], "sort_order": 13},
-            {"line_number": "3a_col_h", "description": "Part II, Column (h) — Gain or (loss)", "line_type": "calculated", "source_rules": ["R002"], "calculation": "proceeds - cost_basis + adjustment_amount", "sort_order": 14},
-            {"line_number": "4", "description": "Part II totals — Long-term", "line_type": "subtotal", "source_rules": ["R004"], "destination_form": "Schedule D Part II (lines 7a-7c by category)", "sort_order": 15},
-        ])
-
-        self._upsert_diagnostics(form, [
-            {"diagnostic_id": "D001", "title": "Proceeds differ from 1099-B", "severity": "warning",
-             "condition": "basis_reported_to_irs == true AND adjustment needed but no code entered",
-             "message": "Proceeds or basis on 1099-B may differ from actual amounts. If basis is incorrect, use Code B with the correction in column (g)."},
-            {"diagnostic_id": "D002", "title": "Wash sale not coded", "severity": "warning",
-             "condition": "same security sold at loss within 30-day window",
-             "message": "A wash sale may apply. If the same or substantially identical security was purchased within 30 days before or after this sale at a loss, use Code T and enter the disallowed loss in column (g)."},
-            {"diagnostic_id": "D003", "title": "Missing date acquired", "severity": "error",
-             "condition": "date_acquired is null",
-             "message": "Date acquired is required to determine holding period (short-term vs long-term) and correct reporting category."},
-        ])
-
-        self._upsert_tests(form, [
-            {"scenario_name": "Simple stock sale — basis correct, no adjustments",
-             "scenario_type": "normal",
-             "inputs": {"description": "100 shares XYZ Corp", "date_acquired": "2023-01-15", "date_sold": "2025-06-01",
-                         "proceeds": 15000, "cost_basis": 10000, "adjustment_code": None, "adjustment_amount": 0,
-                         "basis_reported_to_irs": True},
-             "expected_outputs": {"reporting_category": "D", "gain_or_loss": 5000},
-             "notes": "Held >1yr = LT. Basis reported = category D. Gain = 15K-10K = 5K.", "sort_order": 1},
-            {"scenario_name": "Basis adjustment — 1099-B shows wrong basis",
-             "scenario_type": "normal",
-             "inputs": {"description": "200 shares ABC Inc", "date_acquired": "2024-03-01", "date_sold": "2025-02-15",
-                         "proceeds": 8000, "cost_basis": 6000, "adjustment_code": "B", "adjustment_amount": -500,
-                         "basis_reported_to_irs": True},
-             "expected_outputs": {"reporting_category": "A", "gain_or_loss": 1500},
-             "notes": "Held ≤1yr = ST. Code B adjusts basis. Gain = 8000-6000+(-500) = 1500.", "sort_order": 2},
-            {"scenario_name": "Wash sale — loss disallowed",
-             "scenario_type": "edge",
-             "inputs": {"description": "50 shares DEF Ltd", "date_acquired": "2025-01-10", "date_sold": "2025-04-05",
-                         "proceeds": 4000, "cost_basis": 5000, "adjustment_code": "T", "adjustment_amount": 1000,
-                         "basis_reported_to_irs": True},
-             "expected_outputs": {"reporting_category": "A", "gain_or_loss": 0},
-             "notes": "Loss of $1K disallowed as wash sale. Code T, adjustment +1000. Net = 4000-5000+1000 = 0.", "sort_order": 3},
-        ])
-
-        self._upsert_form_links("8949", sources, [
-            ("IRS_2025_8949_INSTR", "governs"),
-            ("IRC_1222", "governs"),
-            ("IRC_1221", "governs"),
-        ])
-
-        self.stdout.write(self.style.SUCCESS("  Form 8949 complete."))
 
     # ─────────────────────────────────────────────────────────────────────────
     # Form 5: Form 4562
