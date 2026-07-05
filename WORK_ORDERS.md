@@ -66,7 +66,7 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
-- **▶ ACTIVE — [WO-09] S-11 · 1041 module · greenfield RS-first · status `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05).**
+- **▶ ACTIVE — [WO-09] S-11 · 1041 module · greenfield RS-first · status `GAP-CHECKED → research-verified → Gate-1 scope LOCKED → DRAFTING (authoring)` (opened 2026-07-05).**
   Gap-check run against live prod (96 forms) — **all five authoring surfaces are 404 GAPs**; the module is fully
   greenfield (no `load_1041_*` loaders; the only on-disk `1041` refs are the boundary-diag Sch I note + the *receiving*
   side in `load_1040_schedule_k1.py` where a 1040 imports a trust K-1). Required set from BUILD_ORDER S-11:
@@ -76,9 +76,18 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   - **K-1 (Form 1041)** (`SCHEDULE_K1_1041`) — beneficiary distributive shares + character pass-through → **GAP**
   - **GA Form 501** (`GA501`) — Georgia fiduciary income tax return → **GAP**
   - **Schedule I (AMT)** — **RED-defer diagnostic only** (D-2, ruled 2026-07-04; do NOT author the compute).
-  - **Next:** research-verify TY2025 authorities VERBATIM vs FINAL IRS/GA sources (2025 Form 1041 + i1041; Sch B/Sch G/
-    K-1(1041) + instr; Rev. Proc. 2024-40 inflation figures; §643/§651/§661/§663(b)/§642(b)/§1(e)/§1411; GA DOR Form 501
-    + instr) → `f1041_source_brief.md` → Gate-1 scope walk (AskUserQuestion). **Research pass running.**
+  - **✅ Research-verified** (4 passes, verbatim vs FINAL IRS/GA sources) → **`f1041_source_brief.md`**. Rev. Proc.
+    2025-32 confirmed = TY2026 (2024-40 governs TY2025). PDF text dumps cached in `scratchpad/` for excerpt seeding.
+  - **✅ Gate-1 scope LOCKED (2026-07-05, DECISIONS D-10):** core 4 + **ESBT** computed; grantor = structure/
+    grantor-letter; PIF → routed to the 5227 leg; bankruptcy = RED-defer. **FULL** distribution engine (§662 tiers
+    + §663(c) separate-share + §663(b) 65-day + character retention). Cap-gains-in-DNI = direct-entry + 3-circumstance
+    diagnostic. **GA 501 resident-only v1** (Sch 4 NR + conformity add-backs deferred). Sch I AMT = RED-defer (D-2).
+    K-1 full verbatim codes. Form keys: `1041` (spine+SchB+SchG) + `SCHEDULE_K1_1041` + `GA501`.
+  - **➕ Spun off — [WO-10] Form 5227 split-interest trusts** (PIF + CRT/CRAT/CRUT + CLT, §664(b) 4-tier) = its own
+    dedicated leg with its own research pass + source brief, AFTER the 1041 core. Enters this queue as a new order when reached.
+  - **Authoring legs (this order):** (a) `1041` spine+SchB+SchG · (b) `SCHEDULE_K1_1041` · (c) `GA501`. Each:
+    author `READY_TO_SEED=False` → SQLite-validate (CharField caps: rule/diagnostic/assertion_id ≤ 20) → Ken review
+    walk → seed → export = 200. **DRAFTING leg (a).**
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative

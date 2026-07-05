@@ -16,6 +16,60 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-10: 1041 module (S-11/WO-09) v1 scope — core 4 + ESBT computed, FULL distribution engine, cap-gains-in-DNI direct-entry, GA 501 resident-only, Form 5227 spun off as its own leg
+
+**Decision:** The greenfield federal 1041 fiduciary module (S-11 spine → DNI/IDD/Sch B → Sch G → K-1 →
+GA 501) v1 scope, locked at the 2026-07-05 Gate-1 scope walk (AskUserQuestion, 4 + 1 follow-up):
+- **(Q1) Entity types:** COMPUTE the core four (decedent's estate, simple trust, complex trust, qualified
+  disability trust) fully + COMPUTE the **ESBT** S-portion separate-rate worksheet (top trust rate → Sch G
+  Part I line 4). Model **grantor-type trust** as structure + the grantor-letter reporting path (NO K-1,
+  dollars on an attachment). **Pooled income fund** = recognized entity type, routed to the Form 5227 leg
+  (below). **Bankruptcy estate (ch. 7/11)** = RED-defer diagnostic (it is essentially an individual 1040).
+- **(Q2) Distribution engine = FULL:** COMPUTE the §662 two-tier allocation (first-tier line 9 / second-tier
+  line 10, DNI applied tier-1-first), the §663(c) separate-share DNI, the §663(b) 65-day election (Question 6
+  checkbox), and proportional character retention of each DNI class to beneficiaries. The most correct
+  subchapter-J engine; the heaviest reconcile leg.
+- **(Q3) Capital gains IN DNI = direct-entry + diagnostic:** preparer enters Schedule B line 3 (gains
+  attributable to income / treated-as-distributed); a diagnostic surfaces the three Reg. §1.643(a)-3(b)
+  circumstances so the determination is documented, not silent. Default is corpus-excluded (§643(a)(3)).
+  Chosen because inclusion hinges on the governing instrument + local law + the fiduciary's reasonable
+  discretion — data the spec cannot read.
+- **(Q4) GA Form 501 = resident-only v1:** COMPUTE the full-year resident 501 (federal 1041 Adjusted Total
+  Income line 17 → beneficiary subtraction at 501 L4 → flat **5.19%** → $1,350/$2,700 exemptions → Sch 5/6
+  credits). RED-defer the Schedule 4 nonresident source allocation AND the §168(k)/§179 GA-nonconformity
+  add-backs to a later leg. (Diverges from the GA-700 MAXIMAL choice — a fiduciary book skews resident, and
+  GA Form 501 has no dedicated depreciation line; the add-back would ride generic Sch 2 "Other" under §48-7-27.)
+- **(follow-up) Form 5227 = its own dedicated leg:** author the split-interest-trust module (PIF + charitable
+  remainder CRAT/CRUT + charitable lead trusts, incl. the §664(b) four-tier character-ordering regime) as a
+  SEPARATE authoring leg WITH its own focused research pass + source brief — NOT folded inline. The §664 CRT
+  distribution regime is a distinct body of law that earns verbatim source verification of its own.
+- **Pre-decided (not walked):** Schedule I AMT = RED-defer diagnostic (D-2, unchanged); K-1 (Form 1041) full
+  verbatim code transcription of boxes 9/11/12/13/14 (the 1065-K-1 precedent); form-key consolidation =
+  one **`1041`** form (page-1 + Schedule B + Schedule G, tightly coupled: L18 IDD←Sch B L15, L24 tax←Sch G L9)
+  + separate **`SCHEDULE_K1_1041`** + **`GA501`**; OBBBA §1062 (Form 1062 farmland installment, L25b/Sch G 18c) =
+  structure + flag, low frequency.
+
+**Context:** BUILD_ORDER S-11, the greenfield Sept 1041 rock (~70 trust returns, Ken's specialty, Apr 15
+deadline). RS-first mode: enumerate the set, gap-check, author + Gate-1-approve all gaps, THEN dispatch the
+tts app build. All TY2025 constants verified verbatim against FINAL IRS/GA sources in [f1041_source_brief.md]
+(2025 Form 1041 Created 10/28/25; i1041 Mar 5 2026; 2025 Sch K-1; GA Form 501 Rev. 07/09/25). Rev. Proc.
+2025-32 confirmed to be the TY2026 procedure — 2024-40 governs TY2025.
+
+**Alternatives considered:** All-9-entity-types (rejected — PIF/bankruptcy are very low frequency; PIF is
+better served by the dedicated 5227 leg). Core-IDD-only distribution engine (rejected — Ken wanted the full
+tier/separate-share/65-day, his specialty). Compute cap-gains-in-DNI from structured flags (rejected — bakes
+in an instrument-specific judgment that could mislead). GA 501 maximal like GA-700 (rejected for v1 — fiduciary
+book skews resident, no dedicated GA depreciation line). Full 5227 inline (rejected — roughly doubles the
+module and mixes two regimes; gets its own leg instead).
+
+**What would change our mind:** if the forms-usage report shows ESBT/grantor/bankruptcy or nonresident GA
+trusts are common, upgrade those from defer/structure to compute. If the §663(c) separate-share or §662
+multi-tier compute proves to need per-share data the spec can't reach, fall back to structured-diagnostic for
+those sub-legs (a reconcile-leg call). Re-verify ALL constants at TY2026 (OBBBA §67/§68 bite for years after
+12/31/2025; the 2026 breakpoints are already known — see the brief).
+
+---
+
 ## 2026-07-05 — D-9: SC1065 + SC1120S v1 — BOTH authored; SC PTET = the §12-6-545(G) 3% ATB entity election (owner EXCLUSION, not credit); §179 = indexed $1.25M/$3.13M (Reading A)
 
 **Decision:** Extend the GA-700 + PTET work to Georgia's neighbors (Ken: "states adjacent to
