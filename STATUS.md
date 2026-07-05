@@ -62,6 +62,22 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
+**► IMMEDIATE NEXT — NC D-400 (August state track, form 3).** The active work is the August RS state
+campaign: **SC1040 ✅ · AL Form 40 ✅** done → **NC D-400 next**, then GA-700 + PTET, plus the 1120-S
+delta audit (Known-issues has its scope). North Carolina D-400 is a flat-rate return that starts from
+federal AGI (simpler than AL). **Follow the established state-spec pattern** (see `load_sc1040.py` +
+`load_al_form40.py` + `load_ga500_form_500.py`, and the `sc1040_source_brief.md` / `al_form40_source_
+brief.md` briefs):
+  1. Dispatch a research subagent → verify NC D-400 TY2025 structure/rate/deductions VERBATIM against
+     the NC DOR (ncdor.gov) final 2025 PDFs (Authoritative-Source Rule — never training memory).
+  2. Write `nc_d400_source_brief.md` → walk ~4 scope decisions with Ken (AskUserQuestion).
+  3. Author `load_nc_d400.py` with `READY_TO_SEED=False` (safety guard); validate on a throwaway SQLite
+     DB (monkeypatch the guard). **Watch the Postgres varchar(255) limits** — `AuthorityTopic.topic_name`
+     bit me on SC1040 (SQLite doesn't enforce; Postgres does). Keep topic names < 255.
+  4. Ken's review walk → flip guard → seed to prod → verify `lookup/NC_D400/export/` = 200 → commit.
+  **Use explicit-path git commits, never `git add -A`** — a parallel session shares this working tree
+  (memory `rs-shared-worktree-explicit-commits`). Prod is at **91 TaxForms / 431 FAs / 7 approved**.
+
 **► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
 (form 1 of 6) DONE 2026-07-04** — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both endpoints 200).
