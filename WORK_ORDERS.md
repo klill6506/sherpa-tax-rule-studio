@@ -98,6 +98,14 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
       `validate_ga501.py` 16/0; `lookup/GA501/export/` = 200.
   - **Status: ✅ DONE (RS).** Sch I AMT RED-defer (D-2) satisfied via `D_1041_AMT`. **tts app build = the [APP] lane
     (dispatch when CC has a lane).** Next 1041-family authoring order: **[WO-10] Form 5227** split-interest trusts.
+- **▶ ACTIVE — [WO-10] Form 5227 · Split-Interest Trust Information Return · greenfield RS-first · status
+  `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05, spun off from S-11 D-10).**
+  Gap-check: all candidate keys (`5227`, `CRAT`, `CRUT`, `POOLED_INCOME_FUND`, `5227_SCHA`) 404 GAP (99 forms);
+  greenfield (only on-disk ref = the spine's `D_1041_PIF` routing note). Covers the §664 split-interest family:
+  charitable remainder trusts (CRAT §664(d)(1) / CRUT §664(d)(2)), pooled income funds (§642(c)(5)), and
+  §4947(a)(2) split-interest trusts; the **§664(b) four-tier character-ordering** of CRT distributions is the
+  compute heart. **Next:** research-verify VERBATIM vs FINAL Form 5227 + instructions + IRC §664/§642(c)/§4947 +
+  Reg §1.664-1(d) → `f5227_source_brief.md` → Gate-1 scope walk. **Research pass running (3 agents).**
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative
