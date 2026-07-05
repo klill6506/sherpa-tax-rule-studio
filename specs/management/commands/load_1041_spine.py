@@ -100,8 +100,17 @@ from specs.models import (
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1-W5 above).
+#
+# FLIPPED 2026-07-05 — Ken APPROVED the review walk in-session ("Approve — flip,
+# seed, export"): W1 the TY2025 constants (rate schedule / exemptions / cap-gain /
+# NIIT, verified verbatim; Rev. Proc. 2025-32 = TY2026), W2 the full §662/§663
+# distribution engine, W3 the cap-gains-in-DNI direct-entry + 3-circumstance
+# diagnostic, W4 the simplified ESBT top-rate tax (full worksheet deferred),
+# W5 the line numbering — all blessed. Validated on throwaway SQLite
+# (scratchpad/validate_1041.py, 17 pass / 0 fail; 35 facts / 15 rules / 39 lines /
+# 11 diag / 9 tests / 6 FA, every rule cited).
 # ═══════════════════════════════════════════════════════════════════════════
-READY_TO_SEED = False
+READY_TO_SEED = True
 
 
 FORM_JURISDICTION = "federal"
