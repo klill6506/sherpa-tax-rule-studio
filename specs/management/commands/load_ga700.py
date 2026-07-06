@@ -36,8 +36,8 @@ COMPUTES (v1):
     PTEDED (Form 500 Sch 1 L12 subtraction) / PTEADD (L5 addition) mechanics;
     credits & NOLs stay with the entity.
   • The §179 GA-limit difference (Dec B): GA §179 = min(federal §179,               [Dec B]
-    $1,050,000 reduced $-for-$ by cost over $2,620,000); delta = federal − GA
-    (separately stated to partners).
+    $2,500,000 reduced $-for-$ by cost over $4,000,000); delta = federal − GA
+    (GA conforms to federal §179 via HB 1199 → delta normally $0).
   • Schedule 4 partner allocation (Dec C): resident reports FULL distributive       [Dec C]
     share; nonresident reports GA-apportioned + allocated share (guaranteed
     payments not profit-%-based) + the 4% NONRESIDENT WITHHOLDING (§48-7-129,
@@ -59,9 +59,10 @@ RED-DEFERS (each its own "prepare manually" RED — no silent gap):             
 ═══════════════════════════════════════════════════════════════════════════
 requires_human_review WALK ITEMS (for Ken's in-session review before seeding)
 ═══════════════════════════════════════════════════════════════════════════
-W1. IRC CONFORMITY DATE = Jan 1, 2024 (HB 1162) — DOR has NOT posted a 2025
-    conformity bill; GA passes one each spring. Load-bearing for depreciation +
-    §179. Re-verify against the 2025 GA conformity bill before locking (§10 flag 1).
+W1. IRC CONFORMITY DATE = Jan 1, 2026 (HB 1199), retroactive to tax years
+    beginning on/after Jan 1, 2025 — supersedes HB 290 (Jan 1, 2025) and the
+    Aug-2025 Form 4562. GA CONFORMS to OBBBA §179 ($2.5M/$4M) but still decouples
+    §168(k)/(n) bonus. RESOLVED 2026-07-06 (Ken-ruled: HB 1199 retroactive).
 W2. FLAT / PTET RATE 5.19% (0.0519) — DOR-primary (Form 700 face + IT-711), solid;
     year-keyed (2026 → 4.99%). Note Reg. 560-7-3-.03 still prints 5.75% (stale
     text; operative rate is 5.19%; 5.75% survives only in the UET prior-year
@@ -69,8 +70,9 @@ W2. FLAT / PTET RATE 5.19% (0.0519) — DOR-primary (Form 700 face + IT-711), so
 W3. PTET BASE IS ENTITY-LEVEL — federal taxable income (C-corp limits) → §48-7-27
     GA adjustments → §48-7-31 apportionment → 5.19%. NOT a resident/nonresident
     split. CONFIRM the model.
-W4. §179 $1,050,000 / $2,620,000 — GA's last *published* figure (2021 heading);
-    GA did NOT adopt OBBBA. Matches CLAUDE.md. Re-verify with W1.
+W4. §179 $2,500,000 / $4,000,000 — GA CONFORMS to federal/OBBBA §179 for TY2025
+    via HB 1199 (conformity advanced to Jan 1, 2026, retroactive to TY2025;
+    Ken-ruled 2026-07-06). Supersedes the Aug-2025 Form 4562's pre-OBBBA $1.25M.
 W5. APPORTIONMENT = single gross-receipts factor (6 decimals) — the GA600S loader
     records a stale "property/payroll/sales" 3-factor; Form 700 Sch 7 + IT-711 are
     single-factor since 2008. CONFIRM.
@@ -115,7 +117,7 @@ from specs.models import (
 # SAFETY GUARD — flip ONLY after Ken's in-session review walk (W1-W6 above).
 #
 # FLIPPED 2026-07-05 — Ken APPROVED the review walk in-session ("Approve — flip,
-# seed, export"): W1 conformity Jan 1 2024 (re-verify the 2025 bill), W2 the 5.19%
+# seed, export"): W1 conformity Jan 1 2026 (HB 1199, retroactive to TY2025), W2 the 5.19%
 # flat/PTET rate (form + booklet; 5.75% reg quirk noted), W3 the entity-level PTET
 # base, W4 the §179 $1.05M/$2.62M figures, W5 the single gross-receipts factor,
 # W6 the Schedule 4 partner model — all blessed as in-spec re-verify flags.
@@ -139,9 +141,12 @@ FORM_ENTITY_TYPES = ["1065"]
 # Flat / PTET rate (§48-7-20 / Form 700 Sch 1 L7). W2 — TY2026 steps to 4.99%.
 GA_FLAT_RATE: dict[int, str] = {2025: "0.0519"}
 
-# GA §179 (DOR Federal Tax Changes; GA did NOT adopt OBBBA $2.5M/$4M). W4.
-GA_SEC179_LIMIT: dict[int, int] = {2025: 1050000}
-GA_SEC179_PHASEOUT: dict[int, int] = {2025: 2620000}
+# GA §179 — Georgia CONFORMS to federal/OBBBA §179 for TY2025 via HB 1199
+# (conformity date advanced to Jan 1, 2026, retroactive to tax years beginning
+# on/after Jan 1, 2025; supersedes the Aug-2025 Form 4562 which still printed the
+# pre-OBBBA $1.25M under HB 290). GA still decouples from §168(k)/(n) bonus. W4.
+GA_SEC179_LIMIT: dict[int, int] = {2025: 2500000}
+GA_SEC179_PHASEOUT: dict[int, int] = {2025: 4000000}
 
 # Nonresident withholding (§48-7-129). W-rate + <$1,000-share exemption.
 GA_NRW_RATE: dict[int, str] = {2025: "0.04"}
@@ -150,7 +155,7 @@ GA_NRW_EXEMPTION: dict[int, int] = {2025: 1000}
 # PTET estimated-tax filing threshold (net income over which estimates are required).
 GA_PTET_ESTIMATE_THRESHOLD: dict[int, int] = {2025: 25000}
 
-# IRC conformity date (HB 1162; no 2025 bill posted). W1.
+# IRC conformity date (HB 1199, Jan 1 2026, retroactive to TY2025). W1.
 GA_CONFORMITY_DATE = "2024-01-01"
 
 # The stale reg rate (Reg. 560-7-3-.03 literal text) — operative rate is GA_FLAT_RATE. W2.
@@ -276,12 +281,13 @@ AUTHORITY_SOURCES: list[dict] = [
                     "entering it on the other addition line of the return. Depreciation must then be "
                     "computed for Georgia purposes on Georgia Form 4562 which should be attached to the "
                     "Georgia return. Georgia depreciation should be entered on the other subtraction line.' "
-                    "Georgia §179: $1,050,000 deduction with $2,620,000 phaseout (GA did NOT adopt the "
-                    "OBBBA $2,500,000 / $4,000,000). IRC conformity: 'as amended and in effect on January "
-                    "1, 2024' (HB 1162). Georgia follows §163(j) as it existed before the 2017 TCJA; no "
+                    "Georgia §179: $2,500,000 deduction with $4,000,000 phaseout — GA CONFORMS to the OBBBA "
+                    "§179 limit for TY2025 via HB 1199 (conformity 'as amended and in effect on January 1, "
+                    "2026', retroactive to TY2025; supersedes the Aug-2025 Form 4562's pre-OBBBA $1.25M). "
+                    "Georgia follows §163(j) as it existed before the 2017 TCJA; no "
                     "§199A QBI deduction."
                 ),
-                "summary_text": "GA decouples from §168(k) bonus (add federal depr on Sch 5 L7, subtract GA Form 4562 depr on Sch 6 L4); GA §179 = $1.05M/$2.62M; conformity Jan 1, 2024.",
+                "summary_text": "GA decouples from §168(k) bonus (add federal depr on Sch 5 L7, subtract GA Form 4562 depr on Sch 6 L4); GA §179 = $2.5M/$4M (conforms to OBBBA via HB 1199); conformity Jan 1, 2026 (HB 1199, retroactive to TY2025).",
                 "is_key_excerpt": True,
             },
         ],
@@ -421,8 +427,8 @@ GA700_FACTS: list[dict] = [
     {"fact_key": "ga_other_subtractions", "label": "Other GA subtractions (Sch 6, direct-entry)", "data_type": "decimal", "required": False, "sort_order": 32},
     # §179 (compute the GA-limit delta)
     {"fact_key": "federal_sec179_deduction", "label": "Federal IRC §179 expense (separately stated)", "data_type": "decimal", "required": False, "sort_order": 40,
-     "notes": "Dec B. GA delta = federal − min(federal, GA $1,050,000 phased over $2,620,000)."},
-    {"fact_key": "sec179_property_cost", "label": "Total §179 property placed in service (for the $2,620,000 GA phaseout)", "data_type": "decimal", "required": False, "sort_order": 41},
+     "notes": "Dec B. GA delta = federal − min(federal, GA $2,500,000 phased over $4,000,000); GA conforms → delta normally $0."},
+    {"fact_key": "sec179_property_cost", "label": "Total §179 property placed in service (for the $4,000,000 GA phaseout)", "data_type": "decimal", "required": False, "sort_order": 41},
     # Apportionment (Schedule 7) + allocation (Schedule 2)
     {"fact_key": "ga_gross_receipts", "label": "Georgia gross receipts (Sch 7 L1 Col A)", "data_type": "decimal", "required": False, "sort_order": 50},
     {"fact_key": "total_gross_receipts", "label": "Everywhere gross receipts (Sch 7 L1 Col B)", "data_type": "decimal", "required": False, "sort_order": 51},
@@ -455,11 +461,11 @@ GA700_RULES: list[dict] = [
      "inputs": [], "outputs": ["Sch8_L12"], "sort_order": 13,
      "description": "Flows to Schedule 2 Line 1."},
     {"rule_id": "R-GA700-179", "title": "Georgia §179 limit difference (separately stated)", "rule_type": "calculation",
-     "formula": ("ga_limit = max(0, 1050000 - max(0, sec179_property_cost - 2620000)) ; "
+     "formula": ("ga_limit = max(0, 2500000 - max(0, sec179_property_cost - 4000000)) ; "
                  "ga_sec179 = min(federal_sec179_deduction, ga_limit) ; "
                  "sec179_delta = federal_sec179_deduction - ga_sec179  (separately stated to partners; GA K-1)"),
      "inputs": ["federal_sec179_deduction", "sec179_property_cost"], "outputs": ["ga_sec179", "sec179_delta"], "sort_order": 14,
-     "description": "Dec B / W4. GA §179 $1,050,000 / $2,620,000 (GA did NOT adopt OBBBA). §179 is separately stated for partnerships (flows to partners, not page-1 ordinary income)."},
+     "description": "Dec B / W4. GA §179 $2,500,000 / $4,000,000 — Georgia CONFORMS to federal/OBBBA §179 for TY2025 (HB 1199). Because GA now equals federal, the separately-stated GA K-1 §179 delta is normally $0; the remaining GA depreciation difference is §168(k) bonus only."},
     {"rule_id": "R-GA700-APPORT", "title": "Single gross-receipts apportionment (Sch 7 → Sch 2)", "rule_type": "calculation",
      "formula": ("ga_ratio = round(ga_gross_receipts / total_gross_receipts, 6)  [six decimals, no rounding up] ; "
                  "Sch2_L3 = Sch2_L1 - income_allocated_everywhere ; Sch2_L5 = round(Sch2_L3 * ga_ratio) ; "
@@ -503,7 +509,7 @@ GA700_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-GA700-ADD", "GA_OCGA_48_7", "secondary", "§48-7-27 Georgia adjustments"),
     ("R-GA700-SUB", "GA_2025_IT711", "primary", "Sch 6 subtractions incl. GA Form 4562 depreciation"),
     ("R-GA700-GA-INC", "GA_2025_FORM_700", "primary", "Sch 8 L12 = L8 + additions − subtractions"),
-    ("R-GA700-179", "GA_2025_IT711", "primary", "GA §179 $1,050,000 / $2,620,000 decoupling"),
+    ("R-GA700-179", "GA_2025_IT711", "primary", "GA §179 $2,500,000 / $4,000,000 (conforms via HB 1199)"),
     ("R-GA700-APPORT", "GA_2025_IT711", "primary", "single gross-receipts factor, 6 decimals"),
     ("R-GA700-APPORT", "GA_OCGA_48_7", "secondary", "§48-7-31 apportionment/allocation"),
     ("R-GA700-TAXABLE", "GA_2025_FORM_700", "primary", "Sch 1 L6 GA taxable income (face arithmetic)"),
@@ -544,10 +550,10 @@ GA700_DIAGNOSTICS: list[dict] = [
      "condition": "ptet_election is True (or the preparer is weighing the election)", "message": "The pass-through entity tax is an ANNUAL IRREVOCABLE election to pay Georgia tax at the entity level (5.19% on GA taxable income). Electing owners EXCLUDE that income — PTEDED subtraction (Form 500 Sch 1 L12) / PTEADD addition (L5); NO owner credit for the entity-level GA tax. Credits & NOLs stay with the entity. If NOT electing, leave Form 700 Schedules 1 & 3 BLANK.",
      "notes": "Dec A. The headline SALT-cap-workaround feature."},
     {"diagnostic_id": "D_GA700_DEPR", "title": "Georgia decouples from §168(k) bonus — add back / recompute depreciation", "severity": "info",
-     "condition": "federal depreciation or §179 present", "message": "GA did NOT adopt IRC §168(k) bonus or OBBBA. Add back ALL federal depreciation on Sch 5 L7, recompute Georgia depreciation on Georgia Form 4562 (no bonus, GA §179 limits), and enter it on Sch 6 L4. GA §179 = $1,050,000 / $2,620,000 (not the federal $2,500,000 / $4,000,000). §179 is separately stated to partners.",
-     "notes": "Dec B / W4. Ken's specialty. Conformity Jan 1, 2024 (W1)."},
-    {"diagnostic_id": "D_GA700_179LIMIT", "title": "§179 property over the $2,620,000 GA phaseout", "severity": "warning",
-     "condition": "sec179_property_cost > 2620000", "message": "Georgia's $1,050,000 §179 limit phases down dollar-for-dollar once §179 property placed in service exceeds $2,620,000. Verify the phased GA §179 against the asset-level GA Form 4562 before locking the §179 difference.",
+     "condition": "federal depreciation or §179 present", "message": "GA does NOT conform to IRC §168(k)/(n) bonus. Add back ALL federal bonus/accelerated depreciation on Sch 5 L7, recompute Georgia depreciation on the Georgia Form 4562, and enter it on Sch 6 L4. GA DOES conform to the OBBBA §179 limit ($2,500,000 / $4,000,000) for TY2025 (HB 1199), so there is normally no separate GA §179 add-back — the difference is bonus depreciation only.",
+     "notes": "Dec B / W4. Ken's specialty. Conformity Jan 1, 2026 (HB 1199, retroactive to TY2025)."},
+    {"diagnostic_id": "D_GA700_179LIMIT", "title": "§179 property over the $4,000,000 phaseout", "severity": "warning",
+     "condition": "sec179_property_cost > 4000000", "message": "Georgia conforms to the OBBBA §179 limit for TY2025 (HB 1199): the $2,500,000 limit phases down dollar-for-dollar once §179 property placed in service exceeds $4,000,000, mirroring federal. Because GA equals federal, the separately-stated GA K-1 §179 delta is normally $0.",
      "notes": "W4."},
     {"diagnostic_id": "D_GA700_APPORT", "title": "Apportionment is a SINGLE gross-receipts factor (6 decimals)", "severity": "info",
      "condition": "apportionment computed", "message": "Georgia apportions by a single gross-receipts factor (GA receipts ÷ everywhere, to six decimals, do not round). The GA600S loader's 'property/payroll/sales' 3-factor note is STALE. Investment intangibles and pure-investment real-estate rentals are allocated, not apportioned.",
@@ -567,9 +573,9 @@ GA700_DIAGNOSTICS: list[dict] = [
     {"diagnostic_id": "D_GA700_UET", "title": "Estimated-tax underpayment penalty (Form 600UET) — prepare manually", "severity": "info",
      "condition": "electing entity underpaid estimates (net income > $25,000)", "message": "The Form 600UET estimated-tax underpayment penalty is not computed in v1. Note: for the 100%-of-prior-year safe harbor, if the entity did not elect last year the prior-year hypothetical tax is computed at 5.75% (the reg's legacy rate). Prepare Form 600UET manually.",
      "notes": "Dec D RED-defer. W2 (the 5.75% reg quirk)."},
-    {"diagnostic_id": "D_GA700_CONFORM", "title": "GA IRC conformity = Jan 1, 2024 — re-verify the 2025 bill", "severity": "warning",
-     "condition": "depreciation / §179 / conformity-sensitive item present", "message": "Georgia's posted IRC conformity date is January 1, 2024 (HB 1162); DOR has not yet posted a 2025 conformity bill. GA passes an annual conformity bill each spring — re-verify the conformity date and the §179 figures against the 2025 bill before relying on them.",
-     "notes": "W1. The biggest open verify item."},
+    {"diagnostic_id": "D_GA700_CONFORM", "title": "GA IRC conformity = Jan 1, 2026 (HB 1199) — §168(k) bonus add-back", "severity": "warning",
+     "condition": "depreciation / §179 / conformity-sensitive item present", "message": "For TY2025 Georgia's IRC conformity date is January 1, 2026 (HB 1199, retroactive to tax years beginning on/after Jan 1, 2025) — GA conforms to the OBBBA §179 limit ($2,500,000 / $4,000,000) but still decouples from §168(k)/(n) bonus (add-back required). Verify the §168(k) bonus add-back on Schedule 5.",
+     "notes": "W1. RESOLVED 2026-07-06 (HB 1199 retroactive)."},
 ]
 
 GA700_SCENARIOS: list[dict] = [
@@ -588,10 +594,10 @@ GA700_SCENARIOS: list[dict] = [
                 "ga_gross_receipts": 1000000, "total_gross_receipts": 1000000},
      "expected_outputs": {"Sch8_L9": 85000, "Sch8_L11": 20000, "Sch8_L12": 165000},
      "notes": "Add back federal depr 85,000 (Sch 5 L7 → Sch 8 L9); subtract GA depr 20,000 (Sch 6 L4 → Sch 8 L11); L12 = 100,000 + 85,000 − 20,000 = 165,000. Net GA add = 65,000."},
-    {"scenario_name": "GA700-T4 — §179 GA-limit difference", "scenario_type": "edge", "sort_order": 4,
+    {"scenario_name": "GA700-T4 — §179 conforms to federal (no delta)", "scenario_type": "edge", "sort_order": 4,
      "inputs": {"federal_sec179_deduction": 1200000, "sec179_property_cost": 2000000},
-     "expected_outputs": {"ga_sec179": 1050000, "sec179_delta": 150000},
-     "notes": "Cost 2,000,000 < 2,620,000 phaseout → GA limit 1,050,000; GA §179 = min(1,200,000, 1,050,000) = 1,050,000; delta = 1,200,000 − 1,050,000 = 150,000 (separately stated to partners)."},
+     "expected_outputs": {"ga_sec179": 1200000, "sec179_delta": 0},
+     "notes": "GA conforms to OBBBA §179 (HB 1199): cost 2,000,000 < 4,000,000 phaseout → GA limit 2,500,000; GA §179 = min(1,200,000, 2,500,000) = 1,200,000; delta = 0 (GA equals federal → nothing separately stated)."},
     {"scenario_name": "GA700-T5 — single-factor apportionment (six decimals)", "scenario_type": "edge", "sort_order": 5,
      "inputs": {"ptet_election": True, "fed_ordinary_income": 200000, "ga_gross_receipts": 400000, "total_gross_receipts": 1000000,
                 "income_allocated_everywhere": 0, "income_allocated_to_ga": 0},

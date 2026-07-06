@@ -30,18 +30,22 @@ requires_human_review WALK ITEMS (W8-W10)
 W8. RATE — GA corporate income tax = flat 5.19% for TY2025 (HB 111; Sch 1 L10 "Line 9 x 5.19%").
     Not prorated; fiscal filers use the start-of-period rate. CONFIRM.
 W9. DEPRECIATION DELTA — GA does NOT conform to §168(k): federal bonus = Schedule 4 addition; the
-    recomputed GA depreciation = Schedule 5 subtraction. GA §179 for 2025 = $1,250,000 limit /
-    $3,130,000 phase-out (GA INDEXES; the $1.05M/$2.62M in CLAUDE.md is the STALE 2021 figure).
-    CONFIRM the 2025 GA §179 figures + the add-back/subtract mechanic.
+    recomputed GA depreciation = Schedule 5 subtraction. GA §179 for 2025 = $2,500,000 limit /
+    $4,000,000 phase-out — GA CONFORMS to federal/OBBBA §179 via HB 1199 (conformity advanced to
+    Jan 1, 2026, retroactive to TY2025; Ken-ruled 2026-07-06), superseding the Aug-2025 Form 4562's
+    pre-OBBBA $1.25M. Because GA §179 now equals federal, there is normally no §179 addition — the
+    Schedule 4 depreciation addition is §168(k) bonus only.
 W10. NET WORTH TAX — Schedule 2 bracket table: exempt <= $100,000 = $0; 19 brackets; maximum
     $5,000 over $22,000,000. Credits apply to income tax only, not net worth. CONFIRM the table.
 
 ═══════════════════════════════════════════════════════════════════════════
 CARRIED [UNVERIFIED] / flags:
-  • Conformity date (IRC as of Jan 1 2025, HB 290) corroborated by 3 professional sources; primary
-    bill PDF paywalled. OBBBA NOT adopted for TY2025. Re-verify on the next GA conformity bill.
-  • ⚠ CLAUDE.md "Verified Rules" GA §179 = $1.05M/$2.62M is STALE (2021). Correct it; re-check
-    GA700/GA600S for the same staleness (they cite $1.05M/$2.62M per STATUS notes).
+  • RESOLVED 2026-07-06 (Ken-ruled): conformity for TY2025 = IRC as of Jan 1, 2026 (HB 1199,
+    retroactive to tax years beginning on/after Jan 1, 2025), SUPERSEDING HB 290 (Jan 1, 2025).
+    OBBBA §179 IS adopted for TY2025 ($2.5M/$4M); §168(k)/(n) bonus still decoupled. HB 1199
+    post-dates (and supersedes) the Aug-2025 GA Form 4562, which printed the pre-OBBBA $1.25M.
+  • ⚠ CLAUDE.md "Verified Rules" GA §179 corrected to $2.5M/$4M (was stale $1.05M/$2.62M = 2021);
+    GA700 loader + tts compute/engine reconciled to $2.5M/$4M in the same pass.
   • Multi-state apportionment beyond single-factor gross receipts (special/individualized methods) =
     RED-defer. Sch 4 nonresident/consolidated (Sch 12) net worth = structure. Re-verify at TY2026.
 ═══════════════════════════════════════════════════════════════════════════
@@ -94,8 +98,8 @@ FORM_ENTITY_TYPES = ["1120"]  # GA C-corporation (the S-corp analog is GA600S)
 # VERIFIED CONSTANTS (cited in f1120_source_brief.md; 2025 GA DOR sources, never memory)
 # ═══════════════════════════════════════════════════════════════════════════
 GA_CORP_RATE = "0.0519"            # HB 111 (2025) — 5.19% for TY beginning on/after 1/1/2025
-GA_179_LIMIT = 1250000             # 2025 GA Form 4562 (Rev. 08/01/25) — GA indexes; $1.25M for 2025
-GA_179_PHASEOUT = 3130000          # 2025 phase-out threshold
+GA_179_LIMIT = 2500000             # GA conforms to OBBBA §179 via HB 1199 (Jan 1 2026, retroactive to TY2025)
+GA_179_PHASEOUT = 4000000          # = federal OBBBA phase-out (HB 1199 supersedes the Aug-2025 Form 4562's $3.13M)
 GA_NOL_LIMIT_PCT = "0.80"          # GA conforms to the §172 80% NOL limit (Sch 1 L6)
 GA_NW_EXEMPT = 100000              # net worth <= $100,000 = $0 tax
 GA_NW_MAX = 5000                   # maximum net worth tax (net worth over $22M)
@@ -210,11 +214,13 @@ AUTHORITY_SOURCES: list[dict] = [
                     "the tax rate based on the start of their filing period.' (HB 111, 2025.) 'Georgia income "
                     "tax is 5.19% of the Georgia taxable income.' Apportionment: 'the Georgia apportionment "
                     "ratio shall be computed by applying only the gross receipts factor' (single-factor, six "
-                    "decimals; O.C.G.A. §48-7-31). Conformity: IRC as amended and in effect on January 1, 2025 "
-                    "(HB 290; O.C.G.A. §48-1-2(14)) — OBBBA (enacted July 4, 2025) NOT adopted for TY2025. Due "
-                    "on or before the 15th day of the 4th month (calendar year = April 15, 2026)."
+                    "decimals; O.C.G.A. §48-7-31). Conformity (as this IT-611 was published): IRC as amended and "
+                    "in effect on January 1, 2025 (HB 290; O.C.G.A. §48-1-2(14)). ⚠ SUPERSEDED: HB 1199 (enacted "
+                    "~Mar 2026) advanced the conformity date to January 1, 2026, retroactive to tax years "
+                    "beginning on/after Jan 1, 2025 → OBBBA §179 IS adopted for TY2025 ($2.5M/$4M); §168(k)/(n) "
+                    "bonus still decoupled. Due on or before the 15th day of the 4th month (calendar year = April 15, 2026)."
                 ),
-                "summary_text": "IT-611: 5.19% (HB 111), not prorated; single-factor gross-receipts apportionment, 6 decimals (§48-7-31); conformity Jan 1 2025 (HB 290), OBBBA not adopted; due 4th month 15th.",
+                "summary_text": "IT-611: 5.19% (HB 111), not prorated; single-factor gross-receipts apportionment, 6 decimals (§48-7-31); due 4th month 15th. Conformity for TY2025 = Jan 1 2026 (HB 1199, retroactive) — SUPERSEDES the Jan 1 2025 (HB 290) shown on this IT-611; OBBBA §179 adopted, bonus decoupled.",
                 "is_key_excerpt": True,
             },
         ],
@@ -243,9 +249,13 @@ AUTHORITY_SOURCES: list[dict] = [
                     "depreciation with bonus on the federal 4562; recompute for Georgia without §168(k) and "
                     "using GA's §179 limit on the Georgia 4562; the federal bonus/excess is a Schedule 4 "
                     "addition; the recomputed Georgia depreciation (and later-year catch-up) is a Schedule 5 "
-                    "subtraction. (GA indexes §179; the $1,050,000/$2,620,000 figure is the 2021 amount.)"
+                    "subtraction. ⚠ SUPERSEDED for TY2025: HB 1199 (enacted ~Mar 2026) advanced GA's IRC "
+                    "conformity to January 1, 2026 (retroactive to TY2025), AFTER this Aug-2025 Form 4562 was "
+                    "issued, so GA conforms to the OBBBA §179 limit — $2,500,000 / $4,000,000, not the $1.25M/"
+                    "$3.13M quoted above. The §168(k) bonus non-conformity (and the real-property §179 carve-out) "
+                    "still stand."
                 ),
-                "summary_text": "GA §179 2025 = $1,250,000 / $3,130,000 (GA indexes; $1.05M/$2.62M is 2021). No §168(k) bonus. Bonus = Sch 4 add; GA depreciation = Sch 5 subtract.",
+                "summary_text": "Aug-2025 Form 4562 (verbatim) shows GA §179 2025 = $1,250,000 / $3,130,000; ⚠ SUPERSEDED by HB 1199 → GA conforms to OBBBA §179 $2,500,000 / $4,000,000 for TY2025. No §168(k) bonus (Sch 4 add; GA depreciation = Sch 5 subtract).",
                 "is_key_excerpt": True,
             },
         ],
@@ -272,7 +282,8 @@ AUTHORITY_SOURCES: list[dict] = [
                     "net worth and on foreign corporations on net worth employed within Georgia (apportioned per "
                     "Schedule 8), per the graduated table; exempt at or below $100,000; maximum $5,000. "
                     "O.C.G.A. §48-1-2(14): the Internal Revenue Code is adopted as in effect on the statutory "
-                    "conformity date (HB 290 sets January 1, 2025 for TY2025)."
+                    "conformity date (HB 1199 sets January 1, 2026 for TY2025, retroactive to tax years "
+                    "beginning on/after Jan 1, 2025 — superseding HB 290's Jan 1, 2025)."
                 ),
                 "summary_text": "§48-7-31 single-factor gross receipts; §48-13-70 net worth tax (domestic total / foreign apportioned; $100k exempt, $5,000 max); §48-1-2(14) IRC conformity date.",
                 "is_key_excerpt": True,
@@ -299,7 +310,7 @@ F_FACTS: list[dict] = [
     {"fact_key": "federal_bonus_depreciation", "label": "Federal §168(k) bonus depreciation taken (GA Schedule 4 add-back)", "data_type": "decimal", "required": False, "sort_order": 2,
      "notes": "W9. GA does NOT conform to §168(k) — federal bonus is a GA addition (asset-level GA-4562 figure)."},
     {"fact_key": "federal_section_179", "label": "Federal §179 deduction taken (for the GA §179 delta)", "data_type": "decimal", "required": False, "sort_order": 3,
-     "notes": "W9. GA §179 limit 2025 = $1,250,000. Federal §179 above the GA limit is an addition."},
+     "notes": "W9. GA §179 limit 2025 = $2,500,000 (conforms to OBBBA via HB 1199). Federal §179 above the GA limit is an addition; normally $0 since GA = federal."},
     {"fact_key": "other_additions", "label": "Other GA additions — state/muni bond interest, non-GA taxes, etc. (Sch 4)", "data_type": "decimal", "required": False, "sort_order": 4},
     {"fact_key": "ga_depreciation_subtraction", "label": "Georgia recomputed depreciation subtraction (Sch 5 L4)", "data_type": "decimal", "required": False, "sort_order": 5,
      "notes": "W9. GA-basis depreciation without §168(k) + later-year catch-up (asset-level GA-4562 figure)."},
@@ -322,9 +333,9 @@ F_FACTS: list[dict] = [
 
 F_RULES: list[dict] = [
     {"rule_id": "R-GA600-ADD", "title": "Schedule 4 additions — §168(k) bonus + §179 excess (Sch 1 L2)", "rule_type": "calculation",
-     "formula": "section_179_excess = max(0, federal_section_179 - 1250000) ; additions = federal_bonus_depreciation + section_179_excess + other_additions",
+     "formula": "section_179_excess = max(0, federal_section_179 - 2500000) ; additions = federal_bonus_depreciation + section_179_excess + other_additions",
      "inputs": ["federal_bonus_depreciation", "federal_section_179", "other_additions"], "outputs": ["additions"], "sort_order": 1,
-     "description": "W9. GA does not conform to §168(k): federal bonus depreciation is added back (Sch 4 L8). Federal §179 above the GA 2025 limit ($1,250,000) is also an addition. Plus other GA additions (Sch 4)."},
+     "description": "W9. GA does not conform to §168(k): federal bonus depreciation is added back (Sch 4 L8). GA CONFORMS to the OBBBA §179 limit ($2,500,000) via HB 1199, so the §179 excess is normally $0 — the Sch 4 addition is bonus depreciation only. Plus other GA additions (Sch 4)."},
     {"rule_id": "R-GA600-SUB", "title": "Schedule 5 subtractions — GA recomputed depreciation (Sch 1 L4)", "rule_type": "calculation",
      "formula": "subtractions = ga_depreciation_subtraction + other_subtractions",
      "inputs": ["ga_depreciation_subtraction", "other_subtractions"], "outputs": ["subtractions"], "sort_order": 2,
@@ -377,10 +388,10 @@ F_DIAGNOSTICS: list[dict] = [
      "condition": "federal_bonus_depreciation > 0",
      "message": "Georgia does not conform to IRC §168(k) bonus depreciation. The federal bonus depreciation taken is added back on Schedule 4 (Other Additions); the depreciation recomputed for Georgia without bonus is subtracted on Schedule 5. Enter the asset-level figures from the Georgia Form 4562.",
      "notes": "W9."},
-    {"diagnostic_id": "D_GA600_179", "title": "GA §179 limit 2025 = $1,250,000 / $3,130,000 (indexed)", "severity": "warning",
-     "condition": "federal_section_179 > 1250000",
-     "message": "Georgia's §179 deduction limit for 2025 is $1,250,000 with a $3,130,000 investment phase-out (Georgia indexes its §179; it did NOT adopt the OBBBA $2.5M/$4M amounts). Federal §179 above the Georgia limit is added back on Schedule 4. (Note: $1,050,000/$2,620,000 is the stale 2021 figure.)",
-     "notes": "W9. Phase-out is a separate diagnostic if investment > $3,130,000."},
+    {"diagnostic_id": "D_GA600_179", "title": "GA §179 limit 2025 = $2,500,000 / $4,000,000 (conforms to OBBBA)", "severity": "warning",
+     "condition": "federal_section_179 > 2500000",
+     "message": "Georgia's §179 deduction limit for 2025 is $2,500,000 with a $4,000,000 investment phase-out — Georgia CONFORMS to the OBBBA §179 amounts via HB 1199 (conformity Jan 1, 2026, retroactive to TY2025; supersedes the Aug-2025 Form 4562's pre-OBBBA $1.25M). Because GA equals federal, there is normally no §179 add-back on Schedule 4.",
+     "notes": "W9. GA §179 now mirrors federal; add-back only if federal §179 somehow exceeds the GA limit."},
     {"diagnostic_id": "D_GA600_APPORT", "title": "Single-factor gross-receipts apportionment (6 decimals)", "severity": "info",
      "condition": "is_multistate",
      "message": "Georgia apportions business income using only the gross-receipts factor (single factor), computed to six decimals (O.C.G.A. §48-7-31). Special or individualized apportionment methods are not modeled in v1.",
@@ -389,10 +400,10 @@ F_DIAGNOSTICS: list[dict] = [
      "condition": "income_tax_credits > 0 and net_worth_tax > 0",
      "message": "Schedule 10 tax credits may be applied against the Georgia income tax liability ONLY — they cannot reduce the net worth tax. The net worth tax is a separate liability on Schedule 3 column B.",
      "notes": "W10."},
-    {"diagnostic_id": "D_GA600_CONFORM", "title": "GA IRC conformity Jan 1 2025 — OBBBA not adopted", "severity": "info",
+    {"diagnostic_id": "D_GA600_CONFORM", "title": "GA IRC conformity Jan 1 2026 (HB 1199) — OBBBA §179 adopted, bonus decoupled", "severity": "info",
      "condition": "always (informational)",
-     "message": "Georgia conforms to the Internal Revenue Code as in effect on January 1, 2025 (HB 290; O.C.G.A. §48-1-2(14)). OBBBA (enacted July 4, 2025) is NOT adopted for TY2025, and Georgia's standing §168(k)/§179 decoupling applies regardless. Re-verify on the next Georgia conformity bill.",
-     "notes": "Conformity flag."},
+     "message": "For TY2025 Georgia conforms to the Internal Revenue Code as in effect on January 1, 2026 (HB 1199, retroactive to tax years beginning on/after Jan 1, 2025; O.C.G.A. §48-1-2(14)) — superseding HB 290 (Jan 1, 2025) and the Aug-2025 Form 4562. Georgia ADOPTS the OBBBA §179 limit ($2.5M/$4M) but still decouples from §168(k)/(n) bonus (add-back required).",
+     "notes": "Conformity flag. RESOLVED 2026-07-06 (HB 1199 retroactive)."},
 ]
 
 F_SCENARIOS: list[dict] = [
@@ -404,10 +415,10 @@ F_SCENARIOS: list[dict] = [
      "inputs": {"federal_taxable_income": 100000, "federal_bonus_depreciation": 80000, "ga_depreciation_subtraction": 20000},
      "expected_outputs": {"additions": 80000, "subtractions": 20000, "ga_taxable_income": 160000, "income_tax": 8304},
      "notes": "GA adds back 80,000 bonus, subtracts 20,000 GA depreciation: 100,000 + 80,000 - 20,000 = 160,000 x 5.19% = 8,304."},
-    {"scenario_name": "GA600-C — §179 excess over the GA limit", "scenario_type": "edge", "sort_order": 3,
+    {"scenario_name": "GA600-C — §179 conforms to federal (no addition)", "scenario_type": "edge", "sort_order": 3,
      "inputs": {"federal_taxable_income": 500000, "federal_section_179": 2000000},
-     "expected_outputs": {"additions": 750000, "ga_taxable_income": 1250000, "income_tax": 64875},
-     "notes": "Federal §179 2,000,000 - GA limit 1,250,000 = 750,000 addition. 500,000 + 750,000 = 1,250,000 x 5.19% = 64,875."},
+     "expected_outputs": {"additions": 0, "ga_taxable_income": 500000, "income_tax": 25950},
+     "notes": "GA conforms to OBBBA §179 (HB 1199): federal §179 2,000,000 < GA limit 2,500,000 → excess 0 → no Sch 4 addition. 500,000 x 5.19% = 25,950. (§179 addition is now normally $0; the depreciation delta is §168(k) bonus only, see GA600-B.)"},
     {"scenario_name": "GA600-D — multi-state single-factor apportionment", "scenario_type": "edge", "sort_order": 4,
      "inputs": {"federal_taxable_income": 1000000, "is_multistate": True, "gross_receipts_georgia": 300000, "gross_receipts_everywhere": 1000000},
      "expected_outputs": {"ga_ratio": 0.3, "ga_taxable_income": 300000, "income_tax": 15570},
@@ -437,7 +448,7 @@ F_SCENARIOS: list[dict] = [
 FORMS: list[dict] = [
     {
         "identity": {"form_number": "GA600", "form_title": "Georgia Form 600 — Corporation Tax Return (TY2025)",
-                     "notes": "WO-11 / S-13 (form 3 of 3, DECISIONS D-13 Q4 = full). GA C-corporation dual tax: INCOME tax (federal taxable income -> Sch 4 additions incl. §168(k) bonus add-back + §179 excess over the GA $1.25M limit -> Sch 5 GA recomputed-depreciation subtraction -> single-factor gross-receipts apportionment, 6 decimals -> GA NOL 80% -> flat 5.19%, HB 111) AND NET WORTH tax (Schedule 2 bracket table: exempt <=$100k, max $5,000 over $22M). Schedule 3 totals income + net worth; Schedule 10 credits reduce income tax only. Conformity Jan 1 2025 (HB 290), OBBBA not adopted. The S-corp analog is GA600S."},
+                     "notes": "WO-11 / S-13 (form 3 of 3, DECISIONS D-13 Q4 = full). GA C-corporation dual tax: INCOME tax (federal taxable income -> Sch 4 additions incl. §168(k) bonus add-back + §179 excess over the GA $2.5M limit (GA conforms to OBBBA §179 → excess normally $0) -> Sch 5 GA recomputed-depreciation subtraction -> single-factor gross-receipts apportionment, 6 decimals -> GA NOL 80% -> flat 5.19%, HB 111) AND NET WORTH tax (Schedule 2 bracket table: exempt <=$100k, max $5,000 over $22M). Schedule 3 totals income + net worth; Schedule 10 credits reduce income tax only. Conformity Jan 1 2026 (HB 1199, retroactive to TY2025), OBBBA §179 adopted, §168(k) bonus decoupled. The S-corp analog is GA600S."},
         "facts": F_FACTS, "rules": F_RULES, "rule_links": F_RULE_LINKS,
         "lines": F_LINES, "diagnostics": F_DIAGNOSTICS, "scenarios": F_SCENARIOS,
     },
