@@ -16,6 +16,50 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-18: Form 4684 (WO-16) v1 scope LOCKED — Casualties and Thefts
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 4684 (3rd item in
+the SPINE S-16 federal-forms queue, after 8990 + Schedule H):
+- **(Q1) Section A (personal) = full compute incl. the qualified-disaster path.** Per-property loss = min(adjusted
+  basis, FMV decline) − insurance; the **$100 floor** (L11); the **§165(h)(5) federally-declared-disaster
+  limitation** gate (a personal loss is deductible ONLY if attributable to a federally declared disaster, except to
+  the extent of personal casualty gains); the **10%-of-AGI floor** (L17); AND the **qualified-disaster special path**
+  ($500 floor, NO 10%-AGI, add-to-standard-deduction) with the OBBBA-extended declaration window (declared 1/1/2020 –
+  **9/2/2025**, incident began by 7/4/2025, ended by 8/3/2025) in a year-keyed dict.
+- **(Q2) Section B (business/income-producing) = Part I + Part II §1231 netting + route.** Compute Part I per-property
+  loss/gain (total destruction / theft → full basis, ignore FMV); Part II holding-period split: **≤1 yr → ordinary
+  (Form 4797 line 14)**; **>1 yr losses>gains → ordinary (4797 L14)**; **>1 yr gains≥losses → §1231 capital (4797 L3)**.
+  Direct-entry the 4797/Schedule D linkage via flow assertions.
+- **(Q3) Section C compute, Section D diagnostic.** COMPUTE Section C Ponzi-type theft safe harbor (Rev. Proc.
+  2009-20: qualified investment × **95%** no-recovery / **75%** potential-recovery − recoveries → Section B). Section D
+  **§165(i)** election to deduct a disaster loss in the preceding year = structure + diagnostic (filing-mechanics, not
+  a compute).
+- **(Q4) One `4684` form, entity_types = ['1040','1065','1120S','1120'].** Serves Section A personal (1040) + Section B
+  business casualty (all entities; partnerships → 1065 Sch K L11, S-corps → 1120-S Sch K L10). Model the **new OBBBA
+  financial-scam theft loss** as a Section B diagnostic (3 conditions: criminal theft under state law / no reasonable
+  prospect of recovery / transaction entered into for profit — NOT subject to the FDD limitation).
+
+**Context:** WO-16 front door: gap-check (GAP — `lookup/4684/export/` = 404; downstream Sch A/Sch D/4797/8829 route
+TO 4684 but none authors it) → verbatim research pass (FINAL 2025 Form 4684 Created 9/26/25 + i4684 updated 30-Apr-2026
++ Pub 547 + §165 + Rev. Proc. 2009-20) → `f4684_source_brief.md` → this walk. **Load-bearing law finding: the
+§165(h)(5) FDD-only limitation is STILL in effect for TY2025; OBBBA EXTENDED the qualified-disaster special rules
+(window to 9/2/2025) and ADDED the financial-scam theft-loss avenue — it did NOT repeal the base limitation or add
+state-declared disasters.**
+
+**Alternatives considered:** qualified-disaster path as diagnostic-only (rejected — the $500/no-AGI/standard-deduction
+package is season-critical and computable); Section B Part I only, Part II direct-entry (rejected — the §1231 holding-
+period split is the routing that makes the 4797 handoff correct); Sections C & D both diagnostic-only (rejected —
+the Ponzi 95%/75% safe harbor is a clean compute; but Section D election IS left as diagnostic, low frequency);
+entity_types 1040-only (rejected — Section B serves business property of any entity, matching 4562/4797/3800).
+
+**Would reconsider if:** the forms-usage report shows Ponzi/§165(i)/financial-scam volume warrants deeper compute;
+the within-Section-B employee-property line (post-TCJA generally nondeductible) needs its own gate.
+
+**Year-keyed / re-verify at TY2026:** the qualified-disaster declaration window (1/1/2020 – 9/2/2025, OBBBA-set — the
+most-likely-to-churn item), the $100/$500 floors, the 10%-AGI floor, and the 95%/75% Ponzi factors.
+
+---
+
 ## 2026-07-05 — D-17: Schedule H (WO-15) v1 scope LOCKED — Household Employment Taxes
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), Schedule H (Form 1040)

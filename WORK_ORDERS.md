@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-16] Form 4684 · Casualties & Thefts · greenfield RS-first · status `GAP-CHECKED → research-verified →
+  Gate-1 APPROVED → ✅ DONE` (2026-07-05/06; SPINE S-16, 3rd after 8990 + Schedule H).** Gap-check: no `load_4684*`
+  loader (downstream Sch A / Sch D / 4797 / 8829 route TO 4684 but none authors it); `lookup/4684/export/` = 404 →
+  GAP. **✅ RESEARCH-VERIFIED (verbatim vs FINAL 2025 Form 4684 Created 9/26/25 + i4684 updated 30-Apr-2026 + Pub 547
+  + §165 + Rev. Proc. 2009-20) → `f4684_source_brief.md`.** Load-bearing law: the **§165(h)(5) federally-declared-
+  disaster limitation is STILL in effect for TY2025**; OBBBA EXTENDED the qualified-disaster special rules (window to
+  **9/2/2025**) + ADDED a financial-scam theft-loss avenue (Section B) — did NOT repeal the base limitation or add
+  state-declared disasters. **✅ Gate-1 scope walk APPROVED (DECISIONS D-18, all 4 recommended):** Section A full
+  compute incl. qualified-disaster $500/no-AGI/std-deduction path (year-keyed window); Section B Part I + Part II
+  §1231/ordinary routing to 4797 L3/L14; Section C Ponzi 95%/75% safe harbor computed, Section D §165(i) = diagnostic;
+  entity_types 1040/1065/1120S/1120 + financial-scam diagnostic. **✅ AUTHORED + SQLite-VALIDATED** (`load_4684.py`,
+  20 facts / 5 rules / 6 lines / 8 diag / 7 tests / 3 FA; `scratchpad/validate_4684.py` = **29 pass / 0 fail** — FDD
+  gate, qualified-disaster $500, total-destruction full basis, §1231 routing, Ponzi 95/75 all green). **✅ DONE —
+  seeded + exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed, export"; W1-W4 blessed) → **113 TaxForms**;
+  `lookup/4684/export/` = 200; seed_all auto-discovers `load_4684` (reconstructable). **Status: ✅ DONE (RS).** tts
+  app build = [APP] lane. ⏭ Queue continues at **Form 4952** (Investment Interest Expense Deduction).
+
 - **▶ [WO-15] Schedule H · Household Employment Taxes (1040) · greenfield RS-first · status `GAP-CHECKED →
   research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-05; SPINE S-16, 2nd item after 8990).** Next in Ken's
   federal-forms queue. Gap-check: no `load_sch*h*` loader; `SCHEDULE_H` not in the 111-form prod set → GAP.

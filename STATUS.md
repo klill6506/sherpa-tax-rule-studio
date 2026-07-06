@@ -12,8 +12,15 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **112 TaxForms / 503 FlowAssertions / 935 FormRules**
-(**+WO-15 Schedule H 2026-07-05** — Household Employment Taxes (`SCHEDULE_H`, entity_types 1040); 2nd item in the
+Active spec-authoring tool. RS Supabase holds **113 TaxForms / 506 FlowAssertions / 940 FormRules**
+(**+WO-16 Form 4684 2026-07-06** — Casualties and Thefts (`4684`, entity_types 1040/1065/1120S/1120); 3rd item in
+the SPINE S-16 federal-forms queue. Section A personal-use (per-property loss = min(adjusted basis, FMV decline) −
+insurance; **§165(h)(5) federally-declared-disaster-only limitation** still in effect for TY2025; $100 floor + 10%
+AGI; qualified-disaster special path $500/no-AGI/add-to-standard-deduction with the OBBBA-extended declaration window
+declared 1/1/2020–**9/2/2025**) → Schedule A L15/L16; Section B business/income-producing Part I (total destruction →
+full basis) + Part II holding-period **§1231/ordinary routing to Form 4797** L3/L14; Section C Ponzi-type theft safe
+harbor (Rev. Proc. 2009-20, **95%/75%**); Section D §165(i) preceding-year election + new OBBBA financial-scam theft
+loss = diagnostics; `lookup/4684/export/` = 200; **+WO-15 Schedule H 2026-07-05** — Household Employment Taxes (`SCHEDULE_H`, entity_types 1040); 2nd item in the
 SPINE S-16 federal-forms queue. Part I FICA (SS 12.4% / Medicare 2.9% / Additional Medicare 0.9% over $200k / FIT
 withheld) on cash wages ≥ **$2,800** (research caught the stale $2,700 training figure) → FUTA Part II (Section A
 0.6% single-state; Section B credit-reduction, year-keyed **CA 1.2% / VI 4.5%** net 1.8%/5.1% per Fed. Reg.
@@ -103,10 +110,11 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H). **The active queue is the SPINE S-16 federal-forms gap-fill**
-(author each via the full front door, TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ → **▶ Form 4684
-(Casualties & Thefts) = NEXT** → Form 4952 → Form 8379 → Form 8814 → Form 8839 → Form 709 → Form 8832 →
-Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684). **The active queue is the SPINE S-16 federal-forms
+gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ →
+4684 ✅ → **▶ Form 4952 (Investment Interest Expense Deduction) = NEXT** → Form 8379 → Form 8814 → Form 8839 →
+Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report
+or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -276,6 +284,26 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 4684 (Casualties and Thefts) AUTHORED + SEEDED + EXPORTED (WO-16) — 3rd item in the S-16 federal-forms queue.**
+  Full front-door run: gap-check (GAP — `lookup/4684/export/` = 404; downstream Sch A/Sch D/4797/8829 route TO 4684
+  but none authors it) → verbatim research pass (FINAL 2025 Form 4684 **Created 9/26/25** + i4684 updated 30-Apr-2026
+  + Pub 547 + §165 + Rev. Proc. 2009-20) → `f4684_source_brief.md`. **Load-bearing law finding: the §165(h)(5)
+  federally-declared-disaster-only limitation is STILL in effect for TY2025; OBBBA (P.L. 119-21) EXTENDED the
+  qualified-disaster special rules (declaration window to 9/2/2025, $500 floor / no-10%-AGI / std-deduction add-back)
+  and ADDED a financial-scam theft-loss avenue (Section B) — it did NOT repeal the base limitation or add
+  state-declared disasters.** **Gate-1 scope walk (4 AskUserQuestion, all recommended — DECISIONS D-18):** Section A
+  full compute incl. the qualified-disaster path (year-keyed window); Section B Part I + Part II §1231/ordinary
+  holding-period routing to Form 4797 L3/L14; Section C Ponzi 95%/75% safe harbor computed, Section D §165(i) =
+  diagnostic; entity_types 1040/1065/1120S/1120 + financial-scam diagnostic. **Authored:** `load_4684.py` — per-property
+  loss/gain (gain when insurance > basis; total destruction → full basis), Section A FDD gate + $100/$500 + 10%-AGI,
+  Section B §1231 routing, Section C Ponzi (95% no-recovery / 75% recovery). Validated on throwaway SQLite
+  (`scratchpad/validate_4684.py`, **29 pass / 0 fail** — FDD gate (non-disaster → 0), qualified disaster 19,500,
+  total-destruction full basis 30,000, §1231 route, Ponzi 85,000/65,000 all green; caught 1 topic_name > 255 cap,
+  trimmed; all 5 rules cited to 4 sources). Ken Gate-1: "Approve — flip, seed, export." Seeded → **113 TaxForms /
+  506 FlowAssertions / 940 FormRules**; `lookup/4684/export/` = 200; seed_all auto-discovers `load_4684`
+  (reconstructable). **Next in the queue: Form 4952** (Investment Interest Expense Deduction). BUILD_ORDER S-16
+  4684 ✅. **Year-keyed re-verify at TY2026:** the qualified-disaster declaration window (1/1/2020–9/2/2025, OBBBA —
+  the most-likely-to-churn item), the $100/$500/10%-AGI floors, and the 95%/75% Ponzi factors.
 - 2026-07-05: **SCHEDULE H (Household Employment Taxes) AUTHORED + SEEDED + EXPORTED (WO-15) — 2nd item in the S-16 federal-forms queue.**
   Full front-door run: gap-check (GAP — no loader, not in the 111-form prod set) → verbatim research pass (FINAL 2025
   Schedule H **Created 4/15/25** + i1040sh + Pub 926 + Fed. Reg. 2026-00342 FUTA-credit-reduction notice) →
