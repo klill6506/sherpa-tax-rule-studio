@@ -65,7 +65,9 @@ W1. §179 CONFORMITY — RESOLVED 2026-07-04 (Ken confirmed the figure). §179 i
     chose COMPUTE: the §179-excess add-back is now computed on line e by
     R-SC-179-ADDBACK (SC_179_LIMIT / SC_179_PHASEOUT constants), recovered via SC
     depreciation over the asset life. Business-income limit not modeled (noted).
-    (Do NOT cross-apply the GA $1,050,000 figure from CLAUDE.md — SC's own regime.)
+    (SC's own regime: SC_179 = $1,250,000/$3,130,000, conformity 12/31/2024 — SC did
+    NOT adopt OBBBA §179. Do NOT cross-apply the federal/GA $2.5M figure; GA now
+    conforms to OBBBA §179 via HB 1199 but SC does not.)
 W2. BRACKET THRESHOLDS. The $3,560 / $17,830 dollar breakpoints are corroborated
     by the primary SC1040TT table + the $642 rate-schedule constant, but were
     not printed as round numbers in a DOR PDF (a third-party site supplied the

@@ -716,7 +716,7 @@ class Command(BaseCommand):
              "formula": "min(elected_cost, max(0, 2500000 - max(0, total_placed_in_service - 4000000)), taxable_income)",
              "inputs": ["section_179_elected_cost", "total_section_179_placed_in_service", "taxable_income_limitation"],
              "outputs": ["allowed_179_deduction"],
-             "description": "§179 deduction = lesser of: (a) elected cost, (b) $2,500,000 minus dollar-for-dollar reduction for total placed in service exceeding $4,000,000, (c) taxable income from active business. GA limit is $1,050,000/$2,620,000.",
+             "description": "§179 deduction = lesser of: (a) elected cost, (b) $2,500,000 minus dollar-for-dollar reduction for total placed in service exceeding $4,000,000, (c) taxable income from active business. GA conforms to the same §179 limit for TY2025 ($2,500,000/$4,000,000) via HB 1199; GA still decouples from §168(k)/(n) bonus.",
              "sort_order": 1, "precedence": 1},
             {"rule_id": "R002", "title": "OBBBA bonus depreciation", "rule_type": "calculation",
              "formula": "bonus_eligible_basis * bonus_percentage",
@@ -840,7 +840,7 @@ class Command(BaseCommand):
              "inputs": {"section_179_elected_cost": 2500000, "total_section_179_placed_in_service": 2500000,
                          "taxable_income_limitation": 5000000},
              "expected_outputs": {"allowed_179_deduction": 2500000},
-             "notes": "Federal §179 = $2.5M. Georgia limit is $1,050,000/$2,620,000 — GA has NOT adopted OBBBA. State computation would differ. This spec covers federal only.", "sort_order": 4},
+             "notes": "Federal §179 = $2.5M. Georgia conforms to the same §179 limit for TY2025 ($2.5M/$4M) via HB 1199; the state difference is §168(k)/(n) bonus only. This spec covers federal only.", "sort_order": 4},
         ])
 
         self._upsert_form_links("4562", sources, [

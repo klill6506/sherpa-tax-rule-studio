@@ -208,8 +208,8 @@ FRESH_SOURCES = [
         "excerpts": [
             {
                 "excerpt_label": "Georgia depreciation nonconformity",
-                "excerpt_text": "Georgia does NOT conform to IRC section 168(k) bonus depreciation. Georgia does NOT conform to OBBBA (P.L. 119-21) provisions. Federal bonus depreciation taken must be added back on GA-600S Schedule 1. Georgia allows its own Section 179 limit of $1,050,000 with phaseout beginning at $2,620,000 (not the federal $2,500,000/$4,000,000).",
-                "summary_text": "GA does NOT conform to federal bonus or OBBBA. GA Section 179: $1,050,000/$2,620,000.",
+                "excerpt_text": "Georgia does NOT conform to IRC section 168(k)/(n) bonus depreciation. Federal bonus depreciation taken must be added back on GA-600S Schedule 1. Georgia DOES conform to the OBBBA IRC section 179 limit for TY2025 via HB 1199 (IRC conformity advanced to January 1, 2026, retroactive to tax years beginning on/after January 1, 2025) — Georgia section 179 = $2,500,000 with phaseout beginning at $4,000,000, equal to federal. (HB 1199 supersedes the pre-OBBBA figures on the Aug-2025 GA Form 4562.)",
+                "summary_text": "GA does NOT conform to federal bonus (§168(k)/(n)) but DOES conform to OBBBA §179 via HB 1199. GA Section 179: $2,500,000/$4,000,000 (= federal).",
                 "is_key_excerpt": True,
             },
             {
@@ -288,11 +288,10 @@ class Command(BaseCommand):
             defaults={
                 "conformity_type": "partial",
                 "authority_source": sources.get("GA_2025_600S_INSTR"),
-                "summary": "Georgia partially conforms to federal tax law. Does NOT conform to IRC 168(k) bonus depreciation or OBBBA. Georgia Section 179 limit is $1,050,000/$2,620,000 (vs federal $2,500,000/$4,000,000). PTET at 5.19% (TY2025) is elective.",
+                "summary": "Georgia partially conforms to federal tax law (IRC conformity Jan 1, 2026 via HB 1199, retroactive to TY2025). Does NOT conform to IRC 168(k)/(n) bonus depreciation (full addback). DOES conform to the OBBBA Section 179 limit: $2,500,000/$4,000,000, equal to federal. PTET at 5.19% (TY2025) is elective.",
                 "decoupled_items": [
-                    {"item": "IRC 168(k) bonus depreciation", "treatment": "Full addback required on Schedule 1"},
-                    {"item": "OBBBA provisions (P.L. 119-21)", "treatment": "Georgia has NOT adopted OBBBA"},
-                    {"item": "Section 179 limits", "treatment": "GA: $1,050,000/$2,620,000 vs Fed: $2,500,000/$4,000,000"},
+                    {"item": "IRC 168(k)/(n) bonus depreciation", "treatment": "Full addback required on Schedule 1"},
+                    {"item": "Section 179 limits", "treatment": "GA CONFORMS via HB 1199: $2,500,000/$4,000,000 = federal (retroactive to TY2025)"},
                 ],
             },
         )
@@ -773,7 +772,7 @@ class Command(BaseCommand):
     def _load_ga600s(self, sources):
         form = self._upsert_form("GA600S", "GA-600S — Georgia S-Corporation Tax Return", ["1120S"],
                                   jurisdiction="GA",
-                                  notes="Georgia S-Corp return. GA does NOT conform to federal bonus or OBBBA. PTET at 5.19% (TY2025) is elective.")
+                                  notes="Georgia S-Corp return. GA does NOT conform to federal §168(k)/(n) bonus (addback), but CONFORMS to the OBBBA §179 limit ($2.5M/$4M) via HB 1199. PTET at 5.19% (TY2025) is elective.")
         self._upsert_facts(form, [
             # Schedule 1 — GA Taxable Income
             {"fact_key": "federal_taxable_income", "label": "Federal taxable income (from 1120-S Page 1 Line 21)", "data_type": "decimal", "required": True, "sort_order": 1},
@@ -826,9 +825,9 @@ class Command(BaseCommand):
              "precedence": 1, "sort_order": 5,
              "description": "CORRECTED 2026-07-05 (was a 3-factor property/payroll/sales average): Georgia apportions by a SINGLE gross-receipts factor for all taxpayers since 2008 (§48-7-31; IT-611 S-corp booklet, same rule as Form 700 Sch 7). Most single-state GA S-Corps = 100%."},
             {"rule_id": "R006", "title": "Georgia Section 179 limits", "rule_type": "validation",
-             "formula": "ga_179_limit = 1050000; ga_179_phaseout = 2620000",
+             "formula": "ga_179_limit = 2500000; ga_179_phaseout = 4000000",
              "inputs": ["section_179_elected"], "outputs": [], "precedence": 0, "sort_order": 6,
-             "description": "Georgia Section 179 limit is $1,050,000 with phaseout at $2,620,000. This is LOWER than federal $2,500,000/$4,000,000 (OBBBA). Georgia has NOT adopted OBBBA."},
+             "description": "Georgia Section 179 limit is $2,500,000 with phaseout at $4,000,000 — EQUAL to federal. Georgia CONFORMS to the OBBBA Section 179 limit for TY2025 via HB 1199 (IRC conformity Jan 1, 2026, retroactive to tax years beginning on/after Jan 1, 2025), superseding the pre-OBBBA figures on the Aug-2025 GA Form 4562. (GA still decouples from §168(k)/(n) bonus.)"},
         ])
         self._upsert_links(rules, sources, [
             ("R001", "GA_2025_600S_INSTR", "primary", "Schedule 1 GA taxable income computation"),
@@ -836,7 +835,7 @@ class Command(BaseCommand):
             ("R003", "GA_2025_600S_INSTR", "primary", "PTET at 5.19% (TY2025) — elective"),
             ("R004", "GA_2025_600S_INSTR", "primary", "Net worth tax — bracket lookup"),
             ("R005", "GA_2025_600S_INSTR", "primary", "single gross-receipts factor apportionment (§48-7-31)"),
-            ("R006", "GA_2025_600S_INSTR", "primary", "GA Section 179: $1,050,000/$2,620,000"),
+            ("R006", "GA_2025_600S_INSTR", "primary", "GA Section 179: $2,500,000/$4,000,000 (conforms via HB 1199)"),
         ])
         self._upsert_lines(form, [
             {"line_number": "S1_1", "description": "Federal taxable income (from 1120-S Page 1 Line 21)", "line_type": "input", "destination_form": "1120-S Page 1 Line 21", "sort_order": 1},
@@ -862,7 +861,7 @@ class Command(BaseCommand):
              "message": "Apportionment is 100% but entity appears to have out-of-state activity. Verify."},
             {"diagnostic_id": "D005", "title": "GA nonconformity items", "severity": "info",
              "condition": "federal_return_has_obbba_items AND no_ga_adjustment",
-             "message": "Federal return includes OBBBA provisions that Georgia does not conform to. Review for required adjustments."},
+             "message": "Federal return includes depreciation that Georgia does not conform to — chiefly §168(k)/(n) bonus (full addback on Schedule 1). Note GA DOES conform to the OBBBA §179 limit ($2.5M/$4M) via HB 1199. Review for required adjustments."},
         ])
         self._upsert_tests(form, [
             {"scenario_name": "Single-state GA S-Corp — no bonus difference", "scenario_type": "normal",
