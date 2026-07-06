@@ -66,6 +66,29 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ ACTIVE — [WO-14] Form 8990 · §163(j) business-interest limitation · greenfield RS-first · status
+  `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05; SPINE S-16, first of Ken's federal-forms queue).**
+  Finishes the 1120 module's biggest deferred leg. Gap-check: `8990` not in the 92-form federal prod set → GAP.
+  entity_types = 1120/1065/1120S/1040 (any taxpayer with business interest expense subject to the limit). OBBBA
+  restored the **EBITDA-basis ATI** for TY2025 (add back depreciation/amortization/depletion) — the compute heart;
+  $31M §448(c) small-business exemption; 30% ATI + BII + floor-plan; indefinite disallowed-BIE carryforward;
+  §163(j)(7) excepted businesses; Part II partnership EBIE/ETI + Part III S-corp pass-through items.
+  **✅ RESEARCH-VERIFIED (2026-07-05, verbatim vs FINAL Form 8990 Rev. 12-2025 Created 9/9/25 + i8990 Rev. 12-2025
+  + §163(j)) → `f8990_source_brief.md`.** Confirmed **line 11 = the EBITDA add-back** (dep/amort/depletion, an
+  ADDITION for TY2025, reinstated by OBBBA — was suspended 2022-24); Part I ATI (L22) → 30% limit (L26) → total
+  limit L29 = 30%ATI+BII+floor-plan → allowable L30 → disallowed carryforward L31 (indefinite); Part II partnership
+  EBIE/ETI (L32-37); Part III S-corp ETI (L38-42, no EBIE); Sch A/B feeders; $31M §448(c) exemption. Cite OBBBA
+  effective date to P.L. 119-21 + i8990 (Cornell lags).
+  **✅ Gate-1 scope walk APPROVED (DECISIONS D-16, all 3 recommended):** full Part I compute; Part II/III formulas +
+  direct-entry Sch A/B; $31M gate + §163(j)(7) diagnostic. **✅ AUTHORED + SQLite-VALIDATED** (`load_8990.py`, 15
+  facts / 6 rules / 8 lines / 5 diag / 6 tests / 3 FA; `scratchpad/validate_8990.py` = **19 pass / 0 fail** — incl.
+  the EBIT counterfactual: no L11 add-back → disallowed 180k vs 90k). **✅ DONE — seeded + exported 2026-07-05**
+  (Ken Gate-1: "Approve — flip, seed, export"; W1-W3 blessed) → **111 TaxForms**; `lookup/8990/export/` = 200;
+  seed_all reconstructable. **Status: ✅ DONE (RS).** ⏭ Queue continues at **Schedule H** (post-context-clear).
+  **⏭ Federal-forms queue AFTER 8990 (SPINE S-16, Ken's order — author each via the full front door):**
+  Schedule H → Form 4684 → Form 4952 → Form 8379 (Ken wrote "8679" = 8379) → Form 8814 → Form 8839 → Form 709 →
+  Form 8832 → Form 3115. Take the TOP unchecked item at each boot. **Ken clears context after 8990 seeds.**
+
 - **▶ ACTIVE — [WO-09] S-11 · 1041 module · greenfield RS-first · status `GAP-CHECKED → research-verified → Gate-1 scope LOCKED → DRAFTING (authoring)` (opened 2026-07-05).**
   Gap-check run against live prod (96 forms) — **all five authoring surfaces are 404 GAPs**; the module is fully
   greenfield (no `load_1041_*` loaders; the only on-disk `1041` refs are the boundary-diag Sch I note + the *receiving*

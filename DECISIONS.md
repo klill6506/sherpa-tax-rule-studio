@@ -16,6 +16,28 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-16: Form 8990 (WO-14) v1 scope LOCKED — §163(j) business-interest limitation
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (3 AskUserQuestion, all recommended), Form 8990 (first of
+the SPINE S-16 federal-forms queue; finishes the 1120 module's §163(j) deferred leg):
+- **(Q1) Full compute Part I.** ATI (tentative taxable income + additions incl. the **L11 EBITDA add-back** for
+  dep/amort/depletion, OBBBA-restored for TY2025 − reductions) → 30% × ATI (L26) → total limitation L29 (30% ATI +
+  BII + floor plan) → allowable BIE L30 = min(total BIE, limit) → disallowed-BIE carryforward L31 (indefinite).
+- **(Q2) Compute Part II/III formulas, direct-entry Sch A/B.** Partnership EBIE (L32), ETI (L36 = ratio × ATI),
+  excess BII (L37); S-corp ETI (L41), excess BII (L42, no EBIE). Per-owner Schedule A/B allocation = direct-entry.
+- **(Q3) Compute the $31M gate + diagnose excepted businesses.** §448(c) small-business exemption (avg gross
+  receipts ≤ $31M, non-tax-shelter → not required to file); §163(j)(7) excepted trades/businesses (electing
+  real-property/farming, regulated utilities, employee services) = diagnostic (elect out of the limit).
+
+**Context:** entity_types = 1120/1065/1120S/1040. Verified vs FINAL Form 8990 Rev. 12-2025 + i8990 + §163(j). The
+L11 EBITDA add-back is the load-bearing item (was suspended 2022-24, reinstated by OBBBA). Cite the effective date
+to P.L. 119-21 + i8990 (Cornell §163(j)(8) lags). One consolidated `8990` form.
+
+**Would reconsider if:** the per-partner Schedule A allocation (EBIE by partner) proves common enough to compute;
+TY2026 changes the $31M index or the electively-capitalized-interest character rule (OBBBA, years after 12/31/2025).
+
+---
+
 ## 2026-07-05 — D-15: NC + AL pass-through batch (WO-13) v1 scope LOCKED — D-403/CD-401S + Form 65/20S
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), the NC + AL

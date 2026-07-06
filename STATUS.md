@@ -12,8 +12,12 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **110 TaxForms / 497 FlowAssertions / 924 FormRules**
-(**+WO-13 NC + AL pass-through batch 2026-07-05** — completes the adjacent-state pass-through track (GA-700 +
+Active spec-authoring tool. RS Supabase holds **111 TaxForms / 500 FlowAssertions / 930 FormRules**
+(**+WO-14 Form 8990 2026-07-05** — §163(j) business-interest limitation (`8990`, entity_types 1120/1065/1120S/1040);
+finishes the 1120 module's biggest deferred leg; Part I ATI on the OBBBA **EBITDA basis** (L11 dep/amort/depletion
+add-back, reinstated for TY2025) → 30% limit → allowable + indefinite carryforward; Part II/III partnership EBIE/ETI
++ S-corp ETI; $31M §448(c) exemption gate + §163(j)(7) excepted diagnostic; `lookup/8990/export/` = 200; first of the
+SPINE S-16 federal-forms queue; **+WO-13 NC + AL pass-through batch 2026-07-05** — completes the adjacent-state pass-through track (GA-700 +
 SC1065/SC1120S + NC + AL): `NC_D403`/`NC_CD401S` (NC Taxed PTE 4.25% + owner DEDUCTION, CD-401S NC franchise,
 85% bonus/§179 $25k/$200k, NR withholding 4.25%), `AL_FORM_65`/`AL_FORM_20S` (AL Electing PTE 5% + owner
 refundable CREDIT, composite 5%, AL conforms §168(k)/§179, Form 20S Line-32 LIFO/BIG/excess-passive); all 4
@@ -266,6 +270,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **FORM 8990 (§163(j) business-interest limitation) AUTHORED + SEEDED + EXPORTED (WO-14) — finishes the 1120 deferred leg; first of the S-16 federal-forms queue.**
+  Ken picked a federal-forms queue from the not-built list (8990 → Sch H → 4684 → 4952 → 8379 → 8814 → 8839 → 709 →
+  8832 → 3115), recorded in BUILD_ORDER **S-16** + WORK_ORDERS; 8990 done first (pre-context-clear). Research verified
+  vs the **FINAL Form 8990 Rev. 12-2025 + i8990** (Created 9/9/25) → `f8990_source_brief.md`. **The load-bearing item:
+  line 11 = the EBITDA add-back** (depreciation/amortization/depletion), an ADDITION reinstated by OBBBA for TY2025
+  (suspended 2022-24). **Gate-1 (DECISIONS D-16, all recommended):** full Part I compute (ATI EBITDA → 30% limit →
+  allowable → indefinite carryforward); Part II/III pass-through formulas (partnership EBIE/ETI + S-corp ETI) with
+  direct-entry Sch A/B; $31M §448(c) exemption gate + §163(j)(7) excepted-business diagnostic. `load_8990.py`: 15
+  facts / 6 rules / 8 lines / 5 diag / 6 tests / 3 FA; entity_types 1120/1065/1120S/1040. Validated on throwaway
+  SQLite (`scratchpad/validate_8990.py`, **19 pass / 0 fail** — incl. the EBIT counterfactual: without the L11 add-back
+  the sample's disallowed interest is 180k vs 90k; harness caught a topic_name > 255 cap, trimmed). Ken Gate-1:
+  "Approve — flip, seed, export." Seeded → **111 TaxForms / 500 FlowAssertions / 930 FormRules**; `lookup/8990/export/`
+  = 200; seed_all reconstructable. Cite OBBBA effective date to P.L. 119-21 + i8990 (Cornell §163(j)(8) lags).
+  **Next in the queue: Schedule H** (Household Employment Taxes). BUILD_ORDER S-16 8990 ✅.
 - 2026-07-05: **NC + AL PASS-THROUGH BATCH AUTHORED + SEEDED + EXPORTED (WO-13) — completes the adjacent-state pass-through track.**
   Ken: "do the NC + AL". Completes the neighbor pass-through entity coverage (GA-700 + SC1065/SC1120S/PTET done;
   NC + AL were the gaps). Front door: gap-check (all 4 GAP) → 2 parallel research passes (verbatim vs FINAL 2025
