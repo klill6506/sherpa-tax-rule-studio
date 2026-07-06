@@ -16,6 +16,47 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-17: Schedule H (WO-15) v1 scope LOCKED — Household Employment Taxes
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), Schedule H (Form 1040)
+(2nd item in the SPINE S-16 federal-forms queue, after 8990):
+- **(Q1) FUTA = Section A + the credit-reduction path.** COMPUTE Section A (L16 = FUTA wages × 0.6%) AND the
+  single-state credit-reduction case via a year-keyed rate dict (**2025: CA 1.2% / VI 4.5%**, Fed. Reg. 2026-00342);
+  net FUTA for a timely single credit-reduction state = FUTA wages × (0.6% + reduction rate) = the L21 − L23
+  mechanic. DIRECT-ENTRY the full multi-state per-state experience-rate table (L17 cols a–h, L19) since per-state
+  SUTA experience rates are data the spec can't reach; L24 = L21 − L23 computed from the direct-entered L19.
+- **(Q2) Gating tests from qualifying wages + exclusion diagnostics.** COMPUTE the line A/B/C who-must-file routing
+  and the **$2,800** (any one employee) / **$1,000-per-quarter** (all employees) tests from direct-entered
+  QUALIFYING cash wages; surface the four exclusions (spouse / child under 21 / parent-with-exceptions /
+  under-18-not-principal-occupation) as diagnostics — the relationship/age determination needs data the spec can't read.
+- **(Q3) One `SCHEDULE_H` form, entity_types = ['1040'].** Total → Schedule 2 (Form 1040) line 9. Standalone-filer
+  **Part IV** path (line 27 "No") + the **EIN-required** rule = diagnostics. The 1041-attached estate/household-employer
+  case is noted but not a separate entity type (household employers are overwhelmingly individuals).
+- **(Q4) Full Part I compute + SS-base diagnostic.** COMPUTE L2 (SS 12.4%), L4 (Medicare 2.9%), L6 (Additional
+  Medicare 0.9% over $200,000), L7 FIT withheld, L8 total; diagnostic when L1 per-employee SS wages exceed the
+  **$176,100** 2025 SS wage base (year-keyed).
+
+**Context:** WO-15 front door: gap-check (GAP — no loader, not in the 111-form prod set) → verbatim research pass
+(FINAL 2025 Schedule H Created 4/15/25 + i-Sch-H + Pub 926 + Fed. Reg. FUTA-credit-reduction notice) →
+`sch_h_source_brief.md` → this walk. **Research CAUGHT the load-bearing correction: the 2025 cash-wage trigger is
+$2,800, NOT the $2,700 training-data/2024 figure.** OBBBA did NOT change Schedule H structure/rates/layout for
+TY2025 — only indexed dollars ($2,800 trigger, $176,100 SS base) and the annual CA/VI credit-reduction list moved.
+
+**Alternatives considered:** full Section B multi-state worksheet compute (rejected — per-state experience rates are
+preparer data; the credit-reduction single-state case is the common one and is the year-sensitive risk); encode the
+exclusion determination from structured relationship/age facts (rejected — needs per-employee data the spec can't
+read; diagnostic is the honest surface); entity_types 1040+1041 (rejected — estate household employers are rare;
+noted, not modeled); Section-A-only defer Section B (rejected — the CA/VI credit reduction is a live 2025 item).
+
+**Would reconsider if:** the forms-usage report shows multi-state household employers are common (build the full L17
+table); the credit-reduction state list changes for TY2026 (year-keyed dict forces re-verify); the 1041 household-
+employer case shows up (add the entity type + 1041 routing).
+
+**Year-keyed / re-verify at TY2026:** $2,800 trigger, $176,100 SS base, $200,000 Add'l-Medicare threshold, $7,000
+FUTA base, and ESPECIALLY the credit-reduction state list (CA/VI for 2025 — the most-likely-to-change item).
+
+---
+
 ## 2026-07-05 — D-16: Form 8990 (WO-14) v1 scope LOCKED — §163(j) business-interest limitation
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (3 AskUserQuestion, all recommended), Form 8990 (first of

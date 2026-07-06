@@ -12,8 +12,14 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **111 TaxForms / 500 FlowAssertions / 930 FormRules**
-(**+WO-14 Form 8990 2026-07-05** — §163(j) business-interest limitation (`8990`, entity_types 1120/1065/1120S/1040);
+Active spec-authoring tool. RS Supabase holds **112 TaxForms / 503 FlowAssertions / 935 FormRules**
+(**+WO-15 Schedule H 2026-07-05** — Household Employment Taxes (`SCHEDULE_H`, entity_types 1040); 2nd item in the
+SPINE S-16 federal-forms queue. Part I FICA (SS 12.4% / Medicare 2.9% / Additional Medicare 0.9% over $200k / FIT
+withheld) on cash wages ≥ **$2,800** (research caught the stale $2,700 training figure) → FUTA Part II (Section A
+0.6% single-state; Section B credit-reduction, year-keyed **CA 1.2% / VI 4.5%** net 1.8%/5.1% per Fed. Reg.
+2026-00342; multi-state L17 table direct-entry) → total (Part III) to Schedule 2 line 9; who-must-file A/B/C
+($2,800 any-one-employee / withheld FIT / $1,000 any-quarter) + exclusion (spouse/child<21/parent/under-18) /
+Part-IV-standalone / EIN diagnostics; `lookup/SCHEDULE_H/export/` = 200; **+WO-14 Form 8990 2026-07-05** — §163(j) business-interest limitation (`8990`, entity_types 1120/1065/1120S/1040);
 finishes the 1120 module's biggest deferred leg; Part I ATI on the OBBBA **EBITDA basis** (L11 dep/amort/depletion
 add-back, reinstated for TY2025) → 30% limit → allowable + indefinite carryforward; Part II/III partnership EBIE/ETI
 + S-corp ETI; $31M §448(c) exemption gate + §163(j)(7) excepted diagnostic; `lookup/8990/export/` = 200; first of the
@@ -96,11 +102,11 @@ B1–B7 pinned as pending-skips.
 and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent backlog here. At boot, pull
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
-S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227). **The next RS authoring order is
-`[WO-11] S-13 · 1120 C-corp module`** — ADDED 2026-07-05 (DECISIONS D-12), status INTAKE. Ken will prompt
-"build 1120"; run the WORK_ORDERS front door from step 1 (gap-check → research-verify → source brief →
-Gate-1 scope walk → author). Required set: 1120 spine (§11 21%), Sch C (DRD), Sch J, Sch K/L, M-1/M-2,
-1125-A/1125-E, GA Form 600.
+S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H). **The active queue is the SPINE S-16 federal-forms gap-fill**
+(author each via the full front door, TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ → **▶ Form 4684
+(Casualties & Thefts) = NEXT** → Form 4952 → Form 8379 → Form 8814 → Form 8839 → Form 709 → Form 8832 →
+Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -270,6 +276,24 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **SCHEDULE H (Household Employment Taxes) AUTHORED + SEEDED + EXPORTED (WO-15) — 2nd item in the S-16 federal-forms queue.**
+  Full front-door run: gap-check (GAP — no loader, not in the 111-form prod set) → verbatim research pass (FINAL 2025
+  Schedule H **Created 4/15/25** + i1040sh + Pub 926 + Fed. Reg. 2026-00342 FUTA-credit-reduction notice) →
+  `sch_h_source_brief.md`. **Research CAUGHT the load-bearing correction: the 2025 cash-wage trigger is $2,800, NOT
+  the $2,700 training-data/2024 figure.** OBBBA did NOT change Sch H structure/rates/layout for TY2025 — only indexed
+  dollars ($2,800 trigger, $176,100 SS base) and the annual CA/VI credit-reduction list moved. **Gate-1 scope walk
+  (4 AskUserQuestion, all recommended — DECISIONS D-17):** FUTA Section A + credit-reduction path (year-keyed CA 1.2%
+  / VI 4.5%, multi-state table direct-entry); gating tests from qualifying wages + exclusion diagnostics; one
+  `SCHEDULE_H` form entity_types ['1040'] + Part IV/EIN diagnostics; full Part I compute + $176,100 SS-base diagnostic.
+  **Authored:** `load_sch_h.py` — Part I FICA (L2 SS ×12.4% / L4 Medicare ×2.9% / L6 Add'l Medicare ×0.9% over $200k /
+  L7 FIT → L8), Part II FUTA (Section A L16 ×0.6%; Section B L24 = L21 ×6% − L23, credit-reduction net = wages ×
+  (0.6%+rate)), Part III L26 → Schedule 2 line 9; A/B/C who-must-file routing. Validated on throwaway SQLite
+  (`scratchpad/validate_sch_h.py`, **31 pass / 0 fail** — CA 1.8% / VI 5.1% net FUTA, the $2,800/$1,000 gating
+  boundaries, SS-cap, Add'l-Medicare all green; caught 1 topic_name > 255 cap, trimmed; all 5 rules cited to 4
+  sources). Ken Gate-1: "Approve — flip, seed, export." Seeded → **112 TaxForms / 503 FlowAssertions / 935 FormRules**;
+  `lookup/SCHEDULE_H/export/` = 200; seed_all auto-discovers `load_sch_h` (reconstructable). **Next in the queue:
+  Form 4684** (Casualties & Thefts). BUILD_ORDER S-16 Schedule H ✅. **Year-keyed re-verify at TY2026:** $2,800 /
+  $176,100 / $200,000 / $7,000 and ESPECIALLY the credit-reduction state list (CA/VI for 2025).
 - 2026-07-05: **FORM 8990 (§163(j) business-interest limitation) AUTHORED + SEEDED + EXPORTED (WO-14) — finishes the 1120 deferred leg; first of the S-16 federal-forms queue.**
   Ken picked a federal-forms queue from the not-built list (8990 → Sch H → 4684 → 4952 → 8379 → 8814 → 8839 → 709 →
   8832 → 3115), recorded in BUILD_ORDER **S-16** + WORK_ORDERS; 8990 done first (pre-context-clear). Research verified

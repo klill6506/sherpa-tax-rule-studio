@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-15] Schedule H · Household Employment Taxes (1040) · greenfield RS-first · status `GAP-CHECKED →
+  research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-05; SPINE S-16, 2nd item after 8990).** Next in Ken's
+  federal-forms queue. Gap-check: no `load_sch*h*` loader; `SCHEDULE_H` not in the 111-form prod set → GAP.
+  entity_types = 1040. **✅ RESEARCH-VERIFIED (2026-07-05, verbatim vs FINAL 2025 Schedule H Created 4/15/25 +
+  i1040sh + Pub 926 + Fed. Reg. 2026-00342) → `sch_h_source_brief.md`.** Research CAUGHT the load-bearing
+  correction: **2025 cash-wage trigger = $2,800** (not the stale $2,700). OBBBA did NOT change Sch H
+  structure/rates for TY2025 — only indexed dollars + the CA/VI credit-reduction list.
+  **✅ Gate-1 scope walk APPROVED (DECISIONS D-17, all 4 recommended):** FUTA Section A + credit-reduction path
+  (year-keyed CA 1.2% / VI 4.5%, multi-state table direct-entry); gating tests + exclusion diagnostics; one
+  `SCHEDULE_H` form entity_types ['1040'] + Part IV/EIN diagnostics; full Part I compute + $176,100 SS-base
+  diagnostic. **✅ AUTHORED + SQLite-VALIDATED** (`load_sch_h.py`, 15 facts / 5 rules / 7 lines / 7 diag / 6 tests /
+  3 FA; `scratchpad/validate_sch_h.py` = **31 pass / 0 fail** — incl. CA 1.8% / VI 5.1% net FUTA + the $2,800/$1,000
+  gating boundaries). **✅ DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Approve — flip, seed, export";
+  W1-W4 blessed) → **112 TaxForms**; `lookup/SCHEDULE_H/export/` = 200; seed_all auto-discovers `load_sch_h`
+  (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at **Form 4684**
+  (Casualties & Thefts).
+
 - **▶ ACTIVE — [WO-14] Form 8990 · §163(j) business-interest limitation · greenfield RS-first · status
   `GAP-CHECKED → DRAFTING (research)` (opened 2026-07-05; SPINE S-16, first of Ken's federal-forms queue).**
   Finishes the 1120 module's biggest deferred leg. Gap-check: `8990` not in the 92-form federal prod set → GAP.
