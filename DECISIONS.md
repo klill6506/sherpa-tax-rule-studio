@@ -16,6 +16,50 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-22: Form 8839 (WO-20) v1 scope LOCKED — Qualified Adoption Expenses
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8839 (7th item in
+the SPINE S-16 federal-forms queue):
+- **(Q1) Part II = full compute incl. the NEW 2025 refundable split.** Compute L4-L18: max/expenses (L6), the MAGI
+  phaseout ($259,190-$299,190 over $40,000), the **refundable portion** (L11b = min(L11a, **$5,000**)/child → L13 →
+  Form 1040 line 30 — the OBBBA 2025 headline), and the **nonrefundable portion** (ΣL11a − L13 + prior carryforward
+  → capped by the tax-liability limit L17 → Schedule 3 line 6c, 5-yr carryforward). Direct-entry the Credit Limit
+  Worksheet figure (L17, needs the full 1040 tax picture).
+- **(Q2) Part III = full compute.** The §137 employer-provided-adoption-benefits exclusion (W-2 box 12 code T): L24 =
+  min(max, benefits) with the special-needs override, the same MAGI phaseout (L25-28), the excluded benefit (L29/L30),
+  and the taxable remainder (L31 → Form 1040 line 1f).
+- **(Q3) Special-needs override + coordination diagnostics.** Compute the special-needs full-credit override (full
+  $17,280 for a U.S. special-needs child finalized in 2025 even if expenses were less); diagnostics for the §137/§23
+  same-expense rule, the MFS restriction (must file jointly unless living apart), and OBBBA **§70403 tribal-government
+  parity** for special-needs determinations.
+- **(Q4) Year-key $5,000 with provenance + carryforward diagnostics.** The $5,000 refundable cap in a year-keyed
+  constant, citing the **flat 2025 figure to the FORM and the indexing to the STATUTE** (§36C/OBBBA §70402, $5,120 for
+  2026) — NOT to i8839. One `8839` form [1040]; diagnostics for the 2025 refundability, refundable-not-carried-
+  forward, 2024-carryforward-stays-nonrefundable, and the 5-year carryforward.
+
+**Context:** WO-20 front door: gap-check (GAP — `lookup/8839/export/` = 404) → verbatim research (FINAL 2025 Form 8839
+Created 9/2/25 + i8839 "What's New" + §23/§36C/§137 + OBBBA §70402/§70403) → `f8839_source_brief.md` → this walk.
+**★ Verified 2025 headline: up to $5,000 of the adoption credit is REFUNDABLE per eligible child (OBBBA, effective
+2025 — first year partly refundable), via new lines 11a/11b/11c → line 13 → 1040 line 30.** 2025 indexed figures:
+max credit/exclusion **$17,280**, phaseout **$259,190-$299,190**, divisor **$40,000**, refundable cap **$5,000**.
+
+**⚠ Provenance flag (Authoritative-Source Rule):** the $5,000 refundable cap being INDEXED is statutory (§36C/OBBBA
+§70402; 2026 COLA = $5,120) but is NOT stated in the 2025 i8839 — cite the statute for the indexing, the form for the
+flat 2025 $5,000.
+
+**Alternatives considered:** refundable split as diagnostic (rejected — it's the season's biggest change to this
+form); Part III diagnostic-only (rejected — mirrors Part II at low marginal cost); skip coordination diagnostics
+(rejected — the §137/§23 same-expense and MFS traps are common); flat $5,000 without provenance (rejected — the
+Authoritative-Source Rule requires citing the indexing to the statute, not the silent form).
+
+**Would reconsider if:** a future form adds a worksheet line for the refundable indexing (encode it); the carryforward
+ordering (refundable vs nonrefundable) needs the multi-year roll built.
+
+**Year-keyed / re-verify at TY2026:** ALL figures index — $17,280 max, $259,190 phaseout, $40,000 divisor, and the
+**$5,000 refundable cap (→ $5,120 for 2026, statutorily indexed)**.
+
+---
+
 ## 2026-07-06 — D-21: Form 8814 (WO-19) v1 scope LOCKED — Parents' Election To Report Child's Interest and Dividends
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8814 (6th item in

@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-20] Form 8839 · Qualified Adoption Expenses · greenfield RS-first · status `GAP-CHECKED → research-verified
+  → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 7th after 8990 + Sch H + 4684 + 4952 + 8379 + 8814).**
+  Gap-check: no loader, `lookup/8839/export/` = 404 → GAP. entity_types = 1040. Two parts: §23 adoption CREDIT
+  (Part II) + §137 employer-benefit EXCLUSION (Part III). **✅ RESEARCH-VERIFIED (2026-07-06, verbatim vs FINAL 2025
+  Form 8839 Created 9/2/25 + i8839 + §23/§36C/§137 + OBBBA §70402/§70403) → `f8839_source_brief.md`.** **★ CONFIRMED
+  the 2025 headline: up to $5,000 of the credit is REFUNDABLE per child (OBBBA, first year partly refundable) — new
+  L11a/11b/11c → L13 → 1040 L30.** 2025 indexed: max **$17,280** / phaseout **$259,190-$299,190** / divisor **$40,000**
+  / refundable cap **$5,000**. ⚠ Provenance: the $5,000 indexing is statutory (§36C, $5,120 for 2026), NOT in i8839.
+  **✅ Gate-1 scope walk APPROVED (DECISIONS D-22, all 4 recommended):** Part II full compute incl. refundable split;
+  Part III full exclusion; special-needs override + coordination diagnostics; year-keyed $5,000 w/ provenance +
+  carryforward diagnostics. **✅ AUTHORED + SQLite-VALIDATED** (`load_8839.py`, 9 facts / 5 rules / 6 lines / 8 diag /
+  6 tests / 3 FA; `scratchpad/validate_8839.py` = **30 pass / 0 fail** — refundable split, phaseout boundaries,
+  tax-limit carryforward, exclusion all green). **✅ DONE — seeded + exported 2026-07-06** (Ken Gate-1: "Approve —
+  flip, seed, export"; W1-W4 blessed) → **117 TaxForms**; `lookup/8839/export/` = 200; seed_all auto-discovers
+  `load_8839` (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at
+  **Form 709** (United States Gift (and GST) Tax Return — a bigger new module).
+
 - **▶ [WO-19] Form 8814 · Parents' Election to Report Child's Interest & Dividends · greenfield RS-first · status
   `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 6th after 8990 + Sch H +
   4684 + 4952 + 8379).** Gap-check: no loader, `lookup/8814/export/` = 404 → GAP (**`8615` already in prod at 200** —

@@ -12,8 +12,16 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **116 TaxForms / 515 FlowAssertions / 953 FormRules**
-(**+WO-19 Form 8814 2026-07-06** — Parents' Election To Report Child's Interest and Dividends (`8814`, entity_types
+Active spec-authoring tool. RS Supabase holds **117 TaxForms / 518 FlowAssertions / 958 FormRules**
+(**+WO-20 Form 8839 2026-07-06** — Qualified Adoption Expenses (`8839`, entity_types 1040); 7th item in the SPINE
+S-16 federal-forms queue. §23 adoption CREDIT (Part II) + §137 employer-benefit EXCLUSION (Part III); max **$17,280**
+/child, MAGI phaseout **$259,190→$299,190** over $40,000. **★ OBBBA 2025 headline: up to $5,000/child of the credit
+is now REFUNDABLE** (new L11a/11b/11c → L13 → Form 1040 line 30 — first year the adoption credit is partly
+refundable); the nonrefundable remainder is tax-limited → Schedule 3 line 6c with a 5-yr carryforward (refundable
+portion NOT carried; 2024 carryforward stays nonrefundable). Part III exclusion → excluded (L29) + taxable (L31 →
+1040 1f). Special-needs U.S. child finalized 2025 = full credit regardless of expenses + OBBBA §70403 tribal parity;
+no credit+exclusion double-dip. ⚠ the $5,000-cap indexing ($5,120 for 2026) is statutory (§36C), NOT in i8839 — cited
+to the statute. ALL figures INDEXED; `lookup/8839/export/` = 200; **+WO-19 Form 8814 2026-07-06** — Parents' Election To Report Child's Interest and Dividends (`8814`, entity_types
 1040); 6th item in the SPINE S-16 federal-forms queue. §1(g)(7) election for the parent to report the child's
 interest/dividends/capital-gain-distributions instead of the child filing (sibling of the EXISTING `8615` — closes
 its `D_8615_004` RED-defer loop). 3 tiers: first **$1,350** not taxed / next $1,350 at 10% (max **$135** → Form 1040
@@ -133,11 +141,11 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814). **The active queue
-is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot):
-8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → **▶ Form 8839 (Qualified Adoption Expenses) =
-NEXT** → Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage
-report or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839). **The
+active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at
+each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → **▶ Form 709 (US Gift & GST
+Tax Return — bigger module) = NEXT** → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the
+TaxWise forms-usage report or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -307,6 +315,24 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 8839 (Qualified Adoption Expenses) AUTHORED + SEEDED + EXPORTED (WO-20) — 7th item in the S-16 federal-forms queue.**
+  Front door: gap-check (GAP) → verbatim research (FINAL 2025 Form 8839 Created 9/2/25 + i8839 "What's New" +
+  §23/§36C/§137 + OBBBA §70402/§70403) → `f8839_source_brief.md`. **★ CONFIRMED the season's headline change: up to
+  $5,000 of the adoption credit is now REFUNDABLE per eligible child (OBBBA, effective 2025 — the first year this
+  credit is partly refundable), via new lines 11a/11b/11c → line 13 → Form 1040 line 30.** 2025 indexed figures
+  verified: max $17,280 / phaseout $259,190→$299,190 / divisor $40,000 / refundable cap $5,000. **Provenance catch
+  (Authoritative-Source Rule):** the $5,000-cap indexing is statutory (§36C/OBBBA §70402, $5,120 for 2026) but NOT
+  stated in the 2025 i8839 → cited to the statute, not the form. **Gate-1 scope walk (4 AskUserQuestion, all
+  recommended — DECISIONS D-22):** Part II full compute incl. the refundable/nonrefundable split (+ MAGI phaseout, +
+  tax-limited 5-yr carryforward → Sch 3 6c); Part III §137 exclusion (+ phaseout → excluded/taxable → 1040 1f);
+  special-needs full-credit override + coordination diagnostics (§137/§23 double-dip, MFS, tribal parity); year-keyed
+  $5,000 with the provenance split. **Authored:** `load_8839.py` (9 facts / 5 rules / 6 lines / 8 diag / 6 tests /
+  3 FA). Validated on throwaway SQLite (`scratchpad/validate_8839.py`, **30 pass / 0 fail** — the refundable split,
+  the 0/0.5/1.0 phaseout boundaries, the tax-limit carryforward ($12,280 capped at $5k → carry $7,280), and the Part
+  III exclusion all green; caps clean first run; all 5 rules cited to 3 sources). Ken Gate-1: "Approve — flip, seed,
+  export." Seeded → **117 TaxForms / 518 FlowAssertions / 958 FormRules**; `lookup/8839/export/` = 200; seed_all
+  auto-discovers `load_8839` (reconstructable). **Next in the queue: Form 709** (US Gift & GST Tax Return — a bigger
+  new module). BUILD_ORDER S-16 8839 ✅.
 - 2026-07-06: **FORM 8814 (Parents' Election To Report Child's Interest and Dividends) AUTHORED + SEEDED + EXPORTED (WO-19) — 6th item in the S-16 federal-forms queue.**
   Front door: gap-check (GAP — `8814` = 404; **its sibling `8615` already in prod at 200**) → verbatim research
   (FINAL 2025 Form 8814 Created 3/19/25 + i8814) → `f8814_source_brief.md`. **2025 indexed figures verified: base
