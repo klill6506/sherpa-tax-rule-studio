@@ -66,6 +66,26 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-21] Form 709 · United States Gift (and GST) Tax Return · greenfield RS-first · status `GAP-CHECKED →
+  research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 8th — the biggest module).** Gap-check: no
+  loader, `lookup/709/export/` = 404 → GAP. entity_types = 709 (its own gift-tax return). **✅ RESEARCH-VERIFIED
+  (2026-07-06, verbatim vs 2025 i709 + §2001(c)/§2010/§2503/§2523/§2631 + OBBBA §70106) → `f709_source_brief.md`.**
+  **★ Load-bearing correction: 2025 applicable credit = $5,541,800** (= tentative tax on the $13,990,000 BEA; the
+  initial brief's $5,389,800 was the 2024 figure). **★ OBBBA does NOT change TY2025** — 2025 BEA/GST exemption stay
+  $13,990,000; the permanent $15M lands 2026+ (year-keyed). **✅ Gate-1 scope walk APPROVED (DECISIONS D-23, all 4
+  recommended):** compute the full cumulative engine (§2001(c) schedule + L3-L8 + $5,541,800 credit); Schedule A
+  reconciliation + gift-splitting + noncitizen; GST 40%×inclusion-ratio + DSUE→L7; author now with carried
+  [UNVERIFIED] structural line-# flags. **⚠ PROVENANCE: the raw f709.pdf face was unfetchable — all dollar figures +
+  compute logic + Part 2 lines 1-8 VERIFIED; the Part 1/Sch A recon/Sch D SUB-LINE numbers are [UNVERIFIED]** and
+  flagged in the loader + `D_709_UNVERIFIED` for a PDF-face re-verify before the tts build (NC/AL line-# precedent).
+  **✅ AUTHORED + SQLite-VALIDATED** (`load_709.py`, 12 facts / 6 rules / 5 lines / 8 diag / 6 tests / 3 FA;
+  `scratchpad/validate_709.py` = **32 pass / 0 fail** — the rate schedule ($5,541,800 credit derivation), cumulative
+  engine ($20M→$2.4M, cumulative $5M-on-$10M→$404k), Schedule A, gift-splitting, GST all green). **✅ DONE — seeded +
+  exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed, export"; W1-W4 blessed) → **118 TaxForms**;
+  `lookup/709/export/` = 200; seed_all auto-discovers `load_709` (reconstructable). **Status: ✅ DONE (RS).** tts app
+  build = [APP] lane (⚠ re-verify [UNVERIFIED] line #s first). ⏭ Queue continues at **Form 8832** (Entity
+  Classification Election / check-the-box).
+
 - **▶ [WO-20] Form 8839 · Qualified Adoption Expenses · greenfield RS-first · status `GAP-CHECKED → research-verified
   → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 7th after 8990 + Sch H + 4684 + 4952 + 8379 + 8814).**
   Gap-check: no loader, `lookup/8839/export/` = 404 → GAP. entity_types = 1040. Two parts: §23 adoption CREDIT

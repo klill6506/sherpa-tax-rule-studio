@@ -16,6 +16,53 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-23: Form 709 (WO-21) v1 scope LOCKED — US Gift (and GST) Tax Return
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 709 (8th item in the
+SPINE S-16 federal-forms queue — the biggest module, a new gift/GST tax return):
+- **(Q1) Compute the full cumulative gift-tax engine (Part 2).** The §2001(c) tentative-tax rate schedule + the L3-L8
+  cumulative computation (tentative tax on current+prior taxable gifts − tentative tax on prior = tax on current
+  gifts) + the applicable credit (**$5,541,800** for 2025, + DSUE) → gift tax due. All year-keyed.
+- **(Q2) Compute the Schedule A reconciliation + splitting + noncitizen.** Taxable gifts = gross − annual exclusions
+  (**$19,000/donee**) − marital deduction − charitable deduction → Part 2 line 1; gift-splitting (§2513) doubles the
+  per-donee exclusion to **$38,000**; unlimited marital deduction (citizen spouse) vs the **$190,000** noncitizen-
+  spouse exclusion (§2523(i)). Direct-entry the per-gift detail.
+- **(Q3) Compute the GST rate mechanic + DSUE credit flow.** GST tax = **40% × inclusion ratio** (inclusion ratio = 1
+  − exemption allocated/transfer) with the **$13,990,000** GST-exemption allocation (Schedule D); DSUE → Schedule C
+  line 5 → Part 2 line 7 credit increase (structure; direct-entry the DSUE amount + per-transfer detail).
+- **(Q4) Author now, carry [UNVERIFIED] line-# flags.** Author with the verified compute engine + all verified 2025
+  dollar figures + the verified Part 2 lines 1-8; carry the Schedule A reconciliation / Part 1 (post-2025 renumber) /
+  Schedule D structural line NUMBERS as documented **[UNVERIFIED]** flags for a raw-PDF-face re-verify before the tts
+  build. One `709` form (its own gift-tax return, not a 1040 attachment).
+
+**Context:** WO-21 front door: gap-check (GAP — `lookup/709/export/` = 404) → verbatim research (2025 i709 "What's
+New" + Table for Computing Gift Tax + §2001(c)/§2010/§2503/§2523/§2631 + OBBBA §70106) → `f709_source_brief.md` →
+this walk. **★ Load-bearing correction from research: the 2025 applicable credit is $5,541,800** (the initial brief's
+$5,389,800 was the 2024 figure — the tentative tax on the $13,990,000 BEA is $345,800 + 40%×$12,990,000 = $5,541,800).
+**★ OBBBA does NOT change TY2025** — 2025 BEA/GST exemption stay $13,990,000; the permanent **$15,000,000** BEA takes
+effect for gifts after 12/31/2025 (2026+), indexed. Year-keyed so $15M does not leak into 2025.
+
+**⚠ Provenance caveat (Authoritative-Source Rule):** the raw f709.pdf face was unfetchable in the research
+environment — all dollar figures + compute logic + Part 2 lines 1-8 are VERIFIED (from i709 + statute), but the Part 1
+(post-2025 restructure) / Schedule A reconciliation / Schedule D sub-line NUMBERS are [UNVERIFIED] and flagged in the
+loader for a PDF-face re-verify before the tts build (matches the NC/AL line-number precedent, D-15). Nothing is
+guessed — only label positions are flagged.
+
+**Alternatives considered:** cumulative mechanic as direct-entry (rejected — the cumulative computation is the
+signature feature and is fully verified); exclusions/deductions direct-entry (rejected — the $19k/$38k/$190k mechanics
+are the common determinations); GST/DSUE diagnostic-only (rejected — the 40%×inclusion-ratio + DSUE credit flow are
+verified at low marginal cost); HOLD authoring for a PDF re-verify (rejected — the compute + figures are verified;
+only structural line numbers are unconfirmed, which the [UNVERIFIED] flag + a pre-build face-check covers).
+
+**Would reconsider if:** a raw-PDF-face fetch later pins the [UNVERIFIED] line numbers (update them); the GST
+within-Schedule-D detail (ETIP, §2632 automatic allocation nuances) proves common (deepen Schedule D).
+
+**Year-keyed / re-verify at TY2026:** ALL figures index — annual exclusion $19,000, BEA/GST exemption $13,990,000,
+applicable credit $5,541,800, noncitizen-spouse exclusion $190,000 — AND **the OBBBA $15,000,000 BEA takes effect 2026**
+(re-pin the indexed 2026 figure from the Rev. Proc. when published).
+
+---
+
 ## 2026-07-06 — D-22: Form 8839 (WO-20) v1 scope LOCKED — Qualified Adoption Expenses
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8839 (7th item in

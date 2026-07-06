@@ -12,8 +12,18 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **117 TaxForms / 518 FlowAssertions / 958 FormRules**
-(**+WO-20 Form 8839 2026-07-06** — Qualified Adoption Expenses (`8839`, entity_types 1040); 7th item in the SPINE
+Active spec-authoring tool. RS Supabase holds **118 TaxForms / 521 FlowAssertions / 964 FormRules**
+(**+WO-21 Form 709 2026-07-06** — United States Gift (and GST) Tax Return (`709`, entity_types 709 — its own
+gift-tax return); 8th item in the SPINE S-16 federal-forms queue and **the biggest module**. Unified CUMULATIVE gift
+tax: the §2001(c) rate schedule (top 40% over $1M = $345,800 + 40%) → Part 2 L3 = current + prior taxable gifts, L4 =
+tentative(L3), L5 = tentative(prior), L6 = L4−L5 (taxes current gifts at the top cumulative brackets); applicable
+(unified) credit **$5,541,800** (= tentative tax on the **$13,990,000** BEA, + DSUE from Schedule C) → gift tax due
+(sheltered until cumulative taxable gifts exceed $13.99M). Schedule A: gross − annual exclusion (**$19,000**/donee;
+$38,000 if gift-split §2513) − marital (unlimited citizen / **$190,000** noncitizen §2523(i)) − charitable = taxable
+gifts. Schedule D GST = 40% × inclusion ratio, exemption $13.99M. **★ OBBBA $15M BEA is 2026+ (year-keyed, NOT 2025);
+the 2024 applicable credit was $5,389,800 — research caught the correction.** ⚠ [UNVERIFIED] Part 1/Sch A recon/Sch D
+sub-line numbers (raw f709.pdf face unfetchable in research) — re-verify before the tts build; Part 2 lines 1-8 +
+all dollar figures verified; `lookup/709/export/` = 200; **+WO-20 Form 8839 2026-07-06** — Qualified Adoption Expenses (`8839`, entity_types 1040); 7th item in the SPINE
 S-16 federal-forms queue. §23 adoption CREDIT (Part II) + §137 employer-benefit EXCLUSION (Part III); max **$17,280**
 /child, MAGI phaseout **$259,190→$299,190** over $40,000. **★ OBBBA 2025 headline: up to $5,000/child of the credit
 is now REFUNDABLE** (new L11a/11b/11c → L13 → Form 1040 line 30 — first year the adoption credit is partly
@@ -141,11 +151,12 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839). **The
-active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at
-each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → **▶ Form 709 (US Gift & GST
-Tax Return — bigger module) = NEXT** → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the
-TaxWise forms-usage report or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839 · WO-21
+709). **The active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP
+unchecked item at each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ →
+**▶ Form 8832 (Entity Classification Election) = NEXT** → Form 3115. After the queue drains: net-new RS scope needs
+the TaxWise forms-usage report or a law change. **⚠ Form 709 carries [UNVERIFIED] structural line #s (PDF face
+unfetchable) — re-verify before its tts build.**
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -315,6 +326,25 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 709 (US Gift & GST Tax Return) AUTHORED + SEEDED + EXPORTED (WO-21) — the biggest S-16 module.**
+  Front door: gap-check (GAP) → verbatim research (2025 i709 "What's New" + Table for Computing Gift Tax + §2001(c)/
+  §2010/§2503/§2523/§2631 + OBBBA §70106) → `f709_source_brief.md`. **★ Two research corrections (Authoritative-Source
+  Rule in action):** (1) the 2025 applicable credit is **$5,541,800** (the initial brief's $5,389,800 was the 2024
+  figure — the tentative tax on the $13,990,000 BEA is $345,800 + 40%×$12,990,000 = $5,541,800); (2) **OBBBA does NOT
+  change TY2025** — the permanent $15M BEA takes effect for gifts after 12/31/2025 (2026+), year-keyed so it can't leak
+  into 2025. **⚠ Provenance caveat:** the raw f709.pdf face was unfetchable in the research environment — all dollar
+  figures + compute logic + Part 2 lines 1-8 are VERIFIED (from i709 + statute), but the Part 1 (post-2025 restructure)
+  / Schedule A reconciliation / Schedule D sub-line NUMBERS are [UNVERIFIED] and flagged (loader + `D_709_UNVERIFIED`)
+  for a PDF-face re-verify before the tts build (NC/AL line-# precedent). **Gate-1 scope walk (4 AskUserQuestion, all
+  recommended — DECISIONS D-23):** compute the full cumulative gift-tax engine (§2001(c) schedule + L3-L8 + $5,541,800
+  credit → gift tax due); Schedule A reconciliation + gift-splitting ($38k) + noncitizen ($190k); GST 40%×inclusion-
+  ratio + DSUE → Part 2 L7; author now with carried [UNVERIFIED] line-# flags. **Authored:** `load_709.py` (12 facts /
+  6 rules / 5 lines / 8 diag / 6 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_709.py`, **32 pass
+  / 0 fail** — the rate schedule (incl. the $5,541,800 credit derivation), the cumulative engine ($20M→$2,404,000;
+  cumulative $5M-on-$10M→$404,000; under-BEA→$0), Schedule A, gift-splitting ($38k vs $19k), and GST (40%×0.4→$800k)
+  all green; caught 1 topic_name > 255 cap, trimmed; all 6 rules cited to 3 sources). Ken Gate-1: "Approve — flip,
+  seed, export." Seeded → **118 TaxForms / 521 FlowAssertions / 964 FormRules**; `lookup/709/export/` = 200; seed_all
+  auto-discovers `load_709` (reconstructable). **Next in the queue: Form 8832** (Entity Classification Election). BUILD_ORDER S-16 709 ✅.
 - 2026-07-06: **FORM 8839 (Qualified Adoption Expenses) AUTHORED + SEEDED + EXPORTED (WO-20) — 7th item in the S-16 federal-forms queue.**
   Front door: gap-check (GAP) → verbatim research (FINAL 2025 Form 8839 Created 9/2/25 + i8839 "What's New" +
   §23/§36C/§137 + OBBBA §70402/§70403) → `f8839_source_brief.md`. **★ CONFIRMED the season's headline change: up to
