@@ -12,8 +12,16 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **115 TaxForms / 512 FlowAssertions / 949 FormRules**
-(**+WO-18 Form 8379 2026-07-06** — Injured Spouse Allocation (`8379`, entity_types 1040); 5th item in the SPINE
+Active spec-authoring tool. RS Supabase holds **116 TaxForms / 515 FlowAssertions / 953 FormRules**
+(**+WO-19 Form 8814 2026-07-06** — Parents' Election To Report Child's Interest and Dividends (`8814`, entity_types
+1040); 6th item in the SPINE S-16 federal-forms queue. §1(g)(7) election for the parent to report the child's
+interest/dividends/capital-gain-distributions instead of the child filing (sibling of the EXISTING `8615` — closes
+its `D_8615_004` RED-defer loop). 3 tiers: first **$1,350** not taxed / next $1,350 at 10% (max **$135** → Form 1040
+line 16) / excess over **$2,700** carried to the parent split by character (L9 qualified dividends → 1040 3a/3b, L10
+cap-gain distributions → Schedule D line 13, L12 ordinary → Schedule 1 line 8z); don't-file if child income ≥
+**$13,500**; 8-condition eligibility. The 8615/§1(g) relationship cited to §1(g)/Pub 929 (NOT i8814 — provenance
+caveat). 2025 figures INDEXED (re-verify each season); no OBBBA impact; `lookup/8814/export/` = 200;
+**+WO-18 Form 8379 2026-07-06** — Injured Spouse Allocation (`8379`, entity_types 1040); 5th item in the SPINE
 S-16 federal-forms queue. Confirmed the form is **8379** (Ken's BUILD_ORDER "8679" was a typo). An ALLOCATION form,
 not a tax computation: Part I decision tree → `is_injured_spouse` (joint return + debt owed only by spouse + not
 legally obligated + qualifies via community-property/payments/EIC-ACTC/refundable-credit); Part III allocates joint
@@ -125,11 +133,11 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379). **The active queue is the SPINE
-S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ →
-Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → **▶ Form 8814 (Parents' Election, child's interest & dividends) =
-NEXT** → Form 8839 → Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise
-forms-usage report or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814). **The active queue
+is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot):
+8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → **▶ Form 8839 (Qualified Adoption Expenses) =
+NEXT** → Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage
+report or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -299,6 +307,22 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 8814 (Parents' Election To Report Child's Interest and Dividends) AUTHORED + SEEDED + EXPORTED (WO-19) — 6th item in the S-16 federal-forms queue.**
+  Front door: gap-check (GAP — `8814` = 404; **its sibling `8615` already in prod at 200**) → verbatim research
+  (FINAL 2025 Form 8814 Created 3/19/25 + i8814) → `f8814_source_brief.md`. **2025 indexed figures verified: base
+  $2,700 / not-taxed $1,350 / flat second-tier tax $135 / don't-file ceiling $13,500** (all move each year — the
+  reason this form needs a per-season re-verify). **Provenance catch (Authoritative-Source Rule):** the 8615/§1(g)
+  relationship is NOT stated in the 8814 sources → cited to §1(g)/Pub 929, not i8814. **Gate-1 scope walk (4
+  AskUserQuestion, all recommended — DECISIONS D-21):** Part I full allocation (the proportional QD/cap-gain-dist
+  split of the excess over $2,700, carried to the parent by character — L9 → 1040 3a/3b, L10 → Sch D 13, L12 → Sch1
+  8z); compute `can_elect` from the 8 conditions + the two gates ($2,700 skip / $13,500 don't-file); the 8615
+  cross-reference (closes the existing 8615 spec's `D_8615_004` loop); Part II tax ($1,350/$135-or-10% → 1040 L16) +
+  one 8814 form [1040] + multi-child diagnostic. **Authored:** `load_8814.py` (13 facts / 4 rules / 6 lines / 7 diag
+  / 6 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_8814.py`, **26 pass / 0 fail** — the
+  character-split conservation (L9+L10+L12=L6), the $135/10% tiers, the $2,700 boundary, and the eligibility gates
+  all green; all 4 rules cited to 3 sources). Ken Gate-1: "Approve — flip, seed, export." Seeded → **116 TaxForms /
+  515 FlowAssertions / 953 FormRules**; `lookup/8814/export/` = 200; seed_all auto-discovers `load_8814`
+  (reconstructable). **Next in the queue: Form 8839** (Qualified Adoption Expenses). BUILD_ORDER S-16 8814 ✅.
 - 2026-07-06: **FORM 8379 (Injured Spouse Allocation) AUTHORED + SEEDED + EXPORTED (WO-18) — 5th item in the S-16 federal-forms queue.**
   Front door: gap-check (GAP — `8379`/`8679` both 404; **confirmed the form is 8379**, Ken's "8679" a typo) →
   verbatim research (current FINAL Form 8379 Rev. 11-2023 + i8379 Rev. 11-2024 + §6402; **no annual reissue, no OBBBA

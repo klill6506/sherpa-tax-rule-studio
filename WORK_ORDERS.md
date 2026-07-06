@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-19] Form 8814 · Parents' Election to Report Child's Interest & Dividends · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 6th after 8990 + Sch H +
+  4684 + 4952 + 8379).** Gap-check: no loader, `lookup/8814/export/` = 404 → GAP (**`8615` already in prod at 200** —
+  the sibling). entity_types = 1040. 8814 = the §1(g)(7) election for the PARENT to report the child's income instead
+  of the child filing 8615 — **closes the existing 8615 spec's `D_8615_004` RED-defer loop.** **✅ RESEARCH-VERIFIED
+  (2026-07-06, verbatim vs FINAL 2025 Form 8814 Created 3/19/25 + i8814) → `f8814_source_brief.md`.** 2025 indexed
+  figures: base **$2,700** / not-taxed **$1,350** / flat second-tier tax **$135** / don't-file ceiling **$13,500**.
+  ⚠ Provenance: the 8615/§1(g) relationship is cited to §1(g)/Pub 929, NOT i8814 (the 8814 sources don't mention it).
+  **✅ Gate-1 scope walk APPROVED (DECISIONS D-21, all 4 recommended):** Part I full allocation + proportional QD/
+  cap-gain carries; compute `can_elect` + the two gates; 8615 cross-ref cited to §1(g)/Pub 929; Part II tax + one
+  8814 form [1040] + multi-child. **✅ AUTHORED + SQLite-VALIDATED** (`load_8814.py`, 13 facts / 4 rules / 6 lines /
+  7 diag / 6 tests / 3 FA; `scratchpad/validate_8814.py` = **26 pass / 0 fail** — allocation conservation + Part II
+  $135/10% + boundary all green). **✅ DONE — seeded + exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed,
+  export"; W1-W4 blessed) → **116 TaxForms**; `lookup/8814/export/` = 200; seed_all auto-discovers `load_8814`
+  (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at **Form 8839**
+  (Qualified Adoption Expenses).
+
 - **▶ [WO-18] Form 8379 · Injured Spouse Allocation · greenfield RS-first · status `GAP-CHECKED → research-verified →
   Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 5th after 8990 + Sch H + 4684 + 4952).** **Confirmed the form
   is 8379** (Ken's BUILD_ORDER "8679" is a typo — no such IRS form; both 404). Gap-check: no loader, not in the

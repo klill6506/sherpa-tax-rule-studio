@@ -16,6 +16,49 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-21: Form 8814 (WO-19) v1 scope LOCKED — Parents' Election To Report Child's Interest and Dividends
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8814 (6th item in
+the SPINE S-16 federal-forms queue). Sibling of the EXISTING `8615` (child's kiddie-tax form) — 8814 is the §1(g)(7)
+election for the parent to report the child's income instead of the child filing 8615:
+- **(Q1) Part I = full allocation compute + parent-return carries.** Compute L4-L12: base subtraction ($2,700), the
+  proportional qualified-dividend fraction (L7 = L2b/L4) and cap-gain-distribution fraction (L8 = L3/L4) of the excess
+  (L9/L10), and the parent-return carries — L9 → Form 1040 lines 3a/3b, L10 → Schedule D line 13, L12 (remaining
+  ordinary) → Schedule 1 line 8z ("Form 8814"). Year-keyed **$2,700** base.
+- **(Q2) Compute `can_elect` + the two threshold gates.** Determine can_elect from the 8 eligibility conditions
+  (child under 19 / under 24 student; income only interest/dividends/cap-gain-distributions; gross income < **$13,500**;
+  required to file; not filing jointly; no estimated payments; no withholding; qualified parent) + the gates (L4 ≤
+  $2,700 → skip to Part II; L4 ≥ $13,500 → don't file, child files own return) + the "tax may be less if the child
+  files separately" caution.
+- **(Q3) 8615 cross-reference cited to §1(g)/Pub 929 (NOT i8814).** A diagnostic cross-referencing Form 8615 as the
+  child-files alternative + the file-separately caution; **the relationship is cited to §1(g)/Pub 929, not the 8814
+  instructions** (research flagged that i8814 does not mention 8615/§1(g)). This closes the existing 8615 spec's
+  `D_8615_004` RED-defer loop.
+- **(Q4) Compute Part II tax + one `8814` form [1040] + multi-child diagnostic.** L13 = **$1,350** (not taxed), L14 =
+  L4 − L13, **L15 = $135 if L14 ≥ $1,350 else L14 × 10%** → Form 1040 line 16 (check box 1). One `8814` form,
+  entity_types [1040], plus a separate-Form-8814-per-child (line C) diagnostic.
+
+**Context:** WO-19 front door: gap-check (GAP — `lookup/8814/export/` = 404; **`8615` already in prod at 200**) →
+verbatim research (FINAL 2025 Form 8814 Created 3/19/25 + i8814) → `f8814_source_brief.md` → this walk. **2025 indexed
+figures verified: base $2,700 / not-taxed $1,350 / flat second-tier tax $135 / don't-file ceiling $13,500.** No
+substantive TY2025 law change (routine inflation indexing only; no OBBBA).
+
+**⚠ Provenance caveat (Authoritative-Source Rule):** the Form 8615 / §1(g) relationship is accurate tax law but is
+NOT stated in the 8814 form/instructions — cite it to §1(g)/Pub 929, not i8814.
+
+**Alternatives considered:** compute totals with the QD/cap-gain split direct-entry (rejected — the proportional
+character split that preserves QD/LTCG treatment on the parent's return is the compute heart); diagnostic-only
+eligibility (rejected — the 8-condition test + two gates are deterministic); no 8615 cross-reference (rejected —
+leaves D_8615_004 open and the preparer without the which-form signal); skip the multi-child diagnostic (rejected —
+a separate 8814 per child is a common error).
+
+**Would reconsider if:** a future form adds a worksheet for the line-C multiple-children aggregation (compute it).
+
+**Year-keyed / re-verify at TY2026:** all four figures index annually — $2,700 base, $1,350 not-taxed, $135 flat tax,
+$13,500 ceiling (the whole reason this form needs a per-season re-verify).
+
+---
+
 ## 2026-07-06 — D-20: Form 8379 (WO-18) v1 scope LOCKED — Injured Spouse Allocation
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8379 (5th item in
