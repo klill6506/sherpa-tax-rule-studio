@@ -190,6 +190,38 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
     **⚠ SC carried caveat:** authored to the ENACTED 12/31/2024 law + `D_SC1120_H3368` flag; if H.3368 passes
     (adopting OBBBA retroactively for TY2025), SC1120 needs a §179/bonus amend ($2.5M/$4M, drop the add-back) —
     Ken accepted. FL F-1120 / TN FAE 170 = later greenfield orders.
+- **▶ ACTIVE — [WO-13] NC + AL pass-through entity batch · greenfield RS-first · status `GAP-CHECKED → DRAFTING
+  (research)` (opened 2026-07-05; Ken: "do the NC + AL"; SPINE S-15).** Completes the adjacent-state PASS-THROUGH
+  track (SC pass-through done via SC1065/SC1120S/PTET, D-9; the individual + C-corp sides done for AL/NC/SC).
+  **✅ GAP-CHECK (live prod 106 forms):** all pass-through keys GAP — NC has NC_D400(1040)+NC_CD405(1120) but no
+  D-403/CD-401S; AL has AL_FORM_40(1040)+AL_FORM_20C(1120) but no Form 65/20S. Required set:
+  - **NC D-403** (partnership, 1065) + **NC CD-401S** (S-corp, 1120S) + the **NC Taxed PTE** election
+  - **AL Form 65** (partnership, 1065) + **AL Form 20S** (S-corp, 1120S) + the **Alabama Electing PTE** tax (Act 2021-1)
+  - Reuse: NC 85% bonus/§179 $25k/$200k + Jan 1 2023 conformity (as NC D-400/CD-405); AL conforms §168(k)/§179 +
+    GILTI/§174 (as AL 20C). Template = `load_sc_passthrough.py` (two forms one loader) + the SC PTET pattern.
+  - ⚠ Each state's PTET DIFFERS — verify, never clone GA: NC Taxed-PTE (rate = individual 4.25% for 2025? owner-side
+    DEDUCTION not credit — verify) vs AL Electing-PTE (5%, owner-side CREDIT). NC franchise applies to S-corps (CD-401S).
+  - **✅ RESEARCH-VERIFIED (2026-07-05, 2 parallel passes, verbatim vs FINAL 2025 NCDOR/ALDOR) → `nc_al_passthrough_source_brief.md`.**
+    **NC Taxed PTE:** 4.25% (individual rate); owner side = **DEDUCTION** (income removed from NC AGI via NC-PE);
+    base = resident full + nonresident NC-source; 85% bonus/§179 $25k/$200k decouple; **CD-401S computes NC
+    franchise** ($1.50/$1,000, $500 first-$1M cap, $200 min — as CD-405); nonresident withholding 4.25%; conformity
+    Jan 1 2023; due Apr 15. **AL Electing PTE:** 5%; owner side = **refundable CREDIT** (Sch EPT-C); computed on
+    **Form EPT** (65/20S Sch K L23/L25 reference it); election = checkbox + Form EPT + >50% consent; **AL CONFORMS
+    to §168(k)/§179** (no add-back); composite PTE-C 5%; Form 20S non-electing = LIFO/BIG/excess-passive only; BPT
+    separate; due Mar 15. ⚠ AL conformity item-by-item (not blanket). [UNVERIFIED] exact NC/AL line numbers (PDFs
+    didn't extract) — re-pull before seeding.
+  - **✅ Gate-1 scope walk APPROVED 2026-07-05 (DECISIONS D-15, all 4 recommended):** full compute both states;
+    encode NC deduction + AL credit; AL non-electing S-corp taxes = diagnostic+direct-entry; 2 loaders state-paired.
+  - **✅ AUTHORED + SQLite-VALIDATED 2026-07-05 (READY_TO_SEED=False, awaiting Ken review walk W1-W6):**
+    `load_nc_passthrough.py` (`NC_D403` 1065 + `NC_CD401S` 1120S) + `load_al_passthrough.py` (`AL_FORM_65` 1065 +
+    `AL_FORM_20S` 1120S). `scratchpad/validate_nc_al_pt.py` = **47 pass / 0 fail** (caught 2 topic_name > 255 caps,
+    trimmed; NC Taxed-PTE 4.25%/franchise/NRW/85% add-back + AL Electing-PTE 5%/composite/Line-32 all green; all 16
+    rules cited).
+  - **✅ DONE — seeded + exported 2026-07-05** (Ken Gate-1: "Approve — flip, seed, export"; W1-W6 blessed). Flipped
+    both guards → seeded → **110 TaxForms**; `lookup/{NC_D403,NC_CD401S,AL_FORM_65,AL_FORM_20S}/export/` all = 200.
+    Auto-discovered by `seed_all` (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. The
+    adjacent-state pass-through track is now COMPLETE (GA-700 + SC1065/SC1120S + NC + AL). [UNVERIFIED] exact NC/AL
+    line numbers noted for a re-pull. **Post-WO-13: net-new RS scope needs the TaxWise forms-usage report or a law change.**
 - **✅ S-5 completed the front-door loop 2026-07-05** (GAP-CHECKED → DRAFTING → AWAITING KEN → seeded/exported).
   New consolidated `ENTITY_BOUNDARY` form (`load_entity_boundary.py`, 6 self-owned sources): B1 M-3 threshold
   (1065 4-prong / 1120-S $10M); B2 K-2/K-3 DFE 4-criteria gate (COMPUTED, RED on fail + D_EB_DFE_OK affirmative

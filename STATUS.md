@@ -12,8 +12,12 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **106 TaxForms / 493 FlowAssertions / 908 FormRules**
-(**+WO-12 state C-corp batch 2026-07-05** — GA's income-tax neighbors' C-corp returns, extending the 1120
+Active spec-authoring tool. RS Supabase holds **110 TaxForms / 497 FlowAssertions / 924 FormRules**
+(**+WO-13 NC + AL pass-through batch 2026-07-05** — completes the adjacent-state pass-through track (GA-700 +
+SC1065/SC1120S + NC + AL): `NC_D403`/`NC_CD401S` (NC Taxed PTE 4.25% + owner DEDUCTION, CD-401S NC franchise,
+85% bonus/§179 $25k/$200k, NR withholding 4.25%), `AL_FORM_65`/`AL_FORM_20S` (AL Electing PTE 5% + owner
+refundable CREDIT, composite 5%, AL conforms §168(k)/§179, Form 20S Line-32 LIFO/BIG/excess-passive); all 4
+seeded/exported (200); **+WO-12 state C-corp batch 2026-07-05** — GA's income-tax neighbors' C-corp returns, extending the 1120
 module: `SC1120` (5% + §168(k) decouple/§179 $1.25M/$3.13M + license fee; ⚠ H.3368/OBBBA live-wire flag),
 `AL_FORM_20C` (6.5% + constitutional FIT deduction Amendment 662 + AL conforms to §168(k)/§179 + GILTI/§174
 decouples), `NC_CD405` (2.25% income S.B. 105 + net-worth franchise tax + 85% bonus add-back/§179 $25k/$200k);
@@ -262,6 +266,25 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **NC + AL PASS-THROUGH BATCH AUTHORED + SEEDED + EXPORTED (WO-13) — completes the adjacent-state pass-through track.**
+  Ken: "do the NC + AL". Completes the neighbor pass-through entity coverage (GA-700 + SC1065/SC1120S/PTET done;
+  NC + AL were the gaps). Front door: gap-check (all 4 GAP) → 2 parallel research passes (verbatim vs FINAL 2025
+  NCDOR/ALDOR) → `nc_al_passthrough_source_brief.md`. **The PTET contrast is the headline (each state differs —
+  verify, never clone GA):** NC Taxed PTE = 4.25% (individual rate), owner-side **DEDUCTION** (income out of NC AGI
+  via NC-PE); AL Electing PTE = 5% (Form EPT), owner-side **refundable CREDIT** (Sch EPT-C). Research corrections:
+  AL election = checkbox on Form 65/20S + Form EPT (not the old PTE-E/MAT); CD-401S DOES compute NC franchise on
+  S-corps; AL conforms to §168(k)/§179 (item-by-item). **Gate-1 scope walk (4 AskUserQuestion, all recommended —
+  DECISIONS D-15):** full compute both states; encode NC deduction + AL credit; AL Form-20S non-electing taxes
+  (LIFO/BIG/excess-passive) = diagnostic+direct-entry; 2 loaders state-paired (AL EPT = referenced compute node).
+  **Authored:** `load_nc_passthrough.py` (NC_D403 + NC_CD401S — Taxed PTE 4.25%/deduction, CD-401S net-worth
+  franchise, NR withholding 4.25%, 85% bonus/§179 $25k/$200k; reuses CD-405 `_nc_franchise`), `load_al_passthrough.py`
+  (AL_FORM_65 + AL_FORM_20S — Electing PTE 5%/credit, composite PTE-C 5%, AL conforms depreciation, Form 20S Line 32
+  entity taxes). Validated on throwaway SQLite (`scratchpad/validate_nc_al_pt.py`, **47 pass / 0 fail** — CAUGHT 2
+  topic_name > 255 caps, trimmed; NC/AL arithmetic all green; all 16 rules cited). Ken Gate-1: "Approve — flip,
+  seed, export." Seeded → **110 TaxForms / 497 FlowAssertions / 924 FormRules**; all 4 exports 200; auto-discovered
+  by seed_all. **⚠ [UNVERIFIED]:** exact NC D-403/CD-401S/NC-PE + TY2025 AL Sch K line numbers (PDFs didn't extract)
+  — re-pull before the tts app build. **This closes the pre-planned RS spine — net-new RS scope now needs the
+  TaxWise forms-usage report or a law change.** BUILD_ORDER S-15 [RS]✅.
 - 2026-07-05: **STATE C-CORP BATCH AUTHORED + SEEDED + EXPORTED (WO-12) — SC1120 + AL 20C + NC CD-405, extending the 1120 module.**
   Ken: "state C corp rules", batch the reuse-states (GA's income-tax neighbors AL/NC/SC on the C-corp side; each
   reuses conformity research + consumes the WO-11 federal 1120 output). Front door: gap-check (all 3 GAP) →

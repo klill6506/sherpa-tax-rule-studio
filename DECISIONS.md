@@ -16,6 +16,41 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-05 — D-15: NC + AL pass-through batch (WO-13) v1 scope LOCKED — D-403/CD-401S + Form 65/20S
+
+**Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), the NC + AL
+pass-through entity batch (completes the adjacent-state pass-through track; SC done via SC1065/SC1120S/PTET, D-9):
+- **(Q1) Full compute both states.** COMPUTE both entity-level PTETs — **NC Taxed PTE 4.25%** (individual rate)
+  / **AL Electing PTE 5%** (Form EPT) — plus the companions: NC franchise on CD-401S ($1.50/$1,000, $500 first-$1M
+  cap, $200 min, reuse the CD-405 `_nc_franchise` helper), NC nonresident withholding 4.25%, AL composite PTE-C 5%.
+  Depreciation: NC decouple (85% bonus + §179 $25k/$200k); AL conforms (no add-back).
+- **(Q2) Encode NC deduction + AL credit** (the owner-side SALT-cap benefit, which DIFFERS): NC owner DEDUCTS their
+  share of Taxed-PTE income (removed from NC AGI via NC-PE); AL owner takes a REFUNDABLE CREDIT for their share of
+  the EPT paid (Schedule EPT-C). Each modeled + diagnostic.
+- **(Q3) AL Form 20S non-electing entity taxes = diagnostic + direct-entry** (Line 32 = LIFO recapture §40-18-161 /
+  built-in gains §40-18-174 / excess net passive income §40-18-175 — the federal S-corp-level taxes; not recomputed).
+- **(Q4) 2 loaders, state-paired:** `load_nc_passthrough.py` (NC_D403 + NC_CD401S), `load_al_passthrough.py`
+  (AL_FORM_65 + AL_FORM_20S) — mirroring `load_sc_passthrough.py`. AL Form EPT = a compute node referenced from the
+  65/20S Sch K lines (not its own form).
+
+**Context — the PTET contrast is the headline (verify per state, never clone GA):** NC 4.25% / owner deduction vs
+AL 5% / owner refundable credit. Research corrections: AL election = checkbox on Form 65/20S + Form EPT (NOT the old
+PTE-E/MAT); CD-401S DOES compute NC franchise on S-corps; AL conforms to §168(k)/§179 (item-by-item, not blanket).
+
+**Reuse:** NC re-declares CD-405's bonus/§179/franchise sources; AL re-declares 20C's conformity sources.
+
+**Alternatives considered:** AL_FORM_EPT as its own form (rejected — referenced compute node is lighter, matches the
+65/20S Sch K reference); compute the AL LIFO/BIG/excess-passive (rejected — niche federal-level taxes); entity-only
+PTET without the owner side (rejected — the owner deduction/credit is the SALT-cap point and differs by state).
+
+**Would reconsider if:** NC/AL rates change on their phase tracks; NC adds a franchise on partnerships (currently
+S-corp only); the owner-side flow needs the downstream 1040/D-400/AL-40 credit-import built.
+
+**[UNVERIFIED] re-pull before seeding:** exact NC D-403/CD-401S/NC-PE line numbers (PDFs didn't text-extract) and
+the TY2025 AL Sch K line numbers (25f65instr/25f20sinstr when posted).
+
+---
+
 ## 2026-07-05 — D-14: State C-corp batch (WO-12) v1 scope LOCKED — SC1120 + AL 20C + NC CD-405
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), the reuse-state
