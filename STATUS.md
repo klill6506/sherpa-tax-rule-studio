@@ -12,8 +12,16 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **114 TaxForms / 509 FlowAssertions / 945 FormRules**
-(**+WO-17 Form 4952 2026-07-06** — Investment Interest Expense Deduction (`4952`, entity_types 1040/1041); 4th item
+Active spec-authoring tool. RS Supabase holds **115 TaxForms / 512 FlowAssertions / 949 FormRules**
+(**+WO-18 Form 8379 2026-07-06** — Injured Spouse Allocation (`8379`, entity_types 1040); 5th item in the SPINE
+S-16 federal-forms queue. Confirmed the form is **8379** (Ken's BUILD_ORDER "8679" was a typo). An ALLOCATION form,
+not a tax computation: Part I decision tree → `is_injured_spouse` (joint return + debt owed only by spouse + not
+legally obligated + qualifies via community-property/payments/EIC-ACTC/refundable-credit); Part III allocates joint
+items col (a) = (b) + (c) (W-2 income to earner, withholding follows income, standard deduction 50/50 basic,
+dependent credits to the claiming spouse, EIC excluded — IRS allocates); community-property override (9 states
+AZ/CA/ID/LA/NV/NM/TX/WA/WI → L5 skips L6-9, IRS divides per state law); the **IRS computes the refund share** (NOT
+estimated — a spec estimate would guess); 8379 (injured) ≠ 8857 (innocent); file within 3yr-of-filing/2yr-of-payment;
+no OBBBA impact; `lookup/8379/export/` = 200; **+WO-17 Form 4952 2026-07-06** — Investment Interest Expense Deduction (`4952`, entity_types 1040/1041); 4th item
 in the SPINE S-16 federal-forms queue. §163(d): total investment interest (L3 = current + indefinite prior-year
 carryforward) vs net investment income (L6 = investment income L4h − expenses L5); deduction L8 = **min(L3, L6)** →
 Schedule A line 9 (1040) / Form 1041 line 10 (estate/trust); disallowed L7 = max(0, L3−L6) carries forward
@@ -117,11 +125,11 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952). **The active queue is the SPINE S-16
-federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ →
-Schedule H ✅ → 4684 ✅ → 4952 ✅ → **▶ Form 8379 (Injured Spouse Allocation) = NEXT** → Form 8814 → Form 8839 →
-Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report
-or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379). **The active queue is the SPINE
+S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ →
+Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → **▶ Form 8814 (Parents' Election, child's interest & dividends) =
+NEXT** → Form 8839 → Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise
+forms-usage report or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -291,6 +299,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 8379 (Injured Spouse Allocation) AUTHORED + SEEDED + EXPORTED (WO-18) — 5th item in the S-16 federal-forms queue.**
+  Front door: gap-check (GAP — `8379`/`8679` both 404; **confirmed the form is 8379**, Ken's "8679" a typo) →
+  verbatim research (current FINAL Form 8379 Rev. 11-2023 + i8379 Rev. 11-2024 + §6402; **no annual reissue, no OBBBA
+  impact**) → `f8379_source_brief.md`. **Gate-1 scope walk (4 AskUserQuestion, all recommended — DECISIONS D-20):**
+  it's an ALLOCATION form — compute the Part I eligibility decision tree → `is_injured_spouse` + stop-reason
+  diagnostics; validate Part III col (a)=(b)+(c) + allocation-rule diagnostics (W-2 to earner, withholding follows
+  income, std deduction 50/50, EIC excluded) but **do NOT estimate the injured spouse's refund share** (the IRS
+  computes it — a spec estimate would guess); encode the 9 community-property states + the L5-skip override; the
+  8379-vs-8857 boundary + 3yr/2yr time limit + Part IV + processing diagnostics. **Authored:** `load_8379.py` (16
+  facts / 4 rules / 4 lines / 8 diag / 7 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_8379.py`,
+  **29 pass / 0 fail** — decision tree, allocation constraint, community-property list all green; caps clean first
+  run; all 4 rules cited to 3 sources). Ken Gate-1: "Approve — flip, seed, export." Seeded → **115 TaxForms / 512
+  FlowAssertions / 949 FormRules**; `lookup/8379/export/` = 200; seed_all auto-discovers `load_8379` (reconstructable).
+  **Next in the queue: Form 8814** (Parents' Election to Report Child's Interest & Dividends). BUILD_ORDER S-16 8379 ✅.
 - 2026-07-06: **FORM 4952 (Investment Interest Expense Deduction) AUTHORED + SEEDED + EXPORTED (WO-17) — 4th item in the S-16 federal-forms queue.**
   Full front-door run: gap-check (GAP — `lookup/4952/export/` = 404) → verbatim research pass (FINAL 2025 Form 4952
   Created 5/28/25; **no separate i4952 — instructions on pp. 3-4 of the form PDF** + §163(d)) → `f4952_source_brief.md`.

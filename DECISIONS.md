@@ -16,6 +16,44 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-20: Form 8379 (WO-18) v1 scope LOCKED — Injured Spouse Allocation
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8379 (5th item in
+the SPINE S-16 federal-forms queue). **Confirmed the form is 8379** — Ken's BUILD_ORDER "8679" is a typo (no such
+IRS form). This is an ALLOCATION form, not a tax-computation form:
+- **(Q1) Compute the Part I eligibility decision tree.** L2→L9 routing → an `is_injured_spouse` determination
+  (qualifies by reaching Part II via L5 community-property OR L6 made/reported payments OR L8 EIC/ACTC OR L9 other
+  refundable credit) + a stop-reason diagnostic for each fail (not a joint return / debt not owed solely by spouse /
+  you are legally obligated → consider innocent spouse / no qualifying path).
+- **(Q2) Part III = validate col (a) = (b) + (c) + allocation-rule diagnostics; DON'T estimate the refund share.**
+  Reconciliation rules enforce col (a) = col (b) + col (c) on every allocation line; diagnostics encode the
+  allocation rules (W-2 income to the earner, withholding follows the income, standard deduction one-half basic to
+  each, dependent-driven credits to the claiming spouse, EIC excluded from Part III). **Do NOT compute the injured
+  spouse's refund share** — the IRS computes it and the method is not on the form; a spec estimate would be a guess.
+- **(Q3) Community-property override.** Encode the 9 states (AZ/CA/ID/LA/NV/NM/TX/WA/WI) + the gate: L5 resident →
+  skip L6-9 → Part II, plus an override diagnostic (the IRS divides the joint overpayment per state community-property
+  law, ~50% except EIC — the Part III entries may not control).
+- **(Q4) Boundaries + mechanics diagnostics.** One `8379` form, entity_types [1040]. Diagnostics for the 8379-vs-8857
+  boundary (injured = refund taken for the spouse's separate debt; innocent = relief from joint liability → Form
+  8857), the time limit (3 years from filing / 2 years from payment, whichever later), the standalone Part IV
+  signature path, and the processing times (14/11/8 weeks).
+
+**Context:** WO-18 front door: gap-check (GAP — `8379`/`8679` both 404) → verbatim research pass (current FINAL Form
+8379 Rev. 11-2023 + i8379 Rev. 11-2024 + §6402) → `f8379_source_brief.md` → this walk. **No annual reissue** (Rev.
+11-2023 is still current); **no OBBBA/law impact** — the form is purely procedural (allocation of already-computed
+joint-return items). Authority is §6402(c)-(e) Treasury offset, NOT §1.6015 (that governs innocent spouse / Form 8857).
+
+**Alternatives considered:** estimate the injured spouse's refund share (rejected — the IRS's final allocation method,
+especially with offsets and community-property law, is not specified on the form; a number would mislead); Part I
+diagnostic-only (rejected — the decision tree is deterministic and worth computing); community-property diagnostic-
+only (rejected — the L5-skip gate is real routing); core-only without the 8857/time-limit diagnostics (rejected — the
+injured-vs-innocent confusion and the filing deadline are the two things preparers most need surfaced).
+
+**Would reconsider if:** a future form revision adds a refund-share worksheet (then compute it); the community-property
+state list changes (year-keyed). Re-verify the revision each season (the form reissues irregularly, not annually).
+
+---
+
 ## 2026-07-06 — D-19: Form 4952 (WO-17) v1 scope LOCKED — Investment Interest Expense Deduction
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 4952 (4th item in

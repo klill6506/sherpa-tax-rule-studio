@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-18] Form 8379 · Injured Spouse Allocation · greenfield RS-first · status `GAP-CHECKED → research-verified →
+  Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 5th after 8990 + Sch H + 4684 + 4952).** **Confirmed the form
+  is 8379** (Ken's BUILD_ORDER "8679" is a typo — no such IRS form; both 404). Gap-check: no loader, not in the
+  114-form prod set → GAP. entity_types = 1040. NOT a tax-computation form — it ALLOCATES joint-return items (Part
+  III cols a/b/c) so the IRS computes the injured spouse's share of a joint overpayment offset (§6402) against the
+  OTHER spouse's separate past-due debt. **✅ RESEARCH-VERIFIED (2026-07-06, verbatim vs current FINAL Form 8379
+  Rev. 11-2023 + i8379 Rev. 11-2024 + §6402) → `f8379_source_brief.md`** (no annual reissue; no OBBBA impact).
+  **✅ Gate-1 scope walk APPROVED (DECISIONS D-20, all 4 recommended):** compute the Part I decision tree →
+  is_injured_spouse + stop-reasons; validate Part III col(a)=(b)+(c) + allocation-rule diagnostics (refund share NOT
+  estimated — IRS computes it); 9 community-property states + L5-skip override; 8379-vs-8857 + 3yr/2yr + Part IV +
+  processing diagnostics. **✅ AUTHORED + SQLite-VALIDATED** (`load_8379.py`, 16 facts / 4 rules / 4 lines / 8 diag /
+  7 tests / 3 FA; `scratchpad/validate_8379.py` = **29 pass / 0 fail** — decision tree, allocation constraint,
+  community-property list all green). **✅ DONE — seeded + exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed,
+  export"; W1-W4 blessed) → **115 TaxForms**; `lookup/8379/export/` = 200; seed_all auto-discovers `load_8379`
+  (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at **Form 8814**
+  (Parents' Election to Report Child's Interest & Dividends).
+
 - **▶ [WO-17] Form 4952 · Investment Interest Expense Deduction · greenfield RS-first · status `GAP-CHECKED →
   research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 4th after 8990 + Sch H + 4684).**
   Gap-check: no `load_4952*` loader; `lookup/4952/export/` = 404, not in the 113-form prod set → GAP.
