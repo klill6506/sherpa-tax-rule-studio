@@ -66,6 +66,21 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-17] Form 4952 · Investment Interest Expense Deduction · greenfield RS-first · status `GAP-CHECKED →
+  research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 4th after 8990 + Sch H + 4684).**
+  Gap-check: no `load_4952*` loader; `lookup/4952/export/` = 404, not in the 113-form prod set → GAP.
+  **✅ RESEARCH-VERIFIED (2026-07-06, verbatim vs FINAL 2025 Form 4952 Created 5/28/25 — no separate i4952,
+  instructions on pp. 3-4 — + §163(d)) → `f4952_source_brief.md`.** §163(d) UNCHANGED by OBBBA for TY2025 (that's
+  §163(j)/8990, a different provision). **✅ Gate-1 scope walk APPROVED (DECISIONS D-19, all 4 recommended):** full
+  Parts I-III compute (L8 = min(L3, L6), L7 indefinite carryforward); 4g election mechanic + rate-tradeoff
+  diagnostic; entity_types [1040,1041] + routing/filing-exception diagnostics; L5 misc-itemized + investment-interest
+  exclusion diagnostics. **✅ AUTHORED + SQLite-VALIDATED** (`load_4952.py`, 9 facts / 5 rules / 5 lines / 7 diag /
+  5 tests / 3 FA; `scratchpad/validate_4952.py` = **26 pass / 0 fail** — incl. the 4g counterfactual: electing $5k
+  frees $4,500 of deduction). **✅ DONE — seeded + exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed,
+  export"; W1-W4 blessed) → **114 TaxForms**; `lookup/4952/export/` = 200; seed_all auto-discovers `load_4952`
+  (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at **Form 8379**
+  (Injured Spouse Allocation).
+
 - **▶ [WO-16] Form 4684 · Casualties & Thefts · greenfield RS-first · status `GAP-CHECKED → research-verified →
   Gate-1 APPROVED → ✅ DONE` (2026-07-05/06; SPINE S-16, 3rd after 8990 + Schedule H).** Gap-check: no `load_4684*`
   loader (downstream Sch A / Sch D / 4797 / 8829 route TO 4684 but none authors it); `lookup/4684/export/` = 404 →

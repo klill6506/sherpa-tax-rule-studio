@@ -12,8 +12,15 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **113 TaxForms / 506 FlowAssertions / 940 FormRules**
-(**+WO-16 Form 4684 2026-07-06** — Casualties and Thefts (`4684`, entity_types 1040/1065/1120S/1120); 3rd item in
+Active spec-authoring tool. RS Supabase holds **114 TaxForms / 509 FlowAssertions / 945 FormRules**
+(**+WO-17 Form 4952 2026-07-06** — Investment Interest Expense Deduction (`4952`, entity_types 1040/1041); 4th item
+in the SPINE S-16 federal-forms queue. §163(d): total investment interest (L3 = current + indefinite prior-year
+carryforward) vs net investment income (L6 = investment income L4h − expenses L5); deduction L8 = **min(L3, L6)** →
+Schedule A line 9 (1040) / Form 1041 line 10 (estate/trust); disallowed L7 = max(0, L3−L6) carries forward
+**INDEFINITELY**; the **L4g election** to include qualified dividends + net capital gain in investment income (cap
+4b+4e, ordering 4e-then-4b) trades the preferential QD/cap-gain rate for a higher deduction ceiling; L5 excludes
+2%-floor misc itemized (TCJA-suspended through 2025, OBBBA-permanent) + investment-interest exclusion diagnostics;
+**§163(d) UNCHANGED by OBBBA** (that's §163(j)/8990); `lookup/4952/export/` = 200; **+WO-16 Form 4684 2026-07-06** — Casualties and Thefts (`4684`, entity_types 1040/1065/1120S/1120); 3rd item in
 the SPINE S-16 federal-forms queue. Section A personal-use (per-property loss = min(adjusted basis, FMV decline) −
 insurance; **§165(h)(5) federally-declared-disaster-only limitation** still in effect for TY2025; $100 floor + 10%
 AGI; qualified-disaster special path $500/no-AGI/add-to-standard-deduction with the OBBBA-extended declaration window
@@ -110,9 +117,9 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684). **The active queue is the SPINE S-16 federal-forms
-gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ →
-4684 ✅ → **▶ Form 4952 (Investment Interest Expense Deduction) = NEXT** → Form 8379 → Form 8814 → Form 8839 →
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952). **The active queue is the SPINE S-16
+federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot): 8990 ✅ →
+Schedule H ✅ → 4684 ✅ → 4952 ✅ → **▶ Form 8379 (Injured Spouse Allocation) = NEXT** → Form 8814 → Form 8839 →
 Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report
 or a law change.
 
@@ -284,6 +291,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 4952 (Investment Interest Expense Deduction) AUTHORED + SEEDED + EXPORTED (WO-17) — 4th item in the S-16 federal-forms queue.**
+  Full front-door run: gap-check (GAP — `lookup/4952/export/` = 404) → verbatim research pass (FINAL 2025 Form 4952
+  Created 5/28/25; **no separate i4952 — instructions on pp. 3-4 of the form PDF** + §163(d)) → `f4952_source_brief.md`.
+  **§163(d) confirmed UNCHANGED by OBBBA for TY2025** (OBBBA's interest changes are §163(j) business interest / Form
+  8990 — a different provision). **Gate-1 scope walk (4 AskUserQuestion, all recommended — DECISIONS D-19):** full
+  Parts I-III compute (L8 = min(L3 total interest, L6 net investment income); L7 = max(0, L3−L6) indefinite
+  carryforward); the 4g election mechanic (include QD 4b + net cap gain 4e, cap 4b+4e, ordering 4e-then-4b) + a
+  rate-tradeoff diagnostic; entity_types [1040,1041] + routing (Sch A L9 / 1041 L10) + filing-exception diagnostic;
+  L5 misc-itemized-suspension + investment-interest exclusion diagnostics. **Authored:** `load_4952.py` (9 facts / 5
+  rules / 5 lines / 7 diag / 5 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_4952.py`, **26 pass
+  / 0 fail** — incl. the 4g counterfactual: electing $5k frees $4,500 of deduction at ordinary rates; caught 1
+  topic_name > 255 cap, trimmed; all 5 rules cited to 2 sources). Ken Gate-1: "Approve — flip, seed, export." Seeded
+  → **114 TaxForms / 509 FlowAssertions / 945 FormRules**; `lookup/4952/export/` = 200; seed_all auto-discovers
+  `load_4952` (reconstructable). **Next in the queue: Form 8379** (Injured Spouse Allocation). BUILD_ORDER S-16 4952 ✅.
 - 2026-07-06: **FORM 4684 (Casualties and Thefts) AUTHORED + SEEDED + EXPORTED (WO-16) — 3rd item in the S-16 federal-forms queue.**
   Full front-door run: gap-check (GAP — `lookup/4684/export/` = 404; downstream Sch A/Sch D/4797/8829 route TO 4684
   but none authors it) → verbatim research pass (FINAL 2025 Form 4684 **Created 9/26/25** + i4684 updated 30-Apr-2026

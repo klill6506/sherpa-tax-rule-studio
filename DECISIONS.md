@@ -16,6 +16,45 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-19: Form 4952 (WO-17) v1 scope LOCKED — Investment Interest Expense Deduction
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 4952 (4th item in
+the SPINE S-16 federal-forms queue, after 8990 + Schedule H + 4684):
+- **(Q1) 4g election = compute the mechanic + rate-tradeoff diagnostic.** Compute the election (L4h includes the
+  direct-entered elected amount, capped at 4b + 4e, default ordering 4e-then-4b) + a diagnostic on the trade-off
+  (elected qualified dividends / net capital gain are taxed at ordinary rates, NOT the preferential QD/cap-gain rate)
+  and the Schedule D Tax Worksheet coordination. The elected amount stays a preparer choice (direct-entry) — solving
+  the optimal election is a bracket-dependent planning decision, out of scope.
+- **(Q2) One `4952` form, entity_types = ['1040','1041'].** Route L8 → **Schedule A line 9** (individual) / **Form
+  1041 line 10** (estate/trust); the "not required to file 4952" 3-condition exception = diagnostic.
+- **(Q3) L5 misc-itemized diagnostic + investment-interest exclusion diagnostic.** L5 captures only non-miscellaneous
+  items (depreciation/depletion) — a diagnostic notes 2%-floor misc itemized deductions are excluded (TCJA-suspended
+  through 2025, OBBBA §67(g)-permanent); a second diagnostic lists the investment-interest exclusions (qualified-
+  residence §163(h) / passive §469 → Form 8582 / tax-exempt §265 / §264 insurance / §263A capitalized).
+- **(Q4) Compute full Parts I–III + indefinite carryforward.** L3 = L1 + L2; L4c = 4a−4b; L4f = 4d−4e; L4h =
+  4c+4f+4g; L6 = max(0, L4h−L5); **§163(d) limitation L8 = min(L3, L6)**; **L7 = max(0, L3−L6) carries forward
+  INDEFINITELY** (§163(d)(2); L2 pulls the prior-year L7).
+
+**Context:** WO-17 front door: gap-check (GAP — `lookup/4952/export/` = 404; downstream Sch A / Sch D / QDCGT route
+TO 4952 but none authors it) → verbatim research pass (FINAL 2025 Form 4952 Created 5/28/25; **no separate i4952 —
+instructions on pp. 3-4 of the form PDF** + §163(d)) → `f4952_source_brief.md` → this walk. **§163(d) is UNCHANGED by
+OBBBA for TY2025** (no "What's New" on the form); OBBBA's interest changes are §163(j) **business** interest (Form
+8990) — a different provision, not conflated. The only adjacent OBBBA item is §67(g) misc-itemized permanence (affects
+the L5 exclusion, already true for 2025).
+
+**Alternatives considered:** solve the optimal 4g election (rejected — bracket-dependent planning, not a spec
+compute); 4g direct-entry with no diagnostic (rejected — the rate trade-off is the whole point of the election);
+entity_types 1040-only (rejected — trusts commonly carry investment interest, ties into the 1041 module); L7
+carryforward as direct-entry (rejected — the indefinite roll is the §163(d)(2) mechanic worth asserting).
+
+**Would reconsider if:** the forms-usage report shows heavy 4g-election activity (build the optimization); the 2026
+form changes the L5 misc-itemized wording (OBBBA made the suspension permanent — watch the language, no compute change).
+
+**Year-keyed / re-verify at TY2026:** none dollar-valued; watch the L5 misc-itemized-deduction wording on the 2026
+form (the exclusion is now permanent) and re-confirm §163(d) is still un-amended.
+
+---
+
 ## 2026-07-05 — D-18: Form 4684 (WO-16) v1 scope LOCKED — Casualties and Thefts
 
 **Decision:** Per Ken's 2026-07-05 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 4684 (3rd item in
