@@ -16,6 +16,45 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-24: Form 8832 (WO-22) v1 scope LOCKED — Entity Classification Election
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8832 (9th item in
+the SPINE S-16 federal-forms queue). A structural ELECTION form (Treas. Reg. §301.7701-3), not a tax computation:
+- **(Q1) Compute the Part I eligibility + classification decision tree.** L1→L3 routing → an `is_eligible_to_elect`
+  determination (per-se corporation is ineligible; the 60-month block at L2a/L2b) + the available classifications
+  (>1 owner → partnership or association-taxable-as-corp; 1 owner → corp or disregarded) + the L6 election type, with
+  a stop-reason diagnostic for each fail.
+- **(Q2) Compute the default classification + "don't file if default" TIP.** Domestic 2+ members → partnership; 1
+  member → disregarded; foreign by limited liability (all-LL → corp; else partnership/disregarded). Surface the
+  instructions' TIP that a new entity using its default should NOT file 8832.
+- **(Q3) Compute the effective-date window / 60-month gate + late-relief diagnostic.** The effective-date window
+  normalization (clamp to 75 days before / 12 months after; default to the boundary or the filing date); the 60-month
+  limitation gate (with the newly-formed and >50%-ownership-change exceptions); a Rev. Proc. 2009-41 late-relief
+  diagnostic (filed within **3 years and 75 days** of the requested effective date + reasonable cause).
+- **(Q4) Boundary/filing diagnostics + entity_types [1065,1120,1120S,1040].** Diagnostics for the Form 2553 boundary
+  (an S-election uses Form 2553, deemed §301.7701-3(c)(1)(v) to also elect corp status — don't file 8832), per-se-corp
+  ineligibility, and the attach-to-return rule with the **UPDATED Kansas City, MO 64999 / Ogden, UT 84201** addresses
+  (superseding the printed Cincinnati addresses). One `8832` form.
+
+**Context:** WO-22 front door: gap-check (GAP — `8832`/`2553` both 404) → verbatim research (current FINAL Form 8832
+**Rev. December 2013** + §301.7701-3 + Rev. Proc. 2009-41) → `f8832_source_brief.md` → this walk. **No annual reissue**
+(Rev. 12-2013 is current); **no OBBBA impact** (structural §7701 election). The only post-2013 update is the prepended
+new-mailing-address page — the printed Cincinnati addresses are superseded (encode Kansas City / Ogden).
+
+**Alternatives considered:** diagnostic-only eligibility (rejected — the decision tree is deterministic and the 60-month
+gate is the form's real trap); diagnostic-only defaults (rejected — the default is the baseline the election is measured
+against); diagnostics-only dates/relief (rejected — the 75/12 window clamp + 3yr-75day relief window are computable);
+core-only without the 2553/address diagnostics (rejected — the 2553 boundary is the most common 8832 confusion and the
+addresses were superseded).
+
+**Would reconsider if:** the IRS issues a new Form 8832 revision (re-verify the whole form); Form 2553 (S-election) is
+later authored as its own order (cross-link).
+
+**Year-keyed / re-verify:** none dollar-valued; re-verify the FORM REVISION each season (8832 reissues irregularly, not
+annually) and the filing addresses (they changed post-2013).
+
+---
+
 ## 2026-07-06 — D-23: Form 709 (WO-21) v1 scope LOCKED — US Gift (and GST) Tax Return
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 709 (8th item in the

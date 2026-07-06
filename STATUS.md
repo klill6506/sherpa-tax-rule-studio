@@ -12,8 +12,16 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **118 TaxForms / 521 FlowAssertions / 964 FormRules**
-(**+WO-21 Form 709 2026-07-06** — United States Gift (and GST) Tax Return (`709`, entity_types 709 — its own
+Active spec-authoring tool. RS Supabase holds **119 TaxForms / 524 FlowAssertions / 968 FormRules**
+(**+WO-22 Form 8832 2026-07-06** — Entity Classification Election / "check-the-box" (`8832`, entity_types
+1065/1120/1120S/1040); 9th item in the SPINE S-16 federal-forms queue. A structural ELECTION (Treas. Reg.
+§301.7701-3), not a tax computation: the Part I decision tree → `is_eligible_to_elect` (per-se corporation
+ineligible; the 60-month change-limit gate at L2a/L2b) + the available classifications (>1 owner → partnership/corp;
+1 owner → corp/disregarded); the default classification (domestic 2+ = partnership / 1 = disregarded; foreign by
+limited liability) + the don't-file-if-using-default TIP; the effective-date window (75 days before / 12 months after,
+clamped); Rev. Proc. 2009-41 late relief (3 years 75 days + reasonable cause); the Form 2553 boundary (S-election →
+2553, not 8832) + the updated Kansas City/Ogden filing addresses. Rev. 12-2013 (no annual reissue); no OBBBA impact;
+`lookup/8832/export/` = 200; **+WO-21 Form 709 2026-07-06** — United States Gift (and GST) Tax Return (`709`, entity_types 709 — its own
 gift-tax return); 8th item in the SPINE S-16 federal-forms queue and **the biggest module**. Unified CUMULATIVE gift
 tax: the §2001(c) rate schedule (top 40% over $1M = $345,800 + 40%) → Part 2 L3 = current + prior taxable gifts, L4 =
 tentative(L3), L5 = tentative(prior), L6 = L4−L5 (taxes current gifts at the top cumulative brackets); applicable
@@ -152,11 +160,11 @@ tts-tax-status and reconcile SPINE node status against THIS file + on-disk loade
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
 C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839 · WO-21
-709). **The active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP
-unchecked item at each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ →
-**▶ Form 8832 (Entity Classification Election) = NEXT** → Form 3115. After the queue drains: net-new RS scope needs
-the TaxWise forms-usage report or a law change. **⚠ Form 709 carries [UNVERIFIED] structural line #s (PDF face
-unfetchable) — re-verify before its tts build.**
+709 · WO-22 8832). **The active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door,
+TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ →
+8832 ✅ → **▶ Form 3115 (Change in Accounting Method — §481(a)) = NEXT (the LAST S-16 item)**. After the queue drains:
+net-new RS scope needs the TaxWise forms-usage report or a law change. **⚠ Form 709 carries [UNVERIFIED] structural
+line #s (PDF face unfetchable) — re-verify before its tts build.**
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -326,6 +334,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 8832 (Entity Classification Election) AUTHORED + SEEDED + EXPORTED (WO-22) — 9th item in the S-16 federal-forms queue.**
+  Front door: gap-check (GAP — `8832`/`2553` both 404) → verbatim research (current FINAL Form 8832 **Rev. December
+  2013** + §301.7701-3 + Rev. Proc. 2009-41; **no annual reissue, no OBBBA impact**) → `f8832_source_brief.md`.
+  **Research catch:** the filing addresses printed in the instructions are superseded by an updated page → encoded the
+  current Kansas City / Ogden addresses, not the stale Cincinnati ones. **Gate-1 scope walk (4 AskUserQuestion, all
+  recommended — DECISIONS D-24):** it's a structural election — compute the Part I eligibility/classification decision
+  tree (per-se corp + 60-month gates) + available classifications; the default classification (domestic member-count /
+  foreign limited-liability) + don't-file-if-default TIP; the effective-date window clamp (75-before/12-after) + Rev.
+  Proc. 2009-41 late relief; the Form 2553 boundary + updated-address diagnostics. **Authored:** `load_8832.py` (11
+  facts / 4 rules / 4 lines / 8 diag / 7 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_8832.py`,
+  **31 pass / 0 fail** — the eligibility tree (per-se corp, 60-month block + newly-formed exception), the domestic +
+  foreign defaults, the owner-count options, and the effective-date clamp all green; caught 1 topic_name > 255 cap,
+  trimmed; all 4 rules cited to 3 sources). Ken Gate-1: "Approve — flip, seed, export." Seeded → **119 TaxForms / 524
+  FlowAssertions / 968 FormRules**; `lookup/8832/export/` = 200; seed_all auto-discovers `load_8832` (reconstructable).
+  **Next in the queue: Form 3115** (Change in Accounting Method — §481(a); the LAST S-16 item). BUILD_ORDER S-16 8832 ✅.
 - 2026-07-06: **FORM 709 (US Gift & GST Tax Return) AUTHORED + SEEDED + EXPORTED (WO-21) — the biggest S-16 module.**
   Front door: gap-check (GAP) → verbatim research (2025 i709 "What's New" + Table for Computing Gift Tax + §2001(c)/
   §2010/§2503/§2523/§2631 + OBBBA §70106) → `f709_source_brief.md`. **★ Two research corrections (Authoritative-Source

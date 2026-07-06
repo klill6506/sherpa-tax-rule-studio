@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-22] Form 8832 · Entity Classification Election ("check-the-box") · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 9th).** Gap-check: no loader,
+  `lookup/8832/export/` = 404 → GAP (2553 also absent). entity_types = [1065,1120,1120S,1040] (the classifications the
+  election touches). Structural ELECTION (Treas. Reg. §301.7701-3), not a computation. **✅ RESEARCH-VERIFIED
+  (2026-07-06, verbatim vs current FINAL Form 8832 **Rev. December 2013** + §301.7701-3 + Rev. Proc. 2009-41) →
+  `f8832_source_brief.md`** (no annual reissue; no OBBBA impact; the printed Cincinnati filing addresses are
+  superseded → Kansas City/Ogden). **✅ Gate-1 scope walk APPROVED (DECISIONS D-24, all 4 recommended):** compute the
+  Part I eligibility/classification decision tree (per-se corp + 60-month gates) + available classifications; the
+  default classification (domestic member-count / foreign limited-liability) + don't-file-if-default TIP; the
+  effective-date window clamp (75-before/12-after) + Rev. Proc. 2009-41 late relief; the 2553 boundary + updated-
+  address diagnostics. **✅ AUTHORED + SQLite-VALIDATED** (`load_8832.py`, 11 facts / 4 rules / 4 lines / 8 diag /
+  7 tests / 3 FA; `scratchpad/validate_8832.py` = **31 pass / 0 fail** — eligibility tree, defaults (domestic/foreign),
+  options, clamp all green). **✅ DONE — seeded + exported 2026-07-06** (Ken Gate-1: "Approve — flip, seed, export";
+  W1-W4 blessed) → **119 TaxForms**; `lookup/8832/export/` = 200; seed_all auto-discovers `load_8832`
+  (reconstructable). **Status: ✅ DONE (RS).** tts app build = [APP] lane. ⏭ Queue continues at **Form 3115**
+  (Application for Change in Accounting Method — §481(a); the LAST S-16 item).
+
 - **▶ [WO-21] Form 709 · United States Gift (and GST) Tax Return · greenfield RS-first · status `GAP-CHECKED →
   research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 8th — the biggest module).** Gap-check: no
   loader, `lookup/709/export/` = 404 → GAP. entity_types = 709 (its own gift-tax return). **✅ RESEARCH-VERIFIED
