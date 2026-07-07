@@ -59,7 +59,7 @@ FORM_JURISDICTION = "FED"
 FORM_TAX_YEAR = 2025
 FORM_VERSION = 1
 FORM_ENTITY_TYPES = ["1040"]
-FORM_STATUS = "draft"
+FORM_STATUS = "active"  # promoted draft→active 2026-07-06 (S-6 reconciliation)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -159,6 +159,17 @@ AUTHORITY_SOURCES: list[dict] = [
                 "summary_text": "2025: $313,000 / $626,000 threshold; §461(l) permanent (OBBBA); disallowed EBL → NOL carryover.",
                 "is_key_excerpt": True,
             },
+            {
+                "excerpt_label": "Schedule 1 line 8p — report the EBL adjustment as a POSITIVE number",
+                "location_reference": "i461 (2025), 'How To Report' / line-8p reporting instructions",
+                "excerpt_text": (
+                    "For Schedule 1 (Form 1040), enter any excess business loss adjustment on line 8p. Although "
+                    "it's a loss, you will report the excess business loss adjustment as a positive number on the "
+                    "'Other income' line on your tax return and enter 'ELA' on the dotted line."
+                ),
+                "summary_text": "Report the excess business loss on Schedule 1 line 8p as a POSITIVE number ('ELA' on the dotted line).",
+                "is_key_excerpt": True,
+            },
         ],
     },
     {
@@ -244,6 +255,9 @@ F461_FACTS: list[dict] = [
     {"fact_key": "f461_disallowed_to_nol", "label": "Disallowed EBL treated as an NOL carryover",
      "data_type": "decimal", "sort_order": 6,
      "notes": "OUTPUT (= f461_excess_business_loss). §461(l)(2) → §172 next-year NOL (80%-limited). The NOL mechanic itself is not built here."},
+    {"fact_key": "f461_sch1_8p", "label": "§461(l) add-back → Schedule 1 line 8p (positive)",
+     "data_type": "decimal", "sort_order": 7,
+     "notes": "OUTPUT (= f461_excess_business_loss). The current-year add-back reported as a POSITIVE number on Schedule 1 line 8p ('ELA'), increasing AGI. i461 (2025). The NEXT-year NOL is separate (f461_disallowed_to_nol)."},
 ]
 
 F461_RULES: list[dict] = [
@@ -267,6 +281,17 @@ F461_RULES: list[dict] = [
                  "each partner/S-shareholder's allocable share."),
      "inputs": [], "outputs": [],
      "description": "S-6 R5. The ordering + scope guardrail."},
+    {"rule_id": "R-461-SCH1", "title": "Disallowed EBL → Schedule 1 line 8p (positive add-back)", "rule_type": "routing",
+     "precedence": 3, "sort_order": 3,
+     "formula": ("The excess business loss (f461_excess_business_loss) is reported as a POSITIVE number on "
+                 "Schedule 1 (Form 1040) line 8p ('Section 461(l) excess business loss adjustment'), with 'ELA' on "
+                 "the dotted line (i461 2025). It is an 'Other income' add-back: the business loss was already "
+                 "deducted in full via Schedule C/E/F / K-1, so line 8p adds the disallowed excess BACK to income, "
+                 "increasing Schedule 1 line 9/10 → Form 1040 line 8 → AGI. Only the CURRENT-year disallowance is "
+                 "applied here; the resulting NOL carryover to next year (R-461-NOL) is still described-not-built."),
+     "inputs": ["f461_excess_business_loss"], "outputs": ["f461_sch1_8p"],
+     "description": "S-6 R5 add-back (2026-07-06). The current-year §461(l) add-back to Schedule 1 line 8p, "
+                    "verified verbatim against i461 (2025)."},
     {"rule_id": "R-461-NOL", "title": "Disallowed EBL → NOL carryover (§461(l)(2))", "rule_type": "routing",
      "precedence": 4, "sort_order": 4,
      "formula": ("The disallowed EBL (f461_disallowed_to_nol = f461_excess_business_loss) is treated as a net "
@@ -283,6 +308,7 @@ F461_LINES: list[dict] = [
     {"line_number": "BIZ-DED", "description": "Aggregate business deductions (§461(l)(3)(A)(i))", "line_type": "input"},
     {"line_number": "THRESH", "description": "Threshold amount — $313,000 / $626,000 MFJ (2025)", "line_type": "calculated"},
     {"line_number": "EBL", "description": "Excess business loss = max(0, BIZ-DED − (BIZ-INC + THRESH))", "line_type": "calculated"},
+    {"line_number": "SCH1-8P", "description": "§461(l) add-back → Schedule 1 line 8p (positive; 'ELA')", "line_type": "total", "destination_form": "SCH_1"},
     {"line_number": "NOL", "description": "Disallowed EBL treated as an NOL carryover (§461(l)(2))", "line_type": "total"},
 ]
 
@@ -291,8 +317,10 @@ F461_DIAGNOSTICS: list[dict] = [
      "condition": "f461_excess_business_loss > 0",
      "message": ("Your aggregate business loss exceeds the §461(l) threshold ($313,000; $626,000 if MFJ, 2025), "
                  "so the excess is disallowed this year and carried forward as a net operating loss. This limit "
-                 "applies AFTER the at-risk (§465) and passive-activity (§469) limitations."),
-     "notes": "S-6 R5. §461(l)(1),(3). Fires when EBL > 0."},
+                 "applies AFTER the at-risk (§465) and passive-activity (§469) limitations. The software has added "
+                 "the disallowed excess back on Schedule 1 line 8p ('ELA') this year; the resulting NOL carryover "
+                 "to next year is not yet built — record it manually."),
+     "notes": "S-6 R5. §461(l)(1),(3). Fires when EBL > 0. The current-year Sch-1 line-8p add-back IS applied (R-461-SCH1); only the next-year §172 NOL carryover remains manual."},
     {"diagnostic_id": "D_461_NOL", "title": "Disallowed EBL becomes an NOL carryover", "severity": "info",
      "condition": "f461_excess_business_loss > 0",
      "message": ("The disallowed excess business loss is treated as a net operating loss carryover to next year "
@@ -333,6 +361,7 @@ F461_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-461-EBL", "IRC_461", "primary", "§461(l)(3) the EBL definition"),
     ("R-461-EBL", "IRS_2025_F461_INSTR", "secondary", "Form 461 EBL computation"),
     ("R-461-ORDER", "IRC_461", "primary", "§461(l)(6) after §469; (l)(1) non-corporate"),
+    ("R-461-SCH1", "IRS_2025_F461_INSTR", "primary", "i461 (2025): EBL → Schedule 1 line 8p as a positive number ('ELA')"),
     ("R-461-NOL", "IRC_461", "primary", "§461(l)(2) disallowed → NOL carryover"),
     ("R-461-NOL", "IRS_2025_F461_INSTR", "secondary", "i461 (2025) NOL-carryover statement"),
 ]
@@ -362,6 +391,12 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "461", "expect": {"warn_fires": True},
                     "blockers": ["excess_business_loss_positive"]},
      "sort_order": 3},
+    {"assertion_id": "FA-1040-461-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
+     "title": "Disallowed EBL adds back to Schedule 1 line 8p (positive) → AGI",
+     "description": "Validates R-461-SCH1. Bug it catches: the disallowed EBL not added back (return over-deducts), a wrong sign (must be positive), or the wrong Schedule 1 line.",
+     "definition": {"kind": "flow_assertion", "form": "461",
+                    "flow": "f461_excess_business_loss -> SCH_1.8p (positive) -> SCH_1.9/10 -> 1040.8"},
+     "sort_order": 4},
 ]
 
 

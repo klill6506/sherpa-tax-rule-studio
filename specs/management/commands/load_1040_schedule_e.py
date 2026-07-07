@@ -74,7 +74,7 @@ FORM_JURISDICTION = "FED"
 FORM_TAX_YEAR = 2025
 FORM_VERSION = 1
 FORM_ENTITY_TYPES = ["1040"]
-FORM_STATUS = "draft"
+FORM_STATUS = "active"  # promoted draft→active 2026-07-06 (S-6 reconciliation: SCHEDULE_E + FORM_8582)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -495,7 +495,8 @@ SCHE_RULES: list[dict] = [
      "formula": ("A property's line-21 LOSS that is rental real estate is passive per se (§469(c)(2)) and "
                  "routes to Form 8582 line 1 (active participation) or line 2 (no active participation). "
                  "Royalties + net rental income are NOT limited and flow directly to line 26. Real estate "
-                 "professional → non-passive (RED-deferred, D_8582_RE_PRO)."),
+                 "professional → non-passive (diagnostic-only, D_8582_RE_PRO info; the engine still applies the "
+                 "limitation, preparer adjusts)."),
      "inputs": [], "outputs": [],
      "description": "Decision 2/3. The passive-loss hook on line 22; the simplified active-participation bucket."},
     {"rule_id": "R-SCHE-8582-LIMIT", "title": "Line 22 — deductible loss after the 8582 limitation", "rule_type": "calculation",
@@ -708,7 +709,7 @@ F8582_FACTS: list[dict] = [
     {"fact_key": "f8582_active_participation", "label": "Active participation in rental real estate?",
      "data_type": "boolean", "default_value": "true", "sort_order": 20, "notes": "Drives line 1 vs line 2; the special-allowance gate. §469(i)(6)."},
     {"fact_key": "f8582_real_estate_professional", "label": "Real estate professional (§469(c)(7))?",
-     "data_type": "boolean", "default_value": "false", "sort_order": 21, "notes": "RED-deferred (D_8582_RE_PRO) — non-passive treatment not supported in v1."},
+     "data_type": "boolean", "default_value": "false", "sort_order": 21, "notes": "Diagnostic-only (D_8582_RE_PRO info, S-6 R3): the engine still applies the 8582 limitation; the preparer adjusts the non-passive rentals."},
     {"fact_key": "f8582_complete_disposition", "label": "Fully taxable disposition of an activity this year?",
      "data_type": "boolean", "default_value": "false", "sort_order": 22, "notes": "§469(g) — releases the prior-year suspended loss in full."},
     {"fact_key": "f8582_mfs_lived_apart", "label": "MFS — lived apart from spouse ALL year?",
@@ -893,7 +894,9 @@ F8582_DIAGNOSTICS: list[dict] = [
     {"diagnostic_id": "D_8582_RE_PRO", "title": "Real estate professional asserted — rentals treated non-passive", "severity": "info",
      "condition": "f8582_real_estate_professional is True",
      "message": ("Real estate professional status (§469(c)(7)) is asserted: materially-participated rental real "
-                 "estate is treated as NON-passive and bypasses the Form 8582 limitation. The two qualification "
+                 "estate is NON-passive and should bypass the Form 8582 limitation. This software does NOT "
+                 "auto-compute the non-passive split — it still applies the passive limitation to the rentals it "
+                 "sees, so verify the treatment and adjust the non-passive rentals manually. The two qualification "
                  "tests (>750 hours AND >½ personal services in real property trades/businesses, met by one spouse "
                  "alone) are preparer-asserted, not auto-computed — confirm they are met."),
      "notes": "S-6 R3 (supersedes the RED-defer). Checkbox-asserted; sanity check via D_8582_REP_TESTS."},
@@ -991,11 +994,11 @@ F8582_SCENARIOS: list[dict] = [
      "expected_outputs": {"f8582_smaller_loss": 3000, "f8582_special_allowance": 3000,
                           "f8582_total_allowed": 8000, "f8582_suspended": 0},
      "notes": "1d=(8,000); 2d=5,000; line 3 = (3,000); line 4 = smaller of 8,000 or 3,000 = 3,000; allowance = min(3,000, 50%×(150k−130k)=10,000)=3,000; line 10 income = 5,000; line 11 = 3,000+5,000=8,000; suspended 0."},
-    {"scenario_name": "8582-G1 — real estate professional → RED", "scenario_type": "diagnostic", "sort_order": 6,
+    {"scenario_name": "8582-G1 — real estate professional → info", "scenario_type": "diagnostic", "sort_order": 6,
      "inputs": {"tax_year": 2025, "filing_status": "mfj", "rental_loss": 50000, "magi": 200000,
                 "active_participation": True, "real_estate_professional": True},
      "expected_outputs": {"D_8582_RE_PRO": True},
-     "notes": "RE-pro flagged → D_8582_RE_PRO (RED, prepare manually); the 8582 limitation is not applied."},
+     "notes": "RE-pro flagged → D_8582_RE_PRO (info, S-6 R3 diagnostic-only). The engine STILL applies the 8582 limitation to the rentals it sees; the preparer adjusts the non-passive rentals manually."},
     {"scenario_name": "8582-G2 — MFS lived together → $0 allowance", "scenario_type": "diagnostic", "sort_order": 7,
      "inputs": {"tax_year": 2025, "filing_status": "mfs", "rental_loss": 12000, "magi": 30000,
                 "active_participation": True, "mfs_lived_apart": False},
@@ -1140,9 +1143,9 @@ FLOW_ASSERTIONS: list[dict] = [
                     "formula": "total_allowed + suspended == net_passive_loss + line_10_income"},
      "sort_order": 5},
     {"assertion_id": "FA-1040-8582-04", "assertion_type": "flow_assertion", "entity_types": ["1040"],
-     "title": "Gates: RE-pro RED; MFS-together $0 allowance",
-     "description": "A real-estate-professional flag fires D_8582_RE_PRO (RED); MFS lived-together → $0 special allowance (D_8582_MFS_TOGETHER).",
-     "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"red_fires": True},
+     "title": "Gates: RE-pro info; MFS-together $0 allowance",
+     "description": "A real-estate-professional flag fires D_8582_RE_PRO (info, S-6 R3 diagnostic-only — was RED pre-S-6); MFS lived-together → $0 special allowance (D_8582_MFS_TOGETHER).",
+     "definition": {"kind": "gating_check", "form": "FORM_8582", "expect": {"info_fires": True},
                     "blockers": ["real_estate_professional", "mfs_lived_together"]},
      "sort_order": 6},
     # ── Per-activity amendment 2026-06-23 (Parts IV-VIII) ──
