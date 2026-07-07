@@ -12,8 +12,21 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **119 TaxForms / 524 FlowAssertions / 968 FormRules**
-(**+WO-22 Form 8832 2026-07-06** — Entity Classification Election / "check-the-box" (`8832`, entity_types
+Active spec-authoring tool. RS Supabase holds **120 TaxForms / 527 FlowAssertions / 973 FormRules**
+(**+WO-23 Form 3115 2026-07-06** — Application for Change in Accounting Method (`3115`, entity_types
+1040/1065/1120/1120S); the 10th and LAST item in the SPINE S-16 federal-forms queue — **queue now FULLY DRAINED**.
+Ken's specialty (§481(a) depreciation catch-up). The §446(e)/§481(a) method-change APPLICATION, not a return
+computation: the **§481(a) spread engine** (signed Part IV Line 26 → adjustment period: negative/zero = 1 yr,
+positive = 4 yr ratable, positive < **$50,000** + de minimis election = 1 yr, positive under exam = 2 yr; ratable
+installments = net ÷ period, per Rev. Proc. 2015-13 §7.03); the **Schedule E depreciation catch-up** = (depreciation
+TAKEN under the present impermissible method) − (depreciation ALLOWABLE under the proposed permissible method) at the
+beginning of the year of change, the sign flowing into the spread engine + **DCN 7** routing (impermissible→permissible,
+Rev. Proc. 2025-23 §6.01); the **Schedule A cash↔accrual** 2a–2g netting → 2h → Line 26. Scope limits (under-exam L6a
+/ 5-year rule L11a / cut-off L25 suppressing 26–29 / DCN-7 ≥2-impermissible-years / user fee) = diagnostics; the Sch E
+7a–7h method descriptors = direct-entry. **Form 3115 Rev. December 2022** (no annual reissue — re-verify the revision +
+the current automatic-change Rev. Proc. each season); **no OBBBA impact** on the procedural machinery/§481(a) (OBBBA
+changed depreciation AMOUNTS — 100% bonus permanent, §168(n) QPP — not §446/§481 or the form). `lookup/3115/export/`
+= 200; **+WO-22 Form 8832 2026-07-06** — Entity Classification Election / "check-the-box" (`8832`, entity_types
 1065/1120/1120S/1040); 9th item in the SPINE S-16 federal-forms queue. A structural ELECTION (Treas. Reg.
 §301.7701-3), not a tax computation: the Part I decision tree → `is_eligible_to_elect` (per-se corporation
 ineligible; the 60-month change-limit gate at L2a/L2b) + the available classifications (>1 owner → partnership/corp;
@@ -160,11 +173,11 @@ tts-tax-status and reconcile SPINE node status against THIS file + on-disk loade
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
 C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839 · WO-21
-709 · WO-22 8832). **The active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door,
-TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ →
-8832 ✅ → **▶ Form 3115 (Change in Accounting Method — §481(a)) = NEXT (the LAST S-16 item)**. After the queue drains:
-net-new RS scope needs the TaxWise forms-usage report or a law change. **⚠ Form 709 carries [UNVERIFIED] structural
-line #s (PDF face unfetchable) — re-verify before its tts build.**
+709 · WO-22 8832 · WO-23 3115). **The SPINE S-16 federal-forms gap-fill queue is now FULLY DRAINED — all 10 done**:
+8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ → 8832 ✅ → **3115 ✅ (2026-07-06, the
+LAST item)**. **⏭ Net-new RS authoring scope now requires the TaxWise forms-usage report or a law change** (per the
+BUILD_ORDER S-16 closing note) — there is no queued next order. **⚠ Form 709 carries [UNVERIFIED] structural line #s
+(PDF face unfetchable) — re-verify before its tts build.** All 10 S-16 forms await their [APP]-lane tts build.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -334,6 +347,28 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 3115 (Change in Accounting Method, §481(a)) AUTHORED + SEEDED + EXPORTED (WO-23) — the 10th and LAST S-16 item; QUEUE FULLY DRAINED.**
+  Ken's specialty. Front door: gap-check (GAP — no `load_3115*`; the only on-disk `3115` ref is diagnostic text in
+  `load_1120s_complete.py`, not an authoring surface; `lookup/3115/export/` = 404) → **verbatim research** (FINAL
+  **Form 3115 Rev. December 2022** + i3115 12-2022 + **Rev. Proc. 2015-13** §7.03 + **Rev. Proc. 2025-23** §6.01/DCN 7
+  + IRC §446(e)/§481(a)) → `f3115_source_brief.md`. **Research provenance:** confirmed Form 3115 is revised
+  IRREGULARLY (Rev. 12-2022 is current, not annual); confirmed **Rev. Proc. 2025-23** is the current automatic-change
+  list (supersedes 2024-23; the i3115 12-2022 still names "2022-14 or any successor"); confirmed **no OBBBA impact on
+  the procedural machinery or §481(a)** (OBBBA changed depreciation AMOUNTS — 100% bonus permanent, §168(n) QPP — not
+  §446/§481, the spread/de minimis rules, or the form layout). **Gate-1 scope walk (4 AskUserQuestion, all recommended
+  — DECISIONS D-25):** Q1 COMPUTE the full §481(a) spread engine (negative 1-yr / positive 4-yr ratable / de minimis
+  **$50k** 1-yr / under-exam 2-yr); Q2 COMPUTE the Schedule E depreciation catch-up (= depr taken present − depr
+  allowable proposed at BOY) + DCN 7 routing, direct-enter the 7a–7h descriptors; Q3 COMPUTE the Schedule A cash↔accrual
+  2a–2h netting; Q4 scope limits (under-exam / 5-year / cut-off / DCN-7 ≥2-yr / user fee) = diagnostic badges.
+  **Authored:** `load_3115.py` (19 facts / 5 rules / 6 lines / 8 diag / 7 tests / 3 FA). Validated on throwaway SQLite
+  (`scratchpad/validate_3115.py`, **36 pass / 0 fail** — the spread engine incl. de-minimis-precedence-over-under-exam,
+  the catch-up (8k−72k→−64,000; 120k−20k→+100,000), the Schedule A netting (+120,000), and DCN 7 routing all green;
+  caught 1 topic_name > 255 cap, trimmed; all 5 rules cited to 5 sources). **Judgment call flagged to Ken (W2/W3):** the
+  Schedule A cash→accrual signs are baked into the compute (AR add / AP + advance-payments subtract) rather than
+  pre-signed direct-entry — Ken approved as-is. Ken Gate-1: "approved." Seeded → **120 TaxForms / 527 FlowAssertions /
+  973 FormRules**; `lookup/3115/export/` = 200; seed_all auto-discovers `load_3115` (reconstructable, --dry-run
+  verified). **The SPINE S-16 federal-forms queue is now FULLY DRAINED (all 10).** Next RS scope needs the TaxWise
+  forms-usage report or a law change. BUILD_ORDER S-16 3115 ✅.
 - 2026-07-06: **FORM 8832 (Entity Classification Election) AUTHORED + SEEDED + EXPORTED (WO-22) — 9th item in the S-16 federal-forms queue.**
   Front door: gap-check (GAP — `8832`/`2553` both 404) → verbatim research (current FINAL Form 8832 **Rev. December
   2013** + §301.7701-3 + Rev. Proc. 2009-41; **no annual reissue, no OBBBA impact**) → `f8832_source_brief.md`.

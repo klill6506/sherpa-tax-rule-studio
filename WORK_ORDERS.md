@@ -66,6 +66,34 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-23] Form 3115 · Application for Change in Accounting Method (§481(a)) · greenfield RS-first ·
+  status `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 10th — the LAST S-16 item;
+  QUEUE DRAINED).**
+  Ken's specialty (§481(a) depreciation catch-up). Gap-check (2026-07-06): no `load_3115*` loader; the only on-disk
+  `3115` ref is diagnostic text in `load_1120s_complete.py` (not an authoring surface); `lookup/3115/export/` = GAP
+  (server down, cross-checked on-disk — no loader authors form_number 3115). entity_types = 1040/1065/1120/1120S
+  (any taxpayer changing an accounting method). NOT a return computation — it's the §446(e)/§481(a) method-change
+  APPLICATION: automatic vs non-automatic change (Rev. Proc. 2015-13 procedural + the annual automatic-change list);
+  the **§481(a) adjustment** (the catch-up) + spread (positive over 4 years / negative in 1 / de minimis) + DCN;
+  Schedule E depreciation/amortization method changes (Ken's wheelhouse — impermissible→permissible, DCN 7).
+  **✅ RESEARCH-VERIFIED (2026-07-06, verbatim vs FINAL Form 3115 **Rev. December 2022** + i3115 12-2022 + Rev. Proc.
+  2015-13 §7.03 + Rev. Proc. 2025-23 §6.01/DCN 7 + IRC §446(e)/§481(a)) → `f3115_source_brief.md`.** No annual reissue;
+  **no OBBBA impact on the procedural machinery/§481(a)** (OBBBA changed depreciation *amounts*, not §446/§481). Spread:
+  negative = 1 yr / positive = 4 yrs ratable / positive <$50k = de minimis 1-yr election / under-exam positive = 2 yrs.
+  DCN 7 depreciation catch-up = (taken present) − (allowable proposed) as of BOY. **✅ Gate-1 scope walk APPROVED
+  2026-07-06 (DECISIONS D-25, all 4 recommended):** Q1 compute the full spread engine; Q2 compute the Schedule E
+  depreciation catch-up + DCN 7 routing (direct-entry the 7a–7h descriptors); Q3 compute the Schedule A cash↔accrual
+  2a–2h netting; Q4 scope limits (under-exam/5-year/cut-off/≥2-yr) = diagnostic badges. entity_types
+  ['1040','1065','1120','1120S']. **✅ AUTHORED + SQLite-VALIDATED** (`load_3115.py`, 19 facts / 5 rules / 6 lines /
+  8 diag / 7 tests / 3 FA; `scratchpad/validate_3115.py` = **36 pass / 0 fail** — the spread engine (neg 1 / pos 4 /
+  de minimis 1 / under-exam 2 / de minimis precedence), the depreciation catch-up (8k−72k→−64k; 120k−20k→+100k),
+  the Schedule A netting (+120k), DCN 7 routing all green; caught 1 topic_name > 255 cap, trimmed). **✅ DONE —
+  seeded + exported 2026-07-06** (Ken Gate-1: "approved"; W1-W4 blessed) → **120 TaxForms**; `lookup/3115/export/`
+  = 200; seed_all auto-discovers `load_3115` (reconstructable, verified via --dry-run). **Status: ✅ DONE (RS).** tts
+  app build = [APP] lane. **⏭ SPINE S-16 federal-forms queue is now FULLY DRAINED (all 10: 8990 → Sch H → 4684 →
+  4952 → 8379 → 8814 → 8839 → 709 → 8832 → 3115).** Net-new RS scope now needs the TaxWise forms-usage report or a
+  law change (per BUILD_ORDER S-16 closing note).
+
 - **▶ [WO-22] Form 8832 · Entity Classification Election ("check-the-box") · greenfield RS-first · status
   `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 9th).** Gap-check: no loader,
   `lookup/8832/export/` = 404 → GAP (2553 also absent). entity_types = [1065,1120,1120S,1040] (the classifications the

@@ -19,7 +19,9 @@ implement the compute in tts-tax-app. A spec is a test oracle, not runtime data.
 ## Domain knowledge
 
 **The front-door authoring pattern (standardized, battle-tested across the S-16 federal-forms queue — WO-14
-through WO-22, 9 forms, 2026-07-05/06).** Each new form runs the same loop, one form per Work Order:
+through WO-23, ALL 10 forms, 2026-07-05/06; the S-16 queue is now FULLY DRAINED. Next RS scope needs the
+TaxWise forms-usage report or a law change — there is no queued next order).** Each form ran the same loop,
+one form per Work Order:
 1. **Gap-check** — `GET /api/forms/lookup/<FORM>/export/` (via Django test client, set
    `settings.ALLOWED_HOSTS=['testserver']`); 404 = GAP, 200 = already exists. Open a WO in WORK_ORDERS.md.
 2. **Research** — spawn a subagent to verify VERBATIM against the FINAL IRS source (form + instructions +

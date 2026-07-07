@@ -16,6 +16,53 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-06 — D-25: Form 3115 (WO-23) v1 scope LOCKED — Application for Change in Accounting Method (§481(a))
+
+**Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 3115 (10th and LAST
+item in the SPINE S-16 federal-forms queue; Ken's specialty). The §446(e)/§481(a) method-change APPLICATION — not a
+return computation:
+- **(Q1) COMPUTE the full §481(a) spread engine.** From the signed Part IV Line 26 adjustment: negative → entirely in
+  the year of change (1 yr); positive → ratably over **4 years** (25%/yr); positive **< $50,000** → offer the de
+  minimis one-year election (Line 28); positive **under examination** → 2-year period. Cited to Rev. Proc. 2015-13
+  §7.03(1)/(3)(c).
+- **(Q2) COMPUTE the Schedule E depreciation §481(a) catch-up + DCN routing; direct-entry the 7a–7h descriptors.**
+  Catch-up = (depreciation TAKEN under present method) − (depreciation ALLOWABLE under proposed method) as of the
+  beginning of the year of change (sign flows straight into the spread engine); classify impermissible→permissible
+  depreciation → **DCN 7** (Part I Line 1, Rev. Proc. 2025-23 §6.01). The present/proposed method descriptors (7a Code
+  section, 7b Rev. Proc. 87-56 asset class, 7d method, 7e recovery period, 7f convention, 7g bonus flag) = structured
+  direct-entry, NOT validated against each other in v1.
+- **(Q3) COMPUTE the Schedule A cash↔accrual §481(a) worksheet.** Net §481(a) = 2a AR + 2b advance payments + 2c AP +
+  2d prepaids + 2e supplies + 2f inventory + 2g other → 2h → Part IV Line 26 (deterministic sum).
+- **(Q4) Scope-limitation checks = DIAGNOSTIC/warning badges (no compute).** Under-exam (L6a), the 5-year rule (L11a),
+  cut-off vs §481(a) (L25 suppresses lines 26–29), and the DCN-7 ≥2-impermissible-years requirement. One `3115` form;
+  entity_types **['1040','1065','1120','1120S']** (any taxpayer can file).
+
+**Context:** WO-23 front door: gap-check (GAP — no `load_3115*`; only on-disk `3115` ref is diagnostic text in
+`load_1120s_complete.py`; `lookup/3115/export/` = 404) → verbatim research (current FINAL **Form 3115 Rev. December
+2022** + i3115 12-2022 + **Rev. Proc. 2015-13** §7.03 + **Rev. Proc. 2025-23** §6.01/DCN 7 + IRC §446(e)/§481(a)) →
+`f3115_source_brief.md` → this walk. **No OBBBA impact on the procedural machinery or §481(a)** — OBBBA changed
+substantive depreciation *amounts* (100% bonus permanent, §168(n) QPP), not §446/§481, the spread/de minimis rules, or
+the form layout (an impermissible bonus/MACRS method is still corrected via DCN 7 + §481(a); OBBBA changes the *correct
+number*, not the mechanism).
+
+**Alternatives considered:** base-spread-only for Q1 (rejected — the de minimis election and under-exam 2-yr override
+are the practitioner traps and are computable); full 7a–7h descriptor validation for Q2 (rejected — asset-class ↔
+method ↔ convention cross-validation is a large surface for little v1 value; the catch-up NUMBER and DCN are what
+matter); Schedule A direct-entry only for Q3 (rejected — the 2a–2h netting is a clean deterministic sum); computed
+eligibility gate for Q4 (rejected — unlike 8832, the 3115 scope limits are heterogeneous flags, not a single tree;
+diagnostics fit better).
+
+**Would reconsider if:** the IRS issues a new Form 3115 revision (re-verify the whole form — it reissues irregularly,
+not annually); a new automatic-change Rev. Proc. supersedes 2025-23 (re-verify the DCN list); a deeper compute leg
+(e.g. §263A UNICAP §481(a), long-term-contract §460, or LIFO changes) is scoped as its own order.
+
+**Year-keyed / re-verify EACH SEASON:** the **Form 3115 REVISION** (Rev. 12-2022 now) and the **current automatic-
+change Rev. Proc.** (Rev. Proc. 2025-23 now; the DCN list updates ~annually). The **$50,000** de minimis threshold is
+from Rev. Proc. 2015-13 (stable, but re-verify on any successor). MACRS table percentages for the depreciation-
+catch-up validation oracle use clean round numbers (no Pub. 946 table dependency).
+
+---
+
 ## 2026-07-06 — D-24: Form 8832 (WO-22) v1 scope LOCKED — Entity Classification Election
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 8832 (9th item in
