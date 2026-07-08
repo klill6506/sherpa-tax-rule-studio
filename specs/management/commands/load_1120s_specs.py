@@ -436,6 +436,24 @@ class Command(BaseCommand):
              "inputs": ["qbi_ordinary_income", "qbi_w2_wages", "qbi_ubia", "ownership_percentage"],
              "outputs": ["box_17_other_info"],
              "description": "Box 17 QBI items = shareholder's share. Used for §199A computation on 1040.", "sort_order": 17, "precedence": 1},
+            # ── ROUNDING LEG (2026-07-08, Ken ruling: residual-offset allocator) ──
+            {"rule_id": "R-K1-ROUND", "title": "Whole-dollar K-1 rounding — residual to the LAST shareholder", "rule_type": "calculation",
+             "formula": ("For each Schedule K dollar line: every shareholder EXCEPT the last (canonical "
+                         "K-1 order) gets round_half_up(K_line × ownership_pct) to whole dollars; the "
+                         "LAST shareholder gets K_line − Σ(the other shareholders' rounded shares) — the "
+                         "whole-dollar rounding residual — so Σ over all shareholders == the Schedule K "
+                         "line EXACTLY."),
+             "inputs": ["ownership_percentage"], "outputs": [],
+             "description": ("§1377(a) strict per-share-per-day pro-rata plus whole-dollar reporting "
+                             "necessarily puts a $1 offset SOMEWHERE on an odd split — independent "
+                             "per-shareholder rounding instead drifts Σ K-1 vs Schedule K (a 50/50 split "
+                             "of 3,575 rounds to 1,788+1,788=3,576). The IRS ATS 1120-S Scenario-5 key "
+                             "penny-offsets to the second shareholder (K-1s print 1,788/1,787 · "
+                             "5,732/5,731). Applies to every pro-rated dollar box (1-17) and the QBI "
+                             "statement dollar items; shareholder-specific amounts (box 16d "
+                             "distributions, box 17 AC health insurance) are never allocated so never "
+                             "carry a residual. Ken ruling 2026-07-08 (tax-app REVIEW_QUEUE)."),
+             "sort_order": 21, "precedence": 2},
             {"rule_id": "R018", "title": "Basis limitation check", "rule_type": "validation",
              "formula": "total_losses <= stock_basis_boy + debt_basis",
              "inputs": ["box_1_ordinary_income", "stock_basis_boy", "debt_basis"],
@@ -471,6 +489,8 @@ class Command(BaseCommand):
             ("R011", "IRS_2025_1120S_K1_INSTR", "secondary", "Box 11 instructions"),
             ("R017", "IRC_199A", "primary", "§199A QBI items for shareholder computation"),
             ("R017", "IRS_2025_1120S_K1_INSTR", "secondary", "Box 17 — other information"),
+            ("R-K1-ROUND", "IRC_1377", "primary", "§1377(a) strict pro-rata — whole-dollar reporting forces the residual somewhere; last-shareholder offset keeps Σ == Schedule K"),
+            ("R-K1-ROUND", "IRS_2025_1120S_K1_INSTR", "secondary", "Whole-dollar reporting convention; the ATS Scenario-5 key's 1,788/1,787 residual-offset behavior"),
             ("R018", "IRC_1366", "primary", "§1366(d) — loss limited to stock + debt basis"),
             ("R018", "IRS_2025_7203_INSTR", "secondary", "Form 7203 — basis computation and loss limitation"),
             ("R019", "IRC_465", "primary", "§465 — at-risk limitation"),
@@ -521,6 +541,17 @@ class Command(BaseCommand):
              "inputs": {"ownership_percentage": 0.5, "ordinary_business_income": -80000, "stock_basis_boy": 30000, "debt_basis": 0},
              "expected_outputs": {"box_1_ordinary_income": -40000, "deductible_loss": -30000, "suspended_loss": -10000},
              "notes": "50% of -80K = -40K allocated. Stock basis 30K limits deduction to -30K, 10K suspended.", "sort_order": 2},
+            # ── ROUNDING LEG (2026-07-08) ──
+            {"scenario_name": "Residual-offset rounding — 50/50 split of an odd K line (ATS S5 K2)",
+             "scenario_type": "edge",
+             "inputs": {"shareholders": [{"ownership_percentage": 0.5}, {"ownership_percentage": 0.5}],
+                        "net_rental_real_estate_income": 3575},
+             "expected_outputs": {"box_2_first_shareholder": 1788, "box_2_last_shareholder": 1787,
+                                  "box_2_sum": 3575},
+             "notes": ("R-K1-ROUND: first shareholder = round_half_up(3,575 × 0.5) = 1,788; LAST "
+                       "shareholder = 3,575 − 1,788 = 1,787 (the residual). Σ == Schedule K line 2 "
+                       "EXACTLY (never 1,788+1,788=3,576). Matches the ATS Scenario-5 key. Same "
+                       "mechanics: K11 11,463 → 5,732/5,731."), "sort_order": 3},
         ])
 
         self._upsert_form_links("K1_1120S", sources, [

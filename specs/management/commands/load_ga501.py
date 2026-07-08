@@ -253,6 +253,13 @@ GA501_FACTS: list[dict] = [
     {"fact_key": "withholding_credit", "label": "Tax withheld — 1099/G2-A/G2-LP/G2-RP (Form 501 L11b, direct-entry)", "data_type": "decimal", "required": False, "sort_order": 44,
      "notes": "§48-7-129 owner-level withholding when the trust is a NR member of a PTE or sold GA realty (G2-RP)."},
     {"fact_key": "estimated_payments", "label": "Estimated + extension payments (Form 501 L11a)", "data_type": "decimal", "required": False, "sort_order": 45},
+    # ── settle-block inputs (2026-07-08 line_map extension — tts handoff) ──
+    {"fact_key": "sch5b_refundable_credits", "label": "Schedule 5B refundable tax credits — electronic filing only (Form 501 L11c)", "data_type": "decimal", "required": False, "sort_order": 46},
+    {"fact_key": "credit_elect_next_year", "label": "Amount of overpayment credited to next year's estimated tax (Form 501 L14)", "data_type": "decimal", "required": False, "sort_order": 47},
+    {"fact_key": "interest_due", "label": "Interest (Form 501 L15)", "data_type": "decimal", "required": False, "sort_order": 48},
+    {"fact_key": "late_payment_penalty", "label": "Late payment penalty (Form 501 L16)", "data_type": "decimal", "required": False, "sort_order": 49},
+    {"fact_key": "late_filing_penalty", "label": "Late filing penalty (Form 501 L17)", "data_type": "decimal", "required": False, "sort_order": 50},
+    {"fact_key": "uet_penalty", "label": "Underpayment of estimated tax penalty — UET (Form 501 L18)", "data_type": "decimal", "required": False, "sort_order": 51},
 ]
 
 GA501_RULES: list[dict] = [
@@ -284,10 +291,32 @@ GA501_RULES: list[dict] = [
      "formula": "L8 = round(L7c * 0.0519)  [round to the nearest dollar]",
      "inputs": [], "outputs": ["GA501_L8"], "sort_order": 6,
      "description": "W1. Form 501 L8: 'Multiply the amount on Line 7c by 5.19%.' Year-keyed (2026 → 4.99%)."},
-    {"rule_id": "R-GA501-CREDITS", "title": "Tax less credits (Form 501 L10)", "rule_type": "calculation",
-     "formula": "L10 = max(0, L8 - other_state_tax_credit - schedule5_credits)",
+    {"rule_id": "R-GA501-CREDITS", "title": "Tax less credits (Form 501 L9c/L10)", "rule_type": "calculation",
+     "formula": "L9c = min(other_state_tax_credit + schedule5_credits, L8)  [face: 'Total Credits used (9a plus 9b cannot exceed Line 8)'] ; L10 = max(0, L8 - L9c)",
      "inputs": ["other_state_tax_credit", "schedule5_credits"], "outputs": ["GA501_L10"], "sort_order": 7,
-     "description": "L9a other-state credit + L9b Schedule 5 nonrefundable credits (direct-entry). Refundable Sch 5B (Timber) and withholding (L11b) are payments, not L9 credits."},
+     "description": "AMENDED 2026-07-08 (tts handoff): routes through the face's 9c row + cap — same "
+                    "result as the prior direct formula. L9a other-state credit + L9b Schedule 5 "
+                    "nonrefundable credits (direct-entry). Refundable Sch 5B (Timber) and withholding "
+                    "(L11b) are payments, not L9 credits."},
+    # ── SETTLE-BLOCK LEG (2026-07-08 — the tts handoff's line_map extension; face verbatim,
+    #    Form 501 Rev. 07/09/25 page 2; the shipped compute_ga501 already computes these) ──
+    {"rule_id": "R-GA501-SETTLE", "title": "Payments & settle-up (Form 501 L11-L20)", "rule_type": "calculation",
+     "formula": ("L11d = L11a + L11b + L11c ; "
+                 "L12 = max(0, L10 - L11d)  [balance of tax due] ; "
+                 "L13 = max(0, L11d - L10)  [overpayment] ; "
+                 "L19 = L12 + L15 + L16 + L17 + L18 if L12 > 0 else 0  "
+                 "[face: '(If you owe) Add Lines 12, 15 thru 18'] ; "
+                 "L20 = max(0, L13 - L14 - L15 - L16 - L17 - L18) if L13 > 0 else 0  "
+                 "[face: '(If you are due a refund) Subtract the sum of Lines 14 thru 18 from Line 13']"),
+     "inputs": ["estimated_payments", "withholding_credit", "sch5b_refundable_credits",
+                "credit_elect_next_year", "interest_due", "late_payment_penalty",
+                "late_filing_penalty", "uet_penalty"],
+     "outputs": [], "sort_order": 8,
+     "description": "The page-2 payments/settle block (11a estimated+extension · 11b withholding · "
+                    "11c Sch 5B refundable credits (e-file only) · 14 credit-elect · 15 interest · "
+                    "16 late payment · 17 late filing · 18 UET). Face arithmetic verbatim — added "
+                    "2026-07-08 so the spec matches the shipped compute_ga501 (previously the "
+                    "line_map ended at 11b)."},
 ]
 
 GA501_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -300,7 +329,8 @@ GA501_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-GA501-TAXABLE", "GA_2025_FORM_501", "primary", "L7a/L7c GA taxable (face arithmetic)"),
     ("R-GA501-TAX", "GA_2025_501_INSTR", "primary", "5.19% rate (What's New) / L8 multiply"),
     ("R-GA501-TAX", "GA_OCGA_48_7", "secondary", "§48-7-20 income tax rate"),
-    ("R-GA501-CREDITS", "GA_2025_FORM_501", "primary", "L9a/L9b credits → L10"),
+    ("R-GA501-CREDITS", "GA_2025_FORM_501", "primary", "L9a/L9b → 9c cap ('cannot exceed Line 8') → L10"),
+    ("R-GA501-SETTLE", "GA_2025_FORM_501", "primary", "Page-2 lines 11a-20 (payments, penalties, owe/refund) — face verbatim"),
 ]
 
 GA501_LINES: list[dict] = [
@@ -316,8 +346,22 @@ GA501_LINES: list[dict] = [
     {"line_number": "8", "description": "Income tax (L7c × 5.19%)", "line_type": "calculated", "source_rules": ["R-GA501-TAX"], "sort_order": 10},
     {"line_number": "9a", "description": "Other state(s) tax credit", "line_type": "input", "source_facts": ["other_state_tax_credit"], "sort_order": 11},
     {"line_number": "9b", "description": "Schedule 5 nonrefundable credits", "line_type": "input", "source_facts": ["schedule5_credits"], "sort_order": 12},
-    {"line_number": "10", "description": "Tax less credits (L8 − L9)", "line_type": "total", "source_rules": ["R-GA501-CREDITS"], "sort_order": 13},
-    {"line_number": "11b", "description": "Tax withheld (1099 / G2-A / G2-LP / G2-RP)", "line_type": "input", "source_facts": ["withholding_credit"], "sort_order": 14},
+    {"line_number": "9c", "description": "Total credits used (9a plus 9b, cannot exceed Line 8)", "line_type": "calculated", "source_rules": ["R-GA501-CREDITS"], "sort_order": 13},
+    {"line_number": "10", "description": "Tax less credits (L8 − L9c)", "line_type": "total", "source_rules": ["R-GA501-CREDITS"], "sort_order": 14},
+    # ── settle block (2026-07-08 extension — face verbatim, Rev. 07/09/25 page 2) ──
+    {"line_number": "11a", "description": "Georgia estimated tax paid (incl. extension payments)", "line_type": "input", "source_facts": ["estimated_payments"], "sort_order": 15},
+    {"line_number": "11b", "description": "Tax withheld (1099 / G2-A / G2-LP / G2-RP)", "line_type": "input", "source_facts": ["withholding_credit"], "sort_order": 16},
+    {"line_number": "11c", "description": "Schedule 5B refundable tax credits (electronic filing only)", "line_type": "input", "source_facts": ["sch5b_refundable_credits"], "sort_order": 17},
+    {"line_number": "11d", "description": "Total payments and refundable credits (Lines 11a + 11b + 11c)", "line_type": "subtotal", "source_rules": ["R-GA501-SETTLE"], "sort_order": 18},
+    {"line_number": "12", "description": "Balance of tax due (Line 10 less Line 11d, if positive)", "line_type": "calculated", "source_rules": ["R-GA501-SETTLE"], "sort_order": 19},
+    {"line_number": "13", "description": "Overpayment (Line 11d less Line 10, if positive)", "line_type": "calculated", "source_rules": ["R-GA501-SETTLE"], "sort_order": 20},
+    {"line_number": "14", "description": "Amount of Line 13 credited to next year's estimated tax", "line_type": "input", "source_facts": ["credit_elect_next_year"], "sort_order": 21},
+    {"line_number": "15", "description": "Interest", "line_type": "input", "source_facts": ["interest_due"], "sort_order": 22},
+    {"line_number": "16", "description": "Late payment penalty", "line_type": "input", "source_facts": ["late_payment_penalty"], "sort_order": 23},
+    {"line_number": "17", "description": "Late filing penalty", "line_type": "input", "source_facts": ["late_filing_penalty"], "sort_order": 24},
+    {"line_number": "18", "description": "Underpayment of estimated tax penalty (UET)", "line_type": "input", "source_facts": ["uet_penalty"], "sort_order": 25},
+    {"line_number": "19", "description": "Amount you owe (Line 12 plus Lines 15 through 18)", "line_type": "total", "source_rules": ["R-GA501-SETTLE"], "sort_order": 26},
+    {"line_number": "20", "description": "Refund (Line 13 less Lines 14 through 18)", "line_type": "total", "source_rules": ["R-GA501-SETTLE"], "sort_order": 27},
 ]
 
 GA501_DIAGNOSTICS: list[dict] = [
@@ -329,10 +373,17 @@ GA501_DIAGNOSTICS: list[dict] = [
      "condition": "residency in (part_year, nonresident)",
      "message": "This return is part-year or nonresident. Georgia source allocation via Schedule 4 (Total vs Georgia-source columns, ratio at Line 9) is NOT computed in v1 — prepare Schedule 4 manually. The full-year resident computation does not apply.",
      "notes": "D-10 RED-defer."},
-    {"diagnostic_id": "D_GA501_DEPR", "title": "GA §168(k)/§179 add-back rides generic Sch 2 Other — prepare manually", "severity": "warning",
-     "condition": "federal bonus depreciation or §179 in the federal 1041 numbers",
-     "message": "Georgia has not adopted §168(k) bonus depreciation or OBBBA (conformity frozen at Jan 1, 2025). Form 501 has NO dedicated depreciation line — add back federal bonus/§179 excess and enter the GA depreciation difference on the generic Schedule 2 'Other' addition/subtraction lines under §48-7-27. Not computed in v1.",
-     "notes": "D-10 RED-defer. Ken's specialty."},
+    {"diagnostic_id": "D_GA501_DEPR", "title": "GA §168(k) bonus add-back rides generic Sch 2 Other — prepare manually", "severity": "warning",
+     "condition": "federal bonus depreciation in the federal 1041 numbers",
+     "message": "Georgia decouples from §168(k)/(n) bonus depreciation — add back the federal bonus "
+                "and enter the GA depreciation difference on the generic Schedule 2 'Other' "
+                "addition/subtraction lines under §48-7-27 (Form 501 has NO dedicated depreciation "
+                "line). Not computed in v1. (GA DOES conform to the OBBBA §179 limit for TY2025 via "
+                "HB 1199, so there is normally no separate §179 add-back.)",
+     "notes": "D-10 RED-defer. Ken's specialty. TEXT AMENDED 2026-07-08 per the tts handoff "
+              "(2026-07-08_ga501_spec_drift.md): the prior text said conformity was frozen at "
+              "Jan 1, 2025 and lumped §179 into the add-back — stale after HB 1199 (Ken 2026-07-06). "
+              "Mirrors the Ken-approved rules_ga700 wording."},
     {"diagnostic_id": "D_GA501_NRW", "title": "§48-7-129 4% withholding is OWNER-level, not trust→beneficiary", "severity": "info",
      "condition": "the trust is a nonresident member of a PTE, or sold GA real property (G2-RP)",
      "message": "The §48-7-129 4% nonresident withholding applies to the trust as a MEMBER of a pass-through entity (or on a GA real-property sale, G2-RP) — it does NOT apply to distributions from the trust to its beneficiaries. Withholding taken FROM the trust is claimed as a credit on Form 501 Line 11b.",
@@ -349,10 +400,17 @@ GA501_DIAGNOSTICS: list[dict] = [
      "condition": "always",
      "message": "Georgia's pass-through entity tax (HB 149) is a partnership/S-corp election, NOT available on Form 501. A trust only sees PTET as a member/owner of an electing PTE (reflected in the federal numbers flowing to Line 1). There is no PTET election, addback, or subtraction on Form 501.",
      "notes": "Confirmed N/A."},
-    {"diagnostic_id": "D_GA501_CONFORM", "title": "GA conformity Jan 1 2025 (OBBBA not adopted) — re-verify 2025 bill", "severity": "warning",
+    {"diagnostic_id": "D_GA501_CONFORM", "title": "Verify GA IRC conformity (HB 1199) on a conformity-sensitive 501", "severity": "warning",
      "condition": "conformity-sensitive item present",
-     "message": "Georgia conforms to the IRC as enacted on or before January 1, 2025 and has NOT adopted OBBBA (signed July 4, 2025). Depreciation, §179, and other OBBBA items follow pre-OBBBA federal law. GA passes an annual conformity bill each spring — re-verify before relying on the conformity date.",
-     "notes": "W3."},
+     "message": "This return has a conformity-sensitive item. For TY2025 Georgia's IRC conformity "
+                "date is January 1, 2026 (HB 1199, retroactive to tax years beginning on/after "
+                "Jan 1, 2025) — GA conforms to the OBBBA §179 limit ($2,500,000 / $4,000,000) but "
+                "still decouples from §168(k)/(n) bonus depreciation (add-back required). GA passes "
+                "an annual conformity bill each spring — re-verify before relying on the date.",
+     "notes": "W3. TEXT AMENDED 2026-07-08 per the tts handoff (2026-07-08_ga501_spec_drift.md): the "
+              "prior text pre-dated the HB 1199 ruling (Ken 2026-07-06) and said GA had NOT adopted "
+              "OBBBA wholesale — stale (the DOR booklet's What's New printed before HB 1199). "
+              "Mirrors the Ken-approved rules_ga700 wording."},
 ]
 
 GA501_SCENARIOS: list[dict] = [
@@ -379,6 +437,18 @@ GA501_SCENARIOS: list[dict] = [
      "inputs": {"fiduciary_type": "trust", "residency": "nonresident", "fed_adjusted_total_income": 40000},
      "expected_outputs": {"diagnostic": "D_GA501_NR"},
      "notes": "Nonresident/part-year → Schedule 4 allocation is RED-deferred in v1; D_GA501_NR fires (prepare Schedule 4 manually)."},
+    # ── settle-block leg (2026-07-08) ──
+    {"scenario_name": "GA501-T6 — 9c credit cap + settle block (owe path)", "scenario_type": "normal", "sort_order": 6,
+     "inputs": {"fiduciary_type": "trust", "residency": "full_year_resident", "fed_adjusted_total_income": 50000,
+                "beneficiaries_share": 0, "other_state_tax_credit": 3000, "schedule5_credits": 500,
+                "estimated_payments": 400, "withholding_credit": 49, "sch5b_refundable_credits": 0,
+                "interest_due": 10, "late_payment_penalty": 0, "late_filing_penalty": 0, "uet_penalty": 6},
+     "expected_outputs": {"GA501_L8": 2525, "GA501_L9c": 2525, "GA501_L10": 0,
+                          "GA501_L11d": 449, "GA501_L12": 0, "GA501_L13": 449,
+                          "GA501_L19": 0, "GA501_L20": 433},
+     "notes": ("T1 base (tax 2,525). 9c caps 9a+9b (3,500) AT Line 8 → 2,525 (face: 'cannot exceed "
+               "Line 8'); L10 = 0. Payments 11d = 400 + 49 + 0 = 449 → overpayment L13 = 449; refund "
+               "L20 = 449 − 0 (14) − 10 (15) − 6 (18) = 433. The owe path (L12/L19) stays 0.")},
 ]
 
 

@@ -316,6 +316,26 @@ ASSERTIONS = [
         },
         "bug_reference": "Preventive — if L10 columns are wrong, L15 could use wrong value",
     },
+    # --- K-1 rounding leg (2026-07-08, Ken ruling: residual-offset allocator) ---
+    {
+        "assertion_id": "FA-K1-ROUND",
+        "title": "Σ per-shareholder K-1 box == the Schedule K line EXACTLY (whole-dollar residual to the LAST shareholder)",
+        "description": ("R-K1-ROUND (K1_1120S): every shareholder except the last gets "
+                        "round_half_up(K_line × pct); the LAST gets the remainder, so the K-1s always "
+                        "sum back to Schedule K. Bug it catches: independent per-shareholder rounding "
+                        "drifting Σ K-1 vs Schedule K (50/50 of 3,575 → 1,788+1,788=3,576 — the "
+                        "pre-2026-07-08 engine behavior; the ATS S5 key penny-offsets 1,788/1,787)."),
+        "assertion_type": "reconciliation",
+        "entity_types": ["1120S"],
+        "definition": {
+            "check_type": "allocation_sum_exact",
+            "formula": ("for each Schedule K dollar line L: shares[i] = round_half_up(L × pct_i) for "
+                        "i < n; shares[n-1] = L − Σ shares[:n-1]; assert Σ shares == L exactly "
+                        "(3,575 @ 50/50 → 1,788/1,787; 11,463 @ 50/50 → 5,732/5,731)"),
+            "description": "Whole-dollar K-1 allocation must reconcile to Schedule K to the dollar",
+        },
+        "bug_reference": "tax-app REVIEW_QUEUE 2026-07-08 — K-1 sums drifted $1 over Schedule K on the ATS S5 build",
+    },
 ]
 
 

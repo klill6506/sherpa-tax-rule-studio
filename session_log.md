@@ -4,6 +4,26 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-08 (evening) — K1_1120S ROUNDING LEG + GA501 drift amendments seeded
+*Same session as the 4797 entity leg below (the Ken-set non-e-help queue).*
+- **K1_1120S rounding (Ken ruling: residual-offset allocator):** NEW rule `R-K1-ROUND` —
+  whole-dollar half-up per shareholder, the ROUNDING RESIDUAL to the LAST shareholder
+  (canonical K-1 order) so Σ K-1 == Schedule K EXACTLY (§1377(a) + the ATS S5 key's
+  1,788/1,787 · 5,732/5,731 behavior; the spec was silent on rounding). + scenario
+  "Residual-offset rounding" + links (IRC_1377 primary). NEW FA `FA-K1-ROUND` in
+  seed_flow_assertions (entity_types 1120S). Seeded; deployed export verified
+  (R-K1-ROUND + scenario served). tts build = the k1_issuer leg (same session).
+- **GA501 (the 2026-07-08_ga501_spec_drift.md handoff, all three items):**
+  (1) `D_GA501_CONFORM`/`D_GA501_DEPR` texts amended to the HB 1199 ruling (GA conforms
+  to OBBBA §179 $2.5M/$4M; decouples ONLY from §168(k)/(n) bonus) — mirrors the
+  Ken-approved rules_ga700/rules_ga501 wording; (2) line_map extended 15→27 lines
+  (9c credit cap + the page-2 settle block 11a-20, face verbatim Rev. 07/09/25) with
+  amended `R-GA501-CREDITS` (routes through 9c) + NEW `R-GA501-SETTLE` + 6 new input
+  facts + scenario GA501-T6 (9c cap + refund path 449/433); (3) face-mechanics notes
+  were already carried in the tts render. Seeded; deployed export verified (27 lines,
+  R-GA501-SETTLE, HB 1199 text); tts mirror `server/specs/ga501_spec.json` refreshed +
+  T6 transcribed as a pure pin (`test_spec_t6_settle_block_refund_path`, 17/17).
+
 ## 2026-07-08 (evening) — 4797 ENTITY PASS-THROUGH LEG authored + seeded (Ken ruling: "build the full unit")
 *The §179-disposition pass-through gap found in the tts S5 mapper build (REVIEW_QUEUE 2026-07-08);
 Ken ruled build-the-full-unit on the recommended option. Spec-first — this is the RS leg.*
