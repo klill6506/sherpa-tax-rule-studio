@@ -11,7 +11,9 @@ import sources.management.commands.fetch_federal_register as fr
 import sources.management.commands.fetch_irb as irb
 from sources.models import (
     AuthoritySource, AuthorityVersion, ChangeDetectionSource, ChangeRegisterItem, ChangeStatus,
+    RuleAuthorityLink,
 )
+from specs.models import FormRule, TaxForm
 
 
 def _irb_html(nums):
@@ -423,3 +425,88 @@ class TestPollChangeFeeds:
         monkeypatch.delenv("PUSHOVER_USER", raising=False)
         out = run("poll_change_feeds")
         assert "not configured" in out
+
+
+@pytest.fixture
+def form_3115(db):
+    return TaxForm.objects.create(
+        form_number="3115", jurisdiction="federal", tax_year=2025, version=1,
+        form_title="Application for Change in Accounting Method", entity_types=["1040"], status="draft")
+
+
+def _rule(form, rid, title="A rule"):
+    return FormRule.objects.create(tax_form=form, rule_id=rid, title=title, rule_type="calculation")
+
+
+@pytest.mark.django_db
+class TestStaleRulesReport:
+    def test_requires_change_or_source(self, db):
+        with pytest.raises(CommandError):
+            run("stale_rules_report")
+
+    def test_unknown_source_errors(self, db):
+        with pytest.raises(CommandError):
+            run("stale_rules_report", "--source", "NOPE")
+
+    def test_unknown_change_errors(self, db):
+        with pytest.raises(CommandError):
+            run("stale_rules_report", "--change", "CR-2026-999")
+
+    def test_source_lists_citing_rules(self, source, form_3115):
+        rule = _rule(form_3115, "R-3115-CATCHUP", "Depreciation catch-up")
+        RuleAuthorityLink.objects.create(form_rule=rule, authority_source=source, support_level="primary",
+                                         relevance_note="§6.01(5)")
+        out = run("stale_rules_report", "--source", "REVPROC_2025_23")
+        assert "R-3115-CATCHUP" in out
+        assert "CITES SOURCE" in out
+        assert "1 rule(s) across 1 form(s)" in out
+
+    def test_change_uses_authority_source(self, source, form_3115):
+        rule = _rule(form_3115, "R-3115-DCN")
+        RuleAuthorityLink.objects.create(form_rule=rule, authority_source=source, support_level="primary")
+        ChangeRegisterItem.objects.create(change_code="CR-2026-001", title="t", summary="s", authority_source=source)
+        out = run("stale_rules_report", "--change", "CR-2026-001")
+        assert "R-3115-DCN" in out and "CITES SOURCE" in out
+
+    def test_change_affected_forms_sweep(self, db, form_3115):
+        _rule(form_3115, "R-3115-PERIOD")
+        _rule(form_3115, "R-3115-SPREAD")
+        ChangeRegisterItem.objects.create(change_code="CR-2026-002", title="t", summary="s", affected_forms=["3115"])
+        out = run("stale_rules_report", "--change", "CR-2026-002")
+        assert "R-3115-PERIOD" in out and "R-3115-SPREAD" in out
+        assert "on affected form" in out
+        assert "2 rule(s) across 1 form(s)" in out
+
+    def test_change_named_rule_ids(self, db, form_3115):
+        _rule(form_3115, "R-3115-CATCHUP")
+        _rule(form_3115, "R-3115-OTHER")
+        ChangeRegisterItem.objects.create(change_code="CR-2026-003", title="t", summary="s",
+                                          affected_rule_ids=["R-3115-CATCHUP"])
+        out = run("stale_rules_report", "--change", "CR-2026-003")
+        assert "R-3115-CATCHUP" in out and "named in triage" in out
+        assert "R-3115-OTHER" not in out  # not named, not on an affected form here
+
+    def test_cites_source_beats_on_form(self, source, form_3115):
+        # a rule that BOTH cites the source AND is on an affected form -> reported as cites_source (stronger)
+        rule = _rule(form_3115, "R-3115-CATCHUP")
+        RuleAuthorityLink.objects.create(form_rule=rule, authority_source=source, support_level="primary")
+        ChangeRegisterItem.objects.create(change_code="CR-2026-004", title="t", summary="s",
+                                          authority_source=source, affected_forms=["3115"])
+        out = run("stale_rules_report", "--change", "CR-2026-004")
+        assert out.count("R-3115-CATCHUP") == 1  # listed once (deduped), not once per reason
+        assert "CITES SOURCE" in out and "on affected form" not in out
+
+    def test_no_dependents_message(self, source):
+        out = run("stale_rules_report", "--source", "REVPROC_2025_23")
+        assert "No dependent rules" in out
+
+    def test_json_output(self, source, form_3115):
+        rule = _rule(form_3115, "R-3115-CATCHUP", "Catch-up")
+        RuleAuthorityLink.objects.create(form_rule=rule, authority_source=source, support_level="primary",
+                                         relevance_note="§6.01(5)")
+        out = run("stale_rules_report", "--source", "REVPROC_2025_23", "--json")
+        data = json.loads(out)
+        assert data["rule_count"] == 1 and data["form_count"] == 1
+        assert data["rules"][0]["rule_id"] == "R-3115-CATCHUP"
+        assert data["rules"][0]["reason"] == "cites_source"
+        assert data["rules"][0]["relevance_note"] == "§6.01(5)"

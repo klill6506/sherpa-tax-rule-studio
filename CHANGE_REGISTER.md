@@ -49,6 +49,12 @@ A promoted change becomes a WORK_ORDERS order and then runs the SAME front door 
 `AuthoritySource` / `AuthorityVersion` / `SourceFeedDefinition`) AND this human-readable ledger.
 Update this file at each transition, same discipline as WORK_ORDERS.md.
 
+**At triage/promote, run the blast-radius report** — `stale_rules_report --change CR-YYYY-NNN` lists the
+authored rules that depend on the moved authority (rules that CITE the source, rules named in triage, and
+every rule on an affected form), so you know what to re-verify. Read-only — it flags, you decide. This is
+the Authoritative-Source Rule step 5 ("when the source changes, treat dependent logic as stale until
+re-verified") made operational.
+
 ## Commands
 | Step | Command |
 |---|---|
@@ -61,6 +67,7 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
 | detect (Fed. Register) | `fetch_federal_register [--since YYYY-MM-DD | --lookback-days N] [--types ...] [--dry-run]` |
 | detect (IRB) | `fetch_irb [--since-bulletin YYYY-NN | --limit N] [--dry-run]` |
 | **poll all (scheduler)** | `poll_change_feeds [--fr-lookback-days N] [--irb-limit N] [--no-fr|--no-irb] [--dry-run]` |
+| blast radius (staleness) | `stale_rules_report --change CR-YYYY-NNN | --source SOURCE_CODE [--json]` |
 
 ## What feeds it (design intent — see [[rs-change-register-funnel]])
 - IRS IRB / Rev. Proc. / Notice releases (the annual automatic-change list, indexed-amount updates).
@@ -69,9 +76,9 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
 - `SourceFeedDefinition` rows describe WHERE to look; `detect_source_changes` diffs WHAT moved.
 
 ## Deferred / follow-ups
-- **Staleness auto-flag** (Authoritative-Source Rule step 5): when a source moves, auto-mark the
-  dependent `FormRule`s (via `RuleAuthorityLink`) as stale. v1 opens a change item but does not touch
-  rules. Follow-up: a `stale_rules_report` that lists the blast radius of a promoted change.
+- ~~**Staleness report**~~ **DONE 2026-07-08** — `stale_rules_report` (read-only blast radius; cites-source
+  / named / on-affected-form). A future escalation could add an on-`FormRule` stale FLAG + a re-verify queue,
+  but the report is the agreed v1 (report, don't auto-edit — D-26).
 - **FEED_POLL leg 3+**: **Congress.gov** (statutes / P.L. — OBBBA-style); item-LEVEL IRB parsing (individual
   Rev.Procs/Notices out of each bulletin PDF, vs today's bulletin-level); a fetcher that produces the
   `detect_source_changes` checksum manifest for form/pub revisions. (Leg 1 = Federal Register regulations;

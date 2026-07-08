@@ -83,7 +83,17 @@ opt-in via env, not a hardcoded secret). Wired as a **Render cron job** in `rend
 `sherpa-rs-change-feeds`, Mondays 12:00 UTC, lightweight `pip install` build — no frontend). Chose Render-native cron
 over an in-process scheduler (APScheduler/Celery beat) because RS is a Render web service with no persistent worker;
 cron matches the deployment. +6 tests (full suite 62/62). One-time deploy: next Blueprint sync creates the cron; Ken
-sets its `DATABASE_URL`. **Deferred still:** staleness `stale_rules_report`; leg-3 Congress.gov + item-level IRB.
+sets its `DATABASE_URL`. **Deferred still:** leg-3 Congress.gov + item-level IRB.
+
+**Staleness report built same day (2026-07-08):** `stale_rules_report` — the D-26 "report, don't auto-edit" branch,
+realized. READ-ONLY (no `FormRule` change, no migration): given `--change CR-id` or `--source CODE`, lists dependent
+rules by three reasons, strongest first — **cites_source** (RuleAuthorityLink to the moved source), **named**
+(affected_rule_ids from triage), **on_affected_form** (all rules on an affected form) — grouped by form with
+support_level + relevance_note; `--json`. Dedupe keeps the strongest reason per rule. Chose report-only over an
+on-rule `is_stale` flag (the invasive option D-26 already rejected): the flag can be a later escalation, but the
+report gives Ken the blast radius without schema churn or noisy flags. +10 tests (full suite 72/72); live prod proof
+(`--source REVPROC_2025_23` → the 2 Form 3115 DCN-7 rules). This makes Authoritative-Source Rule step 5 operational:
+when the automatic-change list is superseded, the report names exactly what to re-verify.
 
 ---
 
