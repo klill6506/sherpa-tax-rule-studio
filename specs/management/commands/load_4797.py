@@ -93,6 +93,33 @@ KEN'S DECISIONS (2026-07-03):
 The RS spec encodes the rules/diagnostics/scenarios + authority; the SL-equivalent computation
 itself is the tts build leg (engine + resolve_recapture_type + a section_1245_exception model
 field + the D_4797_1245* diagnostics), verified there + in a DB stamp.
+
+═══ ENTITY PASS-THROUGH LEG (2026-07-08, Ken ruling: "build the full unit") ═══
+Closes the §179-disposition pass-through gap found during the 1120-S ATS Scenario-5 mapper
+build (the MeF 4797 mapper had an interim refuse-seam; tts REVIEW_QUEUE 2026-07-08).
+LAW VERIFIED 2026-07-08 verbatim (live 2025 i4797 HTML + i1120s PDF p.15/41 + i1065 PDF
+p.20/52, pymupdf):
+  - i4797 "Disposition by a Partnership or S Corporation of Section 179 Property":
+    "Partnerships and S corporations do not report these transactions on Form 4797, 4684,
+    6252, or 8824. Instead, they provide their partners and shareholders the information
+    they need to report the transactions." Owner side: "If you received a Schedule K-1 from
+    a partnership or S corporation reporting the sale, exchange, or other disposition of
+    property for which a section 179 expense deduction was previously claimed and passed
+    through to its partners or shareholders, you must report your share of the transaction
+    on Form 4797, 4684, 6252, or 8824."
+  - i1120s Line 4: entity exclusion → K-1 box 17 code K. i1065 line 6: → K-1 box 20 code L.
+  - i1120s "Dispositions of property with section 179 deductions (code K)": the 8-item
+    statement list (quoted in the R-4797-ENTPASS rule + the f4797_ent179_* facts).
+  - i1120s Schedule M-2 AAA adjustment 1: "Increase the AAA by income (other than tax-exempt
+    income)" — the corporate-level disposition gain never rides page 1 / Schedule K income
+    lines, so it enters AAA as an M-2 line 3a OTHER ADDITION (the ATS Scenario-5 key's
+    "Gain on Sale Sec 179 Assets" row).
+ENCODED: per-property fact f4797_sec179_passthrough excludes the property from EVERY 4797
+line; the entity carries per-owner PRO-RATA statement facts (K-1 17K/20L) + the AAA other
+addition. NOTE the ATS Scenario-5 key prints the FULL property facts on EACH 50% K-1 and
+2×gain on M-2 3a — that contradicts the i1120s verbatim "pro rata share" items and strict
+§1377(a) pro-rata; the spec encodes the LAW (pro-rata, corp-level gain once). Owner-side
+reporting (1040 builds its 4797 from the K-1 facts) = a stated follow-up unit, not silent.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -243,8 +270,31 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
       sch_a_line16     — Part II L18a (income-producing-property loss; v1 = 0, RED-defer 4684)
     Or {'red_defer': [...]} when an unsupported interplay (4684 casualty) is present. Form
     6252 (installment, lines 4/10/15) and Form 8824 (like-kind, lines 5/16/10) are now
-    SUPPORTED via their feeds (closed 2026-06-28)."""
+    SUPPORTED via their feeds (closed 2026-06-28).
+
+    ENTITY PASS-THROUGH LEG (2026-07-08): a property with sec179_passthrough=True (a §179
+    deduction was previously PASSED THROUGH to owners — only ever true on an entity return)
+    is EXCLUDED from every 4797 line (i4797 verbatim: 'Partnerships and S corporations do
+    not report these transactions on Form 4797...'). Its facts surface instead as:
+      ent179_gain  — Σ corporate-level gain (price − (cost+expense − ALL depreciation incl.
+                     §179)) → the AAA/M-2 line 3a other addition (1120-S)
+      ent179_price — Σ gross sales price (→ pro-rata to each K-1 statement)
+      ent179_cost  — Σ cost+expense REDUCED by non-§179 depreciation but EXCLUDING the §179
+                     deduction (i1120s code K item 5 verbatim)
+      ent179_s179  — Σ §179 passed through (→ pro-rata + passthrough year(s) per K-1)"""
     properties = properties or []
+
+    # ── entity §179 pass-through exclusion (R-4797-ENTPASS) ──
+    ent179 = [p for p in properties if p.get("sec179_passthrough")]
+    properties = [p for p in properties if not p.get("sec179_passthrough")]
+    ent179_gain = sum((_D(p.get("sales_price")) - (_D(p.get("cost_basis"))
+                       + _D(p.get("expense_of_sale")) - _D(p.get("depreciation_allowed")))
+                       for p in ent179), Decimal("0"))
+    ent179_price = sum((_D(p.get("sales_price")) for p in ent179), Decimal("0"))
+    ent179_cost = sum((_D(p.get("cost_basis")) + _D(p.get("expense_of_sale"))
+                       - (_D(p.get("depreciation_allowed")) - _D(p.get("section_179_amount")))
+                       for p in ent179), Decimal("0"))
+    ent179_s179 = sum((_D(p.get("section_179_amount")) for p in ent179), Decimal("0"))
 
     reasons = []
     if has_form_4684:
@@ -253,7 +303,9 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
         return {"red_defer": reasons, "sch1_line4": None, "sch_d_line11": None,
                 "unrecaptured_1250": None}
 
-    results = [compute_property(**p) for p in properties]
+    _ENT_KEYS = ("sec179_passthrough", "section_179_amount")
+    results = [compute_property(**{k: v for k, v in p.items() if k not in _ENT_KEYS})
+               for p in properties]
 
     short_term_ordinary = sum((r["short_term_ordinary"] for r in results), Decimal("0"))
     part3_line31 = sum((r["ordinary_recapture"] for r in results), Decimal("0"))  # → Part II L13
@@ -301,7 +353,9 @@ def compute_4797(*, properties=None, nonrecaptured_1231_losses=0, part1_line2_di
             "l12": l12, "l13": l13, "l15": l15, "l16": l16, "l17": l17, "l18a": l18a, "l18b": l18b,
             "l31": part3_line31, "l32": part3_line32, "part4_recapture": part4,
             "sch1_line4": sch1_line4, "sch_d_line11": l9,
-            "unrecaptured_1250": unrecaptured_1250, "sch_a_line16": l18a}
+            "unrecaptured_1250": unrecaptured_1250, "sch_a_line16": l18a,
+            "ent179_gain": ent179_gain, "ent179_price": ent179_price,
+            "ent179_cost": ent179_cost, "ent179_s179": ent179_s179}
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -317,6 +371,7 @@ AUTHORITY_TOPICS: list[tuple[str, str]] = [
 EXISTING_SOURCES_TO_REFERENCE: list[str] = [
     "IRS_2025_1040_FORM",
     "IRS_2025_1040_INSTR",
+    "IRS_2025_1120S_INSTR",   # entity pass-through leg (2026-07-08): line 4 + code K excerpts added below
 ]
 
 AUTHORITY_SOURCES: list[dict] = [
@@ -642,6 +697,59 @@ AUTHORITY_SOURCES: list[dict] = [
                              "comparison uses the UNREDUCED basis (so the whole bonus excess over SL is "
                              "additional depreciation) → ordinary recapture to the extent of gain (line 26g).",
              "is_key_excerpt": True},
+            {"excerpt_label": "Disposition by a Partnership or S Corporation of Section 179 Property (verbatim)",
+             "location_reference": "i4797 (2025), 'Disposition by a Partnership or S Corporation of "
+                                   "Section 179 Property' (verified 2026-07-08, live irs.gov HTML)",
+             "excerpt_text": (
+                 "Partnerships and S corporations do not report these transactions on Form 4797, 4684, "
+                 "6252, or 8824. Instead, they provide their partners and shareholders the information "
+                 "they need to report the transactions. [Owner side:] If you received a Schedule K-1 from "
+                 "a partnership or S corporation reporting the sale, exchange, or other disposition of "
+                 "property for which a section 179 expense deduction was previously claimed and passed "
+                 "through to its partners or shareholders, you must report your share of the transaction "
+                 "on Form 4797, 4684, 6252, or 8824."),
+             "summary_text": "ENTITY PASS-THROUGH LEG: the entity NEVER reports a §179-passed-through "
+                             "property disposition on its own 4797/4684/6252/8824 — owners report their "
+                             "share on THEIR forms from the K-1 facts (1120-S box 17 code K / 1065 box "
+                             "20 code L).",
+             "is_key_excerpt": True},
+        ],
+    },
+    {
+        "source_code": "IRS_2025_1065_INSTR",
+        "source_type": "official_instructions", "source_rank": "primary_official", "jurisdiction_code": "FED",
+        "entity_type_code": "1065", "tax_year_start": 2025, "tax_year_end": 2025,
+        "title": "Instructions for Form 1065 (2025) — U.S. Return of Partnership Income",
+        "citation": "Instructions for Form 1065 (2025)", "issuer": "IRS",
+        "official_url": "https://www.irs.gov/instructions/i1065",
+        "current_status": "active", "is_substantive_authority": False, "is_filing_authority": True,
+        "trust_score": 9.5, "requires_human_review": False,
+        "notes": "Added 2026-07-08 (entity pass-through leg): the 1065 analog of the 1120-S §179-"
+                 "disposition exclusion (K-1 box 20 code L). Quotes verified via pymupdf on the "
+                 "downloaded i1065 PDF (p.20 line-6 instructions; p.52 box 20 code L).",
+        "topics": ["4797", "depreciation_recapture"],
+        "excerpts": [
+            {"excerpt_label": "Line 6 — partnerships shouldn't use Form 4797 for §179-passed-through property (verbatim)",
+             "location_reference": "i1065 (2025) p.20, line 6 instructions (verified 2026-07-08, pymupdf)",
+             "excerpt_text": (
+                 "Partnerships shouldn't use Form 4797 to report the sale or other disposition of "
+                 "property if a section 179 expense deduction was previously passed through to any of "
+                 "its partners for that property. Instead, report it in box 20 of Schedule K-1 using "
+                 "code L. See Dispositions of property with section 179 deductions (code L), later, "
+                 "for details."),
+             "summary_text": "1065 analog of the 1120-S rule: entity exclusion → K-1 box 20 code L.",
+             "is_key_excerpt": True},
+            {"excerpt_label": "Box 20 code L — dispositions of property with section 179 deductions (verbatim)",
+             "location_reference": "i1065 (2025) p.52, Code L (verified 2026-07-08, pymupdf)",
+             "excerpt_text": (
+                 "Code L. Dispositions of property with section 179 deductions. This represents gain or "
+                 "loss on the sale, exchange, or other disposition of property for which a section 179 "
+                 "deduction has been passed through to partners. The partnership must provide all the "
+                 "following information related to such dispositions (see the instructions for page 1, "
+                 "line 6, earlier)."),
+             "summary_text": "The partnership-side statement obligation (item list parallels the "
+                             "i1120s code-K list quoted on IRS_2025_1120S_INSTR).",
+             "is_key_excerpt": True},
         ],
     },
     {
@@ -669,7 +777,42 @@ AUTHORITY_SOURCES: list[dict] = [
     },
 ]
 
-NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = []
+NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = [
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08) — i1120s verbatim, pymupdf p.15/41 ──
+    ("IRS_2025_1120S_INSTR",
+     {"excerpt_label": "Line 4 — corporations shouldn't use Form 4797 for §179-passed-through property (verbatim)",
+      "location_reference": "i1120s (2025) p.15, Line 4 instructions (verified 2026-07-08, pymupdf)",
+      "excerpt_text": (
+          "Corporations shouldn't use Form 4797 to report the sale or other disposition of property "
+          "if a section 179 expense deduction was previously passed through to any of its "
+          "shareholders for that property. Instead, report it in box 17 of Schedule K-1 using code "
+          "K. See Dispositions of property with section 179 deductions (code K), later, for details."),
+      "summary_text": "The entity-side exclusion: §179-passed-through property dispositions NEVER ride "
+                      "the corp 4797 — K-1 box 17 code K carries the facts instead.",
+      "is_key_excerpt": True}),
+    ("IRS_2025_1120S_INSTR",
+     {"excerpt_label": "Box 17 code K — the shareholder statement item list (verbatim)",
+      "location_reference": "i1120s (2025) p.41, Dispositions of property with section 179 deductions "
+                            "(code K) (verified 2026-07-08, pymupdf)",
+      "excerpt_text": (
+          "This represents gain or loss on the sale, exchange, or other disposition of property for "
+          "which a section 179 deduction has been passed through to shareholders. The corporation "
+          "must provide all the following information with respect to such dispositions (see the "
+          "instructions for Form 1120-S, line 4, earlier). • Description of the property. • Date the "
+          "property was acquired and placed in service. • Date of the sale or other disposition of "
+          "the property. • The shareholder's pro rata share of the gross sales price or amount "
+          "realized. • The shareholder's pro rata share of the cost or other basis plus expense of "
+          "sale (reduced as explained in the instructions for Form 4797, line 22, but excluding the "
+          "section 179 deduction). • The shareholder's pro rata share of the section 179 deduction "
+          "(if any) passed through for the property and the corporation's tax year(s) in which the "
+          "amount was passed through. • If the disposition is due to a casualty or theft a statement "
+          "indicating so, and any additional information needed by the shareholder. • For an "
+          "installment sale, any information the shareholder needs to complete Form 6252."),
+      "summary_text": "The 8-item code-K statement list — each item is PRO RATA per shareholder; the "
+                      "cost figure is reduced by non-§179 depreciation but EXCLUDES the §179 deduction "
+                      "(each owner applies their own §179).",
+      "is_key_excerpt": True}),
+]
 
 AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRC_1231", "4797", "governs"),
@@ -681,6 +824,8 @@ AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("IRC_179D_280F", "4797", "governs"),
     ("IRS_2025_4797_INSTR", "4797", "governs"),
     ("IRS_PUB_544", "4797", "informs"),
+    ("IRS_2025_1120S_INSTR", "4797", "governs"),   # entity pass-through leg (2026-07-08)
+    ("IRS_2025_1065_INSTR", "4797", "governs"),    # entity pass-through leg (2026-07-08)
 ]
 
 
@@ -703,7 +848,11 @@ P_IDENTITY = {
         "§280F recapture L35 → Schedule 1 line 4 (+ SE-tax note). Form 6252 installment sales feed "
         "lines 4/10/15 (supported). RED-defers (no silent gap): Form "
         "4684 casualty, Form 8824 like-kind. §1252/§1255 applicable "
-        "percentages preparer-entered (not encoded)."
+        "percentages preparer-entered (not encoded). ENTITY PASS-THROUGH LEG (2026-07-08): a "
+        "§179-passed-through property disposition is EXCLUDED from the entity 4797 entirely "
+        "(R-4797-ENTPASS) — per-owner pro-rata K-1 statement facts (1120-S 17K / 1065 20L) + the "
+        "1120-S AAA M-2 3a other addition carry it instead; owner-side 1040 reporting = stated "
+        "follow-up."
     ),
 }
 
@@ -776,6 +925,22 @@ P_FACTS: list[dict] = [
      "notes": "§179 deduction claimed − depreciation that would have been allowable (business use ≤50%)."},
     {"fact_key": "f4797_part4_section_280f_recapture", "label": "Part IV §280F listed-property recapture (line 35, col b)",
      "data_type": "decimal", "default_value": "0", "sort_order": 23},
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08) — per-property exclusion + statement facts ──
+    {"fact_key": "f4797_sec179_passthrough",
+     "label": "§179 deduction previously PASSED THROUGH to owners (entity returns — excludes from the entity 4797)",
+     "data_type": "boolean", "default_value": "false", "sort_order": 14,
+     "notes": "i4797/i1120s/i1065 verbatim: an 1120-S/1065 does NOT report the disposition of "
+              "§179-passed-through property on its own Form 4797 (or 4684/6252/8824) — the owners "
+              "report their shares on THEIR forms from the K-1 facts (1120-S box 17 code K / 1065 box "
+              "20 code L). When true, the property is excluded from EVERY 4797 line and its facts "
+              "surface via the f4797_ent179_* outputs. In tts derived from DepreciationAsset."
+              "sec_179_elected > 0 on an entity return — never a hand flag."},
+    {"fact_key": "f4797_s179_amount",
+     "label": "§179 deduction passed through for this property (statement item 6)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 15,
+     "notes": "The §179 portion of the property's line-22-style total depreciation. Reported to each "
+              "owner PRO RATA with the corporation's passthrough tax year(s) (i1120s code K item 6); "
+              "EXCLUDED from the statement's cost figure (item 5)."},
     # ── red-defer flags ──
     {"fact_key": "f4797_has_form_4684", "label": "Casualty/theft of business property (Form 4684)?",
      "data_type": "boolean", "default_value": "false", "sort_order": 30,
@@ -799,6 +964,22 @@ P_FACTS: list[dict] = [
      "data_type": "decimal", "sort_order": 53, "notes": "OUTPUT — NOT a 4797 line; exported to Sch D."},
     {"fact_key": "f4797_sch1_line4", "label": "Schedule 1 line 4 = L18b + Part IV recapture",
      "data_type": "decimal", "sort_order": 54, "notes": "OUTPUT — the 1040 ordinary destination."},
+    # ── entity pass-through outputs (2026-07-08) ──
+    {"fact_key": "f4797_ent179_gain", "label": "Σ corporate-level gain on §179-passed-through dispositions → AAA/M-2 3a other addition",
+     "data_type": "decimal", "sort_order": 55,
+     "notes": "OUTPUT — price − (cost+expense − ALL depreciation incl. §179). Enters AAA as an M-2 "
+              "line 3a other addition (i1120s M-2 adjustment 1: 'Increase the AAA by income (other "
+              "than tax-exempt income)'; the gain never rides page 1 / Schedule K income lines). "
+              "1120-S only; a 1065 adjusts partner capital via the same exclusion (no AAA)."},
+    {"fact_key": "f4797_ent179_price", "label": "Σ gross sales price of §179-passed-through dispositions (statement item 4, pro-rata per owner)",
+     "data_type": "decimal", "sort_order": 56, "notes": "OUTPUT — allocated pro rata to each K-1 statement."},
+    {"fact_key": "f4797_ent179_cost", "label": "Σ statement cost figure — cost+expense reduced by non-§179 depreciation, EXCLUDING §179 (item 5)",
+     "data_type": "decimal", "sort_order": 57,
+     "notes": "OUTPUT — i1120s code K item 5 verbatim: 'cost or other basis plus expense of sale "
+              "(reduced as explained in the instructions for Form 4797, line 22, but excluding the "
+              "section 179 deduction)'. Each owner subtracts THEIR §179 on their own 4797."},
+    {"fact_key": "f4797_ent179_s179", "label": "Σ §179 passed through on disposed properties (statement item 6, pro-rata per owner)",
+     "data_type": "decimal", "sort_order": 58, "notes": "OUTPUT — with the corporation's passthrough tax year(s)."},
 ]
 
 P_RULES: list[dict] = [
@@ -886,6 +1067,34 @@ P_RULES: list[dict] = [
                     "unreduced basis (§1250(b)(1)/(b)(3): the (b)(3) carve-out excludes only PRE-1976 §168, "
                     "so current MACRS/§168(k) bonus IS a depreciation adjustment). 150DB (§168(b)(2)(A)) > "
                     "SL → additional depreciation exists for 15-yr land improvements."},
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08, Ken ruling) ──
+    {"rule_id": "R-4797-ENTPASS", "title": "Entity exclusion — §179-passed-through property dispositions ride the K-1, never the entity 4797",
+     "rule_type": "routing", "precedence": 9, "sort_order": 9,
+     "formula": ("On an 1120-S/1065, a disposed property whose §179 deduction was previously passed "
+                 "through to owners (sec179_passthrough) is EXCLUDED from every Form 4797 line (and "
+                 "4684/6252/8824 — i4797 verbatim: 'Partnerships and S corporations do not report these "
+                 "transactions on Form 4797, 4684, 6252, or 8824. Instead, they provide their partners "
+                 "and shareholders the information they need to report the transactions.'). Routing: "
+                 "(1) each owner's K-1 carries the code marker (1120-S box 17 code K 'STMT'; 1065 box 20 "
+                 "code L) + a per-owner statement with the i1120s 8-item list, each amount the owner's "
+                 "PRO RATA share: description · date acquired/placed in service · date of disposition · "
+                 "pro-rata gross sales price (ent179_price) · pro-rata cost+expense reduced by non-§179 "
+                 "depreciation EXCLUDING §179 (ent179_cost) · pro-rata §179 passed through + the "
+                 "passthrough year(s) (ent179_s179) · casualty/theft indication · installment-sale (6252) "
+                 "info. (2) 1120-S AAA: the corporate-level gain (ent179_gain = price − (cost+expense − "
+                 "ALL depreciation incl. §179)) enters Schedule M-2 line 3a as an OTHER ADDITION (i1120s "
+                 "M-2 adjustment 1 — the gain never rides page 1/Schedule K income lines). (3) Owners "
+                 "report their share on THEIR OWN 4797/4684/6252/8824 (stated follow-up unit on the 1040 "
+                 "side). Casualty/installment §179-passthrough dispositions RED-defer (statement items 7/8 "
+                 "carried but the 4684/6252 owner-side interplay is not modeled)."),
+     "inputs": ["f4797_sec179_passthrough", "f4797_s179_amount", "f4797_sales_price",
+                "f4797_cost_basis", "f4797_expense_of_sale", "f4797_depreciation_allowed"],
+     "outputs": ["f4797_ent179_gain", "f4797_ent179_price", "f4797_ent179_cost", "f4797_ent179_s179"],
+     "description": "Closes the §179-disposition pass-through gap (tts REVIEW_QUEUE 2026-07-08, Ken "
+                    "ruled 'build the full unit'). NOTE: the ATS 1120-S Scenario-5 key prints the FULL "
+                    "property facts on EACH 50% K-1 and 2×gain on M-2 3a — contradicting the i1120s "
+                    "verbatim 'pro rata share' items and §1377(a) strict pro-rata; this rule encodes the "
+                    "LAW (pro-rata per owner; the corp-level gain enters AAA once)."},
 ]
 
 P_LINES: list[dict] = [
@@ -1042,6 +1251,19 @@ P_DIAGNOSTICS: list[dict] = [
                  "recaptures as ordinary income on disposition (line 25), not the §1250 rule. It has been "
                  "auto-classified §1245."),
      "notes": "Decision 1 (nuance leg). §1245(a)(3)(F) / §168(e)(4)."},
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08) ──
+    {"diagnostic_id": "D_4797_ENTPASS", "title": "§179-passed-through disposition routed to the K-1, not the entity 4797", "severity": "info",
+     "condition": "entity return (1120-S/1065) has a disposed asset with sec179_passthrough (§179 previously passed through)",
+     "message": ("A disposed asset carries a §179 deduction that was passed through to the owners. Per "
+                 "the 2025 Instructions for Form 4797, the entity does NOT report this disposition on "
+                 "its own Form 4797 — it has been excluded from every 4797 line. Instead each owner's "
+                 "K-1 carries the disposition facts (1120-S: box 17 code K with a statement; 1065: box "
+                 "20 code L) — pro-rata gross sales price, cost + expense of sale excluding the §179 "
+                 "deduction, dates, and the §179 passed through — and each owner reports their share on "
+                 "their OWN Form 4797. On an 1120-S the corporate-level gain is added to AAA as a "
+                 "Schedule M-2 line 3a other addition."),
+     "notes": "Entity pass-through leg (Ken ruling 2026-07-08). INFO — fires whenever the exclusion "
+              "engages so the re-routing is never silent."},
 ]
 
 P_SCENARIOS: list[dict] = [
@@ -1185,6 +1407,32 @@ P_SCENARIOS: list[dict] = [
                                 "section_1245_exception": "railroad_grading"}]},
      "expected_outputs": {"D_4797_1245RRGR": True},
      "notes": "Decision 1: railroad grading/tunnel bore (§168(e)(4)) is §1245 under §1245(a)(3)(F)."},
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08, E-scenarios) ──
+    {"scenario_name": "F4797-E1 — §179-passed-through disposal excluded; other property unaffected", "scenario_type": "normal", "sort_order": 22,
+     "inputs": {"properties": [
+         # the ATS Scenario-5 Dodge truck: fully-§179'd, sold at a gain
+         {"sales_price": 1400, "cost_basis": 1000, "depreciation_allowed": 1000,
+          "holding_period_months": 119, "property_type": "1245",
+          "sec179_passthrough": True, "section_179_amount": 1000},
+         # an ordinary corp machine disposal (F4797-T1 facts) — must still route normally
+         {"sales_price": 50000, "cost_basis": 100000, "depreciation_allowed": 60000,
+          "holding_period_months": 36, "property_type": "1245"}]},
+     "expected_outputs": {"f4797_line18b": 10000, "f4797_line7": 0, "f4797_line9": 0,
+                          "f4797_sch1_line4": 10000, "f4797_unrecaptured_1250": 0,
+                          "f4797_ent179_gain": 1400, "f4797_ent179_price": 1400,
+                          "f4797_ent179_cost": 1000, "f4797_ent179_s179": 1000},
+     "notes": ("The truck (§179 1,000 passed through; gain = 1,400 − (1,000 − 1,000) = 1,400) is "
+               "EXCLUDED from every 4797 line — only the machine's 10,000 ordinary remains (T1 math). "
+               "Statement outputs: price 1,400 · cost figure 1,000 (cost+expense − non-§179 depr 0, "
+               "§179 NOT subtracted) · §179 1,000 · AAA other addition 1,400. Pro-rata to two 50% "
+               "owners → 700/500/500 each (the ATS key's full-facts-per-K-1 + 2,800 M-2 3a is a key "
+               "quirk — the law is pro-rata, gain once).")},
+    {"scenario_name": "F4797-E2 — §179 pass-through exclusion fires D_4797_ENTPASS", "scenario_type": "diagnostic", "sort_order": 23,
+     "inputs": {"properties": [{"sales_price": 1400, "cost_basis": 1000, "depreciation_allowed": 1000,
+                                "holding_period_months": 119, "property_type": "1245",
+                                "sec179_passthrough": True, "section_179_amount": 1000}]},
+     "expected_outputs": {"D_4797_ENTPASS": True},
+     "notes": "The exclusion is never silent — the info diagnostic explains the K-1 17K/20L routing + the M-2 3a addition."},
 ]
 
 P_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -1208,6 +1456,10 @@ P_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-4797-ADDLDEPR", "IRS_2025_4797_INSTR", "primary", "Line 26a verbatim: additional depr incl. special allowance; SL on unreduced basis"),
     ("R-4797-ADDLDEPR", "IRC_1250", "primary", "§1250(b)(1)/(b)(3) additional depreciation over straight line"),
     ("R-4797-ADDLDEPR", "IRC_168", "secondary", "§168(b)(2)(A) 150DB for 15-yr land improvements; §168(k) bonus is a depreciation adjustment"),
+    # Entity pass-through leg
+    ("R-4797-ENTPASS", "IRS_2025_4797_INSTR", "primary", "i4797 'Disposition by a Partnership or S Corporation of Section 179 Property' (verbatim)"),
+    ("R-4797-ENTPASS", "IRS_2025_1120S_INSTR", "primary", "i1120s line 4 exclusion + box 17 code K statement item list (verbatim)"),
+    ("R-4797-ENTPASS", "IRS_2025_1065_INSTR", "primary", "i1065 line 6 exclusion + box 20 code L (verbatim)"),
 ]
 
 
@@ -1258,6 +1510,27 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "4797", "expect": {"red_fires": True},
                     "blockers": ["form_4684_casualty"]},
      "sort_order": 7},
+    # ── ENTITY PASS-THROUGH LEG (2026-07-08) ──
+    {"assertion_id": "FA-ENT-4797-179", "assertion_type": "reconciliation", "entity_types": ["1120S", "1065"],
+     "title": "§179-passed-through disposal excluded from the entity 4797; Σ per-owner statement facts = entity totals",
+     "description": ("Validates R-4797-ENTPASS. Bugs it catches: (1) the entity 4797 (line 17 → page-1 "
+                     "L4; §1231 → K9/K10; unrecap §1250 → K8c/K9c) still carrying a §179-passed-through "
+                     "disposal (double/mis-reporting — the pre-2026-07-08 engine behavior); (2) the "
+                     "per-owner pro-rata statement amounts (gross sales price / cost excluding §179 / "
+                     "§179 passed through) not summing back to the entity-level totals."),
+     "definition": {"kind": "reconciliation", "form": "4797",
+                    "formula": ("excluded assets contribute 0 to every 4797 line; "
+                                "Σ_owners(pro_rata_price) = ent179_price; Σ_owners(pro_rata_cost) = "
+                                "ent179_cost; Σ_owners(pro_rata_s179) = ent179_s179")},
+     "sort_order": 8},
+    {"assertion_id": "FA-1120S-M2-179", "assertion_type": "flow_assertion", "entity_types": ["1120S"],
+     "title": "1120-S AAA — the §179-disposition corporate-level gain enters M-2 line 3a (other additions)",
+     "description": ("Validates the AAA leg of R-4797-ENTPASS. Bug it catches: the excluded disposition's "
+                     "gain vanishing from AAA entirely (it rides no page-1/Schedule K income line, so "
+                     "M-2 3a is its ONLY corporate-side home — i1120s M-2 adjustment 1)."),
+     "definition": {"kind": "flow_assertion", "form": "4797",
+                    "checks": [{"source_line": "ent179_gain", "must_write_to": ["1120S_M2.3a"]}]},
+     "sort_order": 9},
 ]
 
 

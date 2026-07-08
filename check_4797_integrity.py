@@ -75,6 +75,17 @@ def ind_compute(properties=None, nonrecaptured_1231_losses=0, part1_line2_direct
                 part4_section_179_recapture=0, part4_section_280f_recapture=0,
                 has_form_4684=False, has_form_6252=False, has_form_8824=False, **_):
     properties = properties or []
+    # Entity pass-through leg (2026-07-08): own transcription of the i4797/i1120s exclusion —
+    # §179-passed-through property never routes; statement facts + AAA gain surface instead.
+    ent = [p for p in properties if p.get("sec179_passthrough")]
+    properties = [p for p in properties if not p.get("sec179_passthrough")]
+    e_gain = sum((D(p.get("sales_price")) - (D(p.get("cost_basis")) + D(p.get("expense_of_sale"))
+                  - D(p.get("depreciation_allowed"))) for p in ent), D(0))
+    e_price = sum((D(p.get("sales_price")) for p in ent), D(0))
+    e_cost = sum((D(p.get("cost_basis")) + D(p.get("expense_of_sale"))
+                  - (D(p.get("depreciation_allowed")) - D(p.get("section_179_amount")))
+                  for p in ent), D(0))
+    e_179 = sum((D(p.get("section_179_amount")) for p in ent), D(0))
     if has_form_4684 or has_form_6252 or has_form_8824:
         return {"red_defer": True}
     rs = [ind_property(p) for p in properties]
@@ -95,14 +106,18 @@ def ind_compute(properties=None, nonrecaptured_1231_losses=0, part1_line2_direct
     l18b = l17
     part4 = max(D(0), D(part4_section_179_recapture)) + max(D(0), D(part4_section_280f_recapture))
     return {"l7": l7, "l9": l9, "l18b": l18b, "unrecaptured_1250": ur1250,
-            "sch1_line4": l18b + part4}
+            "sch1_line4": l18b + part4,
+            "ent179_gain": e_gain, "ent179_price": e_price,
+            "ent179_cost": e_cost, "ent179_s179": e_179}
 
 
 # ── 1. Scenarios — independent recompute + cross-check the loader ──
 spec = m.FORMS[0]
 DIAG_KEYS = {d["diagnostic_id"] for d in spec["diagnostics"]}
 OUT_MAP = {"f4797_line7": "l7", "f4797_line9": "l9", "f4797_line18b": "l18b",
-           "f4797_unrecaptured_1250": "unrecaptured_1250", "f4797_sch1_line4": "sch1_line4"}
+           "f4797_unrecaptured_1250": "unrecaptured_1250", "f4797_sch1_line4": "sch1_line4",
+           "f4797_ent179_gain": "ent179_gain", "f4797_ent179_price": "ent179_price",
+           "f4797_ent179_cost": "ent179_cost", "f4797_ent179_s179": "ent179_s179"}
 
 for s in spec["scenarios"]:
     name = s["scenario_name"].split(" ")[0]
@@ -143,6 +158,11 @@ for s in spec["scenarios"]:
                 props = inp.get("properties") or []
                 if not any(p.get("section_1245_exception") == _exc for p in props):
                     err(f"{name}: {_dcode} expected but no property with section_1245_exception=={_exc}")
+        # Entity pass-through leg (2026-07-08)
+        if "D_4797_ENTPASS" in diag_expected:
+            props = inp.get("properties") or []
+            if not any(p.get("sec179_passthrough") for p in props):
+                err(f"{name}: D_4797_ENTPASS expected but no sec179_passthrough property")
         continue
     got = ind_compute(**inp)
     gl = m.compute_4797(**inp)
@@ -203,6 +223,10 @@ print("Nuance leg — N1 single-purpose ag structure is §1245 (ord 80000, NO un
       "§168(i)(13)) / N2-N4 the (D)/(E)/(F) exception info diagnostics (ag / petroleum §1245(a)(3)(E) / "
       "railroad §1245(a)(3)(F)-§168(e)(4)); 26a now COMPUTED (actual incl. bonus − SL on unreduced basis) "
       "where MACRS data present, D_4797_ADDL the fallback gate.")
+print("Entity pass-through leg — E1 §179-passed-through truck EXCLUDED from every 4797 line "
+      "(machine's 10000 ordinary unaffected; ent179 gain/price/cost/§179 = 1400/1400/1000/1000 — "
+      "i4797 'Partnerships and S corporations do not report these transactions' verbatim) / "
+      "E2 D_4797_ENTPASS never-silent gate.")
 
 if errors:
     print("\nFAILURES:")
