@@ -1,7 +1,7 @@
 ---
 type: project-status
 project: sherpa-tax-rule-studio
-last_updated: 2026-07-05
+last_updated: 2026-07-08
 ---
 
 # STATUS — sherpa-tax-rule-studio
@@ -11,6 +11,19 @@ last_updated: 2026-07-05
 ---
 
 ## Current state
+
+**NEW 2026-07-08 — the tax-law-change funnel (CHANGE_REGISTER) v1 is BUILT (DECISIONS D-26).** The
+front-of-the-front-door that makes a law change a tracked TRIGGER for authoring (law change → new RS rule → tts app
+change) — the loop CLAUDE.md/WORK_ORDERS always anticipated but never had a mechanism for. Shipped: the
+`sources.ChangeRegisterItem` model (migration `0003`; status DETECTED→TRIAGED→PROMOTED/DISMISSED; FKs to
+AuthoritySource/AuthorityVersion/SourceFeedDefinition; affected_forms JSON) + two commands — `change_register`
+(add/triage/promote/dismiss/list, the manual-clip arm) and `detect_source_changes` (checksum-diff arm: diffs a
+`--manifest` JSON or `--from-files` recompute against each source's current AuthorityVersion, opens DETECTED items
+idempotently) + `CHANGE_REGISTER.md` (the human ledger mirroring WORK_ORDERS.md) + `tests/test_change_register.py`
+(17 tests; full RS suite **38/38** green). **Invariant preserved:** promotion opens a WORK_ORDERS INTAKE order and the
+existing front door takes over — it does NOT bypass Gate 1 (Ken) or Gate 2 (tts ingest). Deferred (Ken's scoping):
+staleness auto-flag of dependent rules (→ a future `stale_rules_report`) and FEED_POLL network fetchers. Register is
+live + empty. This is now the primary way net-new RS authoring scope enters post-S-16-drain.
 
 Active spec-authoring tool. RS Supabase holds **120 TaxForms / 527 FlowAssertions / 973 FormRules**
 (**+WO-23 Form 3115 2026-07-06** — Application for Change in Accounting Method (`3115`, entity_types
@@ -347,6 +360,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-08: **TAX-LAW-CHANGE FUNNEL (CHANGE_REGISTER) v1 BUILT — the front-of-the-front-door (DECISIONS D-26).**
+  Ken's stated next goal after the S-16 drain: make a law change TRIGGER a new rule then a tax-app change. Scoping walk
+  (3 AskUserQuestion): BOTH detection arms now / DB model + doc / staleness deferred. Shipped this session:
+  (1) `sources.ChangeRegisterItem` model + enums (`ChangeStatus`, `ChangeDetectionSource`) — migration
+  `0003_changeregisteritem`, applied to prod; (2) `change_register` command (add→triage→promote/dismiss + list, the
+  manual-clip arm, auto CR-YYYY-NNN codes); (3) `detect_source_changes` command (checksum-diff arm — diffs a manifest
+  or recomputed file hashes against each source's current `AuthorityVersion`, opens DETECTED items idempotently, flags
+  no-current-version sources as a feed-coverage gap, `--dry-run` supported); (4) `CHANGE_REGISTER.md` front-door doc
+  mirroring WORK_ORDERS.md; (5) `tests/test_change_register.py` — **17 tests** (model lifecycle, command
+  add/triage/promote/dismiss guards, checksum detect + idempotency + no-version + dry-run). **Full RS suite 38/38
+  green.** Reused the existing raw material (`SourceFeedDefinition` = where to look; `AuthorityVersion.checksum_sha256`
+  = the is_current snapshot); the missing piece was the change-ITEM model + triage workflow + doc. **Invariant:**
+  promotion opens a WORK_ORDERS INTAKE order → existing front door (gap-check → research → Gate-1 → author → seed → tts
+  build); nothing crosses a gate unattended. **Deferred:** staleness auto-flag (→ `stale_rules_report`) + FEED_POLL
+  network fetchers. See [[rs-change-register-funnel]].
 - 2026-07-06: **FORM 3115 (Change in Accounting Method, §481(a)) AUTHORED + SEEDED + EXPORTED (WO-23) — the 10th and LAST S-16 item; QUEUE FULLY DRAINED.**
   Ken's specialty. Front door: gap-check (GAP — no `load_3115*`; the only on-disk `3115` ref is diagnostic text in
   `load_1120s_complete.py`, not an authoring surface; `lookup/3115/export/` = 404) → **verbatim research** (FINAL

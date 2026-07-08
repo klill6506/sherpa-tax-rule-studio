@@ -76,6 +76,21 @@ class FeedType(models.TextChoices):
     MANUAL_UPLOAD = "manual_upload", "Manual Upload"
 
 
+class ChangeStatus(models.TextChoices):
+    """Lifecycle of a change-register item flowing toward a WORK_ORDERS INTAKE order."""
+    DETECTED = "detected", "Detected"      # surfaced (manual clip or checksum diff); not yet assessed
+    TRIAGED = "triaged", "Triaged"         # assessed: affected forms / tax year / substantive determined
+    PROMOTED = "promoted", "Promoted"      # became a WORK_ORDERS INTAKE order (front door takes over)
+    DISMISSED = "dismissed", "Dismissed"   # not substantive / no authoring action needed
+
+
+class ChangeDetectionSource(models.TextChoices):
+    """How a change-register item was surfaced."""
+    MANUAL_CLIP = "manual_clip", "Manual Clip"        # Ken (or CC on a law change) hand-entered it
+    CHECKSUM_DIFF = "checksum_diff", "Checksum Diff"  # a source's AuthorityVersion checksum moved
+    FEED_POLL = "feed_poll", "Feed Poll"              # (future) automated feed polling
+
+
 # ---------------------------------------------------------------------------
 # Models
 # ---------------------------------------------------------------------------
@@ -284,3 +299,50 @@ class SourceFeedDefinition(models.Model):
 
     def __str__(self):
         return f"{self.feed_code}: {self.feed_name}"
+
+
+class ChangeRegisterItem(models.Model):
+    """A detected/triaged tax-law change flowing toward a WORK_ORDERS INTAKE order.
+
+    The front-of-the-front-door: a law change TRIGGERS authoring. This record is the funnel's
+    ledger row (DETECTED -> TRIAGED -> PROMOTED / DISMISSED). Promotion opens a WORK_ORDERS order;
+    it NEVER crosses a gate unattended (Gate 1 = Ken approves the spec; Gate 2 = the tts ingest).
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    change_code = models.CharField(max_length=30, unique=True, help_text="e.g. CR-2026-001")
+    title = models.CharField(max_length=255)
+    summary = models.TextField(help_text="What changed, in the authority's own terms (cite it).")
+    jurisdiction_code = models.CharField(max_length=10, default="US", help_text="US, GA, SC, ...")
+    tax_year = models.IntegerField(blank=True, null=True, help_text="The tax year the change first affects (year-keyed).")
+
+    detected_via = models.CharField(max_length=20, choices=ChangeDetectionSource.choices, default=ChangeDetectionSource.MANUAL_CLIP)
+    status = models.CharField(max_length=20, choices=ChangeStatus.choices, default=ChangeStatus.DETECTED)
+
+    # ── Provenance (what authority moved) ───────────────────────────────────
+    authority_source = models.ForeignKey(
+        AuthoritySource, on_delete=models.SET_NULL, blank=True, null=True, related_name="change_items")
+    authority_version = models.ForeignKey(
+        AuthorityVersion, on_delete=models.SET_NULL, blank=True, null=True, related_name="change_items",
+        help_text="The new version whose checksum diff surfaced this (checksum_diff detection).")
+    feed = models.ForeignKey(
+        SourceFeedDefinition, on_delete=models.SET_NULL, blank=True, null=True, related_name="change_items")
+
+    # ── Triage output ───────────────────────────────────────────────────────
+    affected_forms = models.JSONField(default=list, blank=True, help_text='Form numbers the change touches, e.g. ["3115","4562"].')
+    affected_rule_ids = models.JSONField(default=list, blank=True, help_text="Optional: specific FormRule rule_ids implicated.")
+    is_substantive = models.BooleanField(blank=True, null=True, help_text="Triage call: does this require authoring? (null until triaged)")
+    triage_notes = models.TextField(blank=True, null=True)
+
+    # ── Promotion to the front door ─────────────────────────────────────────
+    promoted_work_order = models.CharField(max_length=30, blank=True, null=True, help_text="The WORK_ORDERS order id, e.g. WO-24.")
+    promoted_at = models.DateTimeField(blank=True, null=True)
+
+    detected_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-detected_at", "change_code"]
+
+    def __str__(self):
+        return f"{self.change_code} [{self.status}]: {self.title}"

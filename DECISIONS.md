@@ -16,6 +16,50 @@ Each decision gets a dated entry with: what was decided, why, what was considere
 
 ---
 
+## 2026-07-08 — D-26: The tax-law-change funnel (CHANGE_REGISTER) — v1 architecture LOCKED
+
+**Decision:** Per Ken's 2026-07-08 scoping walk (3 AskUserQuestion), build the change-register funnel — the
+front-of-the-front-door that makes a law change a first-class, tracked TRIGGER for authoring (law change → new RS
+rule → tts app change). This is the loop CLAUDE.md and WORK_ORDERS.md always anticipated but never had a mechanism
+for. v1 shape:
+- **(Q1) BOTH detection arms now.** (a) **Manual clip** — `change_register add` records a change a human/CC knows
+  about. (b) **Checksum diff** — `detect_source_changes` compares candidate checksums (a `--manifest` JSON, or
+  `--from-files` recompute) against each source's current `AuthorityVersion.checksum_sha256`; a mismatch opens a
+  `DETECTED` item (idempotent; flags no-current-version sources as a feed-coverage gap). Actual network fetching is
+  the deferred FEED_POLL follow-up — v1 diffs SUPPLIED checksums so it is deterministic + testable.
+- **(Q2) DB model + `CHANGE_REGISTER.md` doc.** A `sources.ChangeRegisterItem` model (UUID pk; `change_code`
+  CR-YYYY-NNN; FKs to `AuthoritySource`/`AuthorityVersion`/`SourceFeedDefinition`; `affected_forms` JSON; triage +
+  promotion fields; status `DETECTED→TRIAGED→PROMOTED/DISMISSED`) PLUS a markdown front-door ledger mirroring
+  WORK_ORDERS.md. Both machine-queryable and boot-readable.
+- **(Q3) Staleness DEFERRED.** v1 does NOT auto-flag dependent `FormRule`s stale when a source moves
+  (Authoritative-Source Rule step 5). Follow-up: a `stale_rules_report` walking `RuleAuthorityLink` for a promoted
+  change's blast radius. v1 opens the change item; it does not touch rules.
+
+**The invariant that survives:** promotion opens a WORK_ORDERS INTAKE order and the EXISTING front door takes over
+(gap-check → research-verify → Gate-1 scope walk → author READY_TO_SEED=False → SQLite-validate → seed → export → tts
+[APP] build). **The register does NOT bypass the two gates** — a change may START a draft; nothing CROSSES Gate 1
+(Ken) or Gate 2 (tts ingest) unattended.
+
+**Context:** the SPINE S-16 federal-forms queue drained 2026-07-06 (WO-23 Form 3115 was the last item); post-drain,
+net-new RS scope needs the TaxWise forms-usage report OR a law change — so a structured law-change intake is the
+natural next build, not an afterthought. `SourceFeedDefinition` (where to look) + `AuthorityVersion.checksum_sha256`
+(is_current snapshot) already existed as the raw material; the missing piece was the change-ITEM model + triage
+workflow + doc.
+
+**Alternatives considered:** manual-clip only (rejected — Ken wanted the checksum detector now too); doc-only ledger
+(rejected — loses queryability + FK integrity to sources/forms/WOs); DB-only, no doc (rejected — breaks the
+boot-readable front-door habit that WORK_ORDERS.md established); auto-flagging rules stale in v1 (deferred — invasive
+schema change on the rules side + noise risk; the report form is safer and comes later).
+
+**Would reconsider if:** the FEED_POLL fetchers make the manual manifest obsolete; the register grows enough to want a
+REST API (`/api/changes/`) alongside the CLI; staleness reporting proves it should escalate to an on-rule flag.
+
+**Built 2026-07-08:** `sources.ChangeRegisterItem` (migration `0003_changeregisteritem`), commands `change_register`
+(add/triage/promote/dismiss/list) + `detect_source_changes` (manifest/from-files/dry-run), `CHANGE_REGISTER.md`,
+`tests/test_change_register.py` (17 tests). Full RS suite 38/38 green. See [[rs-change-register-funnel]].
+
+---
+
 ## 2026-07-06 — D-25: Form 3115 (WO-23) v1 scope LOCKED — Application for Change in Accounting Method (§481(a))
 
 **Decision:** Per Ken's 2026-07-06 Gate-1 scope walk (4 AskUserQuestion, all recommended), Form 3115 (10th and LAST

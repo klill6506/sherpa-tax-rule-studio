@@ -476,5 +476,8 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
 ## Maintenance
 - Lives in RS repo root + the tts-tax-status mirror (`rule-studio/`). CC boot list.
-- The CHANGE_REGISTER (when built) drops triaged law-change items into INTAKE as new orders.
+- **The CHANGE_REGISTER is BUILT (2026-07-08, DECISIONS D-26)** — see `CHANGE_REGISTER.md`. A triaged law-change
+  item is PROMOTED (`change_register promote --code CR-YYYY-NNN --work-order WO-NN`) and enters THIS file's INTAKE as
+  a new order, then runs the standard front door. It does NOT bypass the gates. This is now the primary intake for
+  net-new RS scope post-S-16-drain.
 - Completion ping reuses the existing Pushover hook: draft ready → notify Ken → approve.
