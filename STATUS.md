@@ -27,9 +27,14 @@ auto-discovers recent IRS/Treasury regulatory documents from the free Federal Re
 final RULE + proposed PRORULE; idempotent by FR `document_number` in the new `external_ref` field, migration `0004`;
 `--since`/`--lookback-days`/`--types`/`--max-pages`/`--dry-run`). Live dry-run (since 2026-05-01) pulled 13 real IRS
 FR items (Trump Accounts, §45Z clean-fuel credit, OBBBA 1099 reporting-threshold increase, partnership-interest sale
-reporting, estate-tax closing-letter fee). Deferred: FEED_POLL leg 2+ (IRB Rev.Procs/Notices — where sub-regulatory
-guidance lives, NOT the FR — + Congress.gov statutes), a weekly scheduler, and the staleness auto-flag (→ future
-`stale_rules_report`). Register is live + empty (the FR run was dry-run only).
+reporting, estate-tax closing-letter fee). **+FEED_POLL leg 2 BUILT 2026-07-08** — `fetch_irb` scrapes the IRS
+Internal Revenue Bulletin index (the sub-regulatory channel the FR MISSES: Rev.Procs / Notices / Rulings /
+Announcements — e.g. the Form 3115 automatic-change list, indexed amounts) and opens a `feed_poll` item per new
+WEEKLY BULLETIN (bulletin-level; triage drills into the individual items), idempotent by `external_ref` `IRB-YYYY-NN`;
+`--since-bulletin`/`--limit`/`--dry-run`; browser UA, stdlib urllib. No govinfo/IRS API exists → index scrape (verified
+the anchor pattern before coding). Live dry-run parsed 25 bulletins, selected the 6 most recent. Deferred: FEED_POLL
+leg 3+ (Congress.gov statutes; item-LEVEL IRB parsing), a weekly scheduler, and the staleness auto-flag (→ future
+`stale_rules_report`). Register is live + empty (both FR + IRB runs were dry-run only).
 
 Active spec-authoring tool. RS Supabase holds **120 TaxForms / 527 FlowAssertions / 973 FormRules**
 (**+WO-23 Form 3115 2026-07-06** — Application for Change in Accounting Method (`3115`, entity_types
@@ -366,6 +371,20 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-08: **FEED_POLL leg 2 — the INTERNAL REVENUE BULLETIN fetcher BUILT (sub-regulatory intake).**
+  The channel the Federal Register misses: Rev.Procs / Notices / Rev.Rulings / Announcements (where the Form 3115
+  automatic-change list, indexed amounts, etc. actually publish). Research first (never from memory): confirmed
+  **govinfo has no IRB collection** and irs.gov has no IRB API, and that FR "NOTICE" items are Paperwork-Reduction-Act
+  noise, not guidance — so the IRB is genuinely a separate channel and the IRS IRB index page (HTTP 200 w/ a browser
+  UA) is the only machine-readable surface. Verified the anchor pattern (`<a href="/pub/irs-irbs/irbYY-NN.pdf">Internal
+  Revenue Bulletin YYYY-NN</a>`, 25/page) before coding. Shipped `fetch_irb`: scrapes the index, `parse_bulletins`
+  (regex → sorted newest-first, year-rollover-safe), opens a DETECTED `feed_poll` item per new weekly bulletin
+  (bulletin-level — triage drills into the items), idempotent by `external_ref` `IRB-YYYY-NN`; `--since-bulletin` /
+  `--limit` (default 5) / `--dry-run`; graceful CommandError on network failure OR a 0-parse (layout-change guard);
+  stdlib urllib. +9 tests (parse/sort/rollover/limit/since/idempotency/shape/dry-run/http-fail/empty-parse) — **full RS
+  suite 56/56 green**. **Live dry-run proof:** parsed 25 real bulletins off irs.gov, selected the 6 most recent
+  (2026-23…28) with correct PDF URLs; nothing written. Deferred: item-LEVEL IRB parsing (individual Rev.Procs out of
+  each bulletin PDF) + Congress.gov statutes (leg 3). See [[rs-change-register-funnel]].
 - 2026-07-08: **FEED_POLL leg 1 — the FEDERAL REGISTER fetcher BUILT (change-register automated intake).**
   Ken picked the Federal Register as the first automated detection arm. Verified the live API contract first (never
   from memory): `results[]` carry document_number/title/type/publication_date/html_url/abstract; filter by

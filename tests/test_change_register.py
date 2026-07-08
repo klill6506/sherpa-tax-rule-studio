@@ -8,9 +8,19 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 
 import sources.management.commands.fetch_federal_register as fr
+import sources.management.commands.fetch_irb as irb
 from sources.models import (
     AuthoritySource, AuthorityVersion, ChangeDetectionSource, ChangeRegisterItem, ChangeStatus,
 )
+
+
+def _irb_html(nums):
+    """Build an IRB-index-like HTML snippet with the real anchor pattern for each YYYY-NN in nums."""
+    rows = "".join(
+        f'<td class="views-field"><a href="/pub/irs-irbs/irb{n[2:4]}-{n.split("-")[1]}.pdf" '
+        f'target="_blank" rel="noopener">Internal Revenue Bulletin {n}</a></td>'
+        for n in nums)
+    return f"<html><body><table>{rows}</table></body></html>"
 
 
 def run(*args):
@@ -295,3 +305,66 @@ class TestFetchFederalRegister:
         self._patch(monkeypatch, [{"results": [_fr_doc("2026-100", title="X" * 400)], "next_page_url": None}])
         run("fetch_federal_register")
         assert len(ChangeRegisterItem.objects.get(external_ref="2026-100").title) == 255
+
+
+@pytest.mark.django_db
+class TestFetchIrb:
+    def _patch(self, monkeypatch, nums):
+        monkeypatch.setattr(irb, "_http_get_text", lambda url: _irb_html(nums))
+
+    def test_parse_bulletins_sorted_newest_first(self):
+        out = irb.parse_bulletins(_irb_html(["2026-26", "2026-28", "2026-27"]))
+        assert [n for n, _ in out] == ["2026-28", "2026-27", "2026-26"]
+        assert out[0][1] == "https://www.irs.gov/pub/irs-irbs/irb26-28.pdf"
+
+    def test_parse_handles_year_rollover_ordering(self):
+        out = irb.parse_bulletins(_irb_html(["2025-52", "2026-1", "2026-2"]))
+        assert [n for n, _ in out] == ["2026-2", "2026-1", "2025-52"]
+
+    def test_opens_limit_most_recent(self, db, monkeypatch):
+        self._patch(monkeypatch, ["2026-24", "2026-25", "2026-26", "2026-27", "2026-28"])
+        run("fetch_irb", "--limit", "2")
+        items = ChangeRegisterItem.objects.filter(detected_via=ChangeDetectionSource.FEED_POLL)
+        assert set(items.values_list("external_ref", flat=True)) == {"IRB-2026-28", "IRB-2026-27"}
+
+    def test_since_bulletin_filter(self, db, monkeypatch):
+        self._patch(monkeypatch, ["2026-24", "2026-25", "2026-26", "2026-27", "2026-28"])
+        run("fetch_irb", "--since-bulletin", "2026-26")
+        refs = set(ChangeRegisterItem.objects.values_list("external_ref", flat=True))
+        assert refs == {"IRB-2026-26", "IRB-2026-27", "IRB-2026-28"}
+
+    def test_idempotent_by_bulletin_number(self, db, monkeypatch):
+        self._patch(monkeypatch, ["2026-27", "2026-28"])
+        run("fetch_irb", "--limit", "5")
+        run("fetch_irb", "--limit", "5")
+        assert ChangeRegisterItem.objects.filter(external_ref="IRB-2026-28").count() == 1
+        assert ChangeRegisterItem.objects.count() == 2
+
+    def test_item_shape(self, db, monkeypatch):
+        self._patch(monkeypatch, ["2026-28"])
+        run("fetch_irb", "--limit", "1")
+        it = ChangeRegisterItem.objects.get(external_ref="IRB-2026-28")
+        assert it.status == ChangeStatus.DETECTED
+        assert it.detected_via == ChangeDetectionSource.FEED_POLL
+        assert "2026-28" in it.title
+        assert "irb26-28.pdf" in it.summary
+
+    def test_dry_run_opens_nothing(self, db, monkeypatch):
+        self._patch(monkeypatch, ["2026-28"])
+        out = run("fetch_irb", "--dry-run")
+        assert ChangeRegisterItem.objects.count() == 0
+        assert "NEW" in out
+
+    def test_empty_parse_raises(self, db, monkeypatch):
+        monkeypatch.setattr(irb, "_http_get_text", lambda url: "<html>no bulletins here</html>")
+        with pytest.raises(CommandError):
+            run("fetch_irb")
+
+    def test_http_failure_raises(self, db, monkeypatch):
+        import urllib.error
+
+        def boom(url):
+            raise urllib.error.URLError("no network")
+        monkeypatch.setattr(irb, "_http_get_text", boom)
+        with pytest.raises(CommandError):
+            run("fetch_irb")

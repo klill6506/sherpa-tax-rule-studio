@@ -64,8 +64,16 @@ the live contract before coding); queries IRS RULE+PRORULE since a date, paginat
 `feed_poll` items idempotently by FR `document_number`. Added an `external_ref` dedup field (migration `0004`) used by
 BOTH the FR arm and the retrofitted checksum arm, and factored `sources/change_register_helpers.py`. +9 tests (full
 suite 47/47). Live dry-run surfaced 13 real IRS FR docs. **Scope note:** the FR carries Treasury/IRS REGULATIONS only
-— sub-regulatory guidance (Rev.Procs/Notices/Rulings via the IRB) and statutes (Congress.gov) are separate future
-FEED_POLL legs; a weekly scheduler is also deferred (run on demand for now).
+— sub-regulatory guidance (Rev.Procs/Notices/Rulings via the IRB) and statutes (Congress.gov) are separate FEED_POLL
+legs; a weekly scheduler is also deferred (run on demand for now).
+
+**FEED_POLL leg 2 built same day (2026-07-08):** the **Internal Revenue Bulletin** — the sub-regulatory channel the
+FR misses (Rev.Procs/Notices/Rulings/Announcements). Research established there is NO clean API (govinfo has no IRB
+collection; irs.gov exposes none) — so `fetch_irb` scrapes the IRS IRB index page (verified reachable w/ a browser UA
++ its stable anchor pattern before coding). Detection is **bulletin-level** (one DETECTED item per new weekly IRB,
+idempotent by `IRB-YYYY-NN`), NOT item-level — a bulletin bundles many items and per-PDF parsing is fragile; triage
+drills in. `--since-bulletin`/`--limit`/`--dry-run`; a 0-parse raises (layout-change guard). +9 tests (full suite
+56/56); live dry-run parsed 25 real bulletins. **Deferred:** item-level IRB parsing + Congress.gov statutes (leg 3).
 
 ---
 
