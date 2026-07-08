@@ -318,6 +318,9 @@ class ChangeRegisterItem(models.Model):
 
     detected_via = models.CharField(max_length=20, choices=ChangeDetectionSource.choices, default=ChangeDetectionSource.MANUAL_CLIP)
     status = models.CharField(max_length=20, choices=ChangeStatus.choices, default=ChangeStatus.DETECTED)
+    external_ref = models.CharField(
+        max_length=120, blank=True, null=True, db_index=True,
+        help_text="Stable dedup key for automated detection: FR document_number, or 'checksum:<sha>' for the checksum arm.")
 
     # ── Provenance (what authority moved) ───────────────────────────────────
     authority_source = models.ForeignKey(

@@ -7,6 +7,7 @@ import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
+import sources.management.commands.fetch_federal_register as fr
 from sources.models import (
     AuthoritySource, AuthorityVersion, ChangeDetectionSource, ChangeRegisterItem, ChangeStatus,
 )
@@ -199,3 +200,98 @@ class TestDetectSourceChanges:
             assert "DIFF" in out
         finally:
             os.remove(path)
+
+    def test_checksum_item_sets_external_ref(self, current_version):
+        path = "scratchpad/_test_manifest6.json"
+        import os
+        os.makedirs("scratchpad", exist_ok=True)
+        with open(path, "w") as fh:
+            json.dump({"REVPROC_2025_23": "b" * 64}, fh)
+        try:
+            run("detect_source_changes", "--manifest", path)
+            it = ChangeRegisterItem.objects.get(detected_via=ChangeDetectionSource.CHECKSUM_DIFF)
+            assert it.external_ref == "checksum:" + "b" * 64
+        finally:
+            os.remove(path)
+
+
+def _fr_doc(num, title="Some IRS reg", typ="Rule", date="2026-07-01"):
+    return {"document_number": num, "title": title, "type": typ, "publication_date": date,
+            "html_url": f"https://www.federalregister.gov/documents/{num}", "abstract": "An abstract.",
+            "agencies": [{"slug": "internal-revenue-service"}]}
+
+
+@pytest.mark.django_db
+class TestFetchFederalRegister:
+    def _patch(self, monkeypatch, pages):
+        """pages = list of API payload dicts returned in sequence per _http_get_json call."""
+        calls = {"n": 0}
+
+        def fake(url):
+            i = min(calls["n"], len(pages) - 1)
+            calls["n"] += 1
+            return pages[i]
+        monkeypatch.setattr(fr, "_http_get_json", fake)
+        return calls
+
+    def test_opens_items_from_results(self, db, monkeypatch):
+        self._patch(monkeypatch, [{"results": [_fr_doc("2026-100"), _fr_doc("2026-101")], "next_page_url": None}])
+        run("fetch_federal_register")
+        items = ChangeRegisterItem.objects.filter(detected_via=ChangeDetectionSource.FEED_POLL)
+        assert items.count() == 2
+        it = ChangeRegisterItem.objects.get(external_ref="2026-100")
+        assert it.status == ChangeStatus.DETECTED
+        assert it.jurisdiction_code == "US"
+        assert "Federal Register" in it.summary
+
+    def test_idempotent_on_document_number(self, db, monkeypatch):
+        payload = [{"results": [_fr_doc("2026-100")], "next_page_url": None}]
+        self._patch(monkeypatch, payload)
+        run("fetch_federal_register")
+        self._patch(monkeypatch, payload)
+        run("fetch_federal_register")  # same doc again
+        assert ChangeRegisterItem.objects.filter(external_ref="2026-100").count() == 1
+
+    def test_pagination_follows_next_page_url(self, db, monkeypatch):
+        self._patch(monkeypatch, [
+            {"results": [_fr_doc("2026-100")], "next_page_url": "https://www.federalregister.gov/api/v1/documents?page=2"},
+            {"results": [_fr_doc("2026-101")], "next_page_url": None},
+        ])
+        run("fetch_federal_register", "--max-pages", "5")
+        assert ChangeRegisterItem.objects.filter(detected_via=ChangeDetectionSource.FEED_POLL).count() == 2
+
+    def test_max_pages_cap_warns(self, db, monkeypatch):
+        # every page returns a next_page_url -> cap should stop it and warn
+        self._patch(monkeypatch, [
+            {"results": [_fr_doc("2026-100")], "next_page_url": "https://x/api/v1/documents?page=2"},
+            {"results": [_fr_doc("2026-101")], "next_page_url": "https://x/api/v1/documents?page=3"},
+        ])
+        out = run("fetch_federal_register", "--max-pages", "1")
+        assert ChangeRegisterItem.objects.count() == 1  # only page 1 read
+        assert "cap" in out.lower()
+
+    def test_dry_run_opens_nothing(self, db, monkeypatch):
+        self._patch(monkeypatch, [{"results": [_fr_doc("2026-100")], "next_page_url": None}])
+        out = run("fetch_federal_register", "--dry-run")
+        assert ChangeRegisterItem.objects.count() == 0
+        assert "NEW" in out
+
+    def test_http_failure_raises_commanderror(self, db, monkeypatch):
+        import urllib.error
+
+        def boom(url):
+            raise urllib.error.URLError("no network")
+        monkeypatch.setattr(fr, "_http_get_json", boom)
+        with pytest.raises(CommandError):
+            run("fetch_federal_register")
+
+    def test_build_url_has_filters(self):
+        url = fr._build_url("2026-01-01", ["RULE", "PRORULE"], ["internal-revenue-service"], 100)
+        assert "publication_date" in url and "2026-01-01" in url
+        assert "internal-revenue-service" in url
+        assert url.count("conditions%5Btype%5D%5B%5D") == 2  # two type conditions
+
+    def test_long_title_truncated(self, db, monkeypatch):
+        self._patch(monkeypatch, [{"results": [_fr_doc("2026-100", title="X" * 400)], "next_page_url": None}])
+        run("fetch_federal_register")
+        assert len(ChangeRegisterItem.objects.get(external_ref="2026-100").title) == 255

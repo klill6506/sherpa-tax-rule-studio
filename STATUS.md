@@ -21,9 +21,15 @@ AuthoritySource/AuthorityVersion/SourceFeedDefinition; affected_forms JSON) + tw
 `--manifest` JSON or `--from-files` recompute against each source's current AuthorityVersion, opens DETECTED items
 idempotently) + `CHANGE_REGISTER.md` (the human ledger mirroring WORK_ORDERS.md) + `tests/test_change_register.py`
 (17 tests; full RS suite **38/38** green). **Invariant preserved:** promotion opens a WORK_ORDERS INTAKE order and the
-existing front door takes over — it does NOT bypass Gate 1 (Ken) or Gate 2 (tts ingest). Deferred (Ken's scoping):
-staleness auto-flag of dependent rules (→ a future `stale_rules_report`) and FEED_POLL network fetchers. Register is
-live + empty. This is now the primary way net-new RS authoring scope enters post-S-16-drain.
+existing front door takes over — it does NOT bypass Gate 1 (Ken) or Gate 2 (tts ingest). This is now the primary way
+net-new RS authoring scope enters post-S-16-drain. **+FEED_POLL leg 1 BUILT 2026-07-08** — `fetch_federal_register`
+auto-discovers recent IRS/Treasury regulatory documents from the free Federal Register API (stdlib urllib, no key;
+final RULE + proposed PRORULE; idempotent by FR `document_number` in the new `external_ref` field, migration `0004`;
+`--since`/`--lookback-days`/`--types`/`--max-pages`/`--dry-run`). Live dry-run (since 2026-05-01) pulled 13 real IRS
+FR items (Trump Accounts, §45Z clean-fuel credit, OBBBA 1099 reporting-threshold increase, partnership-interest sale
+reporting, estate-tax closing-letter fee). Deferred: FEED_POLL leg 2+ (IRB Rev.Procs/Notices — where sub-regulatory
+guidance lives, NOT the FR — + Congress.gov statutes), a weekly scheduler, and the staleness auto-flag (→ future
+`stale_rules_report`). Register is live + empty (the FR run was dry-run only).
 
 Active spec-authoring tool. RS Supabase holds **120 TaxForms / 527 FlowAssertions / 973 FormRules**
 (**+WO-23 Form 3115 2026-07-06** — Application for Change in Accounting Method (`3115`, entity_types
@@ -360,6 +366,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-08: **FEED_POLL leg 1 — the FEDERAL REGISTER fetcher BUILT (change-register automated intake).**
+  Ken picked the Federal Register as the first automated detection arm. Verified the live API contract first (never
+  from memory): `results[]` carry document_number/title/type/publication_date/html_url/abstract; filter by
+  `conditions[agencies][]=internal-revenue-service` + `conditions[type][]` + `conditions[publication_date][gte]`;
+  free + keyless; `requests` not installed → stdlib urllib. Shipped: (1) `external_ref` dedup field on
+  ChangeRegisterItem (migration `0004`) — clean idempotency for FR document_number AND retrofitted the checksum arm
+  (`checksum:<sha>`), replacing the `summary__contains` hack; (2) `sources/change_register_helpers.py` — factored
+  `next_change_code`/`parse_csv` shared across all 3 commands; (3) `fetch_federal_register` command — queries IRS
+  RULE+PRORULE since a date, paginates via `next_page_url` up to `--max-pages`, opens DETECTED `feed_poll` items
+  idempotently, `--dry-run`, graceful CommandError on network failure, HTTP factored into `_http_get_json` for test
+  mocking; (4) 9 new tests (parse→open, idempotency, pagination, max-pages cap warn, dry-run, HTTP-failure, URL
+  filters, title truncation) — **full RS suite 47/47 green**. **Live dry-run proof** (since 2026-05-01): 13 real IRS
+  FR docs surfaced incl. the OBBBA 1099 reporting-threshold increase + Trump Accounts + §45Z. Nothing written to prod
+  (dry-run). ⚠ The FR carries REGULATIONS only — Rev.Procs/Notices/Rulings (IRB) are a separate future leg. See
+  [[rs-change-register-funnel]].
 - 2026-07-08: **TAX-LAW-CHANGE FUNNEL (CHANGE_REGISTER) v1 BUILT — the front-of-the-front-door (DECISIONS D-26).**
   Ken's stated next goal after the S-16 drain: make a law change TRIGGER a new rule then a tax-app change. Scoping walk
   (3 AskUserQuestion): BOTH detection arms now / DB model + doc / staleness deferred. Shipped this session:

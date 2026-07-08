@@ -58,6 +58,15 @@ REST API (`/api/changes/`) alongside the CLI; staleness reporting proves it shou
 (add/triage/promote/dismiss/list) + `detect_source_changes` (manifest/from-files/dry-run), `CHANGE_REGISTER.md`,
 `tests/test_change_register.py` (17 tests). Full RS suite 38/38 green. See [[rs-change-register-funnel]].
 
+**FEED_POLL leg 1 built same day (2026-07-08):** Ken picked the **Federal Register API** as the first automated
+detection arm. `fetch_federal_register` command (stdlib urllib — `requests` not installed; free keyless API; verified
+the live contract before coding); queries IRS RULE+PRORULE since a date, paginates to `--max-pages`, opens DETECTED
+`feed_poll` items idempotently by FR `document_number`. Added an `external_ref` dedup field (migration `0004`) used by
+BOTH the FR arm and the retrofitted checksum arm, and factored `sources/change_register_helpers.py`. +9 tests (full
+suite 47/47). Live dry-run surfaced 13 real IRS FR docs. **Scope note:** the FR carries Treasury/IRS REGULATIONS only
+— sub-regulatory guidance (Rev.Procs/Notices/Rulings via the IRB) and statutes (Congress.gov) are separate future
+FEED_POLL legs; a weekly scheduler is also deferred (run on demand for now).
+
 ---
 
 ## 2026-07-06 — D-25: Form 3115 (WO-23) v1 scope LOCKED — Application for Change in Accounting Method (§481(a))

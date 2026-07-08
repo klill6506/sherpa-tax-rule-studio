@@ -24,13 +24,20 @@ A promoted change becomes a WORK_ORDERS order and then runs the SAME front door 
                            DISMISSED                                        ⟨Gate 2: tts ingest⟩
 ```
 
-**Two arms into DETECT (both live as of 2026-07-08):**
+**Three arms into DETECT (all live):**
 - **Manual clip** — Ken (or CC on a known law change) records it:
   `manage.py change_register add --title "..." --summary "..." --forms 3115 --tax-year 2026 --source REVPROC_2025_23`
 - **Checksum diff** — re-fetch checksums, diff against each source's current `AuthorityVersion`:
   `manage.py detect_source_changes --manifest scratchpad/latest_checksums.json`
   (opens a `DETECTED` item per moved source; idempotent; flags sources with no current version as a
-  feed-coverage gap. Network fetching itself is the FEED_POLL follow-up — v1 diffs supplied checksums.)
+  feed-coverage gap. v1 diffs supplied checksums; the fetcher that produces the manifest is future work.)
+- **Federal Register poll (FEED_POLL leg 1, BUILT 2026-07-08)** — auto-discovers recent IRS/Treasury
+  regulatory documents from the free Federal Register API:
+  `manage.py fetch_federal_register [--since YYYY-MM-DD | --lookback-days N] [--types RULE,PRORULE,NOTICE] [--dry-run]`
+  (opens a `DETECTED` `feed_poll` item per new final/proposed rule; idempotent by FR `document_number`
+  stored in `external_ref`; stdlib urllib, no key. ⚠ The FR carries REGULATIONS — sub-regulatory guidance
+  (Rev. Procs/Notices/Rulings, e.g. the annual automatic-change list) publishes in the IRB, not the FR,
+  so those still arrive via manual clip / a future IRB leg.)
 
 ## Status lifecycle (the `ChangeRegisterItem` model, `sources` app)
 `DETECTED → TRIAGED → PROMOTED` (or `→ DISMISSED`). Backed by a DB model (queryable, FKs to
@@ -45,7 +52,8 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
 | promote | `change_register promote --code CR-YYYY-NNN --work-order WO-NN` |
 | dismiss | `change_register dismiss --code CR-YYYY-NNN --notes N` |
 | list | `change_register list [--status detected]` |
-| detect | `detect_source_changes --manifest <json> | --from-files [--dry-run]` |
+| detect (checksum) | `detect_source_changes --manifest <json> | --from-files [--dry-run]` |
+| detect (Fed. Register) | `fetch_federal_register [--since YYYY-MM-DD | --lookback-days N] [--types ...] [--dry-run]` |
 
 ## What feeds it (design intent — see [[rs-change-register-funnel]])
 - IRS IRB / Rev. Proc. / Notice releases (the annual automatic-change list, indexed-amount updates).
@@ -53,12 +61,15 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
 - State DOR conformity + form updates (GA/SC/AL/NC — via `JurisdictionConformitySource`).
 - `SourceFeedDefinition` rows describe WHERE to look; `detect_source_changes` diffs WHAT moved.
 
-## Deferred (not in v1, by Ken's 2026-07-08 scoping)
+## Deferred / follow-ups
 - **Staleness auto-flag** (Authoritative-Source Rule step 5): when a source moves, auto-mark the
   dependent `FormRule`s (via `RuleAuthorityLink`) as stale. v1 opens a change item but does not touch
   rules. Follow-up: a `stale_rules_report` that lists the blast radius of a promoted change.
-- **FEED_POLL**: the network fetchers/parsers per `SourceFeedDefinition` that would auto-produce the
-  checksum manifest `detect_source_changes` consumes.
+- **FEED_POLL leg 2+**: the **IRB** feed (Rev. Procs / Notices / Rulings — where sub-regulatory guidance
+  lives) and **Congress.gov** (statutes / P.L.); a fetcher that produces the `detect_source_changes`
+  checksum manifest for form/pub revisions. (Leg 1 = Federal Register regulations, BUILT 2026-07-08.)
+- **Scheduling**: a recurring job (Render cron or a scheduled CC routine) that runs `fetch_federal_register`
+  weekly so regulatory changes flow in unattended. Currently run on demand in a session.
 - **REST API** for the register (consistent with `/api/sources/…`) — CLI + this doc are the v1 front door.
 
 ---

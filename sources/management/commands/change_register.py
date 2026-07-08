@@ -29,25 +29,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
+from sources.change_register_helpers import next_change_code as _next_change_code, parse_csv as _csv
 from sources.models import (
     AuthoritySource, ChangeDetectionSource, ChangeRegisterItem, ChangeStatus,
 )
-
-
-def _next_change_code(year: int) -> str:
-    """CR-<year>-<zero-padded seq>, sequential within the year."""
-    prefix = f"CR-{year}-"
-    existing = ChangeRegisterItem.objects.filter(change_code__startswith=prefix).values_list("change_code", flat=True)
-    seqs = []
-    for c in existing:
-        tail = c.rsplit("-", 1)[-1]
-        if tail.isdigit():
-            seqs.append(int(tail))
-    return f"{prefix}{(max(seqs) + 1) if seqs else 1:03d}"
-
-
-def _csv(val):
-    return [v.strip() for v in val.split(",") if v.strip()] if val else []
 
 
 class Command(BaseCommand):

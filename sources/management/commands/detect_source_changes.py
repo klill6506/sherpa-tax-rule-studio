@@ -25,19 +25,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
+from sources.change_register_helpers import next_change_code as _next_change_code
 from sources.models import (
     AuthoritySource, AuthorityVersion, ChangeDetectionSource, ChangeRegisterItem, ChangeStatus,
 )
-
-
-def _next_change_code(year: int) -> str:
-    prefix = f"CR-{year}-"
-    seqs = []
-    for c in ChangeRegisterItem.objects.filter(change_code__startswith=prefix).values_list("change_code", flat=True):
-        tail = c.rsplit("-", 1)[-1]
-        if tail.isdigit():
-            seqs.append(int(tail))
-    return f"{prefix}{(max(seqs) + 1) if seqs else 1:03d}"
 
 
 def _sha256_file(path: str) -> str | None:
@@ -87,9 +78,9 @@ class Command(BaseCommand):
                 unchanged += 1
                 continue
             # a diff (or no stored checksum to compare) — but don't re-open for the same candidate
+            ext_ref = f"checksum:{candidate}"
             dupe = ChangeRegisterItem.objects.filter(
-                authority_source=src, detected_via=ChangeDetectionSource.CHECKSUM_DIFF,
-                status__in=[ChangeStatus.DETECTED, ChangeStatus.TRIAGED], summary__contains=candidate[:16],
+                authority_source=src, detected_via=ChangeDetectionSource.CHECKSUM_DIFF, external_ref=ext_ref,
             ).exists()
             if dupe:
                 skipped_existing += 1
@@ -108,7 +99,7 @@ class Command(BaseCommand):
                              f"!= candidate {candidate}. Re-verify the source and any dependent rules."),
                     jurisdiction_code=src.jurisdiction_code or "US",
                     detected_via=ChangeDetectionSource.CHECKSUM_DIFF, status=ChangeStatus.DETECTED,
-                    authority_source=src, authority_version=current,
+                    authority_source=src, authority_version=current, external_ref=ext_ref,
                 )
                 opened += 1
                 self.stdout.write(self.style.SUCCESS(f"DETECTED {code}: {src.source_code} checksum moved"))
