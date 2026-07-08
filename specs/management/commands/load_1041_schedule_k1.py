@@ -426,24 +426,11 @@ FORMS: list[dict] = [
     },
 ]
 
-FLOW_ASSERTIONS: list[dict] = [
-    {"assertion_id": "FA-K1041-CHAR", "title": "K-1 boxes 1-8 retain DNI class character proportionally", "assertion_type": "flow_assertion",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 1,
-     "description": "Each beneficiary's box for a class = (entity class amount in DNI) × (beneficiary's DNI %). Interest stays box 1, dividends box 2, etc. No losses in boxes 1-8.",
-     "definition": {"rule": "R-K1041-CHAR", "check": "box[c] = round(ent_[c] * beneficiary_dni_pct / 100)"}},
-    {"assertion_id": "FA-K1041-RECON", "title": "Σ beneficiary K-1 shares reconcile to entity DNI classes", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 2,
-     "description": "For each income class, the sum of all beneficiaries' K-1 amounts equals the amount of that class carried out in DNI. The total taxable DNI carried out equals the Schedule B income distribution deduction (L15).",
-     "definition": {"rule": "R-K1041-RECON", "check": "sum(box[c] over beneficiaries) == ent_[c]; total == Sch B L15"}},
-    {"assertion_id": "FA-K1041-FINYR", "title": "Box 11 §642(h) carryovers pass through only in the final year", "assertion_type": "flow_assertion",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 3,
-     "description": "Excess deductions (11A/B) and capital-loss/NOL carryovers (11C/D/E/F) appear on the K-1 only when is_final_year; otherwise box 11 is blank and the attributes stay with the entity.",
-     "definition": {"rule": "R-K1041-FINYR", "check": "box11* populated iff is_final_year"}},
-    {"assertion_id": "FA-K1041-NIIT", "title": "Distributed NII taxed at the beneficiary (box 14H → 8960 L7)", "assertion_type": "flow_assertion",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 4,
-     "description": "Box 14 code H carries the beneficiary's §1411 net investment income adjustment to Form 8960 line 7. Only UNdistributed NII is taxed on the trust's Schedule G line 5 — distributed NII follows the income to the beneficiary.",
-     "definition": {"rule": "R-K1041-BOX14", "check": "box14H -> beneficiary Form 8960 line 7"}},
-]
+# FA home MOVED 2026-07-08 (S-11 leg 8a): the four staged drafts that lived here
+# (FA-K1041-CHAR/RECON/FINYR/NIIT) migrated to load_1041_flow_assertions (CHAR
+# re-authored active, RECON superseded by FA-K1041-SUM, FINYR adopted active,
+# NIIT staged). Keeping this list empty prevents a reseed from regressing statuses.
+FLOW_ASSERTIONS: list[dict] = []
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -481,8 +468,8 @@ class Command(BaseCommand):
             for key in ("facts", "rules", "lines", "diagnostics", "scenarios", "rule_links"):
                 if not spec[key]:
                     empty.append(f"{fn}.{key}")
-        if not FLOW_ASSERTIONS:
-            empty.append("FLOW_ASSERTIONS")
+        # FLOW_ASSERTIONS intentionally empty — the FA home moved to
+        # load_1041_flow_assertions (2026-07-08).
         if not READY_TO_SEED or empty:
             still_empty = "\n  ".join(f"- {n}" for n in empty) or "(all populated)"
             raise CommandError(

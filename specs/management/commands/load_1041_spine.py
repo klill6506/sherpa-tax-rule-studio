@@ -796,32 +796,11 @@ FORMS: list[dict] = [
     },
 ]
 
-FLOW_ASSERTIONS: list[dict] = [
-    {"assertion_id": "FA-1041-DNI", "title": "DNI = §643(a) modifications of taxable income", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 1,
-     "description": "Schedule B L7 DNI = adjusted total income (L17) + adjusted tax-exempt interest (L2) + capital gains attributable to income (L3) − corpus capital gains (L6), floored at 0. Corpus cap gains are excluded by default (§643(a)(3)).",
-     "definition": {"rule": "R-1041-DNI", "check": "SchB_L7 = L1 + L2 + L3 + L4 - L5 + L6, floored at 0"}},
-    {"assertion_id": "FA-1041-IDD", "title": "Income distribution deduction = smaller of distributions or DNI (net of tax-exempt)", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 2,
-     "description": "Schedule B L15 (→ page-1 L18) = min(L13 total distributions net of tax-exempt, L14 DNI net of adjusted tax-exempt interest). The §651/§661 DNI limitation.",
-     "definition": {"rule": "R-1041-IDD", "check": "L15 = min(L13, L14); L18 = L15"}},
-    {"assertion_id": "FA-1041-TIERS", "title": "§662 DNI applied to first-tier before second-tier", "assertion_type": "flow_assertion",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 3,
-     "description": "First-tier distributions (L9) carry out DNI before second-tier (L10); second-tier beneficiaries include only the excess of DNI over first-tier. Beneficiary inclusion ≤ proportionate DNI share.",
-     "definition": {"rule": "R-1041-TIERS", "check": "tier1 = min(L9, DNI); tier2 = min(L10, max(0, DNI - L9))"}},
-    {"assertion_id": "FA-1041-EXEMPT", "title": "§642(b) exemption by entity type", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 4,
-     "description": "Page-1 L21 exemption = $600 estate / $300 simple trust / $100 complex trust / $5,100 QDisT (Rev. Proc. 2024-40 §2.35). ESBT S-portion = 0.",
-     "definition": {"rule": "R-1041-EXEMPT", "check": "L21 = {estate:600, simple:300, complex:100, qdist:5100}[entity_type]"}},
-    {"assertion_id": "FA-1041-TAX", "title": "Sch G L1a tax on the 2025 §1(e) compressed schedule", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 5,
-     "description": "Ordinary-income tax = 10% ≤$3,150; $315+24% ≤$11,450; $2,307+35% ≤$15,650; $3,777+37% above (Rev. Proc. 2024-40 Table 5). Cap-gain / qualified-dividend income uses the 0/15/20% breakpoints $3,250/$15,900.",
-     "definition": {"rule": "R-1041-TAX", "check": "top bracket 37% begins at $15,650; cap-gain 0/15/20 at $3,250/$15,900"}},
-    {"assertion_id": "FA-1041-NIIT", "title": "§1411 NIIT threshold = top-bracket start ($15,650)", "assertion_type": "reconciliation",
-     "entity_types": ["1041"], "status": "draft", "sort_order": 6,
-     "description": "Schedule G L5 = Form 8960 L21 = 3.8% × lesser of undistributed NII or (AGI − $15,650). The trust NIIT threshold equals the start of the top §1(e) bracket.",
-     "definition": {"rule": "R-1041-NIIT", "check": "SchG_L5 = 0.038 * min(undistributed_NII, AGI - 15650)"}},
-]
+# FA home MOVED 2026-07-08 (S-11 leg 8a): the six staged drafts that lived here
+# (FA-1041-DNI/IDD/TIERS/EXEMPT/TAX/NIIT) migrated to load_1041_flow_assertions,
+# which owns activation/supersession for the whole 1041 FA family. Keeping this
+# list empty prevents a reseed from regressing statuses back to draft.
+FLOW_ASSERTIONS: list[dict] = []
 
 
 # ═══════════════════════════════════════════════════════════════════════════

@@ -4,6 +4,32 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-08 — 1041 flow-assertion family CONSOLIDATED + ACTIVATED (S-11 leg 8a, Ken-approved)
+*Ken green-lit the tax-app REVIEW_QUEUE authoring plan ("go ahead with the 1041 FA authoring plan").*
+- **Root cause of the "zero 1041 FAs" export:** the 2026-07-05 S-11 authoring HAD staged 10 draft
+  FlowAssertions (spine: DNI/IDD/TIERS/EXEMPT/TAX/NIIT · K-1: CHAR/RECON/FINYR/NIIT) — none ever
+  activated, and the export serves active-only. The tax-app leg-8 gate build surfaced it.
+- **NEW `load_1041_flow_assertions.py` = the single FA home for the 1041 family** (17 active +
+  2 staged), transcribed from the approved R-1041-*/R-K1041-* rules (no new tax law): page-1
+  chains (TOTINC/ATI/TAXINC/TOTTAX/SETTLE) · Subchapter J core (DNI incl. the corpus-gain
+  back-out, IDD smaller-of, §662 TIERS) · §642(b) EXEMPT table · §1(e) RATES + CGRATE 0/15/20
+  stacking pins (RP 2024-40) · ESBT 37% · K-1 CHAR/SUM/FINYR · GATE-1041-DEFERS (AMT/bankruptcy
+  RED-defers + grantor-no-K-1) · FA-1041-GA501 (state base = federal ATI).
+- **Reconciliation:** ids shared with the drafts re-authored + FORCE-ACTIVE (the load_sch_1a
+  precedent); FA-K1041-FINYR adopted active (engine-backed); **FA-1041-TAX + FA-K1041-RECON
+  DISABLED** (superseded by RATES+CGRATE / SUM — supersession note prepended to description);
+  **FA-1041-NIIT + FA-K1041-NIIT stay STAGED** (trust-side 8960 + the box-14H→8960-L7 import
+  are unbuilt). FA blocks REMOVED from load_1041_spine / load_1041_schedule_k1 (tombstoned) so
+  a reseed can't regress statuses; the k1 loader's hollow-seed guard no longer requires FAs.
+- Validated on throwaway SQLite (`scratchpad/validate_1041_fa.py` — 17 active + 2 staged,
+  ids ≤ varchar(20), idempotent). **Seeded RS Supabase** (539 total — the 10 drafts updated in
+  place + 9 new rows). **Deployed export verified:** `entity_type=1041` serves exactly the 17
+  actives.
+- tts side (same session): export cached as canonical `server/specs/flow_assertions_1041.json`;
+  17 pure runners registered (`_RUNNERS_1041`) exercising compute_1041 / rate_schedule_tax /
+  capital_gain_tax / allocate_k1_boxes / compute_ga501; full gate **422 → 440**. → the 1041
+  form's last buildable leg closed; S-11 fully ticks on the app side.
+
 ## 2026-07-05 — SC1040 spec hygiene fix (promote to active + correct the $50k test pin)
 During the tts-app SC1040 build (S-7), two hygiene issues surfaced in `load_sc1040.py`:
 - **`FORM_STATUS` `draft` → `active`** — the spec was fully authored + Ken-approved 2026-07-04
