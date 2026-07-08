@@ -21,3 +21,26 @@ services:
         value: "3.13.2"
       - key: NODE_VERSION
         value: "22"
+
+  # Change-register scheduler — polls the automated FEED_POLL detectors (Federal Register + IRB)
+  # weekly and opens DETECTED items. Only fills the register; the gates are untouched.
+  # DATABASE_URL must match the web service's (same Supabase project). Optional: set
+  # PUSHOVER_TOKEN + PUSHOVER_USER to get a ping when new items are opened.
+  - type: cron
+    name: sherpa-rs-change-feeds
+    runtime: python
+    region: virginia
+    plan: starter
+    schedule: "0 12 * * 1"  # Mondays 12:00 UTC (IRB publishes weekly; FR uses an 8-day overlap)
+    buildCommand: pip install -r requirements.txt  # no frontend build needed for the cron
+    startCommand: python manage.py poll_change_feeds
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.13.2"
+      # Optional notification (leave unset to skip the ping):
+      - key: PUSHOVER_TOKEN
+        sync: false
+      - key: PUSHOVER_USER
+        sync: false

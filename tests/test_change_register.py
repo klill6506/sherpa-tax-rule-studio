@@ -368,3 +368,58 @@ class TestFetchIrb:
         monkeypatch.setattr(irb, "_http_get_text", boom)
         with pytest.raises(CommandError):
             run("fetch_irb")
+
+
+@pytest.mark.django_db
+class TestPollChangeFeeds:
+    def _patch_both(self, monkeypatch, fr_docs=("2026-100",), irb_nums=("2026-28",)):
+        monkeypatch.setattr(fr, "_http_get_json",
+                            lambda url: {"results": [_fr_doc(n) for n in fr_docs], "next_page_url": None})
+        monkeypatch.setattr(irb, "_http_get_text", lambda url: _irb_html(list(irb_nums)))
+
+    def test_runs_both_arms(self, db, monkeypatch):
+        self._patch_both(monkeypatch, fr_docs=["2026-100", "2026-101"], irb_nums=["2026-28"])
+        out = run("poll_change_feeds")
+        assert ChangeRegisterItem.objects.filter(external_ref="2026-100").exists()
+        assert ChangeRegisterItem.objects.filter(external_ref="IRB-2026-28").exists()
+        assert "3 new item(s) opened" in out
+        assert "2/2 arms ok" in out
+
+    def test_resilient_one_arm_fails(self, db, monkeypatch):
+        import urllib.error
+        monkeypatch.setattr(fr, "_http_get_json",
+                            lambda url: (_ for _ in ()).throw(urllib.error.URLError("down")))
+        monkeypatch.setattr(irb, "_http_get_text", lambda url: _irb_html(["2026-28"]))
+        out = run("poll_change_feeds")  # must NOT raise — IRB still succeeds
+        assert ChangeRegisterItem.objects.filter(external_ref="IRB-2026-28").exists()
+        assert "ERR fetch_federal_register" in out
+        assert "1/2 arms ok" in out
+
+    def test_all_arms_fail_raises(self, db, monkeypatch):
+        import urllib.error
+        monkeypatch.setattr(fr, "_http_get_json",
+                            lambda url: (_ for _ in ()).throw(urllib.error.URLError("down")))
+        monkeypatch.setattr(irb, "_http_get_text",
+                            lambda url: (_ for _ in ()).throw(urllib.error.URLError("down")))
+        with pytest.raises(CommandError):
+            run("poll_change_feeds")
+
+    def test_dry_run_opens_nothing(self, db, monkeypatch):
+        self._patch_both(monkeypatch)
+        out = run("poll_change_feeds", "--dry-run")
+        assert ChangeRegisterItem.objects.count() == 0
+        assert "dry-run" in out
+
+    def test_no_fr_skips_arm(self, db, monkeypatch):
+        self._patch_both(monkeypatch)
+        run("poll_change_feeds", "--no-fr")
+        assert not ChangeRegisterItem.objects.filter(detected_via=ChangeDetectionSource.FEED_POLL, external_ref="2026-100").exists()
+        assert ChangeRegisterItem.objects.filter(external_ref="IRB-2026-28").exists()
+
+    def test_no_pushover_when_env_unset(self, db, monkeypatch):
+        # PUSHOVER_* unset in the test env -> summary notes "not configured", no crash
+        self._patch_both(monkeypatch)
+        monkeypatch.delenv("PUSHOVER_TOKEN", raising=False)
+        monkeypatch.delenv("PUSHOVER_USER", raising=False)
+        out = run("poll_change_feeds")
+        assert "not configured" in out

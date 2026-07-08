@@ -75,6 +75,16 @@ idempotent by `IRB-YYYY-NN`), NOT item-level — a bulletin bundles many items a
 drills in. `--since-bulletin`/`--limit`/`--dry-run`; a 0-parse raises (layout-change guard). +9 tests (full suite
 56/56); live dry-run parsed 25 real bulletins. **Deferred:** item-level IRB parsing + Congress.gov statutes (leg 3).
 
+**Scheduler built same day (2026-07-08):** `poll_change_feeds` — one entry point that runs both FEED_POLL arms
+RESILIENTLY (each in its own try/except so one arm's failure can't stop the other), reports per-arm opened counts,
+exits non-zero ONLY if every arm failed (a real outage vs a quiet week), and fires an OPTIONAL Pushover ping on new
+items (env-gated `PUSHOVER_TOKEN`/`PUSHOVER_USER`, best-effort — RS had no prior notification integration, so it's
+opt-in via env, not a hardcoded secret). Wired as a **Render cron job** in `render.yaml` (`type: cron`,
+`sherpa-rs-change-feeds`, Mondays 12:00 UTC, lightweight `pip install` build — no frontend). Chose Render-native cron
+over an in-process scheduler (APScheduler/Celery beat) because RS is a Render web service with no persistent worker;
+cron matches the deployment. +6 tests (full suite 62/62). One-time deploy: next Blueprint sync creates the cron; Ken
+sets its `DATABASE_URL`. **Deferred still:** staleness `stale_rules_report`; leg-3 Congress.gov + item-level IRB.
+
 ---
 
 ## 2026-07-06 — D-25: Form 3115 (WO-23) v1 scope LOCKED — Application for Change in Accounting Method (§481(a))

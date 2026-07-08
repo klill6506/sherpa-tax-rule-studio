@@ -60,6 +60,7 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
 | detect (checksum) | `detect_source_changes --manifest <json> | --from-files [--dry-run]` |
 | detect (Fed. Register) | `fetch_federal_register [--since YYYY-MM-DD | --lookback-days N] [--types ...] [--dry-run]` |
 | detect (IRB) | `fetch_irb [--since-bulletin YYYY-NN | --limit N] [--dry-run]` |
+| **poll all (scheduler)** | `poll_change_feeds [--fr-lookback-days N] [--irb-limit N] [--no-fr|--no-irb] [--dry-run]` |
 
 ## What feeds it (design intent — see [[rs-change-register-funnel]])
 - IRS IRB / Rev. Proc. / Notice releases (the annual automatic-change list, indexed-amount updates).
@@ -75,8 +76,11 @@ Update this file at each transition, same discipline as WORK_ORDERS.md.
   Rev.Procs/Notices out of each bulletin PDF, vs today's bulletin-level); a fetcher that produces the
   `detect_source_changes` checksum manifest for form/pub revisions. (Leg 1 = Federal Register regulations;
   leg 2 = IRB bulletins — both BUILT 2026-07-08.)
-- **Scheduling**: a recurring job (Render cron or a scheduled CC routine) that runs `fetch_federal_register`
-  + `fetch_irb` weekly so changes flow in unattended. Currently run on demand in a session.
+- ~~**Scheduling**~~ **DONE 2026-07-08** — `poll_change_feeds` runs both automated arms resiliently (one arm
+  failing doesn't stop the other) and is wired as a **Render cron job** (`render.yaml`, `type: cron`,
+  `sherpa-rs-change-feeds`, Mondays 12:00 UTC). Optional Pushover ping on new items (set `PUSHOVER_TOKEN` +
+  `PUSHOVER_USER`). **Deploy step (Ken, one-time):** the cron service ships in `render.yaml` — on the next
+  Blueprint sync Render creates it; set its `DATABASE_URL` to the same Supabase value as the web service.
 - **REST API** for the register (consistent with `/api/sources/…`) — CLI + this doc are the v1 front door.
 
 ---
