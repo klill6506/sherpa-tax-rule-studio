@@ -522,6 +522,7 @@ class Command(BaseCommand):
             # Cross-check facts
             {"fact_key": "total_receipts", "label": "Total receipts (for small corp exception)", "data_type": "decimal", "sort_order": 49},
             {"fact_key": "m2_ending_balance", "label": "M-2 ending balance (for retained earnings tie)", "data_type": "decimal", "sort_order": 50},
+            {"fact_key": "f1125a_boy_inventory", "label": "Form 1125-A line 1 beginning inventory (cross-form, for the R008 no-prior-year default)", "data_type": "decimal", "sort_order": 51},
         ])
 
         rules = self._upsert_rules(form, [
@@ -553,11 +554,20 @@ class Command(BaseCommand):
             {"rule_id": "R006", "title": "BOY inventories tie to prior year EOY", "rule_type": "validation",
              "formula": "l3_inventories_boy == prior_year_l3_inventories_eoy",
              "inputs": ["l3_inventories_boy"], "outputs": [], "precedence": 6, "sort_order": 6,
-             "description": "L3 inventories BOY should equal prior year L3 inventories EOY."},
+             "description": "L3 inventories BOY should equal prior year L3 inventories EOY. "
+                            "(When no prior-year return exists, R008 supplies the default.)"},
             {"rule_id": "R007", "title": "Small corporation exception", "rule_type": "conditional",
              "formula": "schedule_l_not_required = (total_receipts < 250000 AND l14_total_assets_eoy < 250000)",
              "inputs": ["total_receipts", "l14_total_assets_eoy"], "outputs": ["schedule_l_not_required"], "precedence": 0, "sort_order": 7,
              "description": "Schedule L not required if total receipts < $250K AND total assets < $250K."},
+            {"rule_id": "R008", "title": "BOY inventory default when no prior-year return", "rule_type": "conditional",
+             "formula": "IF no prior-year return prepared AND l3_inventories_boy is blank "
+                        "THEN l3_inventories_boy defaults to f1125a_boy_inventory (fill-blank-only; preparer entry always wins)",
+             "inputs": ["f1125a_boy_inventory"], "outputs": ["l3_inventories_boy"], "precedence": 7, "sort_order": 8,
+             "description": "Ken ruling 2026-07-09: BOY inventory normally carries from the prior-year EOY (R006). "
+                            "Only when no prior-year return was prepared does BOY inventory default from Form "
+                            "1125-A line 1 (beginning inventory). Fill-blank-only — never overwrites a preparer "
+                            "entry; the preparer may change or clear it."},
         ])
         self._upsert_links(rules, sources, [
             ("R001", "IRS_2025_1120S_SCHL_INSTR", "primary", "Asset line summation"),
@@ -567,6 +577,9 @@ class Command(BaseCommand):
             ("R005", "IRS_2025_1120S_SCHL_INSTR", "primary", "L24 ties to M-2 ending balance"),
             ("R006", "IRS_2025_1120S_INSTR", "secondary", "BOY should equal prior year EOY"),
             ("R007", "IRS_2025_1120S_SCHL_INSTR", "primary", "Small corp exception: <$250K receipts AND assets"),
+            ("R008", "IRS_2025_1120S_SCHL_INSTR", "secondary",
+             "Line 3 = inventories per the instructions; the no-prior-year default from 1125-A line 1 "
+             "is practice logic (Ken ruling 2026-07-09)"),
         ])
         self._upsert_lines(form, [
             {"line_number": "L1", "description": "Cash", "line_type": "input", "sort_order": 1},

@@ -1,4 +1,16 @@
 # Rule Studio — Session Log
+## 2026-07-09 — 1120S_SCHL R008: BOY-inventory no-prior-year default (Ken ruling)
+- Ken ruled (tts s38, live): L3 BOY inventory carries from prior-year EOY (existing
+  R006); ONLY when no prior-year return was prepared does it default from Form 1125-A
+  line 1. Fill-blank-only; preparer entry always wins.
+- Amended `load_1120s_complete.py` (SCHL block): +fact `f1125a_boy_inventory` (cross-form),
+  +rule **R008** (conditional) w/ authority link (SCHL instr, secondary — practice logic,
+  Ken ruling 2026-07-09), R006 description cross-references R008.
+- SQLite-validated → Supabase-seeded (upsert; R001-R008 confirmed) → deployed
+  `lookup/1120S_SCHL/export/` verified carrying R008 → cached to tts as
+  `server/specs/1120s_schl_spec.json`. tts implemented same session
+  (`_default_l3a_from_cogs_db`, registry write-through; 4 DB tests; flow gate 447).
+
 *One entry per session that touches Rule Studio. Newest first.
 Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did not previously exist).*
 
