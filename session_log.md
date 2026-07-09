@@ -4,6 +4,42 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-08 (night) — S6 RS TRIO authored + seeded (Ken delegated with four in-session rulings)
+*The tax-app Scenario-6 kickoff (s34) hit three RS gaps; Ken ruled the judgment calls live
+(8941 line 5 preparer-entered · §280C diagnostic-only · 8824 = 1120S+1065 routing-only ·
+personal-property §1031 = hard RED + scenario override) and delegated the authoring.*
+- **NEW `load_8941`** — Form 8941 §45R greenfield (lookup was 404). Sources VERBATIM: the
+  in-hand f8941 2025 face (manifest-hashed tts copy) + i8941 2025 (fetched irs.gov, 30 pp).
+  16 facts / 8 rules (ELIG·WAGES·CREDIT·FTEPHASE·WAGEPHASE·STATE·DEST·280C) / 23 lines /
+  6 diagnostics / 4 scenarios / 2 STAGED FAs (FA-8941-01/02, draft — activate with the tts
+  compute unit). entity_types [1120S,1065,1040,1120]; S corps stop at line 16 → K13g.
+  ⚠ TWO flags encoded, not resolved (tax-app REVIEW_QUEUE): (1) face $33,000/$67,000 vs
+  i8941 WS6 $33,300 self-contradiction → D_8941_005 hand-verify band; (2) the ATS S6 key
+  INVERTS the WS5 FTE phaseout (prints the 12,753 REDUCTION as line 8; §45R(d)(3)(A) gives
+  51,014) — scenario F8941-T1 pins the LAW, F8941-T2 documents the key as printed.
+- **`load_8824` amended** — entity_types ['1040'] → ['1040','1120S','1065'] (Ken ruling:
+  routing-only). NEW `R-8824-ENTROUTE` (recognized capital → Schedule D (1120-S/1065)
+  lines 5/12 face-verbatim; L21/ordinary → entity 4797 L16; §1231 → 4797 L5; deferred gain
+  = M-1 timing, never AAA/M-2; line 25 stays informational — §1.168(i)-6 = future unit).
+  NEW scenario F8824-E1 (the ATS S6 truck: personal property → D_8824_009 RED on a real
+  return; key reproduced only via the tts documented-quirk override). FA-ENT-8824-01
+  STAGED draft.
+- **`load_1120s_specs`/`load_1120s_full` — SCHD_1120S renumbered to the 2025 face**
+  (verified verbatim vs f1120ssd.pdf 2025 + IRS1120SScheduleD.xsd): QOF header + 1a
+  direct/1b-3 = 8949 boxes/4 = 6252/5 = 8824/6 = tax-on-ST/**7 = net ST → K7 or K10**;
+  Part II 8a-15 (15 = net LT); Part III 16-23 (23 → page-1 23b); R005 BIG chain corrected
+  to the 16-23 lines; new inflow facts (6252/8824/cap-gain-distributions, QOF). R011/R012 +
+  Schedule K R013/R014 corrected ("Line 5→K7" was pre-2025). **Stale pre-2025 line rows
+  (1c/7a/7b/7c) DELETED in-loader** (update_or_create can't remove rows — the F4797-G2
+  lesson, now self-healing). NOTE: the K-1 spec's "Box 7 → Schedule D line 5" rows are the
+  SHAREHOLDER'S 1040 Schedule D (correct) — left alone.
+- SQLite-validated (scratch db_validate.sqlite3) · **Supabase-seeded (TaxForms 120→121,
+  FlowAssertions →550)** · deployed exports verified (8941 rules+T1 51,014 pin; 8824
+  entity_types+ENTROUTE+E1; SCHD 2025 line set + R011 "Line 7 -> K Line 7") · tts mirrors
+  refreshed (8941_spec.json NEW · form_8824_spec.json · sched_d_1120s_spec.json).
+- Retraction: the s34 handoff's "diagnostics/tests export null ids" claim was a wrong-key
+  dump artifact (the export's diagnostic_id/scenario_name fields are fine).
+
 ## 2026-07-08 (evening) — K1_1120S ROUNDING LEG + GA501 drift amendments seeded
 *Same session as the 4797 entity leg below (the Ken-set non-e-help queue).*
 - **K1_1120S rounding (Ken ruling: residual-offset allocator):** NEW rule `R-K1-ROUND` —

@@ -96,7 +96,13 @@ READY_TO_SEED = True  # FLIPPED 2026-06-28 — Ken approved the review walk ("Ap
 FORM_JURISDICTION = "FED"
 FORM_TAX_YEAR = 2025
 FORM_VERSION = 1  # New form — no prior RS row (lookup returned 404).
-FORM_ENTITY_TYPES = ["1040"]  # 1040 build. (8824 is filed by entities too; entity routing = future.)
+# Entity extension 2026-07-08 (Ken ruling: 1120S + 1065, routing-only): the Part
+# I-III math is entity-agnostic; only the recognized-amount DESTINATIONS differ
+# (R-8824-ENTROUTE). The §1031 real-property-only gate (f8824_is_real_property →
+# D_8824_009 RED) applies to every entity type unchanged (Ken ruling: hard RED;
+# the ATS S6 vehicle-exchange key is reproduced only via the tts documented-quirk
+# override path, never on a real return).
+FORM_ENTITY_TYPES = ["1040", "1120S", "1065"]
 FORM_STATUS = "draft"
 
 
@@ -683,6 +689,29 @@ P_RULES: list[dict] = [
                 "f8824_cost_replacement_60day", "f8824_recapture_1043", "f8824_character_1043"],
      "outputs": ["f8824_f4797_line10"],
      "description": "Defer gain to the extent reinvested within 60 days; basis of replacement reduced by the deferral."},
+    {"rule_id": "R-8824-ENTROUTE", "title": "Entity (1120-S / 1065) destinations for the recognized amounts",
+     "rule_type": "routing", "precedence": 5, "sort_order": 8,
+     "formula": ("On an 1120-S or 1065 return: L21 (+ ordinary L22) → the ENTITY Form 4797 line 16; "
+                 "business §1231 L22 → the entity Form 4797 line 5; capital L22 → Schedule D (Form "
+                 "1120-S) line 5 (short-term) / line 12 (long-term) — identically Schedule D (Form "
+                 "1065) lines 5/12."),
+     "inputs": ["f8824_property_character", "f8824_holding_period_months"],
+     "outputs": ["f8824_f4797_line5", "f8824_f4797_line16"],
+     "description": ("Entity-return destinations (added 2026-07-08, Ken ruling: 1120S+1065 routing-only). "
+                     "Face-verbatim receiving rows: Schedule D (Form 1120-S) 2025 line 5 'Short-term "
+                     "capital gain or (loss) from like-kind exchanges from Form 8824' and line 12 (the "
+                     "long-term twin); Schedule D (Form 1065) carries the same rows at the same numbers. "
+                     "The entity Form 4797 lines 5/16 receive exactly as on the 1040 (the 4797 spec "
+                     "already covers 1120S/1065). The DEFERRED gain (L24) is a book-tax timing item — "
+                     "when the books recognize gain the tax law defers, the difference rides Schedule "
+                     "M-1; it never enters AAA / Schedule M-2 (AAA moves only with taxable-income "
+                     "items). Line 25 substituted basis stays INFORMATIONAL at the entity level too: "
+                     "the preparer sets up the replacement asset manually; wiring the §1.168(i)-6 "
+                     "exchanged-basis/excess-basis split into the depreciation engine is a stated "
+                     "future unit."),
+     "notes": ("v1 boundary: routing-only. The §1031 real-property gate (D_8824_009 RED) applies to "
+               "entities unchanged — a personal-property trade is a taxable sale through the entity "
+               "4797/Schedule D, never a deferral.")},
 ]
 
 P_LINES: list[dict] = [
@@ -710,7 +739,10 @@ P_LINES: list[dict] = [
      "line_type": "total", "destination_form": "Form 4797 line 5 (business §1231) or Schedule D (capital)"},
     {"line_number": "23", "description": "Line 23 — recognized gain (line 21 + line 22)", "line_type": "calculated"},
     {"line_number": "24", "description": "Line 24 — deferred gain or (loss) (line 19 − line 23)", "line_type": "calculated"},
-    {"line_number": "25", "description": "Line 25 — basis of like-kind property received ((L18 + L23) − L15)", "line_type": "calculated"},
+    {"line_number": "25", "description": "Line 25 — basis of like-kind property received ((L18 + L23) − L15)", "line_type": "calculated",
+     "notes": ("INFORMATIONAL at every entity type (Ken ruling 2026-07-08): the preparer sets up the "
+               "replacement asset manually from this figure; wiring the §1.168(i)-6 exchanged-basis/"
+               "excess-basis split into the depreciation engine is a stated future unit.")},
     {"line_number": "25a", "description": "Line 25a — basis allocated to like-kind §1250 property received", "line_type": "calculated"},
     {"line_number": "25b", "description": "Line 25b — basis allocated to like-kind §1245/1252/1254/1255 property", "line_type": "calculated"},
     {"line_number": "25c", "description": "Line 25c — basis allocated to like-kind intangible property", "line_type": "calculated"},
@@ -873,6 +905,19 @@ P_SCENARIOS: list[dict] = [
      "inputs": {"property_used_as_home": True, "fmv_likekind_received": 300000, "basis_likekind_given_up": 100000},
      "expected_outputs": {"D_8824_008": True},
      "notes": "§121/§1031 two-worksheet method → RED-defer."},
+    {"scenario_name": "F8824-E1 — ATS 1120-S Scenario-6 truck exchange (personal property → RED on a real return)",
+     "scenario_type": "diagnostic", "sort_order": 12,
+     "inputs": {"is_real_property": False, "fmv_likekind_received": 40000,
+                "basis_likekind_given_up": 0, "cash_received": 0,
+                "property_character": "business_1231", "holding_period_months": 36},
+     "expected_outputs": {"D_8824_009": True},
+     "notes": ("The IRS ATS 1120-S Scenario 6 key: 2019 Ford F250 → 2021 Ford F250, all dates 2023, "
+               "line 18 blank (zero basis), L19 = L24 = 40,000 deferred, L20-23 = 0, L21 = 0 → 4797 "
+               "line 16 left blank. LAW: post-TCJA §1031 is real-property only — a TY2025 vehicle "
+               "trade is a taxable disposition (4797), so a REAL return fires D_8824_009 RED (Ken "
+               "ruling 2026-07-08). The ATS build reproduces the key's Part I/III face via the tts "
+               "documented-quirk override path (the S5 precedent: the engine emits law; key quirks "
+               "are documented, never encoded as law).")},
 ]
 
 P_RULE_LINKS: list[tuple[str, str, str, str]] = [
@@ -890,6 +935,11 @@ P_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-8824-RELPARTY", "IRS_2025_8824_FORM", "secondary", "Part II lines 9-11"),
     ("R-8824-1043", "IRC_1043", "primary", "§1043 conflict-of-interest deferral"),
     ("R-8824-1043", "IRS_2025_8824_FORM", "secondary", "Part IV lines 30-38; L35 → 4797 line 10"),
+    ("R-8824-ENTROUTE", "IRS_2025_8824_FORM", "primary",
+     "Lines 21/22 destinations — the entity Schedule D (1120-S/1065) faces carry the receiving "
+     "rows verbatim at lines 5/12"),
+    ("R-8824-ENTROUTE", "IRS_2025_4797_INSTR", "secondary",
+     "Entity Form 4797 lines 5/16 receive the 8824 amounts identically to the 1040"),
 ]
 
 
@@ -953,6 +1003,19 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "8824", "expect": {"red_fires": True},
                     "blockers": ["multi_asset_exchange", "section_121_home_use", "personal_property_not_like_kind"]},
      "sort_order": 9},
+    # STAGED (status draft — activates when the tts entity-8824 engine unit
+    # lands; the 1041 lesson: never let an active FA outrun the engine).
+    {"assertion_id": "FA-ENT-8824-01", "assertion_type": "flow_assertion",
+     "entity_types": ["1120S", "1065"], "status": "draft",
+     "title": "Entity routing — L21/ordinary → entity 4797 L16; §1231 L22 → 4797 L5; capital L22 → entity Sch D L5/L12",
+     "description": ("Validates R-8824-ENTROUTE. Bug it catches: an entity like-kind exchange routing its "
+                     "recognized amounts through the 1040 destinations (or nowhere) instead of the entity "
+                     "Schedule D lines 5/12 and entity 4797 lines 5/16."),
+     "definition": {"kind": "flow_assertion", "form": "8824",
+                    "checks": [{"source_line": "21", "must_write_to": ["F4797.16"]},
+                               {"source_line": "22", "must_write_to": ["F4797.5", "SCHD_1120S.5",
+                                                                       "SCHD_1120S.12"]}]},
+     "sort_order": 10},
 ]
 
 

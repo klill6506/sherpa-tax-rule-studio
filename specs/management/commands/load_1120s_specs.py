@@ -576,6 +576,9 @@ class Command(BaseCommand):
         )
 
         self._upsert_facts(form, [
+            # Header
+            {"fact_key": "qof_disposal", "label": "Disposed of any investment in a qualified opportunity fund during the tax year?", "data_type": "boolean", "default_value": "false", "sort_order": 0,
+             "notes": "Face header question (2025). Yes → attach Form 8949 with the QOF reporting."},
             # Per-transaction inputs (from Form 8949)
             {"fact_key": "description", "label": "Description of property", "data_type": "string", "required": True, "sort_order": 1},
             {"fact_key": "date_acquired", "label": "Date acquired", "data_type": "date", "required": True, "sort_order": 2},
@@ -584,9 +587,15 @@ class Command(BaseCommand):
             {"fact_key": "cost_basis", "label": "Cost or other basis", "data_type": "decimal", "required": True, "sort_order": 5},
             {"fact_key": "adjustment_code", "label": "Adjustment code", "data_type": "choice", "choices": ["B", "T", "W", "O"], "sort_order": 6},
             {"fact_key": "adjustment_amount", "label": "Adjustment amount", "data_type": "decimal", "sort_order": 7},
+            # Other-form inflows (lines 4/5/6 short-term, 11/12/13/14 long-term)
+            {"fact_key": "st_gain_6252", "label": "Short-term capital gain from installment sales (Form 6252) — line 4", "data_type": "decimal", "sort_order": 8},
+            {"fact_key": "st_gain_8824", "label": "Short-term capital gain or (loss) from like-kind exchanges (Form 8824) — line 5", "data_type": "decimal", "sort_order": 9},
             # Aggregated totals
             {"fact_key": "total_short_term_gain_loss", "label": "Total net short-term capital gain (loss)", "data_type": "decimal", "sort_order": 10},
             {"fact_key": "total_long_term_gain_loss", "label": "Total net long-term capital gain (loss)", "data_type": "decimal", "sort_order": 11},
+            {"fact_key": "lt_gain_6252", "label": "Long-term capital gain from installment sales (Form 6252) — line 11", "data_type": "decimal", "sort_order": 12},
+            {"fact_key": "lt_gain_8824", "label": "Long-term capital gain or (loss) from like-kind exchanges (Form 8824) — line 12", "data_type": "decimal", "sort_order": 13},
+            {"fact_key": "capital_gain_distributions", "label": "Capital gain distributions — line 13", "data_type": "decimal", "sort_order": 14},
             # BIG tax
             {"fact_key": "built_in_gains_tax_applicable", "label": "Built-in gains tax applicable (§1374)", "data_type": "boolean", "default_value": "false", "sort_order": 20},
             {"fact_key": "s_election_date", "label": "Date of S election", "data_type": "date", "sort_order": 21},
@@ -617,12 +626,12 @@ class Command(BaseCommand):
              "description": "Net STCG → K Line 7, Net LTCG → K Line 8a. These are separately stated items.",
              "sort_order": 4, "precedence": 10},
             {"rule_id": "R005", "title": "Built-in gains tax (§1374)", "rule_type": "calculation",
-             "formula": "net_recognized_built_in_gain * 0.21",
-             "conditions": {"when": "built_in_gains_tax_applicable == true AND within recognition period (5 years)"},
+             "formula": "L18 = min(L16, L17, SchB_line8_NUBIG); L20 = max(0, L18 - L19_1374b2_deduction); L21 = L20 * 0.21; L23 = max(0, L21 - L22_1374b3_credits) -> page 1 line 23b",
+             "conditions": {"when": "built_in_gains_tax_applicable == true AND within the §1374(d)(7) 5-year recognition period"},
              "inputs": ["built_in_gains_tax_applicable", "net_recognized_built_in_gain", "net_unrealized_built_in_gain"],
              "outputs": ["big_tax"],
-             "description": "C-Corp converting to S-Corp may owe BIG tax on built-in gains recognized within 5-year recognition period. Tax is at 21% corporate rate. Limited to net unrealized built-in gain at conversion.",
-             "notes": "NEEDS REVIEW — recognition period rules, net unrealized built-in gain limitation, and carryover of unused BIG.",
+             "description": "C-Corp converting to S-Corp may owe BIG tax on built-in gains recognized within the 5-year recognition period. Part III chain (2025 face): line 18 = smallest of line 16 (excess recognized BIG), line 17 (taxable income), or Schedule B line 8 (net unrealized built-in gain); line 20 = 18 minus the §1374(b)(2) deduction; line 21 = 21%; line 23 = 21 minus §1374(b)(3) C-year credit carryforwards → Form 1120-S page 1 line 23b.",
+             "notes": "NEEDS REVIEW — recognition period rules and carryover of unused BIG remain unreviewed; the line chain is 2025-face-verbatim (renumbered 2026-07-08).",
              "sort_order": 5, "precedence": 15},
         ])
 
@@ -638,26 +647,51 @@ class Command(BaseCommand):
             ("R005", "IRS_2025_1120S_SCHD_INSTR", "secondary", "Part III — BIG tax computation"),
         ])
 
+        # 2025-face line numbering (renumbered 2026-07-08, verified verbatim vs
+        # f1120ssd.pdf 2025 + IRS1120SScheduleD.xsd LineNumber annotations; the
+        # prior map carried a stale pre-2025 layout: 1a/1b/1c = the 8949 boxes,
+        # 2/3 = 6252/8824, net ST on line 5 — the 2025 face nets on line 7).
         self._upsert_lines(form, [
-            {"line_number": "1a", "description": "Short-term totals from Form 8949, Box A (basis reported to IRS)", "line_type": "input", "sort_order": 1},
-            {"line_number": "1b", "description": "Short-term totals from Form 8949, Box B (basis NOT reported)", "line_type": "input", "sort_order": 2},
-            {"line_number": "1c", "description": "Short-term totals from Form 8949, Box C (no 1099-B)", "line_type": "input", "sort_order": 3},
-            {"line_number": "2", "description": "Short-term capital gain from installment sales (Form 6252)", "line_type": "input", "sort_order": 4},
-            {"line_number": "3", "description": "Short-term capital gain from like-kind exchanges (Form 8824)", "line_type": "input", "sort_order": 5},
-            {"line_number": "5", "description": "Net short-term capital gain (loss) — combine lines 1 through 4", "line_type": "subtotal", "source_rules": ["R002"], "sort_order": 6},
-            {"line_number": "6", "description": "Enter amount from line 5 on Schedule K, line 7", "line_type": "total", "source_rules": ["R004"], "destination_form": "Schedule K Line 7 → K-1 Box 7", "sort_order": 7},
-            {"line_number": "7a", "description": "Long-term totals from Form 8949, Box D (basis reported)", "line_type": "input", "sort_order": 10},
-            {"line_number": "7b", "description": "Long-term totals from Form 8949, Box E (basis NOT reported)", "line_type": "input", "sort_order": 11},
-            {"line_number": "7c", "description": "Long-term totals from Form 8949, Box F (no 1099-B)", "line_type": "input", "sort_order": 12},
-            {"line_number": "8", "description": "Long-term capital gain from installment sales (Form 6252)", "line_type": "input", "sort_order": 13},
-            {"line_number": "9", "description": "Long-term capital gain from like-kind exchanges (Form 8824)", "line_type": "input", "sort_order": 14},
-            {"line_number": "11", "description": "Net long-term capital gain (loss) — combine lines 7 through 10", "line_type": "subtotal", "source_rules": ["R003"], "sort_order": 15},
-            {"line_number": "12", "description": "Enter amount from line 11 on Schedule K, line 8a", "line_type": "total", "source_rules": ["R004"], "destination_form": "Schedule K Line 8a → K-1 Box 8a", "sort_order": 16},
-            # Part III — BIG tax
-            {"line_number": "13", "description": "Net recognized built-in gain (Part III)", "line_type": "input", "source_facts": ["net_recognized_built_in_gain"], "sort_order": 20, "notes": "Only if §1374 applies"},
-            {"line_number": "15", "description": "Net unrealized built-in gain limitation", "line_type": "input", "source_facts": ["net_unrealized_built_in_gain"], "sort_order": 21},
-            {"line_number": "19", "description": "Tax — multiply taxable income by 21%", "line_type": "calculated", "source_rules": ["R005"], "calculation": "net_recognized_built_in_gain * 0.21", "sort_order": 22},
+            {"line_number": "QOF", "description": "Header: Did the corporation dispose of any investment(s) in a qualified opportunity fund during the tax year? (Yes → attach Form 8949 and see its instructions)", "line_type": "input", "source_facts": ["qof_disposal"], "sort_order": 0},
+            # Part I — short-term
+            {"line_number": "1a", "description": "Totals for all short-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments (direct entry — no Form 8949; optional: may instead ride line 1b via 8949)", "line_type": "input", "sort_order": 1},
+            {"line_number": "1b", "description": "Totals for all transactions reported on Form(s) 8949 with Box A or Box G checked", "line_type": "input", "sort_order": 2},
+            {"line_number": "2", "description": "Totals for all transactions reported on Form(s) 8949 with Box B or Box H checked", "line_type": "input", "sort_order": 3},
+            {"line_number": "3", "description": "Totals for all transactions reported on Form(s) 8949 with Box C or Box I checked", "line_type": "input", "sort_order": 4},
+            {"line_number": "4", "description": "Short-term capital gain from installment sales from Form 6252, line 26 or 37", "line_type": "input", "source_facts": ["st_gain_6252"], "sort_order": 5},
+            {"line_number": "5", "description": "Short-term capital gain or (loss) from like-kind exchanges from Form 8824", "line_type": "input", "source_facts": ["st_gain_8824"], "sort_order": 6},
+            {"line_number": "6", "description": "Tax on short-term capital gain included on line 23 below (entered as a reduction)", "line_type": "input", "sort_order": 7},
+            {"line_number": "7", "description": "Net short-term capital gain or (loss). Combine lines 1a through 6 in column (h). Enter here and on Form 1120-S, Schedule K, line 7 or 10", "line_type": "total", "source_rules": ["R002", "R004"], "destination_form": "Schedule K Line 7 → K-1 Box 7", "sort_order": 8},
+            # Part II — long-term
+            {"line_number": "8a", "description": "Totals for all long-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments (direct entry — no Form 8949)", "line_type": "input", "sort_order": 10},
+            {"line_number": "8b", "description": "Totals for all transactions reported on Form(s) 8949 with Box D or Box J checked", "line_type": "input", "sort_order": 11},
+            {"line_number": "9", "description": "Totals for all transactions reported on Form(s) 8949 with Box E or Box K checked", "line_type": "input", "sort_order": 12},
+            {"line_number": "10", "description": "Totals for all transactions reported on Form(s) 8949 with Box F or Box L checked", "line_type": "input", "sort_order": 13},
+            {"line_number": "11", "description": "Long-term capital gain from installment sales from Form 6252, line 26 or 37", "line_type": "input", "source_facts": ["lt_gain_6252"], "sort_order": 14},
+            {"line_number": "12", "description": "Long-term capital gain or (loss) from like-kind exchanges from Form 8824", "line_type": "input", "source_facts": ["lt_gain_8824"], "sort_order": 15},
+            {"line_number": "13", "description": "Capital gain distributions", "line_type": "input", "source_facts": ["capital_gain_distributions"], "sort_order": 16},
+            {"line_number": "14", "description": "Tax on long-term capital gain included on line 23 below (entered as a reduction)", "line_type": "input", "sort_order": 17},
+            {"line_number": "15", "description": "Net long-term capital gain or (loss). Combine lines 8a through 14 in column (h). Enter here and on Form 1120-S, Schedule K, line 8a or 10", "line_type": "total", "source_rules": ["R003", "R004"], "destination_form": "Schedule K Line 8a → K-1 Box 8a", "sort_order": 18},
+            # Part III — built-in gains tax
+            {"line_number": "16", "description": "Excess of recognized built-in gains over recognized built-in losses (attach computation statement)", "line_type": "input", "sort_order": 20, "notes": "Only if §1374 applies"},
+            {"line_number": "17", "description": "Taxable income (attach computation statement)", "line_type": "input", "sort_order": 21},
+            {"line_number": "18", "description": "Net recognized built-in gain. Enter the smallest of line 16, line 17, or line 8 of Schedule B", "line_type": "calculated", "source_rules": ["R005"], "source_facts": ["net_recognized_built_in_gain", "net_unrealized_built_in_gain"], "sort_order": 22},
+            {"line_number": "19", "description": "Section 1374(b)(2) deduction", "line_type": "input", "sort_order": 23},
+            {"line_number": "20", "description": "Subtract line 19 from line 18. If zero or less, enter -0- here and on line 23", "line_type": "calculated", "source_rules": ["R005"], "sort_order": 24},
+            {"line_number": "21", "description": "Enter 21% (0.21) of line 20", "line_type": "calculated", "source_rules": ["R005"], "calculation": "line_20 * 0.21", "sort_order": 25},
+            {"line_number": "22", "description": "Section 1374(b)(3) business credit and minimum tax credit carryforwards from C corporation years", "line_type": "input", "sort_order": 26},
+            {"line_number": "23", "description": "Tax. Subtract line 22 from line 21 (if zero or less, enter -0-). Enter here and on Form 1120-S, page 1, line 23b", "line_type": "total", "source_rules": ["R005"], "destination_form": "Form 1120-S page 1 line 23b", "sort_order": 27},
         ])
+        # Stale pre-2025 line rows (1c/7a/7b/7c and re-purposed numbers now
+        # re-described above) — delete anything not in the new map so a reseed
+        # self-heals the DB (update_or_create alone cannot remove rows).
+        _2025_LINES = {"QOF", "1a", "1b", "2", "3", "4", "5", "6", "7",
+                       "8a", "8b", "9", "10", "11", "12", "13", "14", "15",
+                       "16", "17", "18", "19", "20", "21", "22", "23"}
+        stale = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_2025_LINES)
+        if stale.exists():
+            self.stdout.write(f"  deleting {stale.count()} stale pre-2025 line rows")
+            stale.delete()
 
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "BIG tax applicability", "severity": "info",
