@@ -4,6 +4,22 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-09 — FA-ENT-8824-01 ACTIVATED (the tts entity-8824 unit landed, S6 unit 2)
+*One-line status flip in `load_8824.py` (draft → active), the FA-8941 recipe: the tts
+engine now routes R-8824-ENTROUTE (entity 4797 L5/L16 via aggregate_dispositions,
+Schedule D (1120-S) L5/L12 → K7/K8a via aggregate_schedule_d), emits per-exchange
+IRS8824 MeF documents, renders the entity packet copy, and covers the D_8824_* set on
+entity returns. SQLite-validated (db_validate) → Supabase seeded (FlowAssertions 550,
+counts unchanged — status-only) → deployed 1120S export verified (30 actives,
+FA-ENT-8824-01 present). tts runner `_run_ent8824_assertion` added; gate 446→447.
+NOTE for the queued reconciliation pass: the tts mirror stays PINNED (now 26 = prior
+25 + this id); the export's s32-drift actives still lack runners. App-side boundary
+beyond this spec (handoff): D_8824_011 (tts code-registered) REDs a 1065
+capital-character exchange — R-8824-ENTROUTE names Schedule D (1065) L5/L12 but no
+Schedule D (1065) aggregation/spec exists (K8/K9a preparer-entered); suggest an RS
+amendment encoding that boundary (plus: entity §1043 = D_8824_010 escalates to error
+app-side — spec is silent on entity §1043; ratify or amend).*
+
 ## 2026-07-08 (night) — S6 RS TRIO authored + seeded (Ken delegated with four in-session rulings)
 *The tax-app Scenario-6 kickoff (s34) hit three RS gaps; Ken ruled the judgment calls live
 (8941 line 5 preparer-entered · §280C diagnostic-only · 8824 = 1120S+1065 routing-only ·

@@ -1003,10 +1003,11 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "gating_check", "form": "8824", "expect": {"red_fires": True},
                     "blockers": ["multi_asset_exchange", "section_121_home_use", "personal_property_not_like_kind"]},
      "sort_order": 9},
-    # STAGED (status draft — activates when the tts entity-8824 engine unit
-    # lands; the 1041 lesson: never let an active FA outrun the engine).
+    # ACTIVE 2026-07-09: the tts entity-8824 unit landed (entity feeds into
+    # aggregate_dispositions / aggregate_schedule_d + IRS8824 doc mapper +
+    # entity render + D_8824 entity coverage; S6 unit 2) — live.
     {"assertion_id": "FA-ENT-8824-01", "assertion_type": "flow_assertion",
-     "entity_types": ["1120S", "1065"], "status": "draft",
+     "entity_types": ["1120S", "1065"], "status": "active",
      "title": "Entity routing — L21/ordinary → entity 4797 L16; §1231 L22 → 4797 L5; capital L22 → entity Sch D L5/L12",
      "description": ("Validates R-8824-ENTROUTE. Bug it catches: an entity like-kind exchange routing its "
                      "recognized amounts through the 1040 destinations (or nowhere) instead of the entity "
