@@ -456,9 +456,10 @@ P_RULE_LINKS: list[tuple[str, str, str, str]] = [
 ]
 
 FLOW_ASSERTIONS: list[dict] = [
-    # STAGED (draft) — activate when the tts 8941 compute unit lands.
+    # ACTIVE 2026-07-08: the tts 8941 unit landed (compute_8941 + K13g flow +
+    # K-1 code BA + IRS8941 doc mapper; S6 unit 1) — both assertions live.
     {"assertion_id": "FA-8941-01", "assertion_type": "reconciliation",
-     "entity_types": ["1120S", "1065", "1040", "1120"], "status": "draft",
+     "entity_types": ["1120S", "1065", "1040", "1120"], "status": "active",
      "title": "Credit chain: L6=min(4,5); L7=L6×pct; L8/L9 phaseouts are REDUCTIONS; L12=min(L9,L11)",
      "description": ("Validates R-8941-CREDIT/FTEPHASE/WAGEPHASE/STATE. Bug it catches: applying the "
                      "§45R(d)(3) ratio as the allowed credit instead of the reduction (the ATS S6 key's "
@@ -470,7 +471,7 @@ FLOW_ASSERTIONS: list[dict] = [
                                 "L11=max(0,L4-L10); L12=min(L9,L11)")},
      "sort_order": 1},
     {"assertion_id": "FA-8941-02", "assertion_type": "flow_assertion",
-     "entity_types": ["1120S"], "status": "draft",
+     "entity_types": ["1120S"], "status": "active",
      "title": "1120-S: line 16 → Schedule K line 13g → K-1 box 13 (Σ owners == K13g)",
      "description": "Validates R-8941-DEST on the S-corp lane. Bug it catches: the credit reaching 3800 at entity level, or the K-1 split not reconciling to K13g.",
      "definition": {"kind": "flow_assertion", "form": "8941",
@@ -605,7 +606,7 @@ class Command(BaseCommand):
         for a in FLOW_ASSERTIONS:
             a = dict(a)
             FlowAssertion.objects.update_or_create(assertion_id=a.pop("assertion_id"), defaults=a)
-        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (staged draft)")
+        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (active)")
 
     def _report_totals(self):
         self.stdout.write("\n" + "=" * 60)
