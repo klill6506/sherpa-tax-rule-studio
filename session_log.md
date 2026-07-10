@@ -1,4 +1,33 @@
 # Rule Studio — Session Log
+## 2026-07-09 — 1120S_SCHB renumbered to the 2025 face + R006 Q11 auto-answer (Ken ruling; tts s42 item 12)
+- Ken ruled (tts s42, usability item 12): Schedule B question 11 is AUTO-ANSWERED — derived,
+  YELLOW, preparer-overridable; Schedule L/M-1 behavior and diagnostics unchanged. Spec-first.
+- FOUND while verifying: the `load_1120s_complete.py` SCHB block carried a FABRICATED pre-face
+  numbering (~20 questions; its "B11" = an AE&P question that does not exist on the 2025
+  Schedule B; "B3" shareholder count actually lives on page 1 item I). The tts seed already
+  followed the 2025 face — RS-only drift. Rebuilt the block verbatim vs f1120s.pdf 2025
+  (pp.2-3): lines B1-B17 (incl. B12_amount/B15_amount matching the tts/MeF keys), 28 face-keyed
+  facts, verbatim excerpt pair (the face question list + the i1120s (2025) p.24 "Question 11"
+  total-receipts definition). **Stale rows DELETED in-loader** (the F4797-G2/SCHD recipe): on
+  Supabase, 7 line rows + 20 fact rows removed. Practice rules KEPT re-keyed and labeled
+  non-face-question (§1375 AE&P trigger · M-3 $50M · shareholder-count cross-check ·
+  100-shareholder limit); diagnostics re-keyed (D002 now b8_nubig_amount > 0; D003 now the
+  14a-Yes/14b-No pair).
+- NEW **R006** "Question 11 auto-answer (derived, overridable)": b11_under_250k =
+  (q11_total_receipts < 250000) AND (l15_total_assets_eoy < 250000); the component sum names
+  each source line; positive-only reading of the "income or net gain" components (and p1 4/5)
+  flagged as interpretive; the Schedule-L/M-1-unchanged boundary stated in the description
+  (1120S_SCHL R007 remains the separate filing-exception statement); TY2026 re-verify note.
+  Scenarios: "Q11 auto-answer — small corp (Yes)" (180,000/90,000) and "assets at threshold
+  (No)" (249,999/250,000 — strict less-than).
+- SQLite-validated (db_validate.sqlite3) → Supabase-seeded (TaxForms 121 — amendment-only) →
+  deployed `lookup/1120S_SCHB/export/` verified (R006 + 23 lines + 28 facts + 5 scenarios) →
+  cached to tts as NEW `server/specs/1120s_schb_spec.json`. tts built same session
+  (`_auto_answer_b11_db` + amber Auto UI; 5 DB tests; flow 447). RS `b7907bc`.
+- Handoffs for Ken (tts REVIEW_QUEUE): ratify the SCHB renumber/practice-rule re-keying ·
+  the 1065 Schedule B Q4 sibling (4-condition test, $1M assets, timely-K-1 conduct condition)
+  needs its own ruling before authoring · K3a-gross capture question (tts nets K3).
+
 ## 2026-07-09 — M&E four-tier worksheet: 1120S_PAGE1 R009/R010 + 1065_PAGE1 R-1065P1-MEALS/-MEALSND (Ken ruling)
 - Ken ruled (tts s41, usability item 9): add the NEW 100% fully-deductible-meals line to the
   M&E worksheet — spec-first. Encoded the four-tier worksheet (100/80/50/0) that the tts app
