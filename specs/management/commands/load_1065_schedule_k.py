@@ -489,6 +489,32 @@ AUTHORITY_SOURCES: list[dict] = [
                 "is_key_excerpt": True,
             },
             {
+                "excerpt_label": "Line 21 Special Rules — Travel, meals, and entertainment (fetched 2026-07-09)",
+                "location_reference": "i1065 (2025) pp. 24-25, Specific Instructions — Special Rules",
+                "excerpt_text": (
+                    "Subject to limitations and restrictions discussed below, a partnership can deduct "
+                    "ordinary and necessary travel and non-entertainment-related meal expenses paid or "
+                    "incurred in its trade or business. Generally, entertainment expenses, membership "
+                    "dues, and facilities used in connection with these activities can't be deducted. ... "
+                    "Meals. Generally, the partnership can deduct only 50% of the amount otherwise "
+                    "allowable for non-entertainment meal expenses paid or incurred in its trade or "
+                    "business. Entertainment-related meals are generally disallowed. In addition (subject "
+                    "to exceptions under section 274(k)(2)): Meals must not be lavish or extravagant, and "
+                    "a partner or employee of the partnership must be present at the meal. See section "
+                    "274(n)(3) for a special rule that applies to expenses for meals consumed by "
+                    "individuals subject to the hours of service limits of the Department of "
+                    "Transportation. ... Amounts treated as compensation. Generally, the partnership may "
+                    "be able to deduct otherwise nondeductible entertainment, amusement, or recreation "
+                    "expenses if the amounts are treated as compensation to the recipient and reported on "
+                    "Form W-2 for an employee or on Form 1099-NEC for an independent contractor."
+                ),
+                "summary_text": "Meals: 50% general (§274(n)(1), §274(k) partner/employee-present). DOT "
+                                "hours-of-service = §274(n)(3) (80% per Pub 463). Entertainment (incl. "
+                                "entertainment-related meals): nondeductible (§274(a)). "
+                                "Compensation-treated amounts: deductible.",
+                "is_key_excerpt": True,
+            },
+            {
                 "excerpt_label": "TY2025 What's New — OBBBA (P.L. 119-21) partnership touches",
                 "location_reference": "i1065 (2025), What's New",
                 "excerpt_text": (
@@ -609,6 +635,28 @@ PAGE1_FACTS: list[dict] = [
     {"fact_key": "p1_23_ordinary_business_income", "label": "23 — Ordinary business income (loss) (8 − 22)",
      "data_type": "decimal", "sort_order": 27,
      "notes": "OUTPUT. THE key handoff: 23 = 8 − 22 → Schedule K line 1 (R-1065P1-23 / RECON-P1-K1)."},
+    # Meals & entertainment four-tier worksheet — a line-21 component
+    # (100% tier added by Ken ruling 2026-07-09, tts s41 usability item 9; mirrors 1120S_PAGE1 R009/R010)
+    {"fact_key": "p1_21_meals_100pct", "label": "21(a) — Meals, 100% deductible (§274(n)(2)/(e) exception categories only)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 28,
+     "notes": "ONLY the Pub 463 (2025) ch. 2 exceptions: treated as compensation (W-2/1099-NEC); reimbursed under an "
+              "accountable arrangement; recreational/social employee events (holiday party, picnic); meals provided "
+              "to the general public (advertising); meals sold to customers. The temporary 100% restaurant deduction "
+              "(2021-2022) is EXPIRED."},
+    {"fact_key": "p1_21_meals_dot_80pct", "label": "21(b) — Meals, DOT hours-of-service (80% deductible)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 29,
+     "notes": "§274(n)(3); Pub 463 (2025): 'The percentage is 80%.'"},
+    {"fact_key": "p1_21_meals_50pct", "label": "21(c) — Meals, standard business (50% deductible)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 30,
+     "notes": "§274(n)(1) general rule per i1065 2025: 'the partnership can deduct only 50% of the amount otherwise "
+              "allowable for non-entertainment meal expenses.' Not lavish; partner/employee present (§274(k))."},
+    {"fact_key": "p1_21_entertainment_0pct", "label": "21(d) — Entertainment, nondeductible (0%)",
+     "data_type": "decimal", "default_value": "0", "sort_order": 31,
+     "notes": "§274(a) post-TCJA per i1065 2025: entertainment (incl. entertainment-related meals) can't be deducted."},
+    {"fact_key": "p1_21_meals_deductible", "label": "21(e) — Meals & entertainment deductible portion (component of line 21)",
+     "data_type": "decimal", "sort_order": 32, "notes": "OUTPUT of R-1065P1-MEALS."},
+    {"fact_key": "p1_21_meals_nondeductible", "label": "21(f) — Meals & entertainment nondeductible portion (→ Sch K 18c, M-1 4b)",
+     "data_type": "decimal", "sort_order": 33, "notes": "OUTPUT of R-1065P1-MEALSND."},
 ]
 
 PAGE1_RULES: list[dict] = [
@@ -652,6 +700,30 @@ PAGE1_RULES: list[dict] = [
                  "handoff; RECON-P1-K1). ⚠ 2025 face: ordinary business income is line 23, NOT line 22."),
      "inputs": ["p1_8_total_income", "p1_22_total_deductions"], "outputs": ["p1_23_ordinary_business_income"],
      "description": "f1065 page 1 line 23 → Sch K line 1. The load-bearing handoff."},
+    {"rule_id": "R-1065P1-MEALS", "title": "Meals & entertainment worksheet — deductible portion (line 21 component)",
+     "rule_type": "calculation", "precedence": 4, "sort_order": 8,
+     "formula": ("p1_21_meals_deductible = 1.00*p1_21_meals_100pct + 0.80*p1_21_meals_dot_80pct + "
+                 "0.50*p1_21_meals_50pct + 0.00*p1_21_entertainment_0pct"),
+     "inputs": ["p1_21_meals_100pct", "p1_21_meals_dot_80pct", "p1_21_meals_50pct", "p1_21_entertainment_0pct"],
+     "outputs": ["p1_21_meals_deductible"],
+     "description": ("Four-tier meal/entertainment limitation worksheet (mirrors 1120S_PAGE1 R009). Deductible "
+                     "portion = 100% of §274(n)(2)(A)/(e) exception-category meals + 80% of DOT hours-of-service "
+                     "meals (§274(n)(3)) + 50% of standard business meals (§274(n)(1)) + 0% of entertainment "
+                     "(§274(a)). The result is a COMPONENT of line 21 other deductions. 100% tier NEW per Ken "
+                     "ruling 2026-07-09 (tts s41 usability item 9). Verified verbatim: i1065 (2025) pp. 24-25 "
+                     "Special Rules; Pub 463 (2025) ch. 2 Exceptions 1-6 + DOT 80%. TY2026 WATCH: §274(o) "
+                     "(employer-convenience meals) applies to amounts paid after 12/31/2025 — re-verify at the "
+                     "2026 spec cut.")},
+    {"rule_id": "R-1065P1-MEALSND", "title": "Meals & entertainment worksheet — nondeductible portion routing",
+     "rule_type": "routing", "precedence": 4, "sort_order": 9,
+     "formula": ("p1_21_meals_nondeductible = 0.50*p1_21_meals_50pct + 0.20*p1_21_meals_dot_80pct + "
+                 "1.00*p1_21_entertainment_0pct"),
+     "inputs": ["p1_21_meals_50pct", "p1_21_meals_dot_80pct", "p1_21_entertainment_0pct"],
+     "outputs": ["p1_21_meals_nondeductible"],
+     "description": ("Nondeductible portion = 50% of standard meals + 20% of DOT meals + 100% of entertainment "
+                     "(the 100% tier contributes nothing). Routes to Schedule K line 18c (nondeductible expenses) "
+                     "and M-1 line 4b (positive add-back). Never a page-1 deduction. Deductible + nondeductible "
+                     "must sum to the four-tier book total.")},
     {"rule_id": "R-1065P1-174A", "title": "OBBBA §174A domestic R&E — current deduction (flag)",
      "rule_type": "conditional", "precedence": 7, "sort_order": 7,
      "formula": ("OBBBA (P.L. 119-21): domestic research or experimental expenditures paid/incurred in tax "
@@ -674,6 +746,11 @@ PAGE1_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-1065P1-23", "IRC_702", "secondary", "§702(a)(8) residual trade-or-business income"),
     ("R-1065P1-23", "IRC_703", "secondary", "§703(a) partnership taxable income"),
     ("R-1065P1-174A", "IRS_2025_I1065", "primary", "i1065 2025 What's New — §174A domestic R&E current deduction"),
+    ("R-1065P1-MEALS", "IRS_2025_I1065", "primary", "i1065 (2025) pp. 24-25 Special Rules — meals 50% general; §274(n)(3) DOT; entertainment nondeductible; compensation-treated deductible"),
+    ("R-1065P1-MEALS", "IRS_2025_PUB463", "primary", "Pub 463 (2025) ch. 2 — Exceptions 1-6 to the 50% limit (the 100% tier) + DOT 80%"),
+    ("R-1065P1-MEALS", "IRC_274", "secondary", "§274(a)/(k)/(n)(1)/(n)(2)/(n)(3) statutory tiers"),
+    ("R-1065P1-MEALSND", "IRS_2025_I1065", "primary", "Nondeductible portion → Schedule K 18c / M-1 4b add-back"),
+    ("R-1065P1-MEALSND", "IRC_274", "secondary", "§274 disallowed portion — permanent book-tax difference"),
 ]
 
 PAGE1_LINES: list[dict] = [
@@ -725,7 +802,9 @@ PAGE1_LINES: list[dict] = [
     {"line_number": "20", "description": "Energy efficient commercial buildings deduction (attach Form 7205)",
      "line_type": "calculated", "sort_order": 24, "source_facts": ["p1_20_energy_efficient"]},
     {"line_number": "21", "description": "Other deductions (attach statement)", "line_type": "input", "sort_order": 25,
-     "source_facts": ["p1_21_other_deductions"], "source_rules": ["R-1065P1-174A"]},
+     "source_facts": ["p1_21_other_deductions"], "source_rules": ["R-1065P1-174A", "R-1065P1-MEALS"],
+     "notes": "Includes ONLY the deductible portion of meals per the R-1065P1-MEALS four-tier worksheet "
+              "(100%/80%/50%/0%); the nondeductible portion routes to Sch K 18c / M-1 4b (R-1065P1-MEALSND)."},
     {"line_number": "22", "description": "Total deductions (Σ lines 9-21)", "line_type": "subtotal", "sort_order": 26,
      "source_rules": ["R-1065P1-22"]},
     {"line_number": "23", "description": "Ordinary business income (loss) (line 8 − line 22)", "line_type": "total",
@@ -765,6 +844,14 @@ PAGE1_DIAGNOSTICS: list[dict] = [
                  "election. This is a preparer/taxpayer choice — confirm the intended treatment. (Foreign "
                  "R&E remains §174 15-year amortization.)"),
      "notes": "OBBBA What's New flag. Not auto-applied (treatment election)."},
+    {"diagnostic_id": "D_1065P1_MEALS100", "title": "100% meals tier is exception-only", "severity": "warning",
+     "condition": "p1_21_meals_100pct > 0",
+     "message": ("Amounts on the 100% meals line must fit a section 274(n)(2)/(e) exception: treated as "
+                 "compensation (W-2/1099-NEC), reimbursed under an accountable arrangement, recreational or "
+                 "social employee events (e.g., holiday party), meals provided to the general public, or meals "
+                 "sold to customers. Standard business meals are 50% — the temporary 100% restaurant deduction "
+                 "expired after 2022. Verify the classification."),
+     "notes": "Mirrors 1120S_PAGE1 D004 (Ken ruling 2026-07-09, tts s41 usability item 9)."},
 ]
 
 PAGE1_SCENARIOS: list[dict] = [
@@ -797,6 +884,13 @@ PAGE1_SCENARIOS: list[dict] = [
      "expected_outputs": {"p1_3_gross_profit": 150000, "p1_8_total_income": 150000,
                           "p1_22_total_deductions": 200000, "p1_23_ordinary_business_income": -50000},
      "notes": "3=150k; 22=120k+60k+20k=200k; 23=150k−200k=(50k) ordinary loss → Sch K line 1 negative."},
+    {"scenario_name": "P1-5 — M&E four-tier worksheet split", "scenario_type": "normal", "sort_order": 5,
+     "inputs": {"p1_21_meals_100pct": 2000, "p1_21_meals_dot_80pct": 1000, "p1_21_meals_50pct": 10000,
+                "p1_21_entertainment_0pct": 3000},
+     "expected_outputs": {"p1_21_meals_deductible": 7800, "p1_21_meals_nondeductible": 8200},
+     "notes": "2,000x100% + 1,000x80% + 10,000x50% + 3,000x0% = 7,800 deductible (component of line 21); "
+              "5,000 + 200 + 3,000 = 8,200 nondeductible (Sch K 18c / M-1 4b). Portions sum to the 16,000 "
+              "book total. 100% tier per Ken ruling 2026-07-09."},
 ]
 
 
@@ -1328,6 +1422,12 @@ class Command(BaseCommand):
                 topic = AuthorityTopic.objects.filter(topic_code=tc).first()
                 if topic:
                     AuthoritySourceTopic.objects.get_or_create(authority_source=source, authority_topic=topic)
+        # Existing sources authored elsewhere (IRC_274 via load_all_federal; PUB463 via
+        # load_1120s_full — run that loader first so the meals rule links resolve).
+        for code in ("IRC_274", "IRS_2025_PUB463"):
+            src = AuthoritySource.objects.filter(source_code=code).first()
+            if src:
+                sources[code] = src
         self.stdout.write(f"Sources ready: {len(sources)}")
         return sources
 

@@ -66,6 +66,27 @@ FRESH_SOURCES = [
                 "is_key_excerpt": True,
             },
             {
+                "excerpt_label": "Line 19 Special Rules — Travel, meals, and entertainment (fetched 2026-07-09)",
+                "excerpt_text": (
+                    "Subject to limitations and restrictions discussed below, a corporation can deduct "
+                    "ordinary and necessary travel and meal expenses paid or incurred in its trade or "
+                    "business. Generally, entertainment expenses, membership dues, and facilities used in "
+                    "connection with these activities can't be deducted. ... Meals. Generally, the "
+                    "corporation can deduct only 50% of the amount otherwise allowable for meal expenses "
+                    "paid or incurred in its trade or business. In addition (subject to exceptions under "
+                    "section 274(k)(2)): Meals must not be lavish or extravagant, and an employee of the "
+                    "corporation must be present at the meal. See section 274(n)(3) for a special rule "
+                    "that applies to expenses for meals consumed by individuals subject to the hours of "
+                    "service limits of the Department of Transportation. ... Amounts treated as "
+                    "compensation. The corporation may be able to deduct otherwise nondeductible "
+                    "entertainment, amusement, or recreation expenses if the amounts are treated as "
+                    "compensation to the recipient and reported on Form W-2 for an employee or on Form "
+                    "1099-NEC for an independent contractor."
+                ),
+                "summary_text": "Meals: 50% general (§274(n)(1), §274(k) not-lavish/employee-present). DOT hours-of-service special rule = §274(n)(3) (80% per Pub 463). Entertainment: nondeductible (§274(a)). Compensation-treated amounts: deductible.",
+                "is_key_excerpt": True,
+            },
+            {
                 "excerpt_label": "Page 1 Line 21 — Ordinary business income (loss)",
                 "excerpt_text": "Ordinary business income (loss). Subtract line 20 from line 6. Enter the result here and on Schedule K, line 1. If the corporation has income from rental activities, complete Form 8825.",
                 "summary_text": "Line 21 = Line 6 minus Line 20. This is the core operating result that flows to Schedule K Line 1.",
@@ -143,13 +164,71 @@ FRESH_SOURCES = [
             },
         ],
     },
+    {
+        "source_code": "IRS_2025_PUB463",
+        "source_type": "official_publication",
+        "source_rank": "primary_official",
+        "jurisdiction_code": "FED",
+        "tax_year_start": 2025,
+        "tax_year_end": 2025,
+        "title": "Publication 463 (2025) — Travel, Gift, and Car Expenses, Chapter 2 Meals and Entertainment (fetched 2026-07-09)",
+        "citation": "IRS Publication 463 (2025), Chapter 2",
+        "issuer": "IRS",
+        "current_status": "active",
+        "is_substantive_authority": True,
+        "requires_human_review": False,
+        "trust_score": 9.5,
+        "topics": ["1120s", "scorp"],
+        "excerpts": [
+            {
+                "excerpt_label": "Exceptions to the 50% limit for meals — the six 100% categories",
+                "excerpt_text": (
+                    "Your meal expense isn't subject to the 50% limit if the expense meets one of the "
+                    "following exceptions. Exception 1 — expenses treated as compensation: expenses for "
+                    "goods, services, and facilities, to the extent treated by the taxpayer as "
+                    "compensation to an employee and as wages for tax purposes. Exception 2 — "
+                    "employee's reimbursed expenses (accountable plan). Exception 3 — self-employed "
+                    "reimbursed expenses (independent contractor reimbursed by the client with adequate "
+                    "records; the CLIENT is then subject to the 50% limit). Exception 4 — recreational "
+                    "expenses for employees: recreational, social, or similar activities (including "
+                    "facilities) such as a holiday party or a summer picnic. Exception 5 — advertising "
+                    "expenses: meals provided to the general public as a means of advertising or "
+                    "promoting goodwill in the community. Exception 6 — sale of meals: meals actually "
+                    "sold to the public (e.g., a restaurant's food furnished to its customers). "
+                    "[Statutory basis: §274(n)(2)(A) — expenses described in §274(e)(2), (3), (4), "
+                    "(7), (8), or (9).]"
+                ),
+                "summary_text": "The 100%-deductible meal categories: compensation-treated, reimbursed (employee/self-employed), recreational/social employee events, meals to the general public (advertising), meals sold to customers. §274(n)(2)(A)/§274(e).",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "DOT hours-of-service meals — the percentage is 80%",
+                "excerpt_text": (
+                    "Individuals subject to 'hours of service' limits. You can deduct a higher "
+                    "percentage of your meal expenses while traveling away from your tax home if the "
+                    "meals take place during or incident to any period subject to the Department of "
+                    "Transportation's 'hours of service' limits. The percentage is 80%. Individuals "
+                    "subject to the Department of Transportation's 'hours of service' limits include: "
+                    "certain air transportation workers (such as pilots, crew, dispatchers, mechanics, "
+                    "and control tower operators) under Federal Aviation Administration regulations; "
+                    "interstate truck operators and bus drivers under Department of Transportation "
+                    "regulations; certain railroad employees (such as engineers, conductors, train "
+                    "crews, dispatchers, and control operations personnel) under Federal Railroad "
+                    "Administration regulations; and certain merchant mariners under Coast Guard "
+                    "regulations."
+                ),
+                "summary_text": "DOT hours-of-service meals deductible at 80% (§274(n)(3)); lists the covered worker classes (FAA/DOT/FRA/Coast Guard).",
+                "is_key_excerpt": True,
+            },
+        ],
+    },
 ]
 
 # Source codes already loaded by load_all_federal or load_1120s_specs
 EXISTING_SOURCES = [
     "IRS_2025_1120S_INSTR", "IRC_1363", "IRC_1366", "IRC_1367", "IRC_1368",
     "IRC_1374", "IRC_1377", "IRC_179", "IRC_168", "IRC_1222", "IRC_199A",
-    "IRC_1231", "IRC_1245", "IRC_1250", "IRS_2025_4797_INSTR",
+    "IRC_1231", "IRC_1245", "IRC_1250", "IRC_274", "IRS_2025_4797_INSTR",
     "IRS_2025_1120S_SCHD_INSTR", "IRS_2025_1120S_K1_INSTR",
 ]
 
@@ -323,6 +402,18 @@ class Command(BaseCommand):
             {"fact_key": "other_deductions", "label": "Other deductions (Line 19, attach statement)", "data_type": "decimal", "sort_order": 21},
             {"fact_key": "total_deductions", "label": "Total deductions (Line 20 = sum of Lines 7-19)", "data_type": "decimal", "sort_order": 22},
             {"fact_key": "ordinary_business_income", "label": "Ordinary business income (loss) (Line 21 = Line 6 - Line 20)", "data_type": "decimal", "sort_order": 23},
+            # Meals & entertainment four-tier worksheet — a Line 19 component
+            # (100% tier added by Ken ruling 2026-07-09, tts s41 usability item 9)
+            {"fact_key": "meals_100pct", "label": "Meals — 100% deductible (§274(n)(2)/(e) exception categories only)", "data_type": "decimal", "sort_order": 24,
+             "notes": "ONLY the Pub 463 (2025) ch. 2 exception categories: treated as compensation (W-2/1099-NEC); reimbursed under an accountable arrangement; recreational/social employee events (holiday party, summer picnic); meals provided to the general public (advertising/goodwill); meals sold to customers. NOT a general restaurant rate — the temporary 100% restaurant deduction (2021-2022) is expired."},
+            {"fact_key": "meals_dot_80pct", "label": "Meals — DOT hours-of-service (80% deductible)", "data_type": "decimal", "sort_order": 25,
+             "notes": "§274(n)(3): meals consumed during or incident to a period subject to the Department of Transportation hours-of-service limits. Pub 463 (2025): 'The percentage is 80%.'"},
+            {"fact_key": "meals_50pct", "label": "Meals — standard business (50% deductible)", "data_type": "decimal", "sort_order": 26,
+             "notes": "§274(n)(1) general rule per i1120s 2025: 'Generally, the corporation can deduct only 50% of the amount otherwise allowable for meal expenses.' Not lavish/extravagant; employee present (§274(k))."},
+            {"fact_key": "entertainment_0pct", "label": "Entertainment — nondeductible (0%)", "data_type": "decimal", "sort_order": 27,
+             "notes": "§274(a) post-TCJA per i1120s 2025: 'Generally, entertainment expenses, membership dues, and facilities used in connection with these activities can't be deducted.'"},
+            {"fact_key": "meals_deductible_total", "label": "Meals & entertainment — deductible portion (component of Line 19)", "data_type": "decimal", "sort_order": 28},
+            {"fact_key": "meals_nondeductible_total", "label": "Meals & entertainment — nondeductible portion (→ Schedule K 16c, M-1 3b, M-2 5a)", "data_type": "decimal", "sort_order": 29},
         ])
 
         rules = self._upsert_rules(form, [
@@ -368,6 +459,19 @@ class Command(BaseCommand):
              "rule_type": "routing", "formula": "Form_4562_total_depreciation - section_179",
              "inputs": ["form_4562_depreciation", "section_179_deduction"], "outputs": ["depreciation"],
              "precedence": 3, "sort_order": 8},
+            {"rule_id": "R009", "title": "Meals & entertainment worksheet — deductible portion (Line 19 component)",
+             "description": "Four-tier meal/entertainment limitation worksheet. Deductible portion = 100% of exception-category meals (§274(n)(2)(A) via §274(e)(2)/(3)/(4)/(7)/(8)/(9): treated as compensation, reimbursed, recreational/social employee events, provided to the general public, sold to customers) + 80% of DOT hours-of-service meals (§274(n)(3)) + 50% of standard business meals (§274(n)(1)) + 0% of entertainment (§274(a)). The result is a COMPONENT of Line 19 other deductions — never a separate face line. The 100% tier is NEW per Ken ruling 2026-07-09 (tts s41 usability item 9).",
+             "rule_type": "calculation",
+             "formula": "meals_deductible_total = 1.00*meals_100pct + 0.80*meals_dot_80pct + 0.50*meals_50pct + 0.00*entertainment_0pct",
+             "inputs": ["meals_100pct", "meals_dot_80pct", "meals_50pct", "entertainment_0pct"],
+             "outputs": ["meals_deductible_total"], "precedence": 4, "sort_order": 9,
+             "notes": "Verified verbatim 2026-07-09: i1120s (2025) Special Rules — Travel, meals, and entertainment; Pub 463 (2025) ch. 2 Exceptions 1-6 + DOT 80%. TY2026 WATCH: §274(o) disallows employer-operated eating facility / convenience-of-employer meals for amounts paid after 12/31/2025 — re-verify the tiers at the 2026 spec cut."},
+            {"rule_id": "R010", "title": "Meals & entertainment worksheet — nondeductible portion routing",
+             "description": "Nondeductible portion = 50% of standard business meals + 20% of DOT hours-of-service meals + 100% of entertainment (the 100% tier contributes nothing). Routes to Schedule K Line 16c (nondeductible expenses — see Schedule K R016), M-1 Line 3b (POSITIVE add-back), and M-2 Line 5a (AAA other reductions). Never deducted on Page 1. Deductible + nondeductible portions must sum to the book total of the four tiers.",
+             "rule_type": "routing",
+             "formula": "meals_nondeductible_total = 0.50*meals_50pct + 0.20*meals_dot_80pct + 1.00*entertainment_0pct",
+             "inputs": ["meals_50pct", "meals_dot_80pct", "entertainment_0pct"],
+             "outputs": ["meals_nondeductible_total"], "precedence": 4, "sort_order": 10},
         ])
 
         self._upsert_links(rules, sources, [
@@ -382,6 +486,11 @@ class Command(BaseCommand):
             ("R007", "IRC_1363", "primary", "IRC 1363(b) — section 179 is separately stated"),
             ("R007", "IRC_179", "secondary", "IRC 179(d)(4) — passthrough separately stated for S-Corps"),
             ("R008", "IRS_2025_1120S_INSTR_FULL", "primary", "Line 14 depreciation from Form 4562"),
+            ("R009", "IRS_2025_1120S_INSTR_FULL", "primary", "Line 19 Special Rules — meals 50% general; §274(n)(3) DOT; entertainment nondeductible; compensation-treated deductible"),
+            ("R009", "IRS_2025_PUB463", "primary", "Pub 463 (2025) ch. 2 — Exceptions 1-6 to the 50% limit (the 100% tier) + DOT 80%"),
+            ("R009", "IRC_274", "secondary", "§274(a)/(k)/(n)(1)/(n)(2)/(n)(3) statutory tiers"),
+            ("R010", "IRS_2025_1120S_INSTR_FULL", "primary", "Nondeductible portion → Schedule K 16c / M-1 3b add-back"),
+            ("R010", "IRC_274", "secondary", "§274 disallowed portion — permanent book-tax difference"),
         ])
 
         self._upsert_lines(form, [
@@ -405,7 +514,8 @@ class Command(BaseCommand):
             {"line_number": "16", "description": "Advertising", "line_type": "input", "sort_order": 18},
             {"line_number": "17", "description": "Pension, profit-sharing, etc., plans", "line_type": "input", "sort_order": 19},
             {"line_number": "18", "description": "Employee benefit programs", "line_type": "input", "sort_order": 20},
-            {"line_number": "19", "description": "Other deductions (attach statement)", "line_type": "input", "sort_order": 21},
+            {"line_number": "19", "description": "Other deductions (attach statement)", "line_type": "input", "sort_order": 21, "source_rules": ["R009"],
+             "notes": "Includes ONLY the deductible portion of meals per the R009 four-tier worksheet (100%/80%/50%/0%); the nondeductible portion routes to K 16c / M-1 3b / M-2 5a (R010)."},
             {"line_number": "20", "description": "Total deductions (add lines 7 through 19)", "line_type": "subtotal", "source_rules": ["R005"], "sort_order": 22},
             {"line_number": "21", "description": "Ordinary business income (loss) (line 6 minus line 20)", "line_type": "total", "source_rules": ["R006"], "destination_form": "Schedule K Line 1", "sort_order": 23,
              "notes": "Key output of Page 1. Flows to Schedule K Line 1 for shareholder allocation."},
@@ -421,6 +531,9 @@ class Command(BaseCommand):
             {"diagnostic_id": "D003", "title": "Charitable on Page 1", "severity": "error",
              "condition": "other_deductions includes charitable_contributions",
              "message": "Charitable contributions are separately stated on Schedule K Lines 12a/12b, not deducted on Page 1."},
+            {"diagnostic_id": "D004", "title": "100% meals tier is exception-only", "severity": "warning",
+             "condition": "meals_100pct > 0",
+             "message": "Amounts on the 100% meals line must fit a section 274(n)(2)/(e) exception: treated as compensation (W-2/1099-NEC), reimbursed under an accountable arrangement, recreational or social employee events (e.g., holiday party), meals provided to the general public, or meals sold to customers. Standard business meals are 50% — the temporary 100% restaurant deduction expired after 2022. Verify the classification."},
         ])
 
         self._upsert_tests(form, [
@@ -447,6 +560,12 @@ class Command(BaseCommand):
              "expected_outputs": {"gross_profit": 200000, "total_income": 225000,
                                    "total_deductions": 100000, "ordinary_business_income": 125000},
              "notes": "4797 Part II Line 17 = 25000 flows to Line 4. Section 1231 gain flows separately to K9.", "sort_order": 2},
+            {"scenario_name": "M&E four-tier worksheet — deductible/nondeductible split",
+             "scenario_type": "normal",
+             "inputs": {"meals_100pct": 2000, "meals_dot_80pct": 1000, "meals_50pct": 10000,
+                         "entertainment_0pct": 3000},
+             "expected_outputs": {"meals_deductible_total": 7800, "meals_nondeductible_total": 8200},
+             "notes": "2,000x100% + 1,000x80% + 10,000x50% + 3,000x0% = 7,800 deductible (component of Line 19); 5,000 + 200 + 3,000 = 8,200 nondeductible (K16c / M-1 3b / M-2 5a). The two portions sum to the 16,000 book total. 100% tier per Ken ruling 2026-07-09.", "sort_order": 3},
         ])
 
         self._upsert_form_links("1120S_PAGE1", sources, [
@@ -763,9 +882,9 @@ class Command(BaseCommand):
              "inputs": ["form_4797_net_1231"], "outputs": ["K9"],
              "precedence": 1, "sort_order": 15,
              "notes": "VERIFIED: 4797 Part I -> K9 directly. Does NOT go through Schedule D on 1120-S."},
-            {"rule_id": "R016", "title": "K Line 16c = Nondeductible meals",
-             "description": "K Line 16c (nondeductible expenses) includes the 50% nondeductible portion of meals. This amount also flows to M-1 Line 3b as an add-back and to M-2 as a reduction to AAA.",
-             "rule_type": "routing", "formula": "K16c = nondeductible_meals + other_nondeductible",
+            {"rule_id": "R016", "title": "K Line 16c = Nondeductible meals & entertainment",
+             "description": "K Line 16c (nondeductible expenses) includes the nondeductible portion from the Page 1 R010 meals worksheet: 50% of standard business meals + 20% of DOT hours-of-service meals + 100% of entertainment (the 100% exception-category tier contributes nothing). This amount also flows to M-1 Line 3b as an add-back and to M-2 as a reduction to AAA.",
+             "rule_type": "routing", "formula": "K16c = meals_nondeductible_total + other_nondeductible",
              "inputs": ["nondeductible_expenses"], "outputs": ["K16c"],
              "precedence": 1, "sort_order": 16},
             {"rule_id": "R017", "title": "K Line 16d = Total distributions",

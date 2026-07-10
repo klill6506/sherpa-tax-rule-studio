@@ -1,4 +1,29 @@
 # Rule Studio — Session Log
+## 2026-07-09 — M&E four-tier worksheet: 1120S_PAGE1 R009/R010 + 1065_PAGE1 R-1065P1-MEALS/-MEALSND (Ken ruling)
+- Ken ruled (tts s41, usability item 9): add the NEW 100% fully-deductible-meals line to the
+  M&E worksheet — spec-first. Encoded the four-tier worksheet (100/80/50/0) that the tts app
+  had been computing with only three tiers (50/DOT/entertainment; no 100% tier anywhere).
+- Sources verified VERBATIM 2026-07-09: i1120s (2025) + i1065 (2025) "Special Rules — Travel,
+  meals, and entertainment" (new excerpts on IRS_2025_1120S_INSTR_FULL / IRS_2025_I1065);
+  **NEW source IRS_2025_PUB463** (Pub 463 (2025) ch. 2) carrying the six 100% exception
+  categories (§274(n)(2)(A) → §274(e)(2)/(3)/(4)/(7)/(8)/(9): compensation-treated, reimbursed
+  ×2, recreational/social employee events, meals to the general public, meals sold) and the
+  DOT "percentage is 80%" text. IRC_274 linked secondary (pre-existing source).
+- `load_1120s_full.py`: 6 new PAGE1 facts (meals_100pct/dot_80pct/50pct/entertainment_0pct +
+  the two worksheet outputs) · R009 deductible = 1.00/0.80/0.50/0.00 (Line 19 COMPONENT) ·
+  R010 nondeductible = 0.50/0.20/1.00 → K16c/M-1 3b/M-2 5a · D004 warning (100% tier is
+  exception-only) · four-tier scenario (7,800/8,200 on a 16,000 book total) · line-19 notes +
+  source_rules · Sch K R016 description now tier-aware. TY2026 WATCH noted in R009: §274(o)
+  employer-convenience meals disallowance applies to amounts paid after 12/31/2025.
+- `load_1065_schedule_k.py`: mirrored on 1065_PAGE1 (p1_21_meals_* facts, R-1065P1-MEALS/
+  -MEALSND → Sch K 18c/M-1 4b, D_1065P1_MEALS100, scenario P1-5, line-21 notes); _load_sources
+  now also picks up IRC_274/IRS_2025_PUB463 from the DB (run load_1120s_full first).
+- SQLite-validated (scratch db_validate.sqlite3, both loaders; rules/facts/diags/scenarios
+  checked in-DB) → Supabase-seeded (TaxForms 121 / FA 550 — counts unchanged, amendment-only)
+  → deployed exports verified carrying R009/R010 + the 1065 pair → tts mirrors refreshed
+  (`server/specs/1120s_page1_spec.json` + `1065_page1_spec.json`). tts build same session
+  (seed D_MEALS_100 + compute + UI + parity-fixture regen).
+
 ## 2026-07-09 — 1120S_SCHL R008: BOY-inventory no-prior-year default (Ken ruling)
 - Ken ruled (tts s38, live): L3 BOY inventory carries from prior-year EOY (existing
   R006); ONLY when no prior-year return was prepared does it default from Form 1125-A
