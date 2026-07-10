@@ -426,6 +426,50 @@ NEW_INSTRUCTION_SOURCES = [
                 "is_key_excerpt": True,
                 "topic_tags": ["amortization", "form_4562"],
             },
+            {
+                "excerpt_label": "Election out — §168(k)(7) (verbatim, p.7)",
+                "location_reference": "Instructions for Form 4562 (2025), p.7 — Election out",
+                "excerpt_text": (
+                    "Election out. You can elect, for any class of property, to not deduct any "
+                    "special depreciation allowance for all such property in such class placed in "
+                    "service during the tax year. To make an election, attach a statement to your "
+                    "timely filed return (including extensions) indicating the class of property "
+                    "for which you are making the election and that, for such class, you are not "
+                    "to claim any special depreciation allowance. The election must be made "
+                    "separately by each person owning qualified property (for example, by the "
+                    "partnership, by the S corporation, or for each member of a consolidated group "
+                    "by the common parent of the group). If you timely filed your return without "
+                    "making an election, you can still make the election by filing an amended "
+                    "return within 6 months of the due date of the return (excluding extensions). "
+                    "Enter “Filed pursuant to section 301.9100-2” on the amended return. "
+                    "Once made, the election cannot be revoked without IRS consent. "
+                    "Note: If you elect to not have any special depreciation allowance apply, the "
+                    "property placed in service during the tax year will not be subject to an AMT "
+                    "adjustment for depreciation."
+                ),
+                "summary_text": "§168(k)(7): per-class, all property in the class, statement on a timely filed return, "
+                                "301.9100-2 six-month cure, irrevocable without consent — and NO AMT adjustment "
+                                "for the elected-out property.",
+                "is_key_excerpt": True,
+                "topic_tags": ["bonus_depreciation", "form_4562", "elections"],
+            },
+            {
+                "excerpt_label": "Qualified property acquired after 1/19/2025 — 100% + the 40%/60% transitional election (verbatim, p.6)",
+                "location_reference": "Instructions for Form 4562 (2025), p.6 — Certain qualified property acquired after January 19, 2025",
+                "excerpt_text": (
+                    "Certain qualified property (defined below) acquired after January 19, 2025, is "
+                    "eligible for a 100% special depreciation allowance. However, you can elect to "
+                    "take a 40% special depreciation allowance for certain qualified property (60% "
+                    "for property with a long production period and certain aircraft), instead of "
+                    "the 100% special depreciation allowance in the first tax year ending after "
+                    "January 19, 2025."
+                ),
+                "summary_text": "OBBBA transitional election: 40% (60% LPP/aircraft) instead of 100%, first tax year "
+                                "ending after 1/19/2025 ONLY. i4562 (2025) states NO statement mechanics for this "
+                                "election (unlike §168(k)(5)/(k)(7)) — flagged, do not improvise.",
+                "is_key_excerpt": True,
+                "topic_tags": ["bonus_depreciation", "form_4562", "elections"],
+            },
         ],
     },
     {

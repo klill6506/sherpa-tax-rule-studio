@@ -770,6 +770,32 @@ class Command(BaseCommand):
             {"fact_key": "bonus_depreciation_amount", "label": "Bonus depreciation amount", "data_type": "decimal", "sort_order": 12},
             {"fact_key": "acquisition_date", "label": "Date property acquired", "data_type": "date", "sort_order": 13,
              "notes": "Determines 100% vs 40% bonus rate under OBBBA binding contract rule"},
+            {"fact_key": "bonus_eligible", "label": "Qualified property under §168(k)(2) (bonus-eligible)", "data_type": "boolean",
+             "default_value": "true", "sort_order": 14,
+             "notes": "Per-asset. Default true: for 2025 placed-in-service dates, virtually all MACRS "
+                      "property with a recovery period of 20 years or less (plus §167(f)(1) software and "
+                      "water utility property) is qualified property, including USED property meeting the "
+                      "§168(k)(2)(E)(ii) acquisition requirements. Set false only when the property was "
+                      "NEVER eligible: a used acquisition failing §168(k)(2)(E)(ii)/§179(d)(2) "
+                      "(related-party, carryover basis), property of an electing §163(j)(7) real-property/"
+                      "farming business required onto ADS, floor-plan-financing property (§168(k)(9)), or "
+                      "listed property ≤50% business use. Drives R007: ELIGIBILITY (not claiming) controls "
+                      "the AMT adjustment for post-2015 property (i6251 2025 line 2l), and Rev. Proc. "
+                      "2025-16 §2.03(3) keys Table 2 on the same acquisition-requirements test."},
+            {"fact_key": "bonus_electout_classes", "label": "§168(k)(7) election out — classes of property", "data_type": "text",
+             "sort_order": 15,
+             "notes": "RETURN-LEVEL (one election per class per tax year, made by the entity itself — "
+                      "i4562 2025 p.7: 'The election must be made separately by each person owning "
+                      "qualified property (for example, by the partnership, by the S corporation…)'). "
+                      "List of elected-out property classes; tokens = the recovery-period classes the "
+                      "engine supports ('3','5','7','10','15','20','25') plus 'software' (§167(f)(1)). "
+                      "The election covers ALL qualified property in the class placed in service during "
+                      "the year (D008 on conflict). Effects encoded in R009: bonus forced to 0; NO AMT "
+                      "adjustment anyway for post-2015 property (i6251 2025 2l); §280F Table 2 for "
+                      "under-6000 autos (RP 2025-16 §2.03(2)); GA §168(k) add-back eliminated (no "
+                      "federal bonus taken → nothing to add back). Finer class definitions live in "
+                      "Reg. §1.168(k)-2(f)(1) — NOT fetched/verified; the recovery-period classes above "
+                      "match the i4562 qualified-property list and the firm's asset base."},
             # Part I — listed-property §179 (line 7 ← line 29)
             {"fact_key": "listed_sec179_elected", "label": "Listed property elected §179 cost — from line 29 (Part V column (i))", "data_type": "decimal", "sort_order": 6},
             # Part III — MACRS (method/life/vehicle-class per Ken's dropdown
@@ -814,9 +840,12 @@ class Command(BaseCommand):
             {"fact_key": "amt_method", "label": "AMT depreciation method (derived)", "data_type": "choice",
              "choices": ["SAME", "150DB"], "sort_order": 26,
              "notes": "Derived by R007 (post-1998 matrix, i6251 line 2l), preparer-overridable: 150DB "
-                      "only when regular tax uses 200DB AND no §168(k) allowance was claimed; "
-                      "everything else SAME (no separate AMT computation). AMT recovery period and "
-                      "convention always equal regular tax for post-1998 property."},
+                      "only when regular tax uses 200DB AND the property was NEVER ELIGIBLE for a "
+                      "special depreciation allowance (bonus_eligible=false); everything else SAME — "
+                      "including bonus claimed, bonus zeroed, and §168(k)(7) elected-out property "
+                      "placed in service after 2015 (i6251 2025 2l verbatim; corrected 2026-07-10). "
+                      "AMT recovery period and convention always equal regular tax for post-1998 "
+                      "property."},
             # Part V — Amortization
             {"fact_key": "amortizable_amount", "label": "Amortizable amount", "data_type": "decimal", "sort_order": 30},
             {"fact_key": "amortization_period_months", "label": "Amortization period (months)", "data_type": "integer", "default_value": "180", "sort_order": 31,
@@ -860,8 +889,8 @@ class Command(BaseCommand):
                             "= cost minus §179 minus bonus.",
              "sort_order": 3, "precedence": 10},
             {"rule_id": "R007", "title": "AMT depreciation method (post-1998 matrix, derived + overridable)", "rule_type": "calculation",
-             "formula": "amt_method = '150DB' if (depreciation_method == '200DB' and bonus_depreciation_amount == 0) else 'SAME'; amt_life = recovery_period; amt_convention = convention",
-             "inputs": ["depreciation_method", "recovery_period", "convention", "bonus_depreciation_amount"],
+             "formula": "amt_method = '150DB' if (depreciation_method == '200DB' and not bonus_eligible) else 'SAME'; amt_life = recovery_period; amt_convention = convention",
+             "inputs": ["depreciation_method", "recovery_period", "convention", "bonus_eligible"],
              "outputs": ["amt_method", "amt_current_depreciation"],
              "description": "For property placed in service after 1998 (i6251 line 2l, quoted 2026-07-10): "
                             "property depreciated 200DB for regular tax is refigured for AMT using the 150% "
@@ -870,16 +899,62 @@ class Command(BaseCommand):
                             "published A-14/A-15..A-18 (3/5/7/10-yr) or A-1/A-2..A-5 (15/20-yr) columns. NO "
                             "AMT adjustment (amt = regular) for: residential rental property; nonresidential "
                             "real / other §1250 property depreciated SL; ANY property depreciated 150DB, SL, "
-                            "or ADS for regular tax; and QUALIFIED PROPERTY on which the §168(k) special "
-                            "depreciation allowance was claimed (identical AMT/regular basis — the special "
-                            "allowance is deductible for AMT and the remaining basis needs no adjustment; "
-                            "§168(k)(2)(G)). The 150DB recompute therefore bites only when bonus does NOT "
-                            "apply: a §168(k)(7) election-out, non-qualifying used acquisition, or ≤50% "
-                            "business use. Vehicles keep their 5-year recovery period for AMT — "
-                            "vehicle_classification drives §280F dollar caps only, never the AMT life (Ken's "
-                            "matrix, 2026-07-10). Pre-1999 §1250 accelerated property (AMT SL over 40 yrs) is "
-                            "OUT OF SCOPE — flag, don't compute.",
+                            "or ADS for regular tax; and qualified property that IS OR WAS ELIGIBLE for a "
+                            "special depreciation allowance — WHETHER OR NOT CLAIMED. i6251 (2025) line 2l, "
+                            "verbatim: 'If you elected not to have any special depreciation allowance apply, "
+                            "the property may be subject to an AMT adjustment for depreciation if it was "
+                            "placed in service before 2016. It isn't subject to an AMT adjustment for "
+                            "depreciation if it was placed in service after 2015.' i4562 (2025) p.7 Election "
+                            "out Note agrees: 'the property placed in service during the tax year will not "
+                            "be subject to an AMT adjustment for depreciation.' Statutory mechanism: "
+                            "§168(k)(7) switches off only paragraphs (1) and (2)(F) — the property remains "
+                            "qualified property, so the §168(k)(2)(G) AMT exemption still applies "
+                            "(eligibility controls post-PATH Act, for PIS after 2015). ⚠ CORRECTED "
+                            "2026-07-10 (same day as authored): the original R007 arm keyed 150DB on "
+                            "'bonus not claimed' (incl. a (k)(7) election-out) — contrary to both 2025 "
+                            "instructions. The 150DB recompute bites ONLY for 200DB property NEVER ELIGIBLE "
+                            "for any special allowance (bonus_eligible=false: used acquisitions failing "
+                            "§168(k)(2)(E)(ii), §168(k)(9) floor-plan/utility exclusions). ≤50%-business "
+                            "listed property is forced to ADS SL anyway (never 200DB). Vehicles keep their "
+                            "5-year recovery period for AMT — vehicle_classification drives §280F dollar "
+                            "caps only, never the AMT life (Ken's matrix, 2026-07-10; the election-out arm "
+                            "of that matrix reversed on the verbatim sources — flagged for Ken's "
+                            "ratification). Pre-1999 §1250 accelerated property (AMT SL over 40 yrs) is "
+                            "OUT OF SCOPE — flag, don't compute. Pre-2016-PIS elected-out property (AMT "
+                            "adjustment DOES apply) is also out of scope — flag, don't compute.",
              "sort_order": 7, "precedence": 12},
+            {"rule_id": "R009", "title": "§168(k)(7) election out of the special depreciation allowance (per class)", "rule_type": "conditional",
+             "formula": "for each class in bonus_electout_classes: bonus_percentage = 0 for ALL qualified property in that class placed in service this year; election statement attaches to the timely filed return; under-6000 autos in an elected-out class use RP 2025-16 Table 2; amt_method stays SAME (post-2015 PIS); GA §168(k) add-back = 0 for the elected-out assets",
+             "conditions": {"when": "bonus_electout_classes is non-empty"},
+             "inputs": ["bonus_electout_classes", "recovery_period", "bonus_eligible"],
+             "outputs": ["bonus_depreciation_amount", "election_statement_required"],
+             "description": "i4562 (2025) p.7, verbatim: 'You can elect, for any class of property, to not "
+                            "deduct any special depreciation allowance for all such property in such class "
+                            "placed in service during the tax year. To make an election, attach a statement "
+                            "to your timely filed return (including extensions) indicating the class of "
+                            "property for which you are making the election and that, for such class, you "
+                            "are not to claim any special depreciation allowance. The election must be made "
+                            "separately by each person owning qualified property (for example, by the "
+                            "partnership, by the S corporation…).' Late cure: amended return within 6 "
+                            "months of the unextended due date, marked 'Filed pursuant to section "
+                            "301.9100-2'. Once made, irrevocable without IRS consent. FOUR ENGINE EFFECTS: "
+                            "(1) bonus_depreciation_amount = 0 for every qualified asset in the class — the "
+                            "election covers ALL such property (D008 errors a conflicting per-asset bonus); "
+                            "(2) NO AMT adjustment anyway — see R007 (i4562 p.7 Note + i6251 2l, post-2015 "
+                            "PIS); (3) under-6000 passenger autos flip to RP 2025-16 Table 2 ($12,200 year "
+                            "1) per §2.03(2) — §168(k)(7) also switches off §168(k)(2)(F); (4) the GA "
+                            "§168(k) add-back disappears for those assets because no federal bonus is "
+                            "taken (GA-600S Schedule 1 adds back only bonus actually deducted federally) — "
+                            "this is the firm's primary reason for electing out. WHY THE ELECTION MATTERS "
+                            "vs just zeroing bonus: §168(k)(1) applies automatically to qualified property "
+                            "('shall include an allowance'); without the election, depreciation 'allowed or "
+                            "allowable' (§1016(a)(2)) still reduces basis — D009 warns. TRANSITIONAL "
+                            "ALTERNATIVE (documented, NOT implemented): for the first tax year ending after "
+                            "1/19/2025 only, a 40% allowance (60% LPP/aircraft) may be elected instead of "
+                            "100% — i4562 (2025) p.6 verbatim in sources; i4562 states NO statement "
+                            "mechanics for it (unlike (k)(5)/(k)(7)) — spec-silent, REVIEW_QUEUE for Ken; "
+                            "do not improvise a statement.",
+             "sort_order": 9, "precedence": 4},
             {"rule_id": "R008", "title": "§280F / §179(b)(5) vehicle dollar caps by classification", "rule_type": "calculation",
              "formula": "under_6000: annual_cap = rp_2025_16_table(year_in_service, bonus_claimed) * business_pct; over_6000: sec_179 <= 31300; work_truck_6ft: no caps",
              "inputs": ["vehicle_classification", "bonus_depreciation_amount", "section_179_elected_cost"],
@@ -927,9 +1002,14 @@ class Command(BaseCommand):
             ("R003", "IRC_168", "primary", "§168(a)-(b) — MACRS general rules"),
             ("R003", "IRS_PUB_946", "primary", "Pub 946 (2025) Appendix A — Chart 1 routing + printed percentage tables (verbatim excerpts)"),
             ("R003", "IRS_2025_4562_INSTR", "secondary", "Part III instructions — MACRS depreciation"),
-            ("R007", "IRS_2025_6251_INSTR", "primary", "i6251 line 2l — post-1998 AMT depreciation matrix (150DB for 200DB property; exemption list incl. bonus-claimed qualified property)"),
-            ("R007", "IRC_168", "secondary", "§168(k)(2)(G) — no AMT adjustment for qualified property"),
+            ("R007", "IRS_2025_6251_INSTR", "primary", "i6251 line 2l — post-1998 AMT depreciation matrix; verbatim: elected-out property PIS after 2015 'isn't subject to an AMT adjustment' (eligibility controls, not claiming)"),
+            ("R007", "IRC_168", "secondary", "§168(k)(2)(G) — no AMT adjustment for qualified property; (k)(7) switches off only paras (1)/(2)(F), so (2)(G) survives an election-out"),
             ("R007", "IRS_PUB_946", "secondary", "Tables A-14/A-15..A-18 — the AMT 150DB columns"),
+            ("R007", "IRS_2025_4562_INSTR", "secondary", "p.7 Election out Note — elected-out property 'will not be subject to an AMT adjustment for depreciation' (verbatim excerpt)"),
+            ("R009", "IRS_2025_4562_INSTR", "primary", "p.7 Election out — per-class §168(k)(7) mechanics, statement requirements, 301.9100-2 cure, irrevocability (verbatim excerpt)"),
+            ("R009", "IRC_168", "primary", "§168(k)(7) — election out by class; switches off §168(k)(1) and (2)(F) only"),
+            ("R009", "IRS_RP_2025_16", "secondary", "§2.03(2) — a (k)(7) election-out moves under-6000 autos to Table 2 (verbatim excerpt)"),
+            ("R009", "IRS_2025_6251_INSTR", "secondary", "line 2l — no AMT adjustment for elected-out property placed in service after 2015 (verbatim)"),
             ("R008", "IRC_280F", "primary", "§280F(a)/(d)(5) — passenger-automobile caps and the 6,000-lb line"),
             ("R008", "IRS_RP_2025_16", "primary", "2025 passenger-auto caps — Tables 1/2 verbatim"),
             ("R008", "IRC_179", "primary", "§179(b)(5) — SUV limitation and the ≥6-ft-bed exception"),
@@ -1086,6 +1166,12 @@ class Command(BaseCommand):
             {"diagnostic_id": "D007", "title": "Method/life/convention combination has no published table", "severity": "error",
              "condition": "pub_946_percentage(recovery_period, method, convention) has no table entry",
              "message": "This method/recovery-period/convention combination has no Pub 946 published-table support in the engine (e.g., 50-year SL/MM, ADS personal-property lives beyond the printed columns). The computed depreciation would be $0 — enter the correct combination or flag for a verified-source unit. Never trust a silent zero."},
+            {"diagnostic_id": "D008", "title": "Bonus claimed on an asset in a §168(k)(7) elected-out class", "severity": "error",
+             "condition": "asset recovery class in bonus_electout_classes AND asset bonus_pct > 0",
+             "message": "This return elects out of the special depreciation allowance for this asset's property class under §168(k)(7), but the asset claims bonus depreciation. The election covers ALL qualified property in the class placed in service during the year (i4562 2025 p.7: 'all such property in such class') — remove the asset's bonus or remove the class from the election."},
+            {"diagnostic_id": "D009", "title": "Bonus zeroed without a §168(k)(7) election for the class", "severity": "warning",
+             "condition": "asset is bonus_eligible AND bonus_pct == 0 AND asset recovery class NOT in bonus_electout_classes",
+             "message": "This qualified asset claims no special depreciation allowance, but its property class is not elected out under §168(k)(7). §168(k)(1) applies automatically to qualified property ('shall include an allowance'), and depreciation allowed OR ALLOWABLE reduces basis (§1016(a)(2)) — skipping bonus without the election risks losing the deduction while still reducing basis. Either claim the allowance or add the class to the §168(k)(7) election (which also produces the required statement)."},
         ])
 
         self._upsert_tests(form, [
@@ -1122,12 +1208,12 @@ class Command(BaseCommand):
             # expected percentage is a PUBLISHED-TABLE value (Pub 946 (2025)
             # Appendix A / Rev. Proc. 2025-16 / Rev. Proc. 2024-40), never
             # derived arithmetic.
-            {"scenario_name": "AMT matrix — 200DB 5-yr HY, NO bonus: AMT refigures at 150DB, same life/convention",
+            {"scenario_name": "AMT matrix — 200DB 5-yr HY, property NEVER bonus-eligible: AMT refigures at 150DB, same life/convention",
              "scenario_type": "normal",
              "inputs": {"depreciable_basis": 10000, "recovery_period": "5", "depreciation_method": "200DB",
-                         "convention": "HY", "bonus_percentage": "0", "year_in_service": 1},
+                         "convention": "HY", "bonus_percentage": "0", "bonus_eligible": False, "year_in_service": 1},
              "expected_outputs": {"current_year_depreciation": 2000, "amt_method": "150DB", "amt_current_depreciation": 1500},
-             "notes": "Regular = Table A-1 5-yr year 1 (20.00%) = 2,000. AMT = Table A-14 5-yr year 1 (15.00%) = 1,500 — same recovery period and convention (i6251 line 2l). Adjustment = 500.", "sort_order": 6},
+             "notes": "The property was NEVER qualified property (e.g., a used acquisition failing §168(k)(2)(E)(ii) — related-party/carryover basis). Regular = Table A-1 5-yr year 1 (20.00%) = 2,000. AMT = Table A-14 5-yr year 1 (15.00%) = 1,500 — same recovery period and convention (i6251 line 2l). Adjustment = 500. CORRECTED 2026-07-10: the original scenario keyed 150DB on bonus_percentage=0 alone — but a bonus-ELIGIBLE asset with bonus zeroed (or elected out) has NO adjustment for post-2015 PIS (i6251 2l verbatim).", "sort_order": 6},
             {"scenario_name": "AMT matrix — 150DB / SL / ADS / residential / nonresidential: SAME as tax (no adjustment)",
              "scenario_type": "normal",
              "inputs": {"methods": ["150DB", "SL", "ADS_SL", "SL_RES", "SL_NONRES"]},
@@ -1138,7 +1224,7 @@ class Command(BaseCommand):
              "inputs": {"depreciable_basis": 10000, "recovery_period": "5", "depreciation_method": "200DB",
                          "convention": "HY", "bonus_percentage": "100", "year_in_service": 1},
              "expected_outputs": {"amt_method": "SAME", "amt_adjustment": 0},
-             "notes": "Qualified property on which the special depreciation allowance was claimed has identical AMT/regular basis — the allowance is deductible for AMT and the remaining basis needs no adjustment (i6251 2l; §168(k)(2)(G)). The 150DB recompute bites only on a §168(k)(7) election-out, non-qualifying used acquisition, or ≤50% business use.", "sort_order": 8},
+             "notes": "Qualified property on which the special depreciation allowance was claimed has identical AMT/regular basis — the allowance is deductible for AMT and the remaining basis needs no adjustment (i6251 2l; §168(k)(2)(G)). The 150DB recompute bites ONLY for 200DB property never eligible for a special allowance (corrected 2026-07-10 — a §168(k)(7) election-out does NOT re-engage it for post-2015 PIS; i6251 2l + i4562 p.7 Note verbatim).", "sort_order": 8},
             {"scenario_name": "Legacy nonresidential 31.5-yr SL/MM — month 6, year 1 = 1.720%",
              "scenario_type": "normal",
              "inputs": {"depreciable_basis": 100000, "recovery_period": "31.5", "depreciation_method": "SL_NONRES",
@@ -1177,6 +1263,28 @@ class Command(BaseCommand):
                                     {"vehicle_classification": "work_truck_6ft", "sec_179_elected": 60000}]},
              "expected_outputs": {"suv_allowed_179": 31300, "suv_diagnostic": "D006", "work_truck_allowed_179": 60000},
              "notes": "§179(b)(5)(A) / Rev. Proc. 2024-40 §2.25: SUV cap $31,300 (2025). The ≥6-ft-interior-length open cargo bed not readily accessible from the passenger compartment is the §179(b)(5)(B)(ii)(II) exception — no SUV cap, and >6,000 lbs GVWR means no §280F caps either. Excess SUV basis still depreciates under MACRS/bonus.", "sort_order": 14},
+            # ── §168(k)(7) election-out unit scenarios (2026-07-10) ──────────
+            {"scenario_name": "§168(k)(7) election out — 5-yr class: bonus 0, full-basis MACRS, NO AMT adjustment, GA add-back 0, statement attaches",
+             "scenario_type": "normal",
+             "inputs": {"bonus_electout_classes": ["5"], "depreciable_basis": 10000, "recovery_period": "5",
+                         "depreciation_method": "200DB", "convention": "HY", "bonus_eligible": True,
+                         "year_in_service": 1, "entity_type": "1120S"},
+             "expected_outputs": {"bonus_depreciation_amount": 0, "current_year_depreciation": 2000,
+                                   "amt_method": "SAME", "amt_adjustment": 0, "ga_bonus_addback": 0,
+                                   "election_statement_required": True},
+             "notes": "The firm's standard move (kills the GA §168(k) add-back). Bonus forced to 0 for the whole class; MACRS on full basis = A-1 5-yr 20.00% = 2,000. NO AMT adjustment: i4562 2025 p.7 Note ('will not be subject to an AMT adjustment') + i6251 2025 2l ('isn't subject… if placed in service after 2015'). GA-600S Schedule 1 addition = 0 (no federal bonus taken). The election statement (class + declaration) attaches to the timely filed return.", "sort_order": 15},
+            {"scenario_name": "§168(k)(7) conflict — asset claims bonus inside an elected-out class → D008",
+             "scenario_type": "error",
+             "inputs": {"bonus_electout_classes": ["5"], "recovery_period": "5", "bonus_percentage": "100",
+                         "depreciable_basis": 10000},
+             "expected_outputs": {"diagnostic": "D008"},
+             "notes": "The election covers ALL qualified property in the class placed in service during the year (i4562 p.7 'all such property in such class') — a per-asset bonus inside the class is an error, never a silent zero-out.", "sort_order": 16},
+            {"scenario_name": "§168(k)(7) elected-out under-6000 auto — RP 2025-16 Table 2: year 1 capped at $12,200",
+             "scenario_type": "edge",
+             "inputs": {"bonus_electout_classes": ["5"], "vehicle_classification": "under_6000",
+                         "cost_basis": 80000, "business_pct": 100, "year_in_service": 1},
+             "expected_outputs": {"year_1_total_depreciation": 12200, "amt_adjustment": 0},
+             "notes": "RP 2025-16 §2.03(2): the §168(k) allowance 'does not apply' when the taxpayer 'elected out… pursuant to § 168(k)(7) for the class of property that includes passenger automobiles' → Table 2 first year $12,200 (later years identical to Table 1: 19,600/11,800/7,060). Still no AMT adjustment (post-2015 PIS).", "sort_order": 17},
         ])
 
         self._upsert_form_links("4562", sources, [
