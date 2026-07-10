@@ -1,4 +1,4 @@
-"""Load 1120-S family form specs — Schedule K, K-1, Schedule D, Form 8949, Form 4562.
+"""Load 1120-S family form specs — Schedule K, K-1, Schedule D, Form 4562.
 
 Idempotent: uses update_or_create throughout. Safe to re-run.
 Creates authority sources not yet in load_all_federal, then loads full specs
@@ -28,7 +28,7 @@ from ._1120s_sources import EXISTING_SOURCE_CODES, NEW_INSTRUCTION_SOURCES, NEW_
 
 
 class Command(BaseCommand):
-    help = "Load 1120-S family form specs (Schedule K, K-1, Schedule D, 8949, 4562)"
+    help = "Load 1120-S family form specs (Schedule K, K-1, Schedule D, 4562)"
 
     def handle(self, *_args, **_options):
         with transaction.atomic():
@@ -735,11 +735,25 @@ class Command(BaseCommand):
     # ─────────────────────────────────────────────────────────────────────────
 
     def _load_form_4562(self, sources):
+        # ── 2025-face renumber (2026-07-10, the s44 early-era face audit) ─────
+        # Rebuilt VERBATIM vs resources/irs_forms/2025/f4562.pdf (rev "Created
+        # 10/9/25", pymupdf dump) + IRS4562.xsd 2025v6.2 LineNumber annotations.
+        # The prior block carried a fabricated pre-2025 shape: line 6/7 swapped
+        # (face: 6 = the §179 property table, 7 = listed property from line 29),
+        # line 8 as a "smaller of" (face: ADD column (c) lines 6 and 7), and the
+        # pre-2025 line-19 lettering. THE 2025 FACE CHANGE: new 19h "50-year
+        # property" row (50 yrs./MM/S,L), shifting residential rental → 19i and
+        # nonresidential real → 19j; Section C (ADS) adds 20e "50-year".
+        # Lines 10-13 (§179 carryover chain) are OWNED by
+        # load_4562_section179_carryover (Ken-approved 2026-06-22) — the rows
+        # here mirror that loader verbatim so reseed order can never regress it.
+        # R010-R015 / D010-D014 live in load_remaining_1120s +
+        # load_4562_section179_carryover — ids deliberately not reused here.
         form = self._upsert_form(
             "4562",
             "Form 4562 — Depreciation and Amortization",
             ["1120S", "1065", "1120", "1040"],
-            notes="§179 election, bonus depreciation, MACRS, amortization. §179 is separately stated for passthrough entities.",
+            notes="§179 election, bonus depreciation, MACRS, amortization. §179 is separately stated for passthrough entities. Line map = the 2025 face (19h 50-year row NEW; residential 19i, nonresidential 19j; ADS adds 20e).",
         )
 
         self._upsert_facts(form, [
@@ -756,9 +770,12 @@ class Command(BaseCommand):
             {"fact_key": "bonus_depreciation_amount", "label": "Bonus depreciation amount", "data_type": "decimal", "sort_order": 12},
             {"fact_key": "acquisition_date", "label": "Date property acquired", "data_type": "date", "sort_order": 13,
              "notes": "Determines 100% vs 40% bonus rate under OBBBA binding contract rule"},
+            # Part I — listed-property §179 (line 7 ← line 29)
+            {"fact_key": "listed_sec179_elected", "label": "Listed property elected §179 cost — from line 29 (Part V column (i))", "data_type": "decimal", "sort_order": 6},
             # Part III — MACRS
             {"fact_key": "recovery_period", "label": "MACRS recovery period (years)", "data_type": "choice",
-             "choices": ["3", "5", "7", "10", "15", "20", "25", "27.5", "39"], "sort_order": 20},
+             "choices": ["3", "5", "7", "10", "15", "20", "25", "27.5", "39", "50"], "sort_order": 20,
+             "notes": "50-year is NEW on the 2025 face (GDS 19h / ADS 20e; 50 yrs., MM, S/L)."},
             {"fact_key": "depreciation_method", "label": "Depreciation method", "data_type": "choice",
              "choices": ["200DB", "150DB", "SL"], "sort_order": 21},
             {"fact_key": "convention", "label": "Convention", "data_type": "choice",
@@ -781,7 +798,7 @@ class Command(BaseCommand):
              "formula": "min(elected_cost, max(0, 2500000 - max(0, total_placed_in_service - 4000000)), taxable_income)",
              "inputs": ["section_179_elected_cost", "total_section_179_placed_in_service", "taxable_income_limitation"],
              "outputs": ["allowed_179_deduction"],
-             "description": "§179 deduction = lesser of: (a) elected cost, (b) $2,500,000 minus dollar-for-dollar reduction for total placed in service exceeding $4,000,000, (c) taxable income from active business. GA conforms to the same §179 limit for TY2025 ($2,500,000/$4,000,000) via HB 1199; GA still decouples from §168(k)/(n) bonus.",
+             "description": "§179 deduction = lesser of: (a) elected cost, (b) $2,500,000 minus dollar-for-dollar reduction for total placed in service exceeding $4,000,000, (c) taxable income from active business. Face chain: line 4 = max(0, line 2 − line 3); line 5 = max(0, line 1 − line 4); line 9 = min(line 5, line 8). The prior-year-carryover consumption (lines 10/12/13 — face: 12 = add lines 9 and 10, capped at 11; 13 = 9 + 10 − 12) is R014/R015 (load_4562_section179_carryover). GA conforms to the same §179 limit for TY2025 ($2,500,000/$4,000,000) via HB 1199; GA still decouples from §168(k)/(n) bonus.",
              "sort_order": 1, "precedence": 1},
             {"rule_id": "R002", "title": "OBBBA bonus depreciation", "rule_type": "calculation",
              "formula": "bonus_eligible_basis * bonus_percentage",
@@ -808,13 +825,13 @@ class Command(BaseCommand):
              "formula": "current_year_depreciation + bonus_depreciation_amount → Page 1 deduction line",
              "inputs": ["current_year_depreciation", "bonus_depreciation_amount"],
              "outputs": ["page_1_depreciation"],
-             "description": "MACRS + bonus depreciation (excluding §179) flows to Page 1 Line 14 (1120-S). Unlike §179, regular depreciation and bonus are NOT separately stated.",
+             "description": "MACRS + bonus depreciation (excluding §179) flows to Page 1 Line 14 (1120-S). Unlike §179, regular depreciation and bonus are NOT separately stated. Face line 22 (2025, verbatim): 'Total. Add amounts from line 12, lines 14 through 17, lines 19 and 20 in column (g), and line 21. Enter here and on the appropriate lines of your return. Partnerships and S corporations—see instructions' — for 1120-S/1065 the line-12 §179 component rides Schedule K, never page 1.",
              "sort_order": 5, "precedence": 15},
             {"rule_id": "R006", "title": "§197 amortization", "rule_type": "calculation",
              "formula": "amortizable_amount / 180 * months_in_service_this_year",
              "inputs": ["amortizable_amount", "amortization_period_months", "amortization_start_date"],
              "outputs": ["current_year_amortization"],
-             "description": "§197 intangibles amortized over 180 months (15 years) straight-line. Includes goodwill, going concern value, covenants not to compete, franchises, trademarks.",
+             "description": "§197 intangibles amortized over 180 months (15 years) straight-line. Includes goodwill, going concern value, covenants not to compete, franchises, trademarks. Amortization is Part VI on the face (lines 42-44); Part V is Listed Property.",
              "sort_order": 6, "precedence": 10},
         ])
 
@@ -831,40 +848,130 @@ class Command(BaseCommand):
             ("R005", "IRS_2025_1120S_INSTR", "primary", "Page 1 Line 14 — depreciation (non-§179)"),
             ("R005", "IRS_2025_4562_INSTR", "secondary", "Line 22 total → entity return"),
             ("R006", "IRC_197", "primary", "§197 — 180-month amortization of intangibles"),
-            ("R006", "IRS_2025_4562_INSTR", "secondary", "Part V instructions — amortization"),
+            ("R006", "IRS_2025_4562_INSTR", "secondary", "Part VI instructions — amortization"),
         ])
 
         self._upsert_lines(form, [
-            # Part I — §179
-            {"line_number": "1", "description": "Maximum amount (see limitations) — $2,500,000 for 2025", "line_type": "input", "source_facts": ["section_179_limitation"], "sort_order": 1},
-            {"line_number": "2", "description": "Total cost of section 179 property placed in service", "line_type": "input", "source_facts": ["total_section_179_placed_in_service"], "sort_order": 2},
-            {"line_number": "3", "description": "Threshold cost of §179 property before reduction — $4,000,000", "line_type": "input", "source_facts": ["section_179_phaseout_threshold"], "sort_order": 3},
-            {"line_number": "4", "description": "Reduction in limitation (line 2 minus line 3, if positive)", "line_type": "calculated", "calculation": "max(0, total_placed_in_service - 4000000)", "sort_order": 4},
-            {"line_number": "5", "description": "Dollar limitation for tax year (line 1 minus line 4)", "line_type": "calculated", "calculation": "max(0, limitation - reduction)", "sort_order": 5},
-            {"line_number": "6", "description": "Listed property — enter amount from line 29", "line_type": "input", "sort_order": 6},
-            {"line_number": "7", "description": "Total elected cost of §179 property", "line_type": "input", "source_facts": ["section_179_elected_cost"], "sort_order": 7},
-            {"line_number": "8", "description": "Total elected cost of §179 property — enter smaller of line 5 or line 7", "line_type": "calculated", "sort_order": 8},
-            {"line_number": "9", "description": "Tentative deduction — enter smaller of line 5 or line 8", "line_type": "calculated", "sort_order": 9},
-            {"line_number": "11", "description": "Business income limitation", "line_type": "input", "source_facts": ["taxable_income_limitation"], "sort_order": 10},
-            {"line_number": "12", "description": "§179 expense deduction — enter smaller of line 9 or line 11", "line_type": "calculated", "source_rules": ["R001"], "destination_form": "Schedule K Line 11 (1120-S) or Page 1 Line 14 (1040/1120)", "sort_order": 11},
-            # Part II — Bonus
-            {"line_number": "14", "description": "Special depreciation allowance for qualified property (other than listed)", "line_type": "calculated", "source_rules": ["R002"], "source_facts": ["bonus_depreciation_amount"], "sort_order": 14},
-            # Part III — MACRS
+            # ── Part I — Election To Expense Certain Property Under Section 179
+            # (face note: "If you have any listed property, complete Part V
+            # before you complete Part I.")
+            {"line_number": "1", "description": "Maximum amount (see instructions) — $2,500,000 for 2025 (OBBBA)", "line_type": "input", "source_facts": ["section_179_limitation"], "sort_order": 1},
+            {"line_number": "2", "description": "Total cost of section 179 property placed in service (see instructions)", "line_type": "input", "source_facts": ["total_section_179_placed_in_service"], "sort_order": 2},
+            {"line_number": "3", "description": "Threshold cost of section 179 property before reduction in limitation (see instructions) — $4,000,000 for 2025", "line_type": "input", "source_facts": ["section_179_phaseout_threshold"], "sort_order": 3},
+            {"line_number": "4", "description": "Reduction in limitation. Subtract line 3 from line 2. If zero or less, enter -0-", "line_type": "calculated", "calculation": "max(0, line_2 - line_3)", "sort_order": 4},
+            {"line_number": "5", "description": "Dollar limitation for tax year. Subtract line 4 from line 1. If zero or less, enter -0-. If married filing separately, see instructions", "line_type": "calculated", "calculation": "max(0, line_1 - line_4)", "source_rules": ["R001"], "sort_order": 5},
+            {"line_number": "6", "description": "Section 179 property rows — (a) Description of property / (b) Cost (business use only) / (c) Elected cost", "line_type": "input", "source_facts": ["section_179_elected_cost"], "sort_order": 6},
+            {"line_number": "7", "description": "Listed property. Enter the amount from line 29", "line_type": "calculated", "calculation": "line_29", "source_facts": ["listed_sec179_elected"], "sort_order": 7},
+            {"line_number": "8", "description": "Total elected cost of section 179 property. Add amounts in column (c), lines 6 and 7", "line_type": "calculated", "calculation": "sum(line_6_col_c) + line_7", "sort_order": 8},
+            {"line_number": "9", "description": "Tentative deduction. Enter the smaller of line 5 or line 8", "line_type": "calculated", "calculation": "min(line_5, line_8)", "sort_order": 9},
+            # Lines 10-13 — the §179 carryover chain. OWNED by
+            # load_4562_section179_carryover (Ken-approved 2026-06-22);
+            # mirrored VERBATIM here so reseed order can never regress them.
+            {"line_number": "10",
+             "description": "Carryover of disallowed deduction from line 13 of the prior-year Form 4562",
+             "calculation": "", "source_facts": ["section_179_carryover_prior"], "source_rules": [],
+             "destination_form": None, "line_type": "input", "sort_order": 10,
+             "notes": "Prior-year line 13. 1040 proforma carries this forward (Taxpayer.sec_179_carryover_prior)."},
+            {"line_number": "11",
+             "description": "Business income limitation — smaller of business income (not less than zero) or line 5",
+             "calculation": "min(line_5, max(0, active_trade_or_business_taxable_income))",
+             "source_facts": ["taxable_income_limitation"], "source_rules": ["R011"],
+             "destination_form": None, "line_type": "input", "sort_order": 11,
+             "notes": "Individuals: active-T/B income + W-2 wages (1040 L1a), w/o §179/§164(f)/NOL; MFJ combine."},
+            {"line_number": "12",
+             "description": "§179 expense deduction — add lines 9 and 10, but not more than line 11",
+             "calculation": "min(line_9 + line_10, line_11)", "source_facts": [], "source_rules": ["R001", "R014"],
+             "destination_form": "1120-S Sch K L11 / 1065 Sch K L12 / 1040 Sch C L13·Sch E·Sch F L14 / 1120 Page 1",
+             "line_type": "calculated", "sort_order": 12, "notes": ""},
+            {"line_number": "13",
+             "description": "Carryover of disallowed deduction to next year — add lines 9 and 10, less line 12",
+             "calculation": "(line_9 + line_10) - line_12", "source_facts": [], "source_rules": ["R015"],
+             "destination_form": "Next-year Form 4562 line 10", "line_type": "calculated", "sort_order": 13,
+             "notes": "Proforma rolls this to next year's line 10."},
+            # ── Part II — Special Depreciation Allowance and Other Depreciation
+            # (face note: "Don't use Part II or Part III below for listed
+            # property. Instead, use Part V.")
+            {"line_number": "14", "description": "Special depreciation allowance for qualified property (other than listed property) placed in service during the tax year. See instructions", "line_type": "calculated", "source_rules": ["R002"], "source_facts": ["bonus_depreciation_amount"], "sort_order": 14},
+            {"line_number": "15", "description": "Property subject to section 168(f)(1) election", "line_type": "input", "sort_order": 15},
+            {"line_number": "16", "description": "Other depreciation (including ACRS)", "line_type": "input", "sort_order": 16},
+            # ── Part III — MACRS Depreciation · Section A
+            {"line_number": "17", "description": "MACRS deductions for assets placed in service in tax years beginning before 2025", "line_type": "input", "sort_order": 17},
+            {"line_number": "18", "description": "If you are electing to group any assets placed in service during the tax year into one or more general asset accounts, check here", "line_type": "input", "sort_order": 18},
+            # Section B — Assets Placed in Service During 2025 Tax Year Using
+            # the General Depreciation System. Columns: (a) classification /
+            # (b) month-year placed in service / (c) basis for depreciation /
+            # (d) recovery period / (e) convention / (f) method / (g) deduction.
+            # ⚠ 2025 FACE CHANGE: 19h "50-year property" is NEW — residential
+            # rental moved h→i and nonresidential real i→j (XSD 2025v6.2:
+            # GDS50YearPropertyGrp=19h, GDSResidentialRentalProperty=19i,
+            # GDSNonRsdntlRealProp=19j).
             {"line_number": "19a", "description": "3-year property", "line_type": "input", "sort_order": 19},
             {"line_number": "19b", "description": "5-year property", "line_type": "input", "sort_order": 20},
             {"line_number": "19c", "description": "7-year property", "line_type": "input", "sort_order": 21},
             {"line_number": "19d", "description": "10-year property", "line_type": "input", "sort_order": 22},
             {"line_number": "19e", "description": "15-year property", "line_type": "input", "sort_order": 23},
             {"line_number": "19f", "description": "20-year property", "line_type": "input", "sort_order": 24},
-            {"line_number": "19g", "description": "25-year property (SL)", "line_type": "input", "sort_order": 25},
-            {"line_number": "19h", "description": "Residential rental property — 27.5 years (SL/MM)", "line_type": "input", "sort_order": 26},
-            {"line_number": "19i", "description": "Nonresidential real property — 39 years (SL/MM)", "line_type": "input", "sort_order": 27},
-            # Summary
-            {"line_number": "22", "description": "Total depreciation (add Part III amounts + Part II + prior MACRS)", "line_type": "total", "source_rules": ["R003", "R005"], "destination_form": "Page 1 Line 14 (1120-S) or appropriate deduction line", "sort_order": 30},
-            # Part V — Amortization
-            {"line_number": "42", "description": "Amortization of costs that begins during current year", "line_type": "input", "source_facts": ["amortizable_amount", "amortization_period_months", "amortization_start_date"], "sort_order": 40},
-            {"line_number": "44", "description": "Total amortization — current year and prior", "line_type": "total", "source_rules": ["R006"], "destination_form": "Other deductions or Page 1 deduction line", "sort_order": 42},
+            {"line_number": "19g", "description": "25-year property — 25 yrs., S/L", "line_type": "input", "sort_order": 25},
+            {"line_number": "19h", "description": "50-year property — 50 yrs., MM, S/L (NEW row on the 2025 face)", "line_type": "input", "sort_order": 26},
+            {"line_number": "19i", "description": "Residential rental property — 27.5 yrs., MM, S/L", "line_type": "input", "sort_order": 27},
+            {"line_number": "19j", "description": "Nonresidential real property — 39 yrs., MM, S/L", "line_type": "input", "sort_order": 28},
+            # Section C — Assets Placed in Service During 2025 Tax Year Using
+            # the Alternative Depreciation System (20e is NEW on the 2025 face).
+            {"line_number": "20a", "description": "Class life — S/L", "line_type": "input", "sort_order": 29},
+            {"line_number": "20b", "description": "12-year — 12 yrs., S/L", "line_type": "input", "sort_order": 30},
+            {"line_number": "20c", "description": "30-year — 30 yrs., MM, S/L", "line_type": "input", "sort_order": 31},
+            {"line_number": "20d", "description": "40-year — 40 yrs., MM, S/L", "line_type": "input", "sort_order": 32},
+            {"line_number": "20e", "description": "50-year — 50 yrs., MM, S/L (NEW row on the 2025 face)", "line_type": "input", "sort_order": 33},
+            # ── Part IV — Summary
+            {"line_number": "21", "description": "Listed property. Enter amount from line 28", "line_type": "calculated", "calculation": "line_28", "sort_order": 34},
+            {"line_number": "22", "description": "Total. Add amounts from line 12, lines 14 through 17, lines 19 and 20 in column (g), and line 21. Enter here and on the appropriate lines of your return. Partnerships and S corporations—see instructions", "line_type": "total", "source_rules": ["R003", "R005"], "destination_form": "Page 1 Line 14 (1120-S) or appropriate deduction line — §179 (line 12) rides Schedule K for passthroughs", "sort_order": 35},
+            {"line_number": "23a", "description": "For assets shown in Part III placed in service during the current tax year with costs capitalized under section 263A: basis attributable to interest costs capitalized under section 263A(f)", "line_type": "input", "sort_order": 36},
+            {"line_number": "23b", "description": "For assets shown in Part III placed in service during the current tax year with costs capitalized under section 263A: basis attributable to section 263A costs other than 263A(f) interest", "line_type": "input", "sort_order": 37},
+            # ── Part V — Listed Property · Section A
+            {"line_number": "24a", "description": "Do you have evidence to support the business/investment use claimed? (Yes/No)", "line_type": "input", "sort_order": 38},
+            {"line_number": "24b", "description": "If 'Yes,' is the evidence written? (Yes/No)", "line_type": "input", "sort_order": 39},
+            {"line_number": "24c", "description": "Do you own, lease, or charter an aircraft? Check all that apply (Own/Lease/Charter) — NEW on the 2025 face", "line_type": "input", "sort_order": 40},
+            {"line_number": "25", "description": "Special depreciation allowance for qualified listed property placed in service during the tax year and used more than 50% in a qualified business use", "line_type": "input", "sort_order": 41},
+            {"line_number": "26", "description": "Property used more than 50% in a qualified business use — columns (a)-(i) incl. (h) depreciation deduction and (i) elected section 179 cost", "line_type": "input", "sort_order": 42},
+            {"line_number": "27", "description": "Property used 50% or less in a qualified business use (S/L only)", "line_type": "input", "sort_order": 43},
+            {"line_number": "28", "description": "Add amounts in column (h), lines 25 through 27. Enter here and on line 21", "line_type": "total", "calculation": "line_25 + sum(line_26_col_h) + sum(line_27_col_h)", "destination_form": "Line 21", "sort_order": 44},
+            {"line_number": "29", "description": "Add amounts in column (i), line 26. Enter here and on line 7", "line_type": "total", "calculation": "sum(line_26_col_i)", "destination_form": "Line 7", "sort_order": 45},
+            # Section B — Information on Use of Vehicles (per-vehicle columns (a)-(f))
+            {"line_number": "30", "description": "Total business/investment miles driven during the year (don't include commuting miles)", "line_type": "input", "sort_order": 46},
+            {"line_number": "31", "description": "Total commuting miles driven during the year", "line_type": "input", "sort_order": 47},
+            {"line_number": "32", "description": "Total other personal (noncommuting) miles driven", "line_type": "input", "sort_order": 48},
+            {"line_number": "33", "description": "Total miles driven during the year. Add lines 30 through 32", "line_type": "calculated", "calculation": "line_30 + line_31 + line_32", "sort_order": 49},
+            {"line_number": "34", "description": "Was the vehicle available for personal use during off-duty hours? (Yes/No per vehicle)", "line_type": "input", "sort_order": 50},
+            {"line_number": "35", "description": "Was the vehicle used primarily by a more than 5% owner or related person? (Yes/No per vehicle)", "line_type": "input", "sort_order": 51},
+            {"line_number": "36", "description": "Is another vehicle available for personal use? (Yes/No per vehicle)", "line_type": "input", "sort_order": 52},
+            # Section C — Questions for Employers Who Provide Vehicles
+            {"line_number": "37", "description": "Do you maintain a written policy statement that prohibits all personal use of vehicles, including commuting, by your employees?", "line_type": "input", "sort_order": 53},
+            {"line_number": "38", "description": "Do you maintain a written policy statement that prohibits personal use of vehicles, except commuting, by your employees?", "line_type": "input", "sort_order": 54},
+            {"line_number": "39", "description": "Do you treat all use of vehicles by employees as personal use?", "line_type": "input", "sort_order": 55},
+            {"line_number": "40", "description": "Do you provide more than five vehicles to your employees, obtain information from your employees about the use of the vehicles, and retain the information received?", "line_type": "input", "sort_order": 56},
+            {"line_number": "41", "description": "Do you meet the requirements concerning qualified automobile demonstration use?", "line_type": "input", "sort_order": 57},
+            # ── Part VI — Amortization (columns (a)-(f))
+            {"line_number": "42", "description": "Amortization of costs that begins during your 2025 tax year", "line_type": "input", "source_facts": ["amortizable_amount", "amortization_period_months", "amortization_start_date"], "sort_order": 58},
+            {"line_number": "43", "description": "Amortization of costs that began before your 2025 tax year", "line_type": "input", "sort_order": 59},
+            {"line_number": "44", "description": "Total. Add amounts in column (f). See the instructions for where to report", "line_type": "total", "source_rules": ["R006"], "destination_form": "Other deductions or Page 1 deduction line", "sort_order": 60},
         ])
+
+        # In-loader stale-row DELETE (the SCHD/SCHB recipe): update_or_create
+        # alone cannot remove rows, so any line row NOT on the 2025 face is
+        # removed here — self-heals both DBs on reseed. The keep-set includes
+        # lines 10-13 owned by load_4562_section179_carryover.
+        _2025_LINES = (
+            {str(n) for n in range(1, 19)}
+            | {f"19{c}" for c in "abcdefghij"}
+            | {f"20{c}" for c in "abcde"}
+            | {"21", "22", "23a", "23b", "24a", "24b", "24c"}
+            | {str(n) for n in range(25, 45)}
+        )
+        stale = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_2025_LINES)
+        if stale.exists():
+            self.stdout.write(f"  deleting {stale.count()} stale pre-2025 4562 line rows: "
+                              + ", ".join(sorted(stale.values_list("line_number", flat=True))))
+            stale.delete()
 
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "§179 exceeds limitation", "severity": "error",
@@ -906,6 +1013,11 @@ class Command(BaseCommand):
                          "taxable_income_limitation": 5000000},
              "expected_outputs": {"allowed_179_deduction": 2500000},
              "notes": "Federal §179 = $2.5M. Georgia conforms to the same §179 limit for TY2025 ($2.5M/$4M) via HB 1199; the state difference is §168(k)/(n) bonus only. This spec covers federal only.", "sort_order": 4},
+            {"scenario_name": "2025 face re-letter — line 19 classification (h=50-yr, i=residential, j=nonresidential)",
+             "scenario_type": "edge",
+             "inputs": {"asset_lives": ["27.5", "39", "50"]},
+             "expected_outputs": {"line_19_rows": ["19i", "19j", "19h"]},
+             "notes": "Structural pin for the 2025 face change: 19h '50-year property' is NEW (50 yrs./MM/S,L), shifting residential rental 27.5-yr → 19i and nonresidential real 39-yr → 19j (pre-2025: h=residential, i=nonresidential). Verified vs f4562.pdf 2025 (rev 10/9/25) + IRS4562.xsd 2025v6.2 LineNumber annotations. Any consumer keying line-19 letters by the pre-2025 layout prints residential amounts in the 50-year row.", "sort_order": 5},
         ])
 
         self._upsert_form_links("4562", sources, [
