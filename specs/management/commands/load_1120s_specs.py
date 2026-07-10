@@ -772,16 +772,51 @@ class Command(BaseCommand):
              "notes": "Determines 100% vs 40% bonus rate under OBBBA binding contract rule"},
             # Part I — listed-property §179 (line 7 ← line 29)
             {"fact_key": "listed_sec179_elected", "label": "Listed property elected §179 cost — from line 29 (Part V column (i))", "data_type": "decimal", "sort_order": 6},
-            # Part III — MACRS
-            {"fact_key": "recovery_period", "label": "MACRS recovery period (years)", "data_type": "choice",
-             "choices": ["3", "5", "7", "10", "15", "20", "25", "27.5", "39", "50"], "sort_order": 20,
-             "notes": "50-year is NEW on the 2025 face (GDS 19h / ADS 20e; 50 yrs., MM, S/L)."},
+            # Part III — MACRS (method/life/vehicle-class per Ken's dropdown
+            # list, delivered 2026-07-10 — the depreciation-methods unit)
+            {"fact_key": "recovery_period", "label": "Recovery period (years)", "data_type": "choice",
+             "choices": ["3", "5", "7", "10", "15", "20", "25", "27.5", "30", "31.5", "39", "40", "50"], "sort_order": 20,
+             "notes": "Preparer dropdown (Ken 2026-07-10): 3/5/7/10/15/20/27.5/31.5 (legacy)/39. "
+                      "31.5 = legacy nonresidential real (PIS after 1986, before 5/13/1993 — Pub 946 "
+                      "(2025) Table A-7). 30/40 = ADS real property (residential-after-2017 Table A-13 "
+                      "/ Table A-13a) — required by the AMT real-property matrix even though not on "
+                      "the recommended GDS dropdown. 25 (water utility) and 50 (2025-face 19h/20e) "
+                      "stay for face completeness. ADS personal-property lives (Pub 946 Table B) are "
+                      "free-entry beyond this list."},
             {"fact_key": "depreciation_method", "label": "Depreciation method", "data_type": "choice",
-             "choices": ["200DB", "150DB", "SL"], "sort_order": 21},
+             "choices": ["200DB", "150DB", "SL", "SL_RES", "SL_NONRES", "ADS_SL", "NONE"], "sort_order": 21,
+             "notes": "Ken's dropdown (2026-07-10), display labels: 200DB='MACRS 200% DB' (GDS 3/5/7/10 — "
+                      "Tables A-1/A-2..A-5), 150DB='MACRS 150% DB' (required for most 15/20-yr — A-1/"
+                      "A-2..A-5; elective for eligible 3/5/7/10-yr — A-14/A-15..A-18), SL='MACRS "
+                      "straight line' (GDS SL election, HY/MQ — A-8..A-12), SL_RES='Residential rental "
+                      "SL' (27.5 yrs MM — A-6), SL_NONRES='Nonresidential real property SL' (39 yrs MM "
+                      "— A-7a; life 31.5 = legacy — A-7), ADS_SL='ADS straight line' (SL over the ADS "
+                      "life; real property 30/40 MM — A-13/A-13a; personal property HY/MQ), "
+                      "NONE='None' (land / non-depreciable). Ken ruling: passenger auto is NOT a "
+                      "method — it is an asset classification (vehicle_classification) layered onto a "
+                      "5-year method, because the same automobile can use 200DB, 150DB, GDS SL, or "
+                      "ADS SL, and vehicles are separately identified for Part V listed-property "
+                      "reporting and §280F limits."},
             {"fact_key": "convention", "label": "Convention", "data_type": "choice",
              "choices": ["HY", "MQ", "MM"], "sort_order": 22},
             {"fact_key": "depreciable_basis", "label": "Depreciable basis (after §179 and bonus)", "data_type": "decimal", "sort_order": 23},
             {"fact_key": "current_year_depreciation", "label": "Current year MACRS depreciation", "data_type": "decimal", "sort_order": 24},
+            {"fact_key": "vehicle_classification", "label": "Vehicle classification (listed property)", "data_type": "choice",
+             "choices": ["under_6000", "work_truck_6ft", "over_6000"], "sort_order": 25,
+             "notes": "Ken's dropdown (2026-07-10): under_6000='Vehicles Under 6000 lbs' (§280F(d)(5) "
+                      "passenger automobile — Rev. Proc. 2025-16 annual caps apply, incl. §179), "
+                      "work_truck_6ft='Work Truck – 6 Ft bed Specially Equipped' (>6,000 lbs GVWR with "
+                      "a §179(b)(5)(B)(ii)(II) cargo area ≥6 ft interior length not readily accessible "
+                      "from the passenger compartment — NO §280F caps, NO §179 SUV cap), "
+                      "over_6000='Truck or SUV Over 6000 lbs' (no §280F caps; §179 capped at $31,300 "
+                      "for 2025 under §179(b)(5)(A) / Rev. Proc. 2024-40 §2.25). Classification does "
+                      "NOT change the recovery period (5-year) or method."},
+            {"fact_key": "amt_method", "label": "AMT depreciation method (derived)", "data_type": "choice",
+             "choices": ["SAME", "150DB"], "sort_order": 26,
+             "notes": "Derived by R007 (post-1998 matrix, i6251 line 2l), preparer-overridable: 150DB "
+                      "only when regular tax uses 200DB AND no §168(k) allowance was claimed; "
+                      "everything else SAME (no separate AMT computation). AMT recovery period and "
+                      "convention always equal regular tax for post-1998 property."},
             # Part V — Amortization
             {"fact_key": "amortizable_amount", "label": "Amortizable amount", "data_type": "decimal", "sort_order": 30},
             {"fact_key": "amortization_period_months", "label": "Amortization period (months)", "data_type": "integer", "default_value": "180", "sort_order": 31,
@@ -808,12 +843,61 @@ class Command(BaseCommand):
              "description": "100% for assets acquired AND placed in service after 1/19/2025 (permanent under OBBBA). 40% for assets acquired before 1/20/2025 (binding contract rule). Bonus is on remaining basis after §179.",
              "notes": "NEEDS REVIEW — verify binding contract date rules for 40% rate.",
              "sort_order": 2, "precedence": 5},
-            {"rule_id": "R003", "title": "MACRS depreciation calculation", "rule_type": "calculation",
+            {"rule_id": "R003", "title": "MACRS depreciation calculation (published tables only)", "rule_type": "calculation",
              "formula": "depreciable_basis * pub_946_percentage(recovery_period, method, convention, year)",
              "inputs": ["depreciable_basis", "recovery_period", "depreciation_method", "convention"],
              "outputs": ["current_year_depreciation"],
-             "description": "Apply IRS Pub 946 tables based on recovery period, method, and convention. Depreciable basis = original cost minus §179 minus bonus.",
+             "description": "Apply the printed Pub 946 (2025) Appendix A percentage per Chart 1/Chart 2 routing — "
+                            "NEVER derived declining-balance arithmetic (2026-07-10: derived MQ tables and a "
+                            "wrong 150DB 10-yr SL-switch year were found live; the published columns are the "
+                            "law). Routing: 200DB GDS 3/5/7/10 → A-1 (HY) / A-2..A-5 (MQ Q1-Q4); 150DB GDS "
+                            "15/20 (required) → A-1 / A-2..A-5; 150DB elective GDS 3/5/7/10 → A-14 (HY) / "
+                            "A-15..A-18 (MQ); GDS or ADS SL personal → A-8 (HY) / A-9..A-12 (MQ); residential "
+                            "rental 27.5 MM → A-6; nonresidential real 39 MM → A-7a; LEGACY nonresidential "
+                            "31.5 MM (PIS after 1986, before 5/13/1993) → A-7; ADS residential-after-2017 30 "
+                            "MM → A-13; ADS real 40 MM → A-13a. An unmapped (method, life, convention) "
+                            "combination must REFUSE/flag (D007), never silently return 0%. Depreciable basis "
+                            "= cost minus §179 minus bonus.",
              "sort_order": 3, "precedence": 10},
+            {"rule_id": "R007", "title": "AMT depreciation method (post-1998 matrix, derived + overridable)", "rule_type": "calculation",
+             "formula": "amt_method = '150DB' if (depreciation_method == '200DB' and bonus_depreciation_amount == 0) else 'SAME'; amt_life = recovery_period; amt_convention = convention",
+             "inputs": ["depreciation_method", "recovery_period", "convention", "bonus_depreciation_amount"],
+             "outputs": ["amt_method", "amt_current_depreciation"],
+             "description": "For property placed in service after 1998 (i6251 line 2l, quoted 2026-07-10): "
+                            "property depreciated 200DB for regular tax is refigured for AMT using the 150% "
+                            "declining balance method over the SAME recovery period and convention, switching "
+                            "to straight line the first year it gives a larger deduction — i.e. the SAME "
+                            "published A-14/A-15..A-18 (3/5/7/10-yr) or A-1/A-2..A-5 (15/20-yr) columns. NO "
+                            "AMT adjustment (amt = regular) for: residential rental property; nonresidential "
+                            "real / other §1250 property depreciated SL; ANY property depreciated 150DB, SL, "
+                            "or ADS for regular tax; and QUALIFIED PROPERTY on which the §168(k) special "
+                            "depreciation allowance was claimed (identical AMT/regular basis — the special "
+                            "allowance is deductible for AMT and the remaining basis needs no adjustment; "
+                            "§168(k)(2)(G)). The 150DB recompute therefore bites only when bonus does NOT "
+                            "apply: a §168(k)(7) election-out, non-qualifying used acquisition, or ≤50% "
+                            "business use. Vehicles keep their 5-year recovery period for AMT — "
+                            "vehicle_classification drives §280F dollar caps only, never the AMT life (Ken's "
+                            "matrix, 2026-07-10). Pre-1999 §1250 accelerated property (AMT SL over 40 yrs) is "
+                            "OUT OF SCOPE — flag, don't compute.",
+             "sort_order": 7, "precedence": 12},
+            {"rule_id": "R008", "title": "§280F / §179(b)(5) vehicle dollar caps by classification", "rule_type": "calculation",
+             "formula": "under_6000: annual_cap = rp_2025_16_table(year_in_service, bonus_claimed) * business_pct; over_6000: sec_179 <= 31300; work_truck_6ft: no caps",
+             "inputs": ["vehicle_classification", "bonus_depreciation_amount", "section_179_elected_cost"],
+             "outputs": ["capped_depreciation"],
+             "description": "under_6000 ('Vehicles Under 6000 lbs' — §280F(d)(5) passenger automobile, "
+                            "including trucks and vans per Rev. Proc. 2025-16 §1): total year deduction "
+                            "(§179 + bonus + MACRS) capped at Table 1 ($20,200/$19,600/$11,800/$7,060) when "
+                            "the §168(k) allowance applies, Table 2 ($12,200 first year) when it does not "
+                            "(≤50% business use, §168(k)(7) election-out, or non-qualifying acquisition — "
+                            "RP 2025-16 §2.03). Caps prorate by business-use percentage. over_6000 ('Truck "
+                            "or SUV Over 6000 lbs'): NO §280F caps; §179 limited to $31,300 (2025, "
+                            "§179(b)(5)(A) / Rev. Proc. 2024-40 §2.25) for SUVs ≤14,000 lbs GVWR. "
+                            "work_truck_6ft ('Work Truck – 6 Ft bed Specially Equipped'): >6,000 lbs with a "
+                            "≥6-ft interior-length cargo area not readily accessible from the passenger "
+                            "compartment — §179(b)(5)(B)(ii)(II) exception: NO SUV cap and NO §280F caps. "
+                            "Classification never changes method/life; it is orthogonal to the method "
+                            "dropdown (Ken ruling 2026-07-10).",
+             "sort_order": 8, "precedence": 13},
             {"rule_id": "R004", "title": "§179 flows to Schedule K (not Page 1)", "rule_type": "routing",
              "formula": "allowed_179_deduction → Schedule K Line 11 (1120S) or K Line 12 (1065)",
              "conditions": {"when": 'entity_type in ["1120S", "1065"]'},
@@ -841,8 +925,15 @@ class Command(BaseCommand):
             ("R002", "IRC_168", "primary", "§168(k) — bonus depreciation as amended by OBBBA"),
             ("R002", "IRS_2025_4562_INSTR", "secondary", "Part II instructions — special depreciation allowance"),
             ("R003", "IRC_168", "primary", "§168(a)-(b) — MACRS general rules"),
-            ("R003", "IRS_PUB_946", "primary", "Pub 946 — MACRS percentage tables"),
+            ("R003", "IRS_PUB_946", "primary", "Pub 946 (2025) Appendix A — Chart 1 routing + printed percentage tables (verbatim excerpts)"),
             ("R003", "IRS_2025_4562_INSTR", "secondary", "Part III instructions — MACRS depreciation"),
+            ("R007", "IRS_2025_6251_INSTR", "primary", "i6251 line 2l — post-1998 AMT depreciation matrix (150DB for 200DB property; exemption list incl. bonus-claimed qualified property)"),
+            ("R007", "IRC_168", "secondary", "§168(k)(2)(G) — no AMT adjustment for qualified property"),
+            ("R007", "IRS_PUB_946", "secondary", "Tables A-14/A-15..A-18 — the AMT 150DB columns"),
+            ("R008", "IRC_280F", "primary", "§280F(a)/(d)(5) — passenger-automobile caps and the 6,000-lb line"),
+            ("R008", "IRS_RP_2025_16", "primary", "2025 passenger-auto caps — Tables 1/2 verbatim"),
+            ("R008", "IRC_179", "primary", "§179(b)(5) — SUV limitation and the ≥6-ft-bed exception"),
+            ("R008", "IRS_RP_2024_40", "primary", "2025 SUV cap $31,300 — §2.25 verbatim"),
             ("R004", "IRC_179", "primary", "§179(d)(4) — separately stated for passthrough entities"),
             ("R004", "IRS_2025_1120S_INSTR", "secondary", "Schedule K Line 11 — §179 deduction"),
             ("R005", "IRS_2025_1120S_INSTR", "primary", "Page 1 Line 14 — depreciation (non-§179)"),
@@ -986,6 +1077,15 @@ class Command(BaseCommand):
             {"diagnostic_id": "D004", "title": "§179 deducted on Page 1 instead of K", "severity": "error",
              "condition": 'entity_type in ["1120S", "1065"] AND section_179 reduces page 1 ordinary income',
              "message": "For S-Corps and partnerships, §179 is a SEPARATELY STATED item. It must flow to Schedule K Line 11 (1120-S) or K Line 12 (1065), NOT reduce ordinary income on Page 1."},
+            {"diagnostic_id": "D005", "title": "Vehicle asset without a vehicle classification", "severity": "warning",
+             "condition": "asset group is Vehicles AND vehicle_classification is blank",
+             "message": "This vehicle has no classification (Under 6000 lbs / Work Truck 6-ft bed / Over 6000 lbs). The §280F luxury-auto caps and the §179 SUV limit cannot be applied correctly until one is chosen."},
+            {"diagnostic_id": "D006", "title": "§179 on an over-6,000-lb SUV exceeds the $31,300 cap", "severity": "error",
+             "condition": "vehicle_classification == 'over_6000' AND section_179_elected_cost > 31300",
+             "message": "§179 for a sport utility vehicle over 6,000 lbs GVWR cannot exceed $31,300 for 2025 (§179(b)(5)(A); Rev. Proc. 2024-40 §2.25). Reduce the elected §179 — the excess basis depreciates under MACRS (bonus is not capped for >6,000-lb vehicles). A pickup with a ≥6-ft bed qualifies for the §179(b)(5)(B) exception — reclassify as Work Truck if applicable."},
+            {"diagnostic_id": "D007", "title": "Method/life/convention combination has no published table", "severity": "error",
+             "condition": "pub_946_percentage(recovery_period, method, convention) has no table entry",
+             "message": "This method/recovery-period/convention combination has no Pub 946 published-table support in the engine (e.g., 50-year SL/MM, ADS personal-property lives beyond the printed columns). The computed depreciation would be $0 — enter the correct combination or flag for a verified-source unit. Never trust a silent zero."},
         ])
 
         self._upsert_tests(form, [
@@ -1018,6 +1118,65 @@ class Command(BaseCommand):
              "inputs": {"asset_lives": ["27.5", "39", "50"]},
              "expected_outputs": {"line_19_rows": ["19i", "19j", "19h"]},
              "notes": "Structural pin for the 2025 face change: 19h '50-year property' is NEW (50 yrs./MM/S,L), shifting residential rental 27.5-yr → 19i and nonresidential real 39-yr → 19j (pre-2025: h=residential, i=nonresidential). Verified vs f4562.pdf 2025 (rev 10/9/25) + IRS4562.xsd 2025v6.2 LineNumber annotations. Any consumer keying line-19 letters by the pre-2025 layout prints residential amounts in the 50-year row.", "sort_order": 5},
+            # ── Depreciation-methods unit scenarios (2026-07-10) — every
+            # expected percentage is a PUBLISHED-TABLE value (Pub 946 (2025)
+            # Appendix A / Rev. Proc. 2025-16 / Rev. Proc. 2024-40), never
+            # derived arithmetic.
+            {"scenario_name": "AMT matrix — 200DB 5-yr HY, NO bonus: AMT refigures at 150DB, same life/convention",
+             "scenario_type": "normal",
+             "inputs": {"depreciable_basis": 10000, "recovery_period": "5", "depreciation_method": "200DB",
+                         "convention": "HY", "bonus_percentage": "0", "year_in_service": 1},
+             "expected_outputs": {"current_year_depreciation": 2000, "amt_method": "150DB", "amt_current_depreciation": 1500},
+             "notes": "Regular = Table A-1 5-yr year 1 (20.00%) = 2,000. AMT = Table A-14 5-yr year 1 (15.00%) = 1,500 — same recovery period and convention (i6251 line 2l). Adjustment = 500.", "sort_order": 6},
+            {"scenario_name": "AMT matrix — 150DB / SL / ADS / residential / nonresidential: SAME as tax (no adjustment)",
+             "scenario_type": "normal",
+             "inputs": {"methods": ["150DB", "SL", "ADS_SL", "SL_RES", "SL_NONRES"]},
+             "expected_outputs": {"amt_method": "SAME", "amt_adjustment": 0},
+             "notes": "i6251 line 2l exemption list (post-1998 property): residential rental; nonresidential/other §1250 depreciated SL; any property depreciated 150DB or SL; ADS-elected property. Ken's combo table 2026-07-10 rows 5-14.", "sort_order": 7},
+            {"scenario_name": "AMT matrix — 200DB WITH §168(k) bonus claimed: NO AMT adjustment at all",
+             "scenario_type": "edge",
+             "inputs": {"depreciable_basis": 10000, "recovery_period": "5", "depreciation_method": "200DB",
+                         "convention": "HY", "bonus_percentage": "100", "year_in_service": 1},
+             "expected_outputs": {"amt_method": "SAME", "amt_adjustment": 0},
+             "notes": "Qualified property on which the special depreciation allowance was claimed has identical AMT/regular basis — the allowance is deductible for AMT and the remaining basis needs no adjustment (i6251 2l; §168(k)(2)(G)). The 150DB recompute bites only on a §168(k)(7) election-out, non-qualifying used acquisition, or ≤50% business use.", "sort_order": 8},
+            {"scenario_name": "Legacy nonresidential 31.5-yr SL/MM — month 6, year 1 = 1.720%",
+             "scenario_type": "normal",
+             "inputs": {"depreciable_basis": 100000, "recovery_period": "31.5", "depreciation_method": "SL_NONRES",
+                         "convention": "MM", "month_placed_in_service": 6, "year_in_service": 1},
+             "expected_outputs": {"current_year_depreciation": 1720},
+             "notes": "Table A-7 (Pub 946 (2025) p.74) month-6 first-year = 1.720%; full years 3.175%. Applies to nonresidential real PIS after 1986 and before 5/13/1993.", "sort_order": 9},
+            {"scenario_name": "ADS real property SL/MM — 40-yr month 1 = 2.396%; 30-yr residential month 7 = 1.528%",
+             "scenario_type": "normal",
+             "inputs": {"assets": [{"recovery_period": "40", "method": "ADS_SL", "month": 1},
+                                    {"recovery_period": "30", "method": "ADS_SL", "month": 7}],
+                         "depreciable_basis": 100000},
+             "expected_outputs": {"year1_40yr": 2396, "year1_30yr": 1528},
+             "notes": "Table A-13a (40-yr) month-1 = 2.396%, full 2.500%. Table A-13 (residential after 2017, 30-yr) month-7 = 1.528%, full 3.333%. AMT = SAME (ADS).", "sort_order": 10},
+            {"scenario_name": "Published MQ pin — 200DB 5-yr Q4: year 1 = 5.00%, year 2 = 38.00%, year 6 = 9.58%",
+             "scenario_type": "edge",
+             "inputs": {"depreciable_basis": 10000, "recovery_period": "5", "depreciation_method": "200DB",
+                         "convention": "MQ", "quarter_placed_in_service": 4},
+             "expected_outputs": {"year_1": 500, "year_2": 3800, "year_6": 958},
+             "notes": "Table A-5 verbatim (5.00/38.00/22.80/13.68/10.94/9.58). Pins the 2026-07-10 finding: the prior engine MQ tables were DERIVED and wrong (its Q4 column summed to 99.00%). All four quarters × 3/5/7/10/15/20-yr columns now come from A-2..A-5.", "sort_order": 11},
+            {"scenario_name": "Published 150DB pins — HY 10-yr year 5 = 8.74% (SL switch at yr 5); MQ Q1 5-yr year 1 = 26.25%",
+             "scenario_type": "edge",
+             "inputs": {"assets": [{"recovery_period": "10", "method": "150DB", "convention": "HY", "year": 5},
+                                    {"recovery_period": "5", "method": "150DB", "convention": "MQ", "quarter": 1, "year": 1}],
+                         "depreciable_basis": 10000},
+             "expected_outputs": {"hy_10yr_year5": 874, "mq_q1_5yr_year1": 2625},
+             "notes": "Table A-14 10-yr column switches to SL in YEAR 5 (8.74×6 then 4.37) — the prior engine table kept DB through year 5 (8.52→ wrong 8.53/8.72/4.66 tail). Table A-15 Q1 5-yr year 1 = 26.25%. Elective 150DB now has full MQ support (A-15..A-18).", "sort_order": 12},
+            {"scenario_name": "Vehicle caps — under-6000 auto, $80K, bonus claimed: year 1 capped at $20,200",
+             "scenario_type": "normal",
+             "inputs": {"vehicle_classification": "under_6000", "cost_basis": 80000, "business_pct": 100,
+                         "bonus_percentage": "100", "year_in_service": 1},
+             "expected_outputs": {"year_1_total_depreciation": 20200},
+             "notes": "Rev. Proc. 2025-16 Table 1: 20,200/19,600/11,800/7,060. Without bonus (incl. a §168(k)(7) election-out — RP 2025-16 §2.03) Table 2 first year = 12,200. Prior engine constants (19,500 yr-2 / 12,400 no-bonus yr-1) were WRONG and miscited Rev. Proc. 2025-13.", "sort_order": 13},
+            {"scenario_name": "Vehicle caps — over-6000 SUV §179 capped at $31,300; work truck 6-ft bed exempt",
+             "scenario_type": "edge",
+             "inputs": {"assets": [{"vehicle_classification": "over_6000", "sec_179_elected": 60000},
+                                    {"vehicle_classification": "work_truck_6ft", "sec_179_elected": 60000}]},
+             "expected_outputs": {"suv_allowed_179": 31300, "suv_diagnostic": "D006", "work_truck_allowed_179": 60000},
+             "notes": "§179(b)(5)(A) / Rev. Proc. 2024-40 §2.25: SUV cap $31,300 (2025). The ≥6-ft-interior-length open cargo bed not readily accessible from the passenger compartment is the §179(b)(5)(B)(ii)(II) exception — no SUV cap, and >6,000 lbs GVWR means no §280F caps either. Excess SUV basis still depreciates under MACRS/bonus.", "sort_order": 14},
         ])
 
         self._upsert_form_links("4562", sources, [
@@ -1025,7 +1184,11 @@ class Command(BaseCommand):
             ("IRC_179", "governs"),
             ("IRC_168", "governs"),
             ("IRC_197", "governs"),
+            ("IRC_280F", "governs"),
             ("IRS_PUB_946", "informs"),
+            ("IRS_RP_2025_16", "informs"),
+            ("IRS_RP_2024_40", "informs"),
+            ("IRS_2025_6251_INSTR", "informs"),
         ])
 
         self.stdout.write(self.style.SUCCESS("  Form 4562 complete."))

@@ -1,4 +1,45 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-10 (later) — 4562 depreciation-methods unit (Ken's Lacerte method list delivered)
+- Ken delivered the method/life/vehicle-classification dropdown list + the AMT method
+  matrix → spec-first amendment to the freshly-renumbered 4562 block (load_1120s_specs).
+- **Facts:** `depreciation_method` choices → 200DB/150DB/SL/SL_RES/SL_NONRES/ADS_SL/NONE
+  (Ken's 7, display labels + the "passenger auto is a CLASSIFICATION, not a method" ruling
+  in notes); `recovery_period` choices += 30/31.5/40 (31.5 = legacy nonres PIS >1986 <5/13/1993
+  → Table A-7; 30/40 = ADS real → A-13/A-13a); NEW `vehicle_classification`
+  (under_6000 / work_truck_6ft / over_6000) + NEW `amt_method` (SAME/150DB, derived).
+- **Rules:** R003 description rebuilt = the Chart 1/Chart 2 published-table routing +
+  the never-derived-arithmetic mandate + refuse-on-unmapped-combination (D007). NEW R007
+  AMT post-1998 matrix (i6251 line 2l quoted 2026-07-10: 150DB same life+convention ONLY
+  for 200DB property with NO §168(k) allowance claimed; SL/150DB/ADS/residential/nonres/
+  bonus-claimed = SAME; §168(k)(7) election-out re-engages the recompute; pre-1999 §1250
+  accelerated = out of scope, flag). NEW R008 vehicle caps by classification (§280F
+  under-6000 only — Rev. Proc. 2025-16 T1/T2; §179(b)(5)(A) $31,300 SUV cap over-6000;
+  work_truck_6ft = the §179(b)(5)(B)(ii)(II) ≥6-ft-bed exception, no caps).
+- **Sources:** IRS_PUB_946 gains 6 verbatim table excerpts (Chart 1 routing · A-14 3/5/7/10
+  columns · A-2..A-5 ALL columns · A-15..A-18 3/5/7/10 · A-7 31.5-yr · A-13/A-13a ADS 30/40)
+  — pymupdf-extracted from p946.pdf 2026-07-10. NEW sources IRS_RP_2025_16 (2025 auto caps
+  T1/T2 verbatim + §2.03 when-Table-2 incl. the (k)(7) election-out) and IRS_RP_2024_40
+  (§2.25 SUV $31,300 verbatim). IRC_179 gains the §179(b)(5) excerpt; NEW IRC_280F source.
+- **⚠⚠ TWO LIVE tts-ENGINE BUG CLASSES exposed by the verbatim tables** (fix rides the tts
+  engine leg, this unit): (1) the entire MACRS_200DB_MQ dict was DERIVED-wrong (published
+  A-3 Q2-5yr = 11.37/11.37/4.26 vs engine 11.98/11.98/3.04; the Q4 column summed to 99.00%);
+  (2) MACRS_150DB_HY 10-yr had the SL switch a year late (published yr-5 = 8.74, engine 8.53).
+  Also the LUXURY_AUTO_LIMITS constants were wrong (19,500 yr-2 / 12,400 no-bonus yr-1 vs
+  published 19,600 / 12,200) AND miscited "Rev. Proc. 2025-13" (= the §831(b) micro-captive
+  proc, not autos — the real source is Rev. Proc. 2025-16).
+- **Diagnostics:** D005 vehicle-without-classification (warn) · D006 SUV §179 > $31,300
+  (error) · D007 unmapped method/life/convention = REFUSE, never silent 0% (error).
+- **Scenarios:** 9 new published-value pins (AMT trio incl. bonus-claimed-no-adjustment ·
+  31.5 month-6 1.720% · ADS 40/30 · MQ Q4-5yr A-5 pin · 150DB yr-5-switch + A-15 Q1 pin ·
+  auto cap 20,200 · SUV 31,300 vs work-truck exempt). 4562 now 22 facts / 8 rules /
+  60 lines / 7 diags / 14 scenarios in this loader.
+- SQLite-validated (scratch db_validate.sqlite3, all 4562 rules linked) → Supabase-seeded
+  (TaxForms 121, amendment-only) → deployed lookup/4562/export verified (R007/R008,
+  choices, D005-D007, 24 merged scenarios) → tts mirror form_4562_spec.json refreshed.
+- Boundary: the §168(k)(7)/(k)(10) ELECTION mechanism itself (per-class election input,
+  statement doc, GA add-back kill, 280F Table-2 flip, AMT re-engagement) is the NEXT
+  spec unit — R007/R008 already state the interplay verbatim so it drops in.
+
 ## 2026-07-10 — 4562 renumbered to the 2025 face (renumber unit #1 from the s44 early-era audit)
 - Rebuilt load_1120s_specs._load_form_4562 VERBATIM vs f4562.pdf 2025 (rev "Created
   10/9/25", pymupdf dump) + IRS4562.xsd 2025v6.2 LineNumber annotations. The old block
