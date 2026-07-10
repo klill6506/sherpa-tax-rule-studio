@@ -1,4 +1,42 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-10 (later still) — 4562 §168(k)(7) election-out unit (R009) + the R007 AMT-arm tax-law correction
+- The s46 stated follow-on, spec-first. i4562 2025 fetched + read verbatim (p.7 Election
+  out; p.6 the OBBBA 40%-instead-of-100% transitional election — NO statement mechanics
+  stated, spec-silent → tax-app REVIEW_QUEUE, not implemented).
+- **⚠⚠ R007 CORRECTED — a tax-law error in yesterday's matrix:** the election-out arm
+  claimed the AMT 150DB recompute re-engages on a (k)(7) election. Both 2025 instructions
+  say otherwise, verbatim: i6251 line 2l ("It isn't subject to an AMT adjustment for
+  depreciation if it was placed in service after 2015") + the i4562 p.7 Note ("will not
+  be subject to an AMT adjustment"). Mechanism: (k)(7) switches off only §168(k)(1)/(2)(F),
+  so the (2)(G) exemption survives — ELIGIBILITY controls post-PATH, not claiming. Formula
+  now keys on NEW fact `bonus_eligible` (150DB only for never-eligible 200DB property);
+  scenario 6 re-pinned; flagged for Ken's ratification (reverses one arm of the
+  Ken-attributed matrix — REVIEW_QUEUE s47 in the tax app).
+- **NEW R009** (conditional): per-class election out — i4562 p.7 verbatim (all property
+  in the class, statement on the timely filed return, 301.9100-2 six-month cure,
+  irrevocable, per-entity) + the four engine effects (bonus=0 per class · NO AMT
+  adjustment · RP 2025-16 §2.03(2) Table 2 for under-6000 autos · GA add-back eliminated
+  — the firm's reason for electing out) + the why-the-election-matters note (§168(k)(1)
+  "shall" + §1016(a)(2) allowed-or-allowable).
+- **Facts:** NEW `bonus_electout_classes` (return-level; tokens 3/5/7/10/15/20/25 +
+  software; Reg. §1.168(k)-2(f)(1) finer classes NOT fetched — flagged) + NEW
+  `bonus_eligible` (per-asset, default true). amt_method fact notes corrected.
+- **Diagnostics:** D008 bonus-inside-an-elected-out-class (error) · D009
+  bonus-zeroed-without-the-election (warning).
+- **Sources:** IRS_2025_4562_INSTR gains 2 verbatim excerpts (Election out p.7 incl. the
+  AMT Note; the p.6 40%/60% transitional election). R007/R009 gain i6251/IRC_168/
+  RP 2025-16 links (4 each).
+- **Scenarios:** 3 new (elect-out lifecycle: bonus 0 / full-basis MACRS / AMT SAME /
+  GA 0 / statement · D008 conflict · elected-out auto Table-2 12,200); scenario 6 + 8
+  notes corrected. 4562 loader now 25 facts / 9 rules / 9 diags / 17 scenarios.
+- SQLite-validated (db_validate; load_1040_form_6251 run first so the i6251 source links
+  resolve — R007/R009 4/4 links) → Supabase-seeded → deployed lookup/4562/export verified
+  (R009, D008/D009, both facts, 28 merged scenarios) → tts mirror form_4562_spec.json
+  refreshed. RS commit `fdeadfb`.
+- tts side (same session): mig 0183 · engine election + AMT fix · statement page + the
+  DECLARED ElectNotClaimSpclDeprecAllwnc MeF doc (ReturnData1120S ref 1921) · UI
+  checkboxes · engine 63 / flow 447 / MeF 69 / render 25 all green.
+
 ## 2026-07-10 (later) — 4562 depreciation-methods unit (Ken's Lacerte method list delivered)
 - Ken delivered the method/life/vehicle-classification dropdown list + the AMT method
   matrix → spec-first amendment to the freshly-renumbered 4562 block (load_1120s_specs).
