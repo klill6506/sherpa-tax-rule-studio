@@ -57,18 +57,46 @@ FRESH_SOURCES = [
         "topics": ["1120s", "schedule_b"],
         "excerpts": [
             {
-                "excerpt_label": "Schedule B — overview and question list",
+                "excerpt_label": "Schedule B — 2025 face question list (verified vs f1120s.pdf 2025)",
                 "excerpt_text": (
-                    "Schedule B (Form 1120-S) consists of approximately 20 yes/no questions "
-                    "on pages 3-4 of the 1120-S. These are informational questions about the "
-                    "entity's tax situation including: B1 — accounting method (cash, accrual, other); "
-                    "B3 — number of shareholders at end of tax year; B5 — controlled group membership; "
-                    "B7 — foreign corporation shareholder status; B8 — cancelled/forgiven debt; "
-                    "B9 — section 263A UNICAP applicability; B10 — 1099 filing compliance; "
-                    "B11 — outstanding AE&P from C-Corp years; B12 — built-in gains tax (section 1374); "
-                    "B14 — total receipts test for Schedule M-3 (>$50M total assets)."
+                    "Schedule B (Form 1120-S 2025), Other Information, pages 2-3 of the form. "
+                    "Questions on the 2025 face: 1 — check accounting method (cash / accrual / other); "
+                    "2 — business activity and product or service; 3 — any shareholder a disregarded "
+                    "entity, trust, estate, or nominee (if Yes, attach Schedule B-1); 4a/4b — 20%/50% "
+                    "ownership of any corporation / partnership; 5a/5b — outstanding restricted stock / "
+                    "stock options, warrants, or similar instruments; 6 — Form 8918 material advisor "
+                    "disclosure; 7 — checkbox, publicly offered debt instruments with OID; 8 — net "
+                    "unrealized built-in gain in excess of prior-year recognized built-in gain (dollar "
+                    "entry); 9 — section 163(j) real-property/farming election; 10 — Form 8990 "
+                    "conditions (pass-through EBIE / $31M gross receipts / tax shelter); 11 — total "
+                    "receipts AND total assets both under $250,000 (see the Question 11 excerpt); "
+                    "12 — non-shareholder debt cancelled, forgiven, or modified (plus principal "
+                    "reduction amount); 13 — QSub election terminated or revoked; 14a/14b — Form(s) "
+                    "1099 required / filed; 15 — Qualified Opportunity Fund self-certification (plus "
+                    "Form 8996 line 15 amount); 16 — digital assets received or disposed; 17 — "
+                    "reserved for future use. (This excerpt SUPERSEDES the pre-2026-07-09 paraphrase "
+                    "that carried a stale, non-face numbering — e.g. an 'AE&P' question 11 that does "
+                    "not exist on the 2025 Schedule B.)"
                 ),
-                "summary_text": "Schedule B: ~20 yes/no informational questions about entity tax situation on pages 3-4.",
+                "summary_text": "2025 Schedule B face: questions 1-17 as printed (Q11 = the $250K receipts+assets test).",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Question 11 — face text and total receipts definition (verbatim)",
+                "excerpt_text": (
+                    "Form 1120-S (2025) Schedule B, question 11 (face, verbatim): 'Does the "
+                    "corporation satisfy both of the following conditions? a. The corporation's "
+                    "total receipts (see instructions) for the tax year were less than $250,000. "
+                    "b. The corporation's total assets at the end of the tax year were less than "
+                    "$250,000. If “Yes,” the corporation is not required to complete "
+                    "Schedules L and M-1.' Instructions for Form 1120-S (2025), Question 11 "
+                    "(verbatim): 'Total receipts is the sum of the following amounts. • Gross "
+                    "receipts or sales (page 1, line 1a). • All other income (page 1, lines 4 "
+                    "and 5). • Income reported on Schedule K, lines 3a, 4, 5a, and 6. • "
+                    "Income or net gain reported on Schedule K, lines 7, 8a, 9, and 10. • "
+                    "Income or net gain reported on Form 8825, lines 2, 21, and 22a.'"
+                ),
+                "summary_text": "Q11 verbatim: both receipts AND EOY assets < $250K; total-receipts component list from the 2025 instructions.",
                 "is_key_excerpt": True,
             },
             {
@@ -333,126 +361,213 @@ class Command(BaseCommand):
     # ═══════════════════════════════════════════════════════════════════════════
 
     def _load_schedule_b(self, sources):
+        # 2026-07-09 RENUMBERED TO THE 2025 FACE (verified verbatim vs
+        # f1120s.pdf 2025 pages 2-3). The original block carried a stale,
+        # non-face numbering (~20 questions incl. an "AE&P" B11 that does not
+        # exist on the 2025 Schedule B). Stale fact/line rows are DELETED
+        # in-loader below (update_or_create can't remove rows — the F4797-G2
+        # lesson). Same session: NEW R006, the Question 11 auto-answer
+        # (Ken ruling 2026-07-09, tts usability item 12).
         form = self._upsert_form(
             "1120S_SCHB", "Schedule B (Form 1120-S) — Other Information",
             ["1120S"],
-            notes="Pages 3-4 of 1120-S. ~20 yes/no informational questions about entity tax situation.",
+            notes="Pages 2-3 of the 2025 Form 1120-S. Questions 1-16 (+17 reserved) as printed "
+                  "on the 2025 face. Q1/Q2 (accounting method, activity/product) live on the "
+                  "return header in implementations; Q3-Q16 are the yes/no + amount items.",
         )
         self._upsert_facts(form, [
-            {"fact_key": "b1_accounting_method", "label": "B1 — Accounting method", "data_type": "choice",
+            # ── 2025 face questions ──
+            {"fact_key": "b1_accounting_method", "label": "Q1 — Accounting method (cash / accrual / other)", "data_type": "choice",
              "choices": ["cash", "accrual", "other"], "required": True, "sort_order": 1},
-            {"fact_key": "b2_business_activity_code", "label": "B2 — Business activity code", "data_type": "string", "sort_order": 2},
-            {"fact_key": "b3_shareholder_count", "label": "B3 — Number of shareholders at end of tax year", "data_type": "integer", "required": True, "sort_order": 3},
-            {"fact_key": "b4_shareholder_count_mid_year", "label": "B4 — Number of shareholders during any part of the year", "data_type": "integer", "sort_order": 4},
-            {"fact_key": "b5_controlled_group", "label": "B5 — Was the corporation a member of a controlled group?", "data_type": "boolean", "sort_order": 5},
-            {"fact_key": "b6_owned_50pct_entity", "label": "B6 — Does the corporation own 50%+ of another entity?", "data_type": "boolean", "sort_order": 6},
-            {"fact_key": "b7_foreign_corp_shareholder", "label": "B7 — Shareholder in a foreign corporation?", "data_type": "boolean", "sort_order": 7},
-            {"fact_key": "b8_cancelled_debt", "label": "B8 — Any debt cancelled, forgiven, or modified?", "data_type": "boolean", "sort_order": 8},
-            {"fact_key": "b9_section_263a", "label": "B9 — Section 263A UNICAP applies?", "data_type": "boolean", "sort_order": 9},
-            {"fact_key": "b10_filed_all_1099s", "label": "B10 — Did the corporation file all required 1099s?", "data_type": "boolean", "sort_order": 10},
-            {"fact_key": "b11_aep_from_ccorp", "label": "B11 — Outstanding AE&P from C-Corp years?", "data_type": "boolean", "sort_order": 11},
-            {"fact_key": "b12_built_in_gains", "label": "B12 — Built-in gains tax (Section 1374) applies?", "data_type": "boolean", "sort_order": 12},
-            {"fact_key": "b13_tax_exempt_interest", "label": "B13 — Tax-exempt interest or other tax-exempt income?", "data_type": "boolean", "sort_order": 13},
-            {"fact_key": "b14_total_assets_50m", "label": "B14 — Total assets >= $50M (M-3 required)?", "data_type": "boolean", "sort_order": 14},
-            {"fact_key": "b15_issued_publicly_traded", "label": "B15 — Corporation's stock publicly traded?", "data_type": "boolean", "sort_order": 15},
-            {"fact_key": "b16_election_year", "label": "B16 — First year of S election?", "data_type": "boolean", "sort_order": 16},
-            {"fact_key": "b17_short_year", "label": "B17 — Short tax year?", "data_type": "boolean", "sort_order": 17},
-            {"fact_key": "b18_excess_net_passive_income", "label": "B18 — Section 1375 tax on excess net passive income?", "data_type": "boolean", "sort_order": 18},
-            {"fact_key": "b19_tax_shelter", "label": "B19 — Tax shelter registration?", "data_type": "boolean", "sort_order": 19},
-            {"fact_key": "b20_foreign_accounts", "label": "B20 — Foreign financial accounts (FBAR)?", "data_type": "boolean", "sort_order": 20},
-            {"fact_key": "actual_shareholder_count", "label": "Actual number of shareholders entered in return", "data_type": "integer", "sort_order": 21,
-             "notes": "Cross-check against B3."},
-            {"fact_key": "total_assets_eoy", "label": "Total assets at end of year (from Schedule L)", "data_type": "decimal", "sort_order": 22,
-             "notes": "Cross-check for M-3 threshold."},
+            {"fact_key": "b2_business_activity", "label": "Q2a — Business activity", "data_type": "string", "sort_order": 2},
+            {"fact_key": "b2_product_service", "label": "Q2b — Product or service", "data_type": "string", "sort_order": 3},
+            {"fact_key": "b3_nominee_shareholder", "label": "Q3 — Any shareholder a disregarded entity, trust, estate, or nominee? (Yes → Schedule B-1)", "data_type": "boolean", "sort_order": 4},
+            {"fact_key": "b4a_own_corp_20_50", "label": "Q4a — Own 20% directly / 50% directly-or-indirectly of any corporation?", "data_type": "boolean", "sort_order": 5},
+            {"fact_key": "b4b_own_pship_20_50", "label": "Q4b — Own 20% directly / 50% directly-or-indirectly of any partnership or trust?", "data_type": "boolean", "sort_order": 6},
+            {"fact_key": "b5a_restricted_stock", "label": "Q5a — Outstanding shares of restricted stock at year end?", "data_type": "boolean", "sort_order": 7},
+            {"fact_key": "b5b_options_warrants", "label": "Q5b — Outstanding stock options, warrants, or similar instruments at year end?", "data_type": "boolean", "sort_order": 8},
+            {"fact_key": "b6_form_8918", "label": "Q6 — Filed or required to file Form 8918 (material advisor disclosure)?", "data_type": "boolean", "sort_order": 9},
+            {"fact_key": "b7_public_oid_debt", "label": "Q7 — Checkbox: issued publicly offered debt instruments with OID", "data_type": "boolean", "sort_order": 10},
+            {"fact_key": "b8_nubig_amount", "label": "Q8 — Net unrealized built-in gain over prior-year recognized built-in gain ($)", "data_type": "decimal", "sort_order": 11},
+            {"fact_key": "b9_163j_election", "label": "Q9 — Section 163(j) real-property/farming election in effect?", "data_type": "boolean", "sort_order": 12},
+            {"fact_key": "b10_form_8990_test", "label": "Q10 — Satisfies one or more Form 8990 conditions (pass-through EBIE / $31M receipts / tax shelter)?", "data_type": "boolean", "sort_order": 13},
+            {"fact_key": "b11_under_250k", "label": "Q11 — Total receipts < $250,000 AND EOY total assets < $250,000? (DERIVED, overridable)", "data_type": "boolean", "sort_order": 14,
+             "notes": "Auto-answered by R006 (Ken ruling 2026-07-09). YELLOW derived value; a preparer override always wins."},
+            {"fact_key": "b12_debt_forgiven", "label": "Q12 — Non-shareholder debt cancelled, forgiven, or modified?", "data_type": "boolean", "sort_order": 15},
+            {"fact_key": "b12_principal_reduction", "label": "Q12 — Amount of principal reduction ($)", "data_type": "decimal", "sort_order": 16},
+            {"fact_key": "b13_qsub_terminated", "label": "Q13 — QSub election terminated or revoked during the year?", "data_type": "boolean", "sort_order": 17},
+            {"fact_key": "b14a_1099_required", "label": "Q14a — Payments made that require Form(s) 1099?", "data_type": "boolean", "sort_order": 18},
+            {"fact_key": "b14b_1099_filed", "label": "Q14b — If Yes, did/will the corporation file the required Form(s) 1099?", "data_type": "boolean", "sort_order": 19},
+            {"fact_key": "b15_qof", "label": "Q15 — Intends to self-certify as a Qualified Opportunity Fund (attach Form 8996)?", "data_type": "boolean", "sort_order": 20},
+            {"fact_key": "b15_8996_penalty", "label": "Q15 — Form 8996 line 15 amount ($)", "data_type": "decimal", "sort_order": 21},
+            {"fact_key": "b16_digital_assets", "label": "Q16 — Received or disposed of a digital asset (or financial interest in one)?", "data_type": "boolean", "sort_order": 22},
+            # ── Q11 derivation inputs ──
+            {"fact_key": "q11_total_receipts", "label": "Q11 — Total receipts (derived per the Question 11 instruction definition)", "data_type": "decimal", "sort_order": 23,
+             "notes": "Sum: page 1 line 1a; page 1 lines 4 and 5; Schedule K lines 3a, 4, 5a, 6; "
+                      "Schedule K lines 7, 8a, 9, 10 (income or net gain only); Form 8825 lines 2, 21, 22a "
+                      "(income or net gain only)."},
+            {"fact_key": "l15_total_assets_eoy", "label": "Total assets at end of year (Schedule L line 15, EOY column — cross-form)", "data_type": "decimal", "sort_order": 24},
+            # ── practice facts (NOT 2025 Schedule B face questions) ──
+            {"fact_key": "aep_from_ccorp", "label": "Practice — outstanding AE&P from C-Corp years (not a 2025 Sch B question)", "data_type": "boolean", "sort_order": 25,
+             "notes": "Kept for the §1375 practice rule R004. The pre-2026-07-09 spec mislabeled this as face question 11."},
+            {"fact_key": "excess_net_passive_income", "label": "Practice — excess net passive income present (§1375)", "data_type": "boolean", "sort_order": 26},
+            {"fact_key": "shareholder_count", "label": "Practice — number of shareholders (page 1, item I — not a Sch B question)", "data_type": "integer", "sort_order": 27},
+            {"fact_key": "actual_shareholder_count", "label": "Practice — actual number of shareholder records entered in the return", "data_type": "integer", "sort_order": 28,
+             "notes": "Cross-check against page 1 item I."},
         ])
 
         rules = self._upsert_rules(form, [
             {"rule_id": "R001", "title": "Accounting method consistency", "rule_type": "validation",
              "formula": "b1_accounting_method must match method used on Page 1",
              "inputs": ["b1_accounting_method"], "outputs": [], "precedence": 1, "sort_order": 1,
-             "description": "Accounting method on Schedule B must be consistent with the method used throughout the return."},
-            {"rule_id": "R002", "title": "Shareholder count cross-check", "rule_type": "validation",
-             "formula": "b3_shareholder_count == actual_shareholder_count",
-             "inputs": ["b3_shareholder_count", "actual_shareholder_count"], "outputs": [], "precedence": 2, "sort_order": 2,
-             "description": "B3 shareholder count should match the actual number of K-1s prepared."},
+             "description": "Accounting method on Schedule B question 1 must be consistent with the method used throughout the return."},
+            {"rule_id": "R002", "title": "Shareholder count cross-check (page 1 item I)", "rule_type": "validation",
+             "formula": "shareholder_count == actual_shareholder_count",
+             "inputs": ["shareholder_count", "actual_shareholder_count"], "outputs": [], "precedence": 2, "sort_order": 2,
+             "description": "PRACTICE RULE — the shareholder count lives on page 1 item I of the 2025 face "
+                            "(not on Schedule B; the pre-2026-07-09 spec misplaced it here as 'B3'). It should "
+                            "match the number of K-1s prepared."},
             {"rule_id": "R003", "title": "M-3 filing threshold", "rule_type": "conditional",
-             "formula": "if total_assets_eoy >= 50000000 then must_file_m3 = True",
-             "inputs": ["total_assets_eoy", "b14_total_assets_50m"], "outputs": ["must_file_m3"], "precedence": 3, "sort_order": 3,
-             "description": "If total assets >= $50M, must file Schedule M-3 instead of M-1."},
+             "formula": "if l15_total_assets_eoy >= 50000000 then must_file_m3 = True",
+             "inputs": ["l15_total_assets_eoy"], "outputs": ["must_file_m3"], "precedence": 3, "sort_order": 3,
+             "description": "If total assets at end of year are $50 million or more, Schedule M-3 is required "
+                            "instead of Schedule M-1 (M-3 instructions; not a Schedule B face question)."},
             {"rule_id": "R004", "title": "Section 1375 passive income tax trigger", "rule_type": "conditional",
-             "formula": "if b11_aep_from_ccorp AND excess_net_passive_income then section_1375_tax_applies",
-             "inputs": ["b11_aep_from_ccorp", "b18_excess_net_passive_income"], "outputs": [], "precedence": 4, "sort_order": 4,
-             "description": "Section 1375 tax applies when S-Corp has AE&P from C-Corp years AND excess net passive income."},
+             "formula": "if aep_from_ccorp AND excess_net_passive_income then section_1375_tax_applies",
+             "inputs": ["aep_from_ccorp", "excess_net_passive_income"], "outputs": [], "precedence": 4, "sort_order": 4,
+             "description": "PRACTICE RULE — §1375 tax applies when the S corporation has AE&P from C-Corp "
+                            "years AND excess net passive income. (AE&P is not a 2025 Schedule B face question.)"},
             {"rule_id": "R005", "title": "100-shareholder limit check", "rule_type": "validation",
-             "formula": "b3_shareholder_count <= 100",
-             "inputs": ["b3_shareholder_count"], "outputs": [], "precedence": 5, "sort_order": 5,
+             "formula": "shareholder_count <= 100",
+             "inputs": ["shareholder_count"], "outputs": [], "precedence": 5, "sort_order": 5,
              "description": "S corporations cannot have more than 100 shareholders (family members may elect to be treated as one)."},
+            {"rule_id": "R006", "title": "Question 11 auto-answer (derived, overridable)", "rule_type": "calculation",
+             "formula": "b11_under_250k = (q11_total_receipts < 250000) AND (l15_total_assets_eoy < 250000). "
+                        "q11_total_receipts = p1_1a + p1_4 + p1_5 + K3a + K4 + K5a + K6 + K7 + K8a + K9 + K10 "
+                        "+ f8825_2 + f8825_21 + f8825_22a, where the 'income or net gain' components "
+                        "(K7/K8a/K9/K10, 8825 21/22a) and the 'all other income' components (p1 4/5) enter "
+                        "only when positive — losses are excluded.",
+             "inputs": ["q11_total_receipts", "l15_total_assets_eoy"], "outputs": ["b11_under_250k"],
+             "precedence": 6, "sort_order": 6,
+             "description": "Ken ruling 2026-07-09 (usability item 12): question 11 is AUTO-ANSWERED from "
+                            "return context — a DERIVED value (YELLOW) the preparer can override; an "
+                            "override always wins and is never recomputed over. SCHEDULE L AND M-1 BEHAVIOR "
+                            "IS UNCHANGED: the derived Yes answers the face question only — it does NOT "
+                            "suppress Schedule L/M-1 computation, printing, or balance diagnostics "
+                            "(1120S_SCHL R007 remains the separate statement of the filing exception). "
+                            "Component definition per the Instructions for Form 1120-S (2025), Question 11 "
+                            "(see the verbatim excerpt). INTERPRETIVE NOTE: the instruction wording "
+                            "'income or net gain' is read as include-only-when-positive; 'all other income "
+                            "(page 1, lines 4 and 5)' is read the same way. Implementations that do not "
+                            "capture Schedule K line 3a gross (only the 3c net) may substitute the net "
+                            "when positive — an understatement flagged for review.",
+             "notes": "TY2026 re-verify: thresholds are statutory-instruction values ($250,000) — confirm on the 2026 face."},
         ])
         self._upsert_links(rules, sources, [
             ("R001", "IRS_2025_1120S_SCHB_INSTR", "primary", "Accounting method consistency requirement"),
-            ("R002", "IRS_2025_1120S_SCHB_INSTR", "primary", "B3 shareholder count must match K-1s"),
-            ("R003", "IRS_2025_1120S_SCHB_INSTR", "primary", "M-3 threshold: $50M total assets"),
+            ("R002", "IRS_2025_1120S_INSTR_FULL", "secondary", "Page 1 item I shareholder count vs K-1s (practice cross-check)"),
+            ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 threshold: $50M total assets"),
             ("R004", "IRC_1374", "primary", "Section 1375 tax on excess net passive income with AE&P"),
-            ("R004", "IRS_2025_1120S_INSTR_FULL", "secondary", "B11/B18 cross-reference"),
             ("R005", "IRC_1361", "primary", "100-shareholder limit for S-Corp eligibility"),
+            ("R006", "IRS_2025_1120S_SCHB_INSTR", "primary", "Q11 face text + total-receipts definition (verbatim excerpt)"),
         ])
         self._upsert_lines(form, [
-            {"line_number": "B1", "description": "Accounting method (cash, accrual, other)", "line_type": "input", "sort_order": 1},
-            {"line_number": "B2", "description": "Business activity code", "line_type": "input", "sort_order": 2},
-            {"line_number": "B3", "description": "Number of shareholders at end of tax year", "line_type": "input", "sort_order": 3},
-            {"line_number": "B4", "description": "Number of shareholders during any part of the year", "line_type": "input", "sort_order": 4},
-            {"line_number": "B5", "description": "Member of a controlled group?", "line_type": "input", "sort_order": 5},
-            {"line_number": "B6", "description": "Own 50%+ of another entity?", "line_type": "input", "sort_order": 6},
-            {"line_number": "B7", "description": "Shareholder in a foreign corporation?", "line_type": "input", "sort_order": 7},
-            {"line_number": "B8", "description": "Debt cancelled, forgiven, or modified?", "line_type": "input", "sort_order": 8},
-            {"line_number": "B9", "description": "Section 263A UNICAP applies?", "line_type": "input", "sort_order": 9},
-            {"line_number": "B10", "description": "Filed all required 1099s?", "line_type": "input", "sort_order": 10},
-            {"line_number": "B11", "description": "Outstanding AE&P from C-Corp years?", "line_type": "input", "sort_order": 11},
-            {"line_number": "B12", "description": "Built-in gains tax applies?", "line_type": "input", "sort_order": 12},
-            {"line_number": "B13", "description": "Tax-exempt interest or income?", "line_type": "input", "sort_order": 13},
-            {"line_number": "B14", "description": "Total assets >= $50M?", "line_type": "input", "sort_order": 14},
-            {"line_number": "B15", "description": "Stock publicly traded?", "line_type": "input", "sort_order": 15},
-            {"line_number": "B16", "description": "First year of S election?", "line_type": "input", "sort_order": 16},
-            {"line_number": "B17", "description": "Short tax year?", "line_type": "input", "sort_order": 17},
-            {"line_number": "B18", "description": "Section 1375 tax on excess net passive income?", "line_type": "input", "sort_order": 18},
-            {"line_number": "B19", "description": "Tax shelter registration?", "line_type": "input", "sort_order": 19},
-            {"line_number": "B20", "description": "Foreign financial accounts (FBAR)?", "line_type": "input", "sort_order": 20},
+            {"line_number": "B1", "description": "Check accounting method: cash / accrual / other (specify)", "line_type": "input", "sort_order": 1},
+            {"line_number": "B2a", "description": "Business activity", "line_type": "input", "sort_order": 2},
+            {"line_number": "B2b", "description": "Product or service", "line_type": "input", "sort_order": 3},
+            {"line_number": "B3", "description": "Any shareholder a disregarded entity, trust, estate, or nominee? (Yes → attach Schedule B-1)", "line_type": "input", "sort_order": 4},
+            {"line_number": "B4a", "description": "Own directly 20% or more, or directly/indirectly 50% or more, of any corporation? (complete (i)-(v))", "line_type": "input", "sort_order": 5},
+            {"line_number": "B4b", "description": "Own directly 20% or more, or directly/indirectly 50% or more, of any partnership or beneficial interest of a trust? (complete (i)-(v))", "line_type": "input", "sort_order": 6},
+            {"line_number": "B5a", "description": "Outstanding shares of restricted stock at year end? (if Yes: (i) restricted, (ii) non-restricted share counts)", "line_type": "input", "sort_order": 7},
+            {"line_number": "B5b", "description": "Outstanding stock options, warrants, or similar instruments at year end? (if Yes: (i) shares outstanding, (ii) fully-diluted)", "line_type": "input", "sort_order": 8},
+            {"line_number": "B6", "description": "Filed, or required to file, Form 8918 (Material Advisor Disclosure Statement)?", "line_type": "input", "sort_order": 9},
+            {"line_number": "B7", "description": "Checkbox: issued publicly offered debt instruments with original issue discount (may need Form 8281)", "line_type": "input", "sort_order": 10},
+            {"line_number": "B8", "description": "Net unrealized built-in gain reduced by net recognized built-in gain from prior years ($ entry)", "line_type": "input", "sort_order": 11},
+            {"line_number": "B9", "description": "Section 163(j) election for real property trade/business or farming in effect?", "line_type": "input", "sort_order": 12},
+            {"line_number": "B10", "description": "Satisfies one or more Form 8990 conditions (a) pass-through EBIE (b) $31M gross receipts (c) tax shelter? (Yes → attach Form 8990)", "line_type": "input", "sort_order": 13},
+            {"line_number": "B11", "description": "Both conditions: (a) total receipts < $250,000 AND (b) EOY total assets < $250,000? (Yes → Schedules L and M-1 not required)", "line_type": "input", "source_rules": ["R006"], "sort_order": 14,
+             "notes": "DERIVED default (R006) — YELLOW, preparer-overridable. Answering Yes does not change Schedule L/M-1 behavior in the implementation (Ken ruling 2026-07-09)."},
+            {"line_number": "B12", "description": "Non-shareholder debt cancelled, forgiven, or modified to reduce principal?", "line_type": "input", "sort_order": 15},
+            {"line_number": "B12_amount", "description": "If Yes, amount of principal reduction ($)", "line_type": "input", "sort_order": 16},
+            {"line_number": "B13", "description": "QSub election terminated or revoked during the year?", "line_type": "input", "sort_order": 17},
+            {"line_number": "B14a", "description": "Payments made that would require Form(s) 1099?", "line_type": "input", "sort_order": 18},
+            {"line_number": "B14b", "description": "If Yes, did or will the corporation file required Form(s) 1099?", "line_type": "input", "sort_order": 19},
+            {"line_number": "B15", "description": "Intends to self-certify as a Qualified Opportunity Fund? (Yes → attach Form 8996)", "line_type": "input", "sort_order": 20},
+            {"line_number": "B15_amount", "description": "Form 8996 line 15 amount ($)", "line_type": "input", "sort_order": 21},
+            {"line_number": "B16", "description": "Received (reward/award/payment) or sold/exchanged/disposed of a digital asset (or financial interest)?", "line_type": "input", "sort_order": 22},
+            {"line_number": "B17", "description": "Reserved for future use", "line_type": "informational", "sort_order": 23},
         ])
+        # In-loader stale-row DELETE — the pre-2026-07-09 numbering left rows
+        # (B2, B4, B5, B18-B20 lines; b3_shareholder_count-style facts) that
+        # update_or_create cannot remove and that contradict the 2025 face.
+        _2025_B_LINES = {"B1", "B2a", "B2b", "B3", "B4a", "B4b", "B5a", "B5b", "B6", "B7",
+                         "B8", "B9", "B10", "B11", "B12", "B12_amount", "B13", "B14a",
+                         "B14b", "B15", "B15_amount", "B16", "B17"}
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_2025_B_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale pre-2025-face line rows")
+            stale_lines.delete()
+        _2025_B_FACTS = {
+            "b1_accounting_method", "b2_business_activity", "b2_product_service",
+            "b3_nominee_shareholder", "b4a_own_corp_20_50", "b4b_own_pship_20_50",
+            "b5a_restricted_stock", "b5b_options_warrants", "b6_form_8918",
+            "b7_public_oid_debt", "b8_nubig_amount", "b9_163j_election",
+            "b10_form_8990_test", "b11_under_250k", "b12_debt_forgiven",
+            "b12_principal_reduction", "b13_qsub_terminated", "b14a_1099_required",
+            "b14b_1099_filed", "b15_qof", "b15_8996_penalty", "b16_digital_assets",
+            "q11_total_receipts", "l15_total_assets_eoy",
+            "aep_from_ccorp", "excess_net_passive_income",
+            "shareholder_count", "actual_shareholder_count",
+        }
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_2025_B_FACTS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale fact rows")
+            stale_facts.delete()
+
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "AE&P without tracking", "severity": "warning",
-             "condition": "b11_aep_from_ccorp == True AND no_aep_tracking_module",
-             "message": "B11 indicates AE&P from C-Corp years but no AE&P tracking is set up."},
-            {"diagnostic_id": "D002", "title": "Built-in gains without computation", "severity": "warning",
-             "condition": "b12_built_in_gains == True AND no_section_1374_computation",
-             "message": "B12 indicates built-in gains tax applies but no Section 1374 computation found."},
+             "condition": "aep_from_ccorp == True AND no_aep_tracking_module",
+             "message": "AE&P from C-Corp years is present but no AE&P tracking is set up."},
+            {"diagnostic_id": "D002", "title": "Built-in gain without computation", "severity": "warning",
+             "condition": "b8_nubig_amount > 0 AND no_section_1374_computation",
+             "message": "Question 8 reports net unrealized built-in gain but no Section 1374 computation found."},
             {"diagnostic_id": "D003", "title": "1099 non-compliance", "severity": "warning",
-             "condition": "b10_filed_all_1099s == False",
-             "message": "B10 answered NO — corporation did not file all required 1099s. Compliance risk."},
+             "condition": "b14a_1099_required == True AND b14b_1099_filed == False",
+             "message": "Question 14a answered Yes but 14b answered No — required Form(s) 1099 not filed. Compliance risk."},
             {"diagnostic_id": "D004", "title": "Shareholder count mismatch", "severity": "error",
-             "condition": "b3_shareholder_count != actual_shareholder_count",
-             "message": "B3 shareholder count does not match the actual number of shareholders entered."},
+             "condition": "shareholder_count != actual_shareholder_count",
+             "message": "Page 1 item I shareholder count does not match the actual number of shareholders entered."},
         ])
         self._upsert_tests(form, [
             {"scenario_name": "Standard S-Corp — all standard answers", "scenario_type": "normal",
-             "inputs": {"b1_accounting_method": "cash", "b3_shareholder_count": 2, "b5_controlled_group": False,
-                        "b10_filed_all_1099s": True, "b11_aep_from_ccorp": False, "b12_built_in_gains": False,
-                        "b14_total_assets_50m": False, "actual_shareholder_count": 2},
+             "inputs": {"b1_accounting_method": "cash", "shareholder_count": 2,
+                        "b14a_1099_required": True, "b14b_1099_filed": True,
+                        "aep_from_ccorp": False, "b8_nubig_amount": 0,
+                        "l15_total_assets_eoy": 400000, "actual_shareholder_count": 2},
              "expected_outputs": {"must_file_m3": False, "shareholder_count_matches": True}, "sort_order": 1},
             {"scenario_name": "C-Corp conversion scenario", "scenario_type": "edge",
-             "inputs": {"b1_accounting_method": "accrual", "b3_shareholder_count": 1, "b11_aep_from_ccorp": True,
-                        "b12_built_in_gains": True, "b16_election_year": True, "b14_total_assets_50m": False,
-                        "actual_shareholder_count": 1},
+             "inputs": {"b1_accounting_method": "accrual", "shareholder_count": 1,
+                        "aep_from_ccorp": True, "b8_nubig_amount": 120000,
+                        "l15_total_assets_eoy": 400000, "actual_shareholder_count": 1},
              "expected_outputs": {"must_file_m3": False, "aep_tracking_required": True, "big_tax_applies": True}, "sort_order": 2},
             {"scenario_name": "Large entity — M-3 required", "scenario_type": "edge",
-             "inputs": {"b3_shareholder_count": 50, "b14_total_assets_50m": True, "total_assets_eoy": 75000000,
+             "inputs": {"shareholder_count": 50, "l15_total_assets_eoy": 75000000,
                         "actual_shareholder_count": 50},
              "expected_outputs": {"must_file_m3": True}, "sort_order": 3},
+            {"scenario_name": "Q11 auto-answer — small corp (Yes)", "scenario_type": "normal",
+             "inputs": {"q11_total_receipts": 180000, "l15_total_assets_eoy": 90000},
+             "expected_outputs": {"b11_under_250k": True}, "sort_order": 4,
+             "notes": "R006: both under $250,000 → derived Yes. Schedule L/M-1 computation unchanged."},
+            {"scenario_name": "Q11 auto-answer — assets at threshold (No)", "scenario_type": "edge",
+             "inputs": {"q11_total_receipts": 249999, "l15_total_assets_eoy": 250000},
+             "expected_outputs": {"b11_under_250k": False}, "sort_order": 5,
+             "notes": "R006: 'less than' is strict — assets exactly $250,000 fail condition (b)."},
         ])
         self._upsert_form_links("1120S_SCHB", sources, [
             ("IRS_2025_1120S_SCHB_INSTR", "governs"),
             ("IRS_2025_1120S_INSTR", "informs"),
         ])
-        self.stdout.write(self.style.SUCCESS("  Schedule B complete."))
+        self.stdout.write(self.style.SUCCESS("  Schedule B complete (2025 face + R006 Q11 auto-answer)."))
 
     # ═══════════════════════════════════════════════════════════════════════════
     # Schedule L — Balance Sheet per Books
