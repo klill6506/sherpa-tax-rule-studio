@@ -102,13 +102,14 @@ FRESH_SOURCES = [
             {
                 "excerpt_label": "Schedule B — M-3 threshold and accounting method",
                 "excerpt_text": (
-                    "If total assets at end of tax year are $50 million or more, the corporation "
-                    "must file Schedule M-3 (Form 1120-S) instead of Schedule M-1. The accounting "
-                    "method reported on Schedule B line 1 must be consistent with the method used "
-                    "throughout the return. If the entity changed its accounting method during the "
-                    "year, Form 3115 must be filed."
+                    "Instructions for Form 1120-S (2025), p.49 (verbatim): 'Corporations with total "
+                    "assets of $10 million or more on the last day of the tax year must file "
+                    "Schedule M-3 (Form 1120-S) instead of Schedule M-1.' (The pre-2026-07-09 "
+                    "paraphrase said $50 million — a tax-law error.) The accounting method reported "
+                    "on Schedule B question 1 must be consistent with the method used throughout "
+                    "the return; a method change requires Form 3115."
                 ),
-                "summary_text": "M-3 required if total assets >= $50M. Accounting method must be consistent.",
+                "summary_text": "M-3 required if total assets >= $10M (i1120s p.49 verbatim). Accounting method must be consistent.",
                 "is_key_excerpt": True,
             },
         ],
@@ -177,15 +178,19 @@ FRESH_SOURCES = [
             {
                 "excerpt_label": "Schedule M-3 — filing threshold and structure",
                 "excerpt_text": (
-                    "Schedule M-3 (Form 1120-S) is required instead of Schedule M-1 when the "
-                    "corporation's total assets at the end of the tax year are $50 million or more. "
-                    "Part I reconciles financial statement net income to net income per income tax "
-                    "return. Part II details income/loss items showing book amount, temporary "
-                    "differences, permanent differences, and income/loss per tax return. Part III "
-                    "details expense/deduction items with the same columns. Corporations with total "
-                    "assets less than $50 million may voluntarily file Schedule M-3."
+                    "Instructions for Form 1120-S (2025), p.49 (verbatim): 'Corporations with total "
+                    "assets of $10 million or more on the last day of the tax year must file "
+                    "Schedule M-3 (Form 1120-S) instead of Schedule M-1.' And from the Schedule M-1 "
+                    "instructions (same page, verbatim): 'A corporation filing Form 1120-S that "
+                    "isn't required to file Schedule M-3 may voluntarily file Schedule M-3 instead "
+                    "of Schedule M-1.' (The pre-2026-07-09 paraphrase carried a $50 million "
+                    "threshold — a tax-law error corrected in the retrospective-B face audit.) "
+                    "Structure: Part I reconciles financial statement net income; Parts II/III "
+                    "detail income and expense items in book / temporary difference / permanent "
+                    "difference / tax return columns. ⚠ The M-3 face PDF is not yet in the template "
+                    "repo — Part/line numbering in this spec is UNVERIFIED against the face."
                 ),
-                "summary_text": "M-3 required if assets >= $50M. Parts I-III: financial statement to tax return reconciliation.",
+                "summary_text": "M-3 required if assets >= $10M (i1120s 2025 p.49 verbatim); voluntary below. Line numbering unverified pending the face template.",
                 "is_key_excerpt": True,
             },
         ],
@@ -428,10 +433,12 @@ class Command(BaseCommand):
                             "(not on Schedule B; the pre-2026-07-09 spec misplaced it here as 'B3'). It should "
                             "match the number of K-1s prepared."},
             {"rule_id": "R003", "title": "M-3 filing threshold", "rule_type": "conditional",
-             "formula": "if l15_total_assets_eoy >= 50000000 then must_file_m3 = True",
+             "formula": "if l15_total_assets_eoy >= 10000000 then must_file_m3 = True",
              "inputs": ["l15_total_assets_eoy"], "outputs": ["must_file_m3"], "precedence": 3, "sort_order": 3,
-             "description": "If total assets at end of year are $50 million or more, Schedule M-3 is required "
-                            "instead of Schedule M-1 (M-3 instructions; not a Schedule B face question)."},
+             "description": "If total assets on the last day of the tax year are $10 MILLION or more, "
+                            "Schedule M-3 is required instead of Schedule M-1 (i1120s 2025 p.49 verbatim; "
+                            "corrected 2026-07-09 — the prior spec's $50M was a tax-law error; not a "
+                            "Schedule B face question)."},
             {"rule_id": "R004", "title": "Section 1375 passive income tax trigger", "rule_type": "conditional",
              "formula": "if aep_from_ccorp AND excess_net_passive_income then section_1375_tax_applies",
              "inputs": ["aep_from_ccorp", "excess_net_passive_income"], "outputs": [], "precedence": 4, "sort_order": 4,
@@ -973,7 +980,13 @@ class Command(BaseCommand):
         form = self._upsert_form(
             "1120S_M3", "Schedule M-3 (Form 1120-S) — Net Income (Loss) Reconciliation for S Corporations",
             ["1120S"],
-            notes="Required when total assets >= $50M. Detailed book-tax reconciliation. Lower priority for Ken's target market.",
+            notes="Required when total assets >= $10 MILLION (i1120s 2025 p.49 verbatim: 'Corporations "
+                  "with total assets of $10 million or more on the last day of the tax year must file "
+                  "Schedule M-3 (Form 1120-S) instead of Schedule M-1.'). The pre-2026-07-09 spec said "
+                  "$50M — a tax-law error corrected in the retrospective-B face audit. Detailed book-tax "
+                  "reconciliation. Lower priority for Ken's target market. ⚠ line_map is UNVERIFIED "
+                  "against the M-3 face (no f1120ssm3 template in the repo) — treat P1-*/P2-*/P3-* "
+                  "numbering as suspect until the face is downloaded and audited (2026-07-09 ledger).",
         )
         self._upsert_facts(form, [
             {"fact_key": "total_assets_eoy", "label": "Total assets at end of tax year", "data_type": "decimal", "required": True, "sort_order": 1},
@@ -987,7 +1000,7 @@ class Command(BaseCommand):
             {"fact_key": "expense_permanent_diff", "label": "Part III — Expense items: permanent differences", "data_type": "decimal", "sort_order": 9},
             {"fact_key": "expense_book_amount", "label": "Part III — Expense items: book amount", "data_type": "decimal", "sort_order": 10},
             {"fact_key": "expense_tax_amount", "label": "Part III — Expense items: per tax return", "data_type": "decimal", "sort_order": 11},
-            {"fact_key": "voluntary_filing", "label": "Filing voluntarily (assets < $50M)?", "data_type": "boolean", "sort_order": 12},
+            {"fact_key": "voluntary_filing", "label": "Filing voluntarily (assets < $10M)?", "data_type": "boolean", "sort_order": 12},
             {"fact_key": "financial_statement_type", "label": "Type of financial statements", "data_type": "choice",
              "choices": ["certified_audited", "compiled", "internal", "sec_10k", "other"], "sort_order": 13},
             {"fact_key": "restatement_indicator", "label": "Financial statements restated for this year?", "data_type": "boolean", "sort_order": 14},
@@ -995,10 +1008,13 @@ class Command(BaseCommand):
         ])
 
         rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "Required if total assets >= $50M", "rule_type": "conditional",
-             "formula": "if total_assets_eoy >= 50000000 then must_file_m3 = True",
+            {"rule_id": "R001", "title": "Required if total assets >= $10M", "rule_type": "conditional",
+             "formula": "if total_assets_eoy >= 10000000 then must_file_m3 = True",
              "inputs": ["total_assets_eoy"], "outputs": ["must_file_m3"], "precedence": 1, "sort_order": 1,
-             "description": "Schedule M-3 is required instead of Schedule M-1 when total assets at end of tax year are $50 million or more."},
+             "description": "Schedule M-3 is required instead of Schedule M-1 when total assets on the "
+                            "last day of the tax year are $10 MILLION or more (i1120s 2025 p.49 verbatim; "
+                            "corrected 2026-07-09 from the prior spec's erroneous $50M — the tts engine "
+                            "was already correct at $10M in rules_entity_boundary/rules_1065_l)."},
             {"rule_id": "R002", "title": "Part I — Financial information reconciliation", "rule_type": "calculation",
              "formula": "net_income_per_tax_return = net_income_per_books + temporary_differences + permanent_differences",
              "inputs": ["net_income_per_books", "income_temporary_diff", "income_permanent_diff"],
@@ -1016,7 +1032,7 @@ class Command(BaseCommand):
              "description": "Part III details each expense/deduction item showing book amount, temporary and permanent differences, and tax return amount."},
         ])
         self._upsert_links(rules, sources, [
-            ("R001", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 filing threshold: $50M total assets"),
+            ("R001", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 filing threshold: $10M total assets (i1120s 2025 p.49)"),
             ("R001", "IRS_2025_1120S_SCHB_INSTR", "secondary", "Schedule B references M-3 threshold"),
             ("R002", "IRS_2025_1120S_M3_INSTR", "primary", "Part I — financial statement reconciliation"),
             ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "Part II — income items"),
@@ -1046,18 +1062,24 @@ class Command(BaseCommand):
         ])
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "M-3 required but M-1 filed", "severity": "error",
-             "condition": "total_assets_eoy >= 50000000 AND filing_m1_instead_of_m3",
-             "message": "Total assets >= $50M but filing Schedule M-1 instead of M-3. Schedule M-3 is required."},
+             "condition": "total_assets_eoy >= 10000000 AND filing_m1_instead_of_m3",
+             "message": "Total assets >= $10 million but filing Schedule M-1 instead of M-3. Schedule M-3 is required (i1120s 2025 p.49)."},
             {"diagnostic_id": "D002", "title": "M-3 filed voluntarily", "severity": "info",
-             "condition": "total_assets_eoy < 50000000 AND filing_m3",
-             "message": "Schedule M-3 filed but total assets < $50M. Voluntary filing is allowed but unusual."},
+             "condition": "total_assets_eoy < 10000000 AND filing_m3",
+             "message": "Schedule M-3 filed but total assets < $10 million. Voluntary filing is allowed (i1120s: a corporation not required to file M-3 may do so instead of M-1)."},
         ])
         self._upsert_tests(form, [
             {"scenario_name": "Threshold check — M-3 required", "scenario_type": "normal",
              "inputs": {"total_assets_eoy": 75000000},
              "expected_outputs": {"must_file_m3": True},
              "sort_order": 1,
-             "notes": "$75M total assets. Above $50M threshold, M-3 required."},
+             "notes": "$75M total assets — above the $10M threshold, M-3 required."},
+            {"scenario_name": "Threshold check — $12M filer (the $10M-$50M band)", "scenario_type": "edge",
+             "inputs": {"total_assets_eoy": 12000000},
+             "expected_outputs": {"must_file_m3": True},
+             "sort_order": 2,
+             "notes": "The band the pre-2026-07-09 $50M threshold silently mis-gated: a $12M filer "
+                      "MUST file M-3 per i1120s 2025 p.49."},
         ])
         self._upsert_form_links("1120S_M3", sources, [
             ("IRS_2025_1120S_M3_INSTR", "governs"),

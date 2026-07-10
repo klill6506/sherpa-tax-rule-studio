@@ -1,4 +1,26 @@
 # Rule Studio — Session Log
+## 2026-07-09 — Early-era FACE AUDIT (retrospective B, Ken-approved) + M-3 threshold TAX-LAW FIX ($50M → $10M)
+- Ken approved the tts retrospective proposals; item B = audit every "Session 11"-vintage
+  1120-S-family block against the 2025 faces. Full ledger:
+  tts `docs/rs_handoff/2026-07-09_early_era_face_audit.md`. Verdicts: SCHD_1120S CLEAN
+  (the s34 renumber verified verbatim) · 1120S_SCHL DRIFTED-internally-contradictory
+  (fabricated "L22 Total liabilities" + a second fabricated numbering in the facts) ·
+  SCH_K_1120S DRIFTED worst (fabricated 13f "FTC" row — face: Biofuel producer credit;
+  missing 17c AE&P; wrong line-18 formula) · K1_1120S DRIFTED (box 12/13 code letters
+  wrong vs the 2025 instruction tables) · 4562 DRIFTED incl. a MISSED 2025 FACE CHANGE
+  (new 19h 50-year property row → residential 19i / nonresidential 19j) · 6198 + 3800
+  FABRICATED · 1120S_M3 face-not-in-repo. Queued renumber order: 4562 → SCH_K → K1 →
+  SCHL → 6198 → M3-line_map (needs the face template) → 3800.
+- **FIXED + SEEDED THIS SESSION: the M-3 filing threshold.** i1120s 2025 p.49 verbatim
+  (verified twice in-PDF): "Corporations with total assets of $10 million or more on the
+  last day of the tax year must file Schedule M-3 (Form 1120-S) instead of Schedule M-1."
+  The spec said $50M everywhere — 1120S_M3 R001/D001/D002/notes/fact label + BOTH source
+  excerpts (M3_INSTR + the SCHB M-3 excerpt) + SCHB R003 (authored yesterday — it had
+  propagated the error). New $12M-band scenario pins the band the old threshold mis-gated.
+  SQLite-validated → Supabase-seeded → deployed exports verified (M3 R001 `>= 10000000`,
+  SCHB R003 same) → tts SCHB mirror refreshed. NOTE: the tts engine was ALREADY correct
+  at $10M (`rules_entity_boundary` / `rules_1065_l`) — spec-only error.
+
 ## 2026-07-09 — 1120S_SCHB renumbered to the 2025 face + R006 Q11 auto-answer (Ken ruling; tts s42 item 12)
 - Ken ruled (tts s42, usability item 12): Schedule B question 11 is AUTO-ANSWERED — derived,
   YELLOW, preparer-overridable; Schedule L/M-1 behavior and diagnostics unchanged. Spec-first.
