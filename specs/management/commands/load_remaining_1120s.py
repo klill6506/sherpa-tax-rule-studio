@@ -135,8 +135,8 @@ FRESH_SOURCES = [
         "source_type": "official_instruction",
         "source_rank": "primary_official",
         "jurisdiction_code": "FED",
-        "title": "Instructions for Form 8825 (2025) — Rental Real Estate Income and Expenses (fetched 2026-03-18)",
-        "citation": "Instructions for Form 8825 (2025)",
+        "title": "Instructions for Form 8825 and Schedule A (Rev. December 2025) — Rental Real Estate Income and Expenses (i8825.pdf fetched 2026-07-10)",
+        "citation": "Instructions for Form 8825 and Schedule A (Rev. December 2025)",
         "issuer": "IRS",
         "current_status": "active",
         "is_substantive_authority": True,
@@ -145,15 +145,51 @@ FRESH_SOURCES = [
         "topics": ["rental_real_estate", "8825", "passive_activity"],
         "excerpts": [
             {
-                "excerpt_label": "Who must file and property reporting",
-                "excerpt_text": "Partnerships and S corporations use Form 8825 to report income and deductible expenses from rental real estate activities. Up to 8 properties can be listed on one form; use additional forms for more. Each property reports gross rents (line 2), itemized expenses (lines 3-15), total expenses (line 16), and net rent (line 17 = line 2 - line 16).",
-                "summary_text": "S-Corps/partnerships report rental real estate per-property income and expenses.",
+                "excerpt_label": "What's New (Rev. 12-2025) — which version, col (c) codes, 2a/2b split, Schedule A",
+                "excerpt_text": "Which version to use. For tax years beginning in 2025, use the December 2025 revision of Form 8825. Use the November 2018 revision of Form 8825 for tax years beginning in 2018, before 2025. [...] Allowable codes for other information. New codes were added to provide additional information relating to gain or (loss) associated with acquisitions, dispositions, or other transactions. Enter applicable codes in column (c) of line 1. Line 2. Report rental real estate gross rents and other income related to rental real estate activity separately on lines 2a and 2b. Schedule A (Form 8825). If you're a partnership or S corporation that is required to file Schedule M-3, you must use new Schedule A (Form 8825), Rental Real Estate Other Deductions, to report other deductions and include the total amount on Form 8825, line 17.",
+                "summary_text": "Dec-2025 revision for TY2025: 2a/2b income split, new col (c) A-I codes, new Schedule A (Form 8825) for M-3 filers -> line 17.",
                 "is_key_excerpt": True,
             },
             {
-                "excerpt_label": "Flow to Schedule K and depreciation",
-                "excerpt_text": "The net rental real estate income or loss (sum of all properties) flows to Schedule K Line 2. Depreciation for rental properties is reported on Form 8825 Line 14, NOT on Form 4562 Line 22 that flows to Page 1. Rental property depreciation flows through 8825 to K Line 2, keeping rental and trade/business depreciation separate.",
-                "summary_text": "Net rental -> K Line 2. Rental depreciation on 8825 Line 14, NOT on Page 1 Line 14.",
+                "excerpt_label": "Line 1 — address, type codes 1-8, col (c) M-3-only note, codes A-I",
+                "excerpt_text": "For each property in column (a), enter the street address, city or town, and ZIP code. If the property is located outside the United States, enter the postal code and country. Specify the type of property by entering one of the following codes in column (b). Allowable Codes for Type of Property: 1—Single-family residence; 2—Multi-family residence; 3—Vacation or short-term rental; 4—Commercial; 5—Land; 6—Royalties; 7—Self-rental; 8—Other (include description with the code on Form 8825 or on a separate statement). Note: Column (c) is only required for partnerships and S corporations that have a Schedule M-3 filing requirement. For each property, in column (c), provide any applicable other information outlined by the following codes. Allowable Codes for Other Information: A—Nontaxable contribution (sections 721 and 351); B—Other exchange (sections 1031, 1033, etc.); C—Taxable acquisition (section 1012); D—New construction/renovation or other basis addition/subtraction; E—Reserved for future use; F—Nontaxable distribution (section 731); G—Taxable disposition (section 1001 gain/loss); H—Abandonment; I—Other/supplement. For each property, enter the number of days rented at fair market value in column (d) and number of days with personal use in column (e). For details, see section 280A.",
+                "summary_text": "Col (a) street/city/ZIP; col (b) type 1-8; col (c) A-I acquisition/disposition codes REQUIRED ONLY for M-3 filers; cols (d)/(e) days.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Line 17 Other Deductions + Schedule A (Form 8825) — M-3 conditional",
+                "excerpt_text": "Line 17—Other Deductions. For partnerships and S corporations that don't have a Schedule M-3 filing requirement, enter all other deductions for each property listed. All others, see Schedule A next. Schedule A (Form 8825), Rental Real Estate Other Deductions: For partnerships and S corporations with a Schedule M-3 filing requirement, complete and attach Schedule(s) A (Form 8825) for each property listed on Form 8825. Enter the total amount on Form 8825, line 17, for each property.",
+                "summary_text": "Non-M-3 filers: enter other deductions directly on line 17. M-3 filers: Schedule A (Form 8825) per property, total -> line 17.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Line 14 Depreciation — Form 4562 attachment",
+                "excerpt_text": "The partnership or S corporation may claim a depreciation deduction each year for rental property (except for land, which is not depreciable). If the partnership or S corporation placed property in service during the current tax year or claimed depreciation on any vehicle or other listed property, complete and attach Form 4562, Depreciation and Amortization.",
+                "summary_text": "Rental depreciation on 8825 line 14; attach Form 4562 when current-year PIS or listed property.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Line 8 Interest — section 163(j) pointer",
+                "excerpt_text": "Line 8—Interest. Your interest expense may be limited. See the Instructions for Form 8990, Limitation on Business Interest Expense Under Section 163(j), for more information.",
+                "summary_text": "Line 8 interest may be limited under section 163(j) (Form 8990).",
+                "is_key_excerpt": False,
+            },
+            {
+                "excerpt_label": "Specific Instructions — pages, 20a-23 once, scope exclusions",
+                "excerpt_text": "If you have more than four rental real estate properties, page 2 of Form 8825 has been redesigned to allow four additional entries. Complete and attach as many additional pages needed to list all your rental real estate properties. Complete lines 1 through 19 for each property. Complete lines 20a through 23 on page 1 only once. The figures on lines 20a and 20b should be the combined totals from all pages. [...] Don't report on Form 8825 any of the following: Income or deductions from a trade or business activity or a rental activity other than rental real estate. Portfolio income or deductions. Section 179 expense deduction. Other items that must be reported separately to the partners or shareholders. Commercial revitalization deductions.",
+                "summary_text": "Lines 1-19 per property (4/page); 20a-23 once on page 1 combining all pages. No trade/business items, portfolio, or section 179 here.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Form 8825 (Rev. 12-2025) face — expense/summary line labels verbatim",
+                "excerpt_text": "2a Gross rents. 2b Other income related to rental real estate activity. 2c Total rental real estate income for each property. Add lines 2a and 2b. 3 Advertising. 4 Auto and travel. 5 Cleaning and maintenance. 6 Commissions. 7 Insurance. 8 Interest (see instructions). 9 Legal and other professional fees. 10 Real estate taxes. 11 Repairs. 12 Utilities. 13 Wages and salaries. 14 Depreciation (see instructions). 15 Reserved for future use. 16 Reserved for future use. 17 Other deductions (attach Schedule A (Form 8825)). 18 Total rental real estate expenses for each property. Add lines 3 through 17. 19 Income or (loss) from each rental real estate property. Subtract line 18 from line 2c. 20a Total rental real estate income. Add total rental real estate income from line 2c. 20b Total rental real estate expenses. Add total rental real estate expenses from line 18. 21 Net gain (loss) from Form 4797, Part II, line 17, from the disposition of property from rental real estate activities. 22a Net income (loss) from rental real estate activities from partnerships, estates, and trusts in which this partnership or S corporation is a partner or beneficiary (from Schedule K-1). 22b Identify below the partnerships, estates, or trusts from which net income (loss) is shown on line 22a. 23 Net rental real estate income (loss). Combine lines 20a through 22a. Enter the result here and on Schedule K, line 2, of Form 1065 or 1120-S.",
+                "summary_text": "Dec-2025 face: income 2a-2c, expenses 3-17 (15/16 reserved), 18 total, 19 net; 20a/20b/21/22a/22b/23 summary; 23 = combine 20a-22a -> Sch K line 2.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Schedule A (Form 8825) (12-2025) face — 31 lines verbatim",
+                "excerpt_text": "SCHEDULE A (Form 8825) (December 2025) — Rental Real Estate Other Deductions. Attach to Form 8825. 1 Asset management fee. 2 Bad debt expense. 3 Building maintenance. 4 Common charges. 5 Contract services. 6 Debt extinguishment costs. 7 Ground rent. 8 Grounds maintenance. 9 Homeowner association fee. 10 Incentive fee. 11 Landscaping. 12 Leased employee expense. 13 Management fee. 14 Other taxes. 15 Prepayment penalty. 16 Reimbursed wages/salaries (reimbursed to management co.). 17 Section 481(a) adjustments. 18 Tenant renovations. 19 Tenant services. 20 Turnover expenses. 21-29 Reserved for future use. 30 Other. 31 Total (Enter the total here and on Form 8825, line 17.)",
+                "summary_text": "Schedule A: 20 named other-deduction categories + line 30 Other; line 31 total -> Form 8825 line 17 (per property columns).",
                 "is_key_excerpt": True,
             },
         ],
@@ -492,89 +528,300 @@ class Command(BaseCommand):
     # ═══════════════════════════════════════════════════════════════════════════
 
     def _load_8825(self, sources):
+        # Renumbered VERBATIM to the December 2025 revision (f8825.pdf Rev.
+        # 12-2025 + i8825.pdf Rev. 12-2025, both fetched 2026-07-10; IRS8825.xsd
+        # 2025v6.2 element/LineNumber map agrees). The original Session-10 block
+        # carried a pre-2025 numbering (other 15 / total 16 / net 17 / total-net
+        # 21) that matches NO published revision of the form — early-era drift,
+        # same class as the 2026-07-09 face audit findings. Stale fact/line rows
+        # are DELETED in-loader so a reseed self-heals.
         form = self._upsert_form("8825", "Form 8825 — Rental Real Estate Income and Expenses of a Partnership or an S Corporation",
                                   ["1120S", "1065"],
-                                  notes="Per-property rental income/expenses. Net -> K Line 2. Rental depreciation here, NOT on Page 1 Line 14.")
+                                  notes="Rev. December 2025 face (use for tax years beginning in 2025). Per-property "
+                                        "income 2a-2c / expenses 3-17 (15/16 reserved) / 18 total / 19 net; summary "
+                                        "20a-23 once on page 1; line 23 = combine 20a-22a -> Schedule K line 2. "
+                                        "Rental depreciation on line 14 HERE, never Page 1. NEW in 12-2025: line 2b "
+                                        "other income, column (c) A-I other-information codes (M-3 filers only), and "
+                                        "Schedule A (Form 8825) other-deductions detail (M-3 filers only) -> line 17.")
         self._upsert_facts(form, [
-            {"fact_key": "property_address", "label": "Property address/description", "data_type": "string", "sort_order": 1},
-            {"fact_key": "property_type", "label": "Type of property (residential, commercial, etc.)", "data_type": "string", "sort_order": 2},
-            {"fact_key": "gross_rents", "label": "Gross rents (Line 2)", "data_type": "decimal", "required": True, "sort_order": 3},
-            {"fact_key": "advertising", "label": "Advertising (Line 3)", "data_type": "decimal", "sort_order": 4},
-            {"fact_key": "auto_travel", "label": "Auto and travel (Line 4)", "data_type": "decimal", "sort_order": 5},
-            {"fact_key": "cleaning", "label": "Cleaning and maintenance (Line 5)", "data_type": "decimal", "sort_order": 6},
-            {"fact_key": "commissions", "label": "Commissions (Line 6)", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "insurance", "label": "Insurance (Line 7)", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "legal_professional", "label": "Legal and other professional fees (Line 8)", "data_type": "decimal", "sort_order": 9},
-            {"fact_key": "mortgage_interest", "label": "Mortgage interest paid (Line 9)", "data_type": "decimal", "sort_order": 10},
-            {"fact_key": "other_interest", "label": "Other interest (Line 10)", "data_type": "decimal", "sort_order": 11},
-            {"fact_key": "repairs", "label": "Repairs (Line 11)", "data_type": "decimal", "sort_order": 12},
-            {"fact_key": "taxes", "label": "Taxes (Line 12)", "data_type": "decimal", "sort_order": 13},
-            {"fact_key": "utilities", "label": "Utilities (Line 13)", "data_type": "decimal", "sort_order": 14},
-            {"fact_key": "depreciation", "label": "Depreciation (Line 14)", "data_type": "decimal", "sort_order": 15,
-             "notes": "Rental property depreciation — appears HERE, NOT on Page 1 Line 14."},
-            {"fact_key": "other_expenses", "label": "Other expenses (Line 15)", "data_type": "decimal", "sort_order": 16},
-            {"fact_key": "total_expenses", "label": "Total expenses per property (Line 16)", "data_type": "decimal", "sort_order": 17},
-            {"fact_key": "net_rent", "label": "Net rent per property (Line 17 = Line 2 - Line 16)", "data_type": "decimal", "sort_order": 18},
-            {"fact_key": "total_net_rental", "label": "Total net rental real estate income/loss (Line 21)", "data_type": "decimal", "sort_order": 19},
+            # Line 1 — property table, columns (a)-(e)
+            {"fact_key": "property_street", "label": "Street address (Line 1(a))", "data_type": "string", "sort_order": 1,
+             "notes": "i8825 12-2025: 'enter the street address, city or town, and ZIP code. If the property is located outside the United States, enter the postal code and country.'"},
+            {"fact_key": "property_city", "label": "City or town (Line 1(a))", "data_type": "string", "sort_order": 2},
+            {"fact_key": "property_state", "label": "State (Line 1(a))", "data_type": "string", "sort_order": 3},
+            {"fact_key": "property_zip", "label": "ZIP code (Line 1(a))", "data_type": "string", "sort_order": 4},
+            {"fact_key": "property_type", "label": "Type of property — code 1-8 (Line 1(b))", "data_type": "choice", "sort_order": 5,
+             "choices": {"1": "Single-family residence", "2": "Multi-family residence", "3": "Vacation or short-term rental",
+                          "4": "Commercial", "5": "Land", "6": "Royalties", "7": "Self-rental",
+                          "8": "Other (include description with the code on Form 8825 or on a separate statement)"},
+             "notes": "Codes verbatim from the Rev. 12-2025 face page 2 / i8825."},
+            {"fact_key": "other_info_code", "label": "Other information — code A-I (Line 1(c))", "data_type": "choice", "sort_order": 6,
+             "choices": {"A": "Nontaxable contribution (sections 721 and 351)", "B": "Other exchange (sections 1031, 1033, etc.)",
+                          "C": "Taxable acquisition (section 1012)", "D": "New construction/renovation or other basis addition/subtraction",
+                          "E": "Reserved for future use", "F": "Nontaxable distribution (section 731)",
+                          "G": "Taxable disposition (section 1001 gain/loss)", "H": "Abandonment", "I": "Other/supplement"},
+             "notes": "i8825 12-2025 Note VERBATIM: 'Column (c) is only required for partnerships and S corporations "
+                      "that have a Schedule M-3 filing requirement.' For codes A-I include relevant supplementary "
+                      "description on Form 8825 or on a separate statement (face page 2)."},
+            {"fact_key": "fair_rental_days", "label": "Fair rental days (Line 1(d))", "data_type": "integer", "sort_order": 7},
+            {"fact_key": "personal_use_days", "label": "Personal-use days (Line 1(e))", "data_type": "integer", "sort_order": 8,
+             "notes": "See section 280A (i8825)."},
+            # Income — lines 2a-2c
+            {"fact_key": "gross_rents", "label": "Gross rents (Line 2a)", "data_type": "decimal", "required": True, "sort_order": 9},
+            {"fact_key": "other_rental_income", "label": "Other income related to rental real estate activity (Line 2b)", "data_type": "decimal", "sort_order": 10,
+             "notes": "NEW on the 12-2025 face: 'Report rental real estate gross rents and other income related to rental real estate activity separately on lines 2a and 2b.'"},
+            {"fact_key": "total_property_income", "label": "Total rental real estate income for each property (Line 2c = 2a + 2b)", "data_type": "decimal", "sort_order": 11},
+            # Expenses — lines 3-17 (15/16 reserved)
+            {"fact_key": "advertising", "label": "Advertising (Line 3)", "data_type": "decimal", "sort_order": 12},
+            {"fact_key": "auto_travel", "label": "Auto and travel (Line 4)", "data_type": "decimal", "sort_order": 13},
+            {"fact_key": "cleaning", "label": "Cleaning and maintenance (Line 5)", "data_type": "decimal", "sort_order": 14},
+            {"fact_key": "commissions", "label": "Commissions (Line 6)", "data_type": "decimal", "sort_order": 15},
+            {"fact_key": "insurance", "label": "Insurance (Line 7)", "data_type": "decimal", "sort_order": 16},
+            {"fact_key": "mortgage_interest", "label": "Interest — mortgage component (Line 8)", "data_type": "decimal", "sort_order": 17,
+             "notes": "The 12-2025 face has ONE interest line (8, 'Interest (see instructions)'); the mortgage/other "
+                      "split is app-side modeling shared with Schedule E — both components land on line 8. "
+                      "i8825: interest may be limited under section 163(j) (Form 8990)."},
+            {"fact_key": "other_interest", "label": "Interest — other component (Line 8)", "data_type": "decimal", "sort_order": 18,
+             "notes": "Second component of face line 8 — see mortgage_interest note."},
+            {"fact_key": "legal_professional", "label": "Legal and other professional fees (Line 9)", "data_type": "decimal", "sort_order": 19},
+            {"fact_key": "taxes", "label": "Real estate taxes (Line 10)", "data_type": "decimal", "sort_order": 20},
+            {"fact_key": "repairs", "label": "Repairs (Line 11)", "data_type": "decimal", "sort_order": 21},
+            {"fact_key": "utilities", "label": "Utilities (Line 12)", "data_type": "decimal", "sort_order": 22},
+            {"fact_key": "wages_salaries", "label": "Wages and salaries (Line 13)", "data_type": "decimal", "sort_order": 23},
+            {"fact_key": "depreciation", "label": "Depreciation (Line 14)", "data_type": "decimal", "sort_order": 24,
+             "notes": "Rental property depreciation — appears HERE, NOT on Page 1 Line 14. Attach Form 4562 when "
+                      "current-year placed-in-service or listed property (i8825 Line 14)."},
+            {"fact_key": "other_expenses", "label": "Other deductions (Line 17)", "data_type": "decimal", "sort_order": 25,
+             "notes": "Non-M-3 filers enter all other deductions directly; M-3 filers must detail on Schedule A "
+                      "(Form 8825) per property and carry line A31 here (i8825 Line 17 / Schedule A, verbatim in R006)."},
+            {"fact_key": "schedule_a_category", "label": "Schedule A (Form 8825) other-deduction category", "data_type": "choice", "sort_order": 26,
+             "choices": {"A1": "Asset management fee", "A2": "Bad debt expense", "A3": "Building maintenance",
+                          "A4": "Common charges", "A5": "Contract services", "A6": "Debt extinguishment costs",
+                          "A7": "Ground rent", "A8": "Grounds maintenance", "A9": "Homeowner association fee",
+                          "A10": "Incentive fee", "A11": "Landscaping", "A12": "Leased employee expense",
+                          "A13": "Management fee", "A14": "Other taxes", "A15": "Prepayment penalty",
+                          "A16": "Reimbursed wages/salaries (reimbursed to management co.)",
+                          "A17": "Section 481(a) adjustments", "A18": "Tenant renovations", "A19": "Tenant services",
+                          "A20": "Turnover expenses", "A30": "Other"},
+             "notes": "Fixed category list verbatim from the Schedule A (Form 8825) 12-2025 face (lines 21-29 "
+                      "reserved). Per-property MULTIPLE detail rows (category + amount, description for A30 Other) "
+                      "are app-side input mechanics; their sum = line A31 = Form 8825 line 17."},
+            # Per-property computed
+            {"fact_key": "total_expenses", "label": "Total rental real estate expenses for each property (Line 18)", "data_type": "decimal", "sort_order": 27},
+            {"fact_key": "net_rent", "label": "Income or (loss) from each rental real estate property (Line 19 = 2c - 18)", "data_type": "decimal", "sort_order": 28},
+            # Summary — page 1 once
+            {"fact_key": "total_gross_rents", "label": "Total rental real estate income (Line 20a)", "data_type": "decimal", "sort_order": 29},
+            {"fact_key": "total_expenses_all", "label": "Total rental real estate expenses (Line 20b)", "data_type": "decimal", "sort_order": 30},
+            {"fact_key": "gain_4797_rental", "label": "Net gain (loss) from Form 4797, Part II, line 17, from rental real estate dispositions (Line 21)", "data_type": "decimal", "sort_order": 31},
+            {"fact_key": "passthrough_net_rental", "label": "Net rental income (loss) from partnerships, estates, trusts (Line 22a)", "data_type": "decimal", "sort_order": 32},
+            {"fact_key": "passthrough_identities", "label": "Partnerships/estates/trusts on line 22a — name + EIN (Line 22b)", "data_type": "string", "sort_order": 33,
+             "notes": "Attach a statement if more space is needed (face 22b)."},
+            {"fact_key": "total_net_rental", "label": "Net rental real estate income (loss) (Line 23 = combine 20a-22a)", "data_type": "decimal", "sort_order": 34},
         ])
+        # Stale pre-renumber fact rows — delete anything not in the new set so
+        # a reseed self-heals (update_or_create alone cannot remove rows).
+        _2025_FACTS = {
+            "property_street", "property_city", "property_state", "property_zip",
+            "property_type", "other_info_code", "fair_rental_days", "personal_use_days",
+            "gross_rents", "other_rental_income", "total_property_income",
+            "advertising", "auto_travel", "cleaning", "commissions", "insurance",
+            "mortgage_interest", "other_interest", "legal_professional", "taxes",
+            "repairs", "utilities", "wages_salaries", "depreciation", "other_expenses",
+            "schedule_a_category", "total_expenses", "net_rent",
+            "total_gross_rents", "total_expenses_all", "gain_4797_rental",
+            "passthrough_net_rental", "passthrough_identities", "total_net_rental",
+        }
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_2025_FACTS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale pre-renumber fact rows")
+            stale_facts.delete()
         rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "Total expenses per property (Line 16)", "rule_type": "calculation",
-             "formula": "sum(Lines 3-15)", "inputs": ["advertising", "auto_travel", "cleaning", "commissions", "insurance", "legal_professional", "mortgage_interest", "other_interest", "repairs", "taxes", "utilities", "depreciation", "other_expenses"],
-             "outputs": ["total_expenses"], "precedence": 1, "sort_order": 1},
-            {"rule_id": "R002", "title": "Net rent per property (Line 17)", "rule_type": "calculation",
-             "formula": "gross_rents - total_expenses", "inputs": ["gross_rents", "total_expenses"],
-             "outputs": ["net_rent"], "precedence": 2, "sort_order": 2},
-            {"rule_id": "R003", "title": "Total net rental -> K Line 2", "rule_type": "routing",
-             "formula": "K2 = sum(all net_rent)", "inputs": ["net_rent"], "outputs": ["K_line_2"],
-             "precedence": 3, "sort_order": 3, "description": "Sum of all property net rents flows to Schedule K Line 2."},
+            {"rule_id": "R001", "title": "Total expenses per property (Line 18)", "rule_type": "calculation",
+             "formula": "line_18 = sum(lines 3 through 17)",
+             "inputs": ["advertising", "auto_travel", "cleaning", "commissions", "insurance", "mortgage_interest",
+                         "other_interest", "legal_professional", "taxes", "repairs", "utilities", "wages_salaries",
+                         "depreciation", "other_expenses"],
+             "outputs": ["total_expenses"], "precedence": 2, "sort_order": 1,
+             "description": "Face verbatim: 'Total rental real estate expenses for each property. Add lines 3 through 17.' Lines 15/16 are Reserved for future use on the 12-2025 face."},
+            {"rule_id": "R002", "title": "Income or (loss) per property (Line 19)", "rule_type": "calculation",
+             "formula": "line_19 = line_2c - line_18", "inputs": ["total_property_income", "total_expenses"],
+             "outputs": ["net_rent"], "precedence": 3, "sort_order": 2,
+             "description": "Face verbatim: 'Income or (loss) from each rental real estate property. Subtract line 18 from line 2c.'"},
+            {"rule_id": "R003", "title": "Line 23 combines 20a-22a -> Schedule K Line 2", "rule_type": "routing",
+             "formula": "line_23 = line_20a - line_20b + line_21 + line_22a; K2 = line_23",
+             "inputs": ["total_gross_rents", "total_expenses_all", "gain_4797_rental", "passthrough_net_rental"],
+             "outputs": ["total_net_rental", "K_line_2"], "precedence": 4, "sort_order": 3,
+             "description": "Face verbatim: 'Net rental real estate income (loss). Combine lines 20a through 22a. "
+                            "Enter the result here and on Schedule K, line 2, of Form 1065 or 1120-S.' 20a = sum of "
+                            "all line 2c; 20b = sum of all line 18 (shown in parentheses — subtract); 21 = Form 4797 "
+                            "Part II line 17 rental dispositions; 22a = pass-through rental from K-1s received. "
+                            "Lines 20a-23 are completed on page 1 ONLY ONCE, combining all pages. (The pre-renumber "
+                            "formula 'K2 = sum(all net_rent)' omitted lines 21/22a — corrected 2026-07-10.)"},
             {"rule_id": "R004", "title": "Rental depreciation stays on 8825", "rule_type": "validation",
              "formula": "rental_depreciation NOT on Page1_Line14",
              "inputs": ["depreciation"], "outputs": [], "precedence": 0, "sort_order": 4,
-             "description": "Rental property depreciation is reported on Form 8825 Line 14, not on Form 4562/Page 1 Line 14. This keeps rental and trade/business depreciation separate for passive activity purposes."},
+             "description": "Rental property depreciation is reported on Form 8825 Line 14, not on Form 4562/Page 1 Line 14. This keeps rental and trade/business depreciation separate for passive activity purposes. Attach Form 4562 when current-year placed-in-service or listed property (i8825 Line 14)."},
+            {"rule_id": "R005", "title": "Total income per property (Line 2c)", "rule_type": "calculation",
+             "formula": "line_2c = line_2a + line_2b", "inputs": ["gross_rents", "other_rental_income"],
+             "outputs": ["total_property_income"], "precedence": 1, "sort_order": 5,
+             "description": "Face verbatim: 'Total rental real estate income for each property. Add lines 2a and 2b.' "
+                            "i8825 What's New: 'Report rental real estate gross rents and other income related to "
+                            "rental real estate activity separately on lines 2a and 2b.' (2b is NEW on the 12-2025 face.)"},
+            {"rule_id": "R006", "title": "Schedule A (Form 8825) other-deductions detail — M-3 filers", "rule_type": "conditional",
+             "formula": "if schedule_m3_required: line_17 = ScheduleA_line_31 (per property, Schedule A attached); else line_17 = direct entry",
+             "inputs": ["other_expenses", "schedule_a_category"], "outputs": [], "precedence": 5, "sort_order": 6,
+             "description": "i8825 12-2025 VERBATIM: 'Line 17—Other Deductions. For partnerships and S corporations "
+                            "that don't have a Schedule M-3 filing requirement, enter all other deductions for each "
+                            "property listed. All others, see Schedule A next.' And: 'For partnerships and S "
+                            "corporations with a Schedule M-3 filing requirement, complete and attach Schedule(s) A "
+                            "(Form 8825) for each property listed on Form 8825. Enter the total amount on Form 8825, "
+                            "line 17, for each property.' Schedule A line 31 = total of the fixed category lines 1-20 "
+                            "plus line 30 Other (21-29 reserved). The M-3 requirement is the i1120s/i1065 $10M "
+                            "total-assets test (corrected 2026-07-09). App note: management-fee-type amounts belong "
+                            "on Schedule A line 13 when the schedule applies.",
+             "exceptions": "Non-M-3 filers may still keep per-row detail as an app-side statement; only the OFFICIAL Schedule A attachment is conditioned on M-3."},
+            {"rule_id": "R007", "title": "Column (c) other-information codes — M-3 filers only", "rule_type": "validation",
+             "formula": "other_info_code required only when schedule_m3_required; codes A-I",
+             "inputs": ["other_info_code"], "outputs": [], "precedence": 0, "sort_order": 7,
+             "description": "i8825 12-2025 Note VERBATIM: 'Column (c) is only required for partnerships and S "
+                            "corporations that have a Schedule M-3 filing requirement.' New 12-2025 codes for gain/"
+                            "(loss) events: A contribution 721/351, B other exchange 1031/1033, C taxable acquisition "
+                            "1012, D new construction/renovation or basis addition/subtraction, E reserved, F "
+                            "nontaxable distribution 731, G taxable disposition 1001, H abandonment, I other/"
+                            "supplement. For codes A-I include relevant supplementary description on Form 8825 or on "
+                            "a separate statement (face page 2)."},
         ])
         self._upsert_links(rules, sources, [
-            ("R001", "IRS_2025_8825_INSTR_FULL", "primary", "Per-property expense total"),
-            ("R002", "IRS_2025_8825_INSTR_FULL", "primary", "Net rent = gross - expenses"),
-            ("R003", "IRS_2025_8825_INSTR_FULL", "primary", "Total net rental -> K Line 2"),
-            ("R004", "IRS_2025_8825_INSTR_FULL", "primary", "Rental depreciation on 8825, not Page 1"),
+            ("R001", "IRS_2025_8825_INSTR_FULL", "primary", "Line 18 = add lines 3 through 17 (face verbatim)"),
+            ("R002", "IRS_2025_8825_INSTR_FULL", "primary", "Line 19 = line 2c minus line 18 (face verbatim)"),
+            ("R003", "IRS_2025_8825_INSTR_FULL", "primary", "Line 23 = combine 20a-22a -> Schedule K line 2 (face verbatim)"),
+            ("R003", "IRS_2025_8825_INSTR", "secondary", "Net -> Sch K line 2 -> K-1; passive at owner level"),
+            ("R004", "IRS_2025_8825_INSTR_FULL", "primary", "Rental depreciation on 8825 line 14, not Page 1; attach 4562"),
+            ("R005", "IRS_2025_8825_INSTR_FULL", "primary", "Line 2c = 2a + 2b; 2a/2b split is new (What's New verbatim)"),
+            ("R006", "IRS_2025_8825_INSTR_FULL", "primary", "Schedule A (Form 8825) M-3-conditional mechanics (verbatim)"),
+            ("R007", "IRS_2025_8825_INSTR_FULL", "primary", "Column (c) codes A-I; M-3-only Note (verbatim)"),
         ])
         self._upsert_lines(form, [
-            {"line_number": "2", "description": "Gross rents", "line_type": "input", "sort_order": 1},
-            {"line_number": "3", "description": "Advertising", "line_type": "input", "sort_order": 2},
-            {"line_number": "4", "description": "Auto and travel", "line_type": "input", "sort_order": 3},
-            {"line_number": "5", "description": "Cleaning and maintenance", "line_type": "input", "sort_order": 4},
-            {"line_number": "6", "description": "Commissions", "line_type": "input", "sort_order": 5},
-            {"line_number": "7", "description": "Insurance", "line_type": "input", "sort_order": 6},
-            {"line_number": "8", "description": "Legal and other professional fees", "line_type": "input", "sort_order": 7},
-            {"line_number": "9", "description": "Mortgage interest paid to banks, etc.", "line_type": "input", "sort_order": 8},
-            {"line_number": "10", "description": "Other interest", "line_type": "input", "sort_order": 9},
-            {"line_number": "11", "description": "Repairs", "line_type": "input", "sort_order": 10},
-            {"line_number": "12", "description": "Taxes", "line_type": "input", "sort_order": 11},
-            {"line_number": "13", "description": "Utilities", "line_type": "input", "sort_order": 12},
-            {"line_number": "14", "description": "Depreciation (rental property only)", "line_type": "input", "sort_order": 13},
-            {"line_number": "15", "description": "Other expenses", "line_type": "input", "sort_order": 14},
-            {"line_number": "16", "description": "Total expenses (sum lines 3-15)", "line_type": "subtotal", "source_rules": ["R001"], "sort_order": 15},
-            {"line_number": "17", "description": "Net rent per property (line 2 minus line 16)", "line_type": "calculated", "source_rules": ["R002"], "sort_order": 16},
-            {"line_number": "21", "description": "Net rental real estate income (loss)", "line_type": "total", "source_rules": ["R003"], "destination_form": "Schedule K Line 2", "sort_order": 17},
+            {"line_number": "1", "description": "Physical address of each property — street, city, state, ZIP (col a); type code 1-8 (col b); other-information code A-I (col c); fair rental days (col d); personal-use days (col e)", "line_type": "input", "source_facts": ["property_street", "property_city", "property_state", "property_zip", "property_type", "other_info_code", "fair_rental_days", "personal_use_days"], "sort_order": 1},
+            {"line_number": "2a", "description": "Gross rents", "line_type": "input", "source_facts": ["gross_rents"], "sort_order": 2},
+            {"line_number": "2b", "description": "Other income related to rental real estate activity", "line_type": "input", "source_facts": ["other_rental_income"], "sort_order": 3},
+            {"line_number": "2c", "description": "Total rental real estate income for each property. Add lines 2a and 2b", "line_type": "calculated", "source_rules": ["R005"], "sort_order": 4},
+            {"line_number": "3", "description": "Advertising", "line_type": "input", "source_facts": ["advertising"], "sort_order": 5},
+            {"line_number": "4", "description": "Auto and travel", "line_type": "input", "source_facts": ["auto_travel"], "sort_order": 6},
+            {"line_number": "5", "description": "Cleaning and maintenance", "line_type": "input", "source_facts": ["cleaning"], "sort_order": 7},
+            {"line_number": "6", "description": "Commissions", "line_type": "input", "source_facts": ["commissions"], "sort_order": 8},
+            {"line_number": "7", "description": "Insurance", "line_type": "input", "source_facts": ["insurance"], "sort_order": 9},
+            {"line_number": "8", "description": "Interest (see instructions)", "line_type": "input", "source_facts": ["mortgage_interest", "other_interest"], "sort_order": 10,
+             "notes": "One face line; the app's mortgage/other split both land here. Section 163(j) may limit (Form 8990)."},
+            {"line_number": "9", "description": "Legal and other professional fees", "line_type": "input", "source_facts": ["legal_professional"], "sort_order": 11},
+            {"line_number": "10", "description": "Real estate taxes", "line_type": "input", "source_facts": ["taxes"], "sort_order": 12},
+            {"line_number": "11", "description": "Repairs", "line_type": "input", "source_facts": ["repairs"], "sort_order": 13},
+            {"line_number": "12", "description": "Utilities", "line_type": "input", "source_facts": ["utilities"], "sort_order": 14},
+            {"line_number": "13", "description": "Wages and salaries", "line_type": "input", "source_facts": ["wages_salaries"], "sort_order": 15},
+            {"line_number": "14", "description": "Depreciation (see instructions)", "line_type": "input", "source_facts": ["depreciation"], "source_rules": ["R004"], "sort_order": 16},
+            {"line_number": "15", "description": "Reserved for future use", "line_type": "informational", "sort_order": 17},
+            {"line_number": "16", "description": "Reserved for future use", "line_type": "informational", "sort_order": 18},
+            {"line_number": "17", "description": "Other deductions (attach Schedule A (Form 8825))", "line_type": "input", "source_facts": ["other_expenses"], "source_rules": ["R006"], "sort_order": 19},
+            {"line_number": "18", "description": "Total rental real estate expenses for each property. Add lines 3 through 17", "line_type": "subtotal", "source_rules": ["R001"], "sort_order": 20},
+            {"line_number": "19", "description": "Income or (loss) from each rental real estate property. Subtract line 18 from line 2c", "line_type": "calculated", "source_rules": ["R002"], "sort_order": 21},
+            {"line_number": "20a", "description": "Total rental real estate income. Add total rental real estate income from line 2c", "line_type": "subtotal", "source_rules": ["R003"], "sort_order": 22},
+            {"line_number": "20b", "description": "Total rental real estate expenses. Add total rental real estate expenses from line 18 (shown in parentheses)", "line_type": "subtotal", "source_rules": ["R003"], "sort_order": 23},
+            {"line_number": "21", "description": "Net gain (loss) from Form 4797, Part II, line 17, from the disposition of property from rental real estate activities", "line_type": "input", "source_facts": ["gain_4797_rental"], "source_rules": ["R003"], "sort_order": 24},
+            {"line_number": "22a", "description": "Net income (loss) from rental real estate activities from partnerships, estates, and trusts in which this partnership or S corporation is a partner or beneficiary (from Schedule K-1)", "line_type": "input", "source_facts": ["passthrough_net_rental"], "source_rules": ["R003"], "sort_order": 25},
+            {"line_number": "22b", "description": "Identify the partnerships, estates, or trusts from which net income (loss) is shown on line 22a — (1) Name, (2) EIN. Attach a statement if more space is needed", "line_type": "input", "source_facts": ["passthrough_identities"], "sort_order": 26},
+            {"line_number": "23", "description": "Net rental real estate income (loss). Combine lines 20a through 22a. Enter the result here and on Schedule K, line 2, of Form 1065 or 1120-S", "line_type": "total", "source_rules": ["R003"], "destination_form": "Schedule K Line 2", "sort_order": 27},
+            # Schedule A (Form 8825) (12-2025) — Rental Real Estate Other Deductions
+            {"line_number": "A1", "description": "Asset management fee", "line_type": "input", "sort_order": 28},
+            {"line_number": "A2", "description": "Bad debt expense", "line_type": "input", "sort_order": 29},
+            {"line_number": "A3", "description": "Building maintenance", "line_type": "input", "sort_order": 30},
+            {"line_number": "A4", "description": "Common charges", "line_type": "input", "sort_order": 31},
+            {"line_number": "A5", "description": "Contract services", "line_type": "input", "sort_order": 32},
+            {"line_number": "A6", "description": "Debt extinguishment costs", "line_type": "input", "sort_order": 33},
+            {"line_number": "A7", "description": "Ground rent", "line_type": "input", "sort_order": 34},
+            {"line_number": "A8", "description": "Grounds maintenance", "line_type": "input", "sort_order": 35},
+            {"line_number": "A9", "description": "Homeowner association fee", "line_type": "input", "sort_order": 36},
+            {"line_number": "A10", "description": "Incentive fee", "line_type": "input", "sort_order": 37},
+            {"line_number": "A11", "description": "Landscaping", "line_type": "input", "sort_order": 38},
+            {"line_number": "A12", "description": "Leased employee expense", "line_type": "input", "sort_order": 39},
+            {"line_number": "A13", "description": "Management fee", "line_type": "input", "sort_order": 40},
+            {"line_number": "A14", "description": "Other taxes", "line_type": "input", "sort_order": 41},
+            {"line_number": "A15", "description": "Prepayment penalty", "line_type": "input", "sort_order": 42},
+            {"line_number": "A16", "description": "Reimbursed wages/salaries (reimbursed to management co.)", "line_type": "input", "sort_order": 43},
+            {"line_number": "A17", "description": "Section 481(a) adjustments", "line_type": "input", "sort_order": 44},
+            {"line_number": "A18", "description": "Tenant renovations", "line_type": "input", "sort_order": 45},
+            {"line_number": "A19", "description": "Tenant services", "line_type": "input", "sort_order": 46},
+            {"line_number": "A20", "description": "Turnover expenses", "line_type": "input", "sort_order": 47},
+            {"line_number": "A21", "description": "Reserved for future use", "line_type": "informational", "sort_order": 48},
+            {"line_number": "A22", "description": "Reserved for future use", "line_type": "informational", "sort_order": 49},
+            {"line_number": "A23", "description": "Reserved for future use", "line_type": "informational", "sort_order": 50},
+            {"line_number": "A24", "description": "Reserved for future use", "line_type": "informational", "sort_order": 51},
+            {"line_number": "A25", "description": "Reserved for future use", "line_type": "informational", "sort_order": 52},
+            {"line_number": "A26", "description": "Reserved for future use", "line_type": "informational", "sort_order": 53},
+            {"line_number": "A27", "description": "Reserved for future use", "line_type": "informational", "sort_order": 54},
+            {"line_number": "A28", "description": "Reserved for future use", "line_type": "informational", "sort_order": 55},
+            {"line_number": "A29", "description": "Reserved for future use", "line_type": "informational", "sort_order": 56},
+            {"line_number": "A30", "description": "Other", "line_type": "input", "sort_order": 57},
+            {"line_number": "A31", "description": "Total (Enter the total here and on Form 8825, line 17.)", "line_type": "total", "source_rules": ["R006"], "destination_form": "Form 8825 line 17", "sort_order": 58},
         ])
+        # Stale pre-renumber line rows (bare "2", and any other row not on the
+        # 12-2025 face map) — delete so a reseed self-heals.
+        _2025_LINES = ({"1", "2a", "2b", "2c"} | {str(n) for n in range(3, 20)}
+                       | {"20a", "20b", "21", "22a", "22b", "23"}
+                       | {f"A{n}" for n in range(1, 32)})
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_2025_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale pre-renumber line rows")
+            stale_lines.delete()
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "No rents on property", "severity": "warning",
-             "condition": "gross_rents == 0", "message": "Property listed but gross rents = $0. Verify this property had rental activity."},
+             "condition": "gross_rents == 0 AND other_rental_income == 0", "message": "Property listed but line 2c income = $0. Verify this property had rental activity."},
             {"diagnostic_id": "D002", "title": "Missing rental depreciation", "severity": "warning",
              "condition": "depreciation == 0 AND property has depreciable improvements", "message": "Rental property has no depreciation. Buildings and improvements should be depreciated."},
             {"diagnostic_id": "D003", "title": "More than 8 properties", "severity": "info",
-             "condition": "property_count > 8", "message": "More than 8 rental properties — attach additional Form 8825."},
+             "condition": "property_count > 8", "message": "More than 8 rental properties — complete and attach as many additional pages of Form 8825 as needed (lines 20a-23 on page 1 only once, combining all pages)."},
+            {"diagnostic_id": "D004", "title": "M-3 filer needs Schedule A (Form 8825)", "severity": "warning",
+             "condition": "schedule_m3_required AND line_17 != 0 AND no Schedule A detail rows",
+             "message": "This return has a Schedule M-3 filing requirement and amounts on Form 8825 line 17 — Schedule A (Form 8825) must be completed and attached for each property (i8825 Rev. 12-2025)."},
+            {"diagnostic_id": "D005", "title": "Other-information code needs description", "severity": "info",
+             "condition": "other_info_code in A-I", "message": "Line 1 column (c) code entered — include the relevant supplementary description on Form 8825 or on a separate statement (codes A-I; face page 2)."},
         ])
         self._upsert_tests(form, [
             {"scenario_name": "Single rental property — net income", "scenario_type": "normal",
              "inputs": {"gross_rents": 24000, "insurance": 1200, "mortgage_interest": 6000, "repairs": 800, "taxes": 3000, "depreciation": 5000, "utilities": 0, "other_expenses": 500},
-             "expected_outputs": {"total_expenses": 16500, "net_rent": 7500}, "sort_order": 1},
+             "expected_outputs": {"total_property_income": 24000, "total_expenses": 16500, "net_rent": 7500}, "sort_order": 1},
             {"scenario_name": "Net rental loss", "scenario_type": "normal",
              "inputs": {"gross_rents": 12000, "mortgage_interest": 8000, "taxes": 4000, "depreciation": 10000, "insurance": 2000},
-             "expected_outputs": {"total_expenses": 24000, "net_rent": -12000}, "sort_order": 2},
+             "expected_outputs": {"total_property_income": 12000, "total_expenses": 24000, "net_rent": -12000}, "sort_order": 2},
+            {"scenario_name": "Line 2b other income + line 13 wages (new 12-2025 rows)", "scenario_type": "normal",
+             "inputs": {"gross_rents": 10000, "other_rental_income": 500, "wages_salaries": 2000, "repairs": 1000},
+             "expected_outputs": {"total_property_income": 10500, "total_expenses": 3000, "net_rent": 7500}, "sort_order": 3},
+            {"scenario_name": "Line 23 combines 20a through 22a (21/22a included)", "scenario_type": "normal",
+             "inputs": {"total_gross_rents": 34000, "total_expenses_all": 28500, "gain_4797_rental": 1200, "passthrough_net_rental": 300},
+             "expected_outputs": {"total_net_rental": 7000}, "sort_order": 4},
+            {"scenario_name": "Schedule A detail rows total to line 17", "scenario_type": "normal",
+             "inputs": {"schedule_a_rows": [{"category": "A13", "amount": 1500}, {"category": "A11", "amount": 700}, {"category": "A30", "description": "Supplies", "amount": 300}]},
+             "expected_outputs": {"schedule_a_total": 2500, "other_expenses": 2500}, "sort_order": 5},
         ])
         self._upsert_form_links("8825", sources, [("IRS_2025_8825_INSTR_FULL", "governs")])
-        self.stdout.write(self.style.SUCCESS("  8825 complete."))
+        # Stale excerpts on the re-fetched instruction source (the 2026-03-18
+        # fetch described a numbering that matches no published revision).
+        _KEEP_LABELS = {
+            "What's New (Rev. 12-2025) — which version, col (c) codes, 2a/2b split, Schedule A",
+            "Line 1 — address, type codes 1-8, col (c) M-3-only note, codes A-I",
+            "Line 17 Other Deductions + Schedule A (Form 8825) — M-3 conditional",
+            "Line 14 Depreciation — Form 4562 attachment",
+            "Line 8 Interest — section 163(j) pointer",
+            "Specific Instructions — pages, 20a-23 once, scope exclusions",
+            "Form 8825 (Rev. 12-2025) face — expense/summary line labels verbatim",
+            "Schedule A (Form 8825) (12-2025) face — 31 lines verbatim",
+        }
+        src = sources.get("IRS_2025_8825_INSTR_FULL")
+        if src is not None:
+            stale_exc = AuthorityExcerpt.objects.filter(authority_source=src).exclude(excerpt_label__in=_KEEP_LABELS)
+            if stale_exc.exists():
+                self.stdout.write(f"  deleting {stale_exc.count()} stale 2026-03-18 excerpts")
+                stale_exc.delete()
+        self.stdout.write(self.style.SUCCESS("  8825 complete (Rev. 12-2025 face)."))
 
     # ═══════════════════════════════════════════════════════════════════════════
     # Form 7203 — S Corporation Shareholder Stock and Debt Basis Limitation
