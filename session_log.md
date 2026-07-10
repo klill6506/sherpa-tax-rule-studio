@@ -1,4 +1,27 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-10 (later again) — 8825 renumbered to the Dec-2025 face + Schedule A (Form 8825) mechanics (tts s48)
+- The batch-2 8825 group's spec-first leg. **The Session-10 8825 block was ANOTHER
+  early-era drifted spec, found OUTSIDE the s44 audit queue** — its numbering (other 15 /
+  total 16 / net 17 / total-net 21) matches NO published revision. Rebuilt verbatim vs
+  f8825.pdf + i8825.pdf Rev. 12-2025 (both fetched today) + IRS8825.xsd 2025v6.2.
+- New face encoded: 2a/2b/2c income split (2b NEW) · 15/16 reserved · line 17 = the NEW
+  **Schedule A (Form 8825)** fixed-category schedule (A1-A20 + A30; i8825 verbatim:
+  REQUIRED only for Schedule M-3 filers; A31 total → line 17) · 18 = sum(3-17) · 19 =
+  2c − 18 · **23 = COMBINE 20a-22a → K2 (the old R003 "K2 = sum(net_rent)" OMITTED
+  21/22a — corrected)** · col (b) 1-8 + NEW col (c) A-I codes (M-3-only Note verbatim).
+- 34 facts (structured address; choice lists) · R001-R007 · 58-line map (A1-A31) ·
+  D001-D005 · 5 scenarios · 8 re-fetched verbatim excerpts (2 stale 2026-03-18 excerpts
+  deleted in-loader) · in-loader stale fact/line DELETE.
+- **⚠ Seeding lesson: prod was seeded via a SCOPED script** (scratchpad/
+  seed_8825_renumber.py runs only _load_sources + _load_8825) — re-running the whole
+  load_remaining_1120s would stomp 4562 R011, which the later
+  load_4562_section179_carryover amend loader owns. Full rebuilds stay correct via
+  seed_all's base-then-amend ordering.
+- SQLite harness 123 checks green (scratchpad/validate_8825_renumber.py, incl. a
+  pollute-then-reseed self-heal proof) · Supabase-seeded · deployed export verified ·
+  tts mirror refreshed. RS commit `c4c94bc`; the tts build landed same-session
+  (`a4435f4`: migs 0184/0185, four live print-bug fixes, f8825sa print, MeF
+  GeneralDependencyMedium detail, D_8825_001-005, the B2-7a/8/9 UI).
 ## 2026-07-10 (later still) — 4562 §168(k)(7) election-out unit (R009) + the R007 AMT-arm tax-law correction
 - The s46 stated follow-on, spec-first. i4562 2025 fetched + read verbatim (p.7 Election
   out; p.6 the OBBBA 40%-instead-of-100% transitional election — NO statement mechanics
