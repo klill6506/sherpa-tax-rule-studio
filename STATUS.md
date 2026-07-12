@@ -1,7 +1,7 @@
 ---
 type: project-status
 project: sherpa-tax-rule-studio
-last_updated: 2026-07-08
+last_updated: 2026-07-12
 ---
 
 # STATUS — sherpa-tax-rule-studio
@@ -11,6 +11,18 @@ last_updated: 2026-07-08
 ---
 
 ## Current state
+
+**NEW 2026-07-12 — WO-26 Form 2553 (SPINE S-20b) DRAFTED TO GATE-1 — ⏳ AWAITING KEN; NOT seeded, NOT exported.**
+The first post-S-16 greenfield order: `load_2553.py` (28 facts / 8 rules / 45 lines / 19 diag / 10 scenarios / 3 FA
+staged DRAFT, entity_types ['1120S'], print-first — no MeF channel) ships `READY_TO_SEED = False`; the harness
+(`scratchpad/validate_2553.py`, **82/0**) proves the guard refuses, the §1362(b) 2mo15d deadline math reproduces all
+three published i2553 examples + the no-corresponding-day/leap edges, and the Rev. Proc. 2013-30 path chooser holds.
+Research verbatim vs Form 2553 Rev. 12-2017 + i2553 Rev. 12-2020 (`f2553_source_brief.md`); **catch: the printed Q1
+fee $6,200 → $5,750 per Rev. Proc. 2026-1 App. A (quoted from the IRB 2026-1 PDF; year-keyed)**; KC/Ogden addresses
+live-verified. Ken's Gate-1 walk (W1-W4, approve-all recommendations) is in the WO-26 entry + tts REVIEW_QUEUE s67.
+On approval: flip the sentinel → seed → verify export → refresh the tts mirror → dispatch the tts print unit
+(Gate 2). `seed_all` fails soft on the gated loader (named [FAIL], keeps going). Next per the SPINE: 2848 (S-20c)
+same recipe; 3115 (S-20d) RS-side already DONE (WO-23).
 
 **NEW 2026-07-08 — the tax-law-change funnel (CHANGE_REGISTER) v1 is BUILT (DECISIONS D-26).** The
 front-of-the-front-door that makes a law change a tracked TRIGGER for authoring (law change → new RS rule → tts app

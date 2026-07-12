@@ -1,4 +1,42 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — Form 2553 greenfield DRAFTED to Gate-1 (WO-26, tts Spine S-20b RS leg, tts s67) — ⏳ AWAITING KEN; NOT seeded
+- **The first post-S-16 greenfield order, and the first one drafted-to-gate under
+  autonomous mode**: the two human gates are non-negotiable, so the draft stops AT
+  Gate-1 — `load_2553.py` ships `READY_TO_SEED = False`, the guard refuses to seed
+  (proven in the harness), nothing is on prod, and the tts app build is NOT
+  dispatched. Ken's Gate-1 walk (W1-W4) is written into the WO-26 entry +
+  tts REVIEW_QUEUE s67 with approve-all recommendations.
+- **Research (f2553_source_brief.md)**: verbatim vs Form 2553 Rev. 12-2017 (current;
+  no annual reissue) + i2553 Rev. 12-2020 + live where-to-file page (KC/Ogden
+  addresses + faxes verified current, page reviewed 2026-03-30). **Catch: the
+  printed Q1 user fee $6,200 is superseded → $5,750** per Rev. Proc. 2026-1 App. A
+  (A)(3)(a)(ii) — pulled the IRB 2026-1 PDF and quoted it (the first web-summary
+  hit cited a stale 2005 fee PDF — the re-fetch-and-quote rule earned its keep
+  again). §1362(b)(5) PLR = $14,500; Rev. Proc. 2022-19 §3.03 = the no-PLR path
+  for consent/signature defects (via Rev. Proc. 2026-1 §6.03(49)).
+- **Draft content**: 28 facts / 8 rules (R-2553-ELIG the eight Who May Elect tests ·
+  R-2553-COUNT spouse/§1361(c)(1)(B)-family aggregation + item G · **R-2553-WINDOW
+  the 2mo15d corresponding-day deadline calculator — the three published i2553
+  examples are pinned scenarios (Jan 7→Mar 21 · Jan 1→Mar 15 · Nov 8→Jan 22) plus
+  the no-corresponding-day (Dec 31→Mar 15) and leap-Feb edges** · R-2553-LATE the
+  Rev. Proc. 2013-30 path chooser (corporate 1-5 / the 6a-c alternative that lifts
+  the 3yr75d cap / entity path + Part IV / PLR) · R-2553-CONSENT timing + signers
+  (community-property BOTH spouses; ESBT trustee+deemed owner; QSST deemed owner) ·
+  R-2553-PART2 F(2)/(4)→O+(P|Q|R) w/ the P1 47-month receipts gate · R-2553-QSST
+  transfer-date gate · R-2553-REELECT the §1.1362-5 five-year bar) / 45 face lines /
+  19 diagnostics / 10 scenarios / **3 FAs staged DRAFT** (the new-FAs-default-ACTIVE
+  trap; the tts leg will activate + write runners + refresh mirrors in one motion).
+  entity_types ['1120S']; print-first (Form 2553 has NO MeF channel — paper/fax).
+- Harness `scratchpad/validate_2553.py`: **82 pass / 0 fail** (guard-refusal pin ·
+  twice-run idempotent · caps (caught the recurring topic_name>255 trap, trimmed) ·
+  deadline/timeliness/count/relief/consent/Part-II oracles · scenario
+  expected_outputs recomputed from the helpers · FA draft-status pins · the
+  year-keyed fee correction pinned in the D_2553_Q1FEE message).
+- `seed_all` impact checked: the gated loader fails soft (per-loader try/except,
+  named [FAIL] with the Gate-1 refusal text) — prod rebuilds unaffected.
+- ⏭ Next RS order per the SPINE: **Form 2848 (S-20c)** — same draft-to-gate recipe
+  (gap-confirmed 404 this session); 3115 (S-20d) needs no RS work (WO-23 DONE).
+
 ## 2026-07-12 — 8283 ENTITY ARM amendment (tts Spine S-20a RS leg, tts s65) — the D_8283_010 "not modeled" boundary closes on the entity side
 - **Additive amendment to the shared 8283 spec** (load_1040_form_8283.py amends by
   lookup, entity_types preserved 1120S/1065/1040): rules 5→9, diagnostics 13→16,

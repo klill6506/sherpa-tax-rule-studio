@@ -66,6 +66,34 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-26] Form 2553 · Election by a Small Business Corporation · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)` (2026-07-12; SPINE
+  S-20b).** Gap re-confirmed 2026-07-12 (`lookup/2553/export/` = 404; first flagged at the WO-22 gap-check). The
+  §1362(a) S-election — structural, print-first (paper/fax only, NO MeF channel); pairs with WO-22 (8832 routes
+  S-elections here; 2553 is the deemed §301.7701-3(c)(1)(v) classification election). **✅ RESEARCH-VERIFIED
+  (2026-07-12, verbatim vs FINAL Form 2553 Rev. December 2017 + i2553 Rev. December 2020 + Rev. Proc. 2026-1 App. A
+  fetched from IRB 2026-1 PDF) → `f2553_source_brief.md`.** No annual reissue; no OBBBA impact. **Research catches:**
+  the item-Q1 user fee printed in i2553 ($6,200, Rev. Proc. 2021-1 era) is SUPERSEDED → **$5,750** (Rev. Proc. 2026-1
+  App. A (A)(3)(a)(ii), verbatim; §1362(b)(5) late-election PLR = $14,500; YEAR-KEYED — re-verify each January);
+  the KC/Ogden filing addresses live-verified current (irs.gov where-to-file page reviewed 2026-03-30); Rev. Proc.
+  2022-19 §3.03 covers consent/signature defects without a PLR (via Rev. Proc. 2026-1 §6.03(49)). **✅ AUTHORED
+  (draft) + SQLite-VALIDATED** (`load_2553.py`, 28 facts / 8 rules / 45 lines / 19 diag / 10 scenarios / 3 FA staged
+  DRAFT; `scratchpad/validate_2553.py` = **82 pass / 0 fail** — the §1362(b) 2mo15d corresponding-day deadline math
+  reproduces ALL THREE published i2553 examples (Jan 7→Mar 21 · Jan 1→Mar 15 · Nov 8→Jan 22) + the
+  no-corresponding-day and leap-Feb edges; timeliness incl. preceding-year + pre-first-day-invalid; the
+  spouse/family-aggregation 100-shareholder gate (item G); the Rev. Proc. 2013-30 path chooser (corporate 1-5 /
+  6a-c alternative / entity + Part IV / PLR); consent-scope timing; Part II routing; twice-run idempotent; the
+  Gate-1 guard proven to refuse). **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT exported.**
+  `seed_all` reports the gated loader as a named [FAIL] and keeps going (per-loader try/except) — a prod rebuild is
+  unaffected. **Gate-1 walk for Ken (W1-W4, recommendations = approve all):** W1 the eight Who May Elect eligibility
+  tests as diagnostics (count reads the AGGREGATED number; one-class-of-stock preparer-asserted INFO); W2 the
+  election-window calculator with the three published examples as pinned scenarios; W3 the Rev. Proc. 2013-30
+  late-relief path chooser + margin legend + the $14,500 PLR fallback; W4 consent timing/signers + Part II routing
+  (Q1 $5,750 year-keyed) + QSST Part III gate + entity_types ['1120S'] print-first scope. On approval: flip
+  READY_TO_SEED, seed, verify the deployed export, refresh the tts mirror → dispatch the tts print-unit build
+  (Gate 2). tts app build NOT started (WORK_ORDERS rule: no app build until APPROVED). ⏭ Queue continues at
+  **Form 2848 (S-20c — same greenfield draft-to-gate recipe)** → 3115 app build (S-20d; RS side DONE at WO-23).
+
 - **▶ [WO-25] SCH_K_1120S 2025-face renumber (early-era audit queue unit #2) · AMENDMENT ·
   status `✅ DONE — seeded + exported 2026-07-11`.** Not greenfield — the s44 face-audit queue
   (Ken-approved retrospective item B) is the standing Gate-1 for the renumber units; same recipe
