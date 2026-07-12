@@ -491,41 +491,93 @@ class Command(BaseCommand):
             "K1_1120S",
             "Schedule K-1 (Form 1120-S) — Shareholder's Share of Income, Deductions, Credits, etc.",
             ["1120S"],
-            notes="Each shareholder receives a K-1. Boxes correspond to K lines. Subject to basis/at-risk/passive limitations.",
+            notes=(
+                "Each shareholder receives a K-1. Subject to basis/at-risk/passive "
+                "limitations. 2025-face renumber (2026-07-11, audit unit #3): rebuilt "
+                "verbatim vs f1120ssk.pdf 2025 (Part I A-D, Part II E-I, Part III "
+                "boxes 1-19) + the i1120s 2025 pp.30-48 code tables. The box 12/13 "
+                "code letters are NOT the Schedule K sub-line letters: 13a→C, 13b→D, "
+                "13c→E, 13d→F, 13e→G, 13f→I; box 13 codes A/B mean the nuclear "
+                "power credits (2023+ re-lettering)."
+            ),
         )
 
+        # 2025 face Part I item D + Part II items E-I (f1120ssk.pdf 2025 verbatim);
+        # Part III box facts; basis-limitation inputs.
         self._upsert_facts(form, [
-            {"fact_key": "shareholder_name", "label": "Shareholder's name", "data_type": "string", "required": True, "sort_order": 1},
-            {"fact_key": "shareholder_tin", "label": "Shareholder's TIN", "data_type": "string", "required": True, "sort_order": 2},
-            {"fact_key": "shares_owned_start", "label": "Shares owned — beginning of year", "data_type": "integer", "sort_order": 3},
-            {"fact_key": "shares_owned_end", "label": "Shares owned — end of year", "data_type": "integer", "sort_order": 4},
-            {"fact_key": "ownership_percentage", "label": "Shareholder's percentage of stock ownership", "data_type": "decimal", "required": True, "sort_order": 5},
+            {"fact_key": "shareholder_name", "label": "Item F1 — Shareholder's name, address, city, state, and ZIP code", "data_type": "string", "required": True, "sort_order": 1},
+            {"fact_key": "shareholder_tin", "label": "Item E — Shareholder's identifying number", "data_type": "string", "required": True, "sort_order": 2},
+            {"fact_key": "responsible_party_tin", "label": "Item F2 — Responsible party TIN (disregarded entity/trust/estate/nominee shareholder)", "data_type": "string", "sort_order": 3},
+            {"fact_key": "responsible_party_name", "label": "Item F2 — Responsible party name", "data_type": "string", "sort_order": 4},
+            {"fact_key": "shareholder_entity_type", "label": "Item F3 — What type of entity is this shareholder?", "data_type": "string", "sort_order": 5},
+            {"fact_key": "ownership_percentage", "label": "Item G — Current year allocation percentage", "data_type": "decimal", "required": True, "sort_order": 6},
+            {"fact_key": "shares_owned_start", "label": "Item H — Shareholder's number of shares, beginning of tax year", "data_type": "integer", "sort_order": 7},
+            {"fact_key": "shares_owned_end", "label": "Item H — Shareholder's number of shares, end of tax year", "data_type": "integer", "sort_order": 8},
+            {"fact_key": "loans_from_shareholder_boy", "label": "Item I — Loans from shareholder, beginning of tax year", "data_type": "decimal", "sort_order": 9},
+            {"fact_key": "loans_from_shareholder_eoy", "label": "Item I — Loans from shareholder, end of tax year", "data_type": "decimal", "sort_order": 10},
+            {"fact_key": "corp_total_shares_boy", "label": "Item D — Corporation's total number of shares, beginning of tax year", "data_type": "integer", "sort_order": 11},
+            {"fact_key": "corp_total_shares_eoy", "label": "Item D — Corporation's total number of shares, end of tax year", "data_type": "integer", "sort_order": 12},
             # Box values (allocated from K)
-            {"fact_key": "box_1_ordinary_income", "label": "Box 1 — Ordinary business income (loss)", "data_type": "decimal", "sort_order": 10},
-            {"fact_key": "box_2_rental_real_estate", "label": "Box 2 — Net rental real estate income (loss)", "data_type": "decimal", "sort_order": 11},
-            {"fact_key": "box_3_other_rental", "label": "Box 3 — Other net rental income (loss)", "data_type": "decimal", "sort_order": 12},
-            {"fact_key": "box_4_interest", "label": "Box 4 — Interest income", "data_type": "decimal", "sort_order": 13},
-            {"fact_key": "box_5a_ordinary_dividends", "label": "Box 5a — Ordinary dividends", "data_type": "decimal", "sort_order": 14},
-            {"fact_key": "box_5b_qualified_dividends", "label": "Box 5b — Qualified dividends", "data_type": "decimal", "sort_order": 15},
-            {"fact_key": "box_6_royalties", "label": "Box 6 — Royalties", "data_type": "decimal", "sort_order": 16},
-            {"fact_key": "box_7_net_stcg", "label": "Box 7 — Net short-term capital gain (loss)", "data_type": "decimal", "sort_order": 17},
-            {"fact_key": "box_8a_net_ltcg", "label": "Box 8a — Net long-term capital gain (loss)", "data_type": "decimal", "sort_order": 18},
-            {"fact_key": "box_8b_collectibles", "label": "Box 8b — Collectibles (28%) gain (loss)", "data_type": "decimal", "sort_order": 19},
-            {"fact_key": "box_8c_unrecaptured_1250", "label": "Box 8c — Unrecaptured §1250 gain", "data_type": "decimal", "sort_order": 20},
-            {"fact_key": "box_9_net_1231", "label": "Box 9 — Net §1231 gain (loss)", "data_type": "decimal", "sort_order": 21},
-            {"fact_key": "box_10_other_income", "label": "Box 10 — Other income (loss)", "data_type": "decimal", "sort_order": 22},
-            {"fact_key": "box_11_section_179", "label": "Box 11 — §179 deduction", "data_type": "decimal", "sort_order": 23},
-            {"fact_key": "box_12_other_deductions", "label": "Box 12 — Other deductions (coded)", "data_type": "decimal", "sort_order": 24},
-            {"fact_key": "box_13_credits", "label": "Box 13 — Credits (coded)", "data_type": "decimal", "sort_order": 25},
-            {"fact_key": "box_16a_tax_exempt_interest", "label": "Box 16a — Tax-exempt interest income", "data_type": "decimal", "sort_order": 26},
-            {"fact_key": "box_16c_nondeductible", "label": "Box 16c — Nondeductible expenses", "data_type": "decimal", "sort_order": 27},
-            {"fact_key": "box_16d_distributions", "label": "Box 16d — Distributions", "data_type": "decimal", "sort_order": 28},
-            {"fact_key": "box_17_other_info", "label": "Box 17 — Other information (QBI, investment)", "data_type": "decimal", "sort_order": 29},
+            {"fact_key": "box_1_ordinary_income", "label": "Box 1 — Ordinary business income (loss)", "data_type": "decimal", "sort_order": 20},
+            {"fact_key": "box_2_rental_real_estate", "label": "Box 2 — Net rental real estate income (loss)", "data_type": "decimal", "sort_order": 21},
+            {"fact_key": "box_3_other_rental", "label": "Box 3 — Other net rental income (loss)", "data_type": "decimal", "sort_order": 22},
+            {"fact_key": "box_4_interest", "label": "Box 4 — Interest income", "data_type": "decimal", "sort_order": 23},
+            {"fact_key": "box_5a_ordinary_dividends", "label": "Box 5a — Ordinary dividends", "data_type": "decimal", "sort_order": 24},
+            {"fact_key": "box_5b_qualified_dividends", "label": "Box 5b — Qualified dividends", "data_type": "decimal", "sort_order": 25},
+            {"fact_key": "box_6_royalties", "label": "Box 6 — Royalties", "data_type": "decimal", "sort_order": 26},
+            {"fact_key": "box_7_net_stcg", "label": "Box 7 — Net short-term capital gain (loss)", "data_type": "decimal", "sort_order": 27},
+            {"fact_key": "box_8a_net_ltcg", "label": "Box 8a — Net long-term capital gain (loss)", "data_type": "decimal", "sort_order": 28},
+            {"fact_key": "box_8b_collectibles", "label": "Box 8b — Collectibles (28%) gain (loss)", "data_type": "decimal", "sort_order": 29},
+            {"fact_key": "box_8c_unrecaptured_1250", "label": "Box 8c — Unrecaptured §1250 gain", "data_type": "decimal", "sort_order": 30},
+            {"fact_key": "box_9_net_1231", "label": "Box 9 — Net §1231 gain (loss)", "data_type": "decimal", "sort_order": 31},
+            {"fact_key": "box_10_other_income", "label": "Box 10 — Other income (loss) (codes A–ZZ)", "data_type": "decimal", "sort_order": 32},
+            {"fact_key": "box_11_section_179", "label": "Box 11 — §179 deduction", "data_type": "decimal", "sort_order": 33},
+            {"fact_key": "box_12_other_deductions", "label": "Box 12 — Other deductions (codes A–ZZ)", "data_type": "decimal", "sort_order": 34},
+            {"fact_key": "box_13_credits", "label": "Box 13 — Credits (codes per the 2025 table — see R013)", "data_type": "decimal", "sort_order": 35},
+            {"fact_key": "box_14_k3_attached", "label": "Box 14 — Schedule K-3 is attached if checked", "data_type": "boolean", "default_value": "false", "sort_order": 36},
+            {"fact_key": "box_15_amt_items", "label": "Box 15 — Alternative minimum tax (AMT) items (codes A–F)", "data_type": "decimal", "sort_order": 37},
+            {"fact_key": "box_16a_tax_exempt_interest", "label": "Box 16 code A — Tax-exempt interest income", "data_type": "decimal", "sort_order": 38},
+            {"fact_key": "box_16b_other_tax_exempt", "label": "Box 16 code B — Other tax-exempt income", "data_type": "decimal", "sort_order": 39},
+            {"fact_key": "box_16c_nondeductible", "label": "Box 16 code C — Nondeductible expenses", "data_type": "decimal", "sort_order": 40},
+            {"fact_key": "box_16d_distributions", "label": "Box 16 code D — Distributions (per-recipient actuals, never allocated)", "data_type": "decimal", "sort_order": 41},
+            {"fact_key": "box_16e_loan_repayment", "label": "Box 16 code E — Repayment of loans from shareholders (per-recipient actuals)", "data_type": "decimal", "sort_order": 42},
+            {"fact_key": "box_16f_foreign_taxes", "label": "Box 16 code F — Foreign taxes paid or accrued", "data_type": "decimal", "sort_order": 43},
+            {"fact_key": "box_17a_investment_income", "label": "Box 17 code A — Investment income", "data_type": "decimal", "sort_order": 44},
+            {"fact_key": "box_17b_investment_expenses", "label": "Box 17 code B — Investment expenses", "data_type": "decimal", "sort_order": 45},
+            {"fact_key": "box_17_other_info", "label": "Box 17 — Other information (17d statement items, codes C–BA + ZZ; V = §199A)", "data_type": "decimal", "sort_order": 46},
+            {"fact_key": "box_18_multiple_at_risk", "label": "Box 18 — More than one activity for at-risk purposes (see attached statement)", "data_type": "boolean", "default_value": "false", "sort_order": 47},
+            {"fact_key": "box_19_multiple_passive", "label": "Box 19 — More than one activity for passive activity purposes (see attached statement)", "data_type": "boolean", "default_value": "false", "sort_order": 48},
             # Basis limitation inputs
-            {"fact_key": "stock_basis_boy", "label": "Stock basis — beginning of year", "data_type": "decimal", "sort_order": 40},
-            {"fact_key": "debt_basis", "label": "Debt basis — direct loans to S-Corp", "data_type": "decimal", "sort_order": 41},
-            {"fact_key": "at_risk_amount", "label": "At-risk amount (Form 6198)", "data_type": "decimal", "sort_order": 42},
+            {"fact_key": "stock_basis_boy", "label": "Stock basis — beginning of year", "data_type": "decimal", "sort_order": 50},
+            {"fact_key": "debt_basis", "label": "Debt basis — direct loans to S-Corp", "data_type": "decimal", "sort_order": 51},
+            {"fact_key": "at_risk_amount", "label": "At-risk amount (Form 6198)", "data_type": "decimal", "sort_order": 52},
         ])
+
+        # In-loader stale-fact self-heal (the s56 rename-orphan class guard).
+        _K1_FACT_KEYS = {
+            "shareholder_name", "shareholder_tin", "responsible_party_tin",
+            "responsible_party_name", "shareholder_entity_type",
+            "ownership_percentage", "shares_owned_start", "shares_owned_end",
+            "loans_from_shareholder_boy", "loans_from_shareholder_eoy",
+            "corp_total_shares_boy", "corp_total_shares_eoy",
+            "box_1_ordinary_income", "box_2_rental_real_estate", "box_3_other_rental",
+            "box_4_interest", "box_5a_ordinary_dividends", "box_5b_qualified_dividends",
+            "box_6_royalties", "box_7_net_stcg", "box_8a_net_ltcg", "box_8b_collectibles",
+            "box_8c_unrecaptured_1250", "box_9_net_1231", "box_10_other_income",
+            "box_11_section_179", "box_12_other_deductions", "box_13_credits",
+            "box_14_k3_attached", "box_15_amt_items",
+            "box_16a_tax_exempt_interest", "box_16b_other_tax_exempt",
+            "box_16c_nondeductible", "box_16d_distributions", "box_16e_loan_repayment",
+            "box_16f_foreign_taxes", "box_17a_investment_income",
+            "box_17b_investment_expenses", "box_17_other_info",
+            "box_18_multiple_at_risk", "box_19_multiple_passive",
+            "stock_basis_boy", "debt_basis", "at_risk_amount",
+        }
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_K1_FACT_KEYS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale K-1 facts: "
+                              + ", ".join(sorted(stale_facts.values_list("fact_key", flat=True))))
+            stale_facts.delete()
 
         rules = self._upsert_rules(form, [
             {"rule_id": "R001", "title": "Box 1 allocation", "rule_type": "calculation",
@@ -552,11 +604,89 @@ class Command(BaseCommand):
              "formula": "k_line_11 * ownership_percentage",
              "inputs": ["section_179_deduction", "ownership_percentage"], "outputs": ["box_11_section_179"],
              "description": "Box 11 = shareholder's share of §179. Subject to shareholder's own §179 limits.", "sort_order": 11, "precedence": 1},
-            {"rule_id": "R017", "title": "Box 17 allocation — QBI", "rule_type": "calculation",
+            {"rule_id": "R017", "title": "Box 17 allocation — QBI (code V)", "rule_type": "calculation",
              "formula": "k_line_17_qbi_items * ownership_percentage",
              "inputs": ["qbi_ordinary_income", "qbi_w2_wages", "qbi_ubia", "ownership_percentage"],
              "outputs": ["box_17_other_info"],
-             "description": "Box 17 QBI items = shareholder's share. Used for §199A computation on 1040.", "sort_order": 17, "precedence": 1},
+             "description": ("Box 17 code V = §199A information. i1120s 2025 p.43 verbatim: use the "
+                             "code with an asterisk (V*) in box 17 and enter 'STMT' — the statement "
+                             "separately identifies the shareholder's pro rata share of qualified items, "
+                             "W-2 wages, and UBIA. Used for the §199A computation on the 1040."),
+             "sort_order": 17, "precedence": 1},
+            # ── 2025 CODE-ASSIGNMENT RULES (renumber unit #3, 2026-07-11) ──
+            # The K-1 box code letters come from the i1120s 2025 code tables,
+            # NOT from the Schedule K sub-line letters.
+            {"rule_id": "R012", "title": "Box 12 code assignment (2025 table)", "rule_type": "calculation",
+             "formula": ("K 12a cash charitable → code A (60% limit) or B (30% limit); noncash "
+                         "charitable (K 12b) → codes C (50%), D (30%), E (cap-gain property to 50% "
+                         "org, 30%), F (cap-gain property, 20%), G (100%); K 12c investment interest "
+                         "expense → code H; K 12d section 59(e)(2) expenditures → code J; K 12e other "
+                         "deductions → per-item codes I/L/M/O/W/X/Y/Z/AA/AB/AC or ZZ (catch-all)."),
+             "inputs": ["box_12_other_deductions"], "outputs": [],
+             "description": ("i1120s 2025 pp.32-34 verbatim: 'Report each shareholder's pro rata share "
+                             "of cash charitable contributions in box 12 of Schedule K-1 using code A "
+                             "or B, as applicable' · noncash 'using codes C through G' · investment "
+                             "interest 'using code H' · §59(e) 'using code J'. Code I = Deductions—"
+                             "royalty income; code L = Deductions—portfolio (other) — NEITHER is the "
+                             "§59(e)/other-deductions code. ZZ items print ZZ* with a typed statement. "
+                             "Codes K, N, P–V, AD–AJ are reserved for future use (2025)."),
+             "sort_order": 12, "precedence": 1},
+            {"rule_id": "R013", "title": "Box 13 code assignment (2025 table)", "rule_type": "calculation",
+             "formula": ("K 13a LIH §42(j)(5) → code C; K 13b LIH other → code D; K 13c qualified "
+                         "rehab (rental RE) → code E; K 13d other rental RE credits → code F; K 13e "
+                         "other rental credits → code G; K 13f biofuel producer → code I; K 13g other "
+                         "credits → the credit's own code (A, B, H, or J through BC; 8941 = BA) or ZZ."),
+             "inputs": ["box_13_credits"], "outputs": [],
+             "description": ("i1120s 2025 pp.34-37 verbatim per line ('Use code C…', 'Use code D…', "
+                             "'using code E/F/G/I', 13g: 'Enter the applicable code, A, B, H, or J "
+                             "through BC'). ⚠ The 2025 box 13 alphabet is NOT the Schedule K sub-line "
+                             "letters: codes A/B = zero-emission nuclear / advanced nuclear (2023+ "
+                             "re-lettering); printing A for LIH §42(j)(5) claims the wrong credit. "
+                             "8941 small-employer health premiums = code BA. Codes AN, BD–BG reserved."),
+             "sort_order": 13, "precedence": 1},
+            {"rule_id": "R014", "title": "Box 14 — Schedule K-3 checkbox", "rule_type": "validation",
+             "formula": "box_14_k3_attached = (a Schedule K-3 is attached for this shareholder)",
+             "inputs": ["box_14_k3_attached"], "outputs": [],
+             "description": "2025 face box 14: 'Schedule K-3 is attached if checked.' Check when international items require a K-3.",
+             "sort_order": 14, "precedence": 1},
+            {"rule_id": "R015", "title": "Box 15 AMT codes A–F", "rule_type": "calculation",
+             "formula": "K 15a–15f → box 15 codes A–F respectively (pro rata)",
+             "inputs": ["box_15_amt_items"], "outputs": [],
+             "description": ("i1120s 2025 p.39 verbatim: 'Report each shareholder's pro rata share of "
+                             "amounts reported on lines 15a through 15f in box 15 of Schedule K-1 "
+                             "using codes A through F, respectively.' Multiple 15f items → F* + STMT."),
+             "sort_order": 15, "precedence": 1},
+            {"rule_id": "R016", "title": "Box 16 codes A–F; D/E per-recipient", "rule_type": "calculation",
+             "formula": ("K 16a/16b/16c/16f → box 16 codes A/B/C/F pro rata; 16d distributions → code "
+                         "D and 16e loan repayments → code E on the RECEIVING shareholder's K-1 only "
+                         "(actuals, never allocated)."),
+             "inputs": ["box_16a_tax_exempt_interest", "box_16b_other_tax_exempt", "box_16c_nondeductible",
+                        "box_16d_distributions", "box_16e_loan_repayment", "box_16f_foreign_taxes"],
+             "outputs": [],
+             "description": ("i1120s 2025 pp.39-40 verbatim: lines 16a/16b/16c/16f report 'using codes "
+                             "A, B, C, and F, respectively'; 'Report property distributions (line 16d) "
+                             "and repayment of loans from shareholders (line 16e) on the Schedule K-1 "
+                             "of the shareholder(s) that received the distributions or repayments "
+                             "(using codes D and E).'"),
+             "sort_order": 16, "precedence": 1},
+            {"rule_id": "R021", "title": "Box 17 codes — 2025 table", "rule_type": "calculation",
+             "formula": ("K 17a investment income → code A; K 17b investment expenses → code B; 17d "
+                         "statement items → own codes C–BA (V = §199A, K = §179-property dispositions, "
+                         "AC = §448(c) gross receipts, BA = domestic research expenditures) or ZZ. "
+                         "K 17c AE&P dividends are NEVER on the K-1 (Form 1099-DIV only)."),
+             "inputs": ["box_17a_investment_income", "box_17b_investment_expenses", "box_17_other_info"],
+             "outputs": [],
+             "description": ("i1120s 2025 pp.40-48: 17a/17b report 'using codes A and B, respectively'; "
+                             "17d items carry the pp.40-48 code list (C rehab non-rental, D energy-"
+                             "property basis, E/F LIH recapture, G/H credit recapture, I/J look-back, "
+                             "K/L §179 dispositions/recapture, M–R info items, U NII, V §199A, AA/AB "
+                             "§163(j) items, AC §448(c) gross receipts, AJ excess business loss, AN "
+                             "farming/fishing, AP inversion gain, AS–AV credit-property bases, AW "
+                             "reportable transactions, BA domestic research, ZZ other). >2%-shareholder "
+                             "health insurance has NO enumerated code — i1120s p.17: it is a W-2 box 14 "
+                             "information item; on the K-1 it may ride only as a ZZ other-information "
+                             "statement item, never code AC."),
+             "sort_order": 21, "precedence": 1},
             # ── ROUNDING LEG (2026-07-08, Ken ruling: residual-offset allocator) ──
             {"rule_id": "R-K1-ROUND", "title": "Whole-dollar K-1 rounding — residual to the LAST shareholder", "rule_type": "calculation",
              "formula": ("For each Schedule K dollar line: every shareholder EXCEPT the last (canonical "
@@ -571,9 +701,11 @@ class Command(BaseCommand):
                              "of 3,575 rounds to 1,788+1,788=3,576). The IRS ATS 1120-S Scenario-5 key "
                              "penny-offsets to the second shareholder (K-1s print 1,788/1,787 · "
                              "5,732/5,731). Applies to every pro-rated dollar box (1-17) and the QBI "
-                             "statement dollar items; shareholder-specific amounts (box 16d "
-                             "distributions, box 17 AC health insurance) are never allocated so never "
-                             "carry a residual. Ken ruling 2026-07-08 (tax-app REVIEW_QUEUE)."),
+                             "statement dollar items; shareholder-specific amounts (box 16 codes D/E "
+                             "distributions and loan repayments, the box 17 health-insurance "
+                             "information item — a ZZ statement item, NOT code AC, which means §448(c) "
+                             "gross receipts on the 2025 table) are never allocated so never carry a "
+                             "residual. Ken ruling 2026-07-08 (tax-app REVIEW_QUEUE)."),
              "sort_order": 21, "precedence": 2},
             {"rule_id": "R018", "title": "Basis limitation check", "rule_type": "validation",
              "formula": "total_losses <= stock_basis_boy + debt_basis",
@@ -610,6 +742,12 @@ class Command(BaseCommand):
             ("R011", "IRS_2025_1120S_K1_INSTR", "secondary", "Box 11 instructions"),
             ("R017", "IRC_199A", "primary", "§199A QBI items for shareholder computation"),
             ("R017", "IRS_2025_1120S_K1_INSTR", "secondary", "Box 17 — other information"),
+            ("R012", "IRS_2025_1120S_INSTR", "primary", "pp.32-34 — box 12 code assignments (A/B cash, C-G noncash, H investment interest, J §59(e)(2), ZZ other; verbatim excerpts)"),
+            ("R013", "IRS_2025_1120S_INSTR", "primary", "pp.34-37 — box 13 code assignments (13a→C … 13f→I; 13g own codes A/B/H/J-BC incl. 8941=BA; verbatim excerpts)"),
+            ("R014", "IRS_2025_1120S_INSTR", "primary", "2025 face box 14 — Schedule K-3 attached checkbox"),
+            ("R015", "IRS_2025_1120S_INSTR", "primary", "p.39 — box 15 codes A-F respectively (verbatim excerpt)"),
+            ("R016", "IRS_2025_1120S_INSTR", "primary", "pp.39-40 — box 16 codes A/B/C/F pro rata; D/E per-recipient (verbatim excerpt)"),
+            ("R021", "IRS_2025_1120S_INSTR", "primary", "pp.40-48 — box 17 code list (A/B, C-BA, ZZ); p.17 health insurance = W-2 box 14 item (verbatim excerpts)"),
             ("R-K1-ROUND", "IRC_1377", "primary", "§1377(a) strict pro-rata — whole-dollar reporting forces the residual somewhere; last-shareholder offset keeps Σ == Schedule K"),
             ("R-K1-ROUND", "IRS_2025_1120S_K1_INSTR", "secondary", "Whole-dollar reporting convention; the ATS Scenario-5 key's 1,788/1,787 residual-offset behavior"),
             ("R018", "IRC_1366", "primary", "§1366(d) — loss limited to stock + debt basis"),
@@ -631,13 +769,84 @@ class Command(BaseCommand):
             {"line_number": "Box8b", "description": "Collectibles (28%) gain (loss)", "line_type": "calculated", "destination_form": "Schedule D Line 18 (28% Rate Gain Worksheet)", "sort_order": 10},
             {"line_number": "Box8c", "description": "Unrecaptured §1250 gain", "line_type": "calculated", "destination_form": "Schedule D Line 19 (Unrecaptured §1250 Gain Worksheet)", "sort_order": 11},
             {"line_number": "Box9", "description": "Net §1231 gain (loss)", "line_type": "calculated", "source_rules": ["R009"], "destination_form": "Form 4797 Part I", "sort_order": 12},
-            {"line_number": "Box10", "description": "Other income (loss)", "line_type": "calculated", "destination_form": "See K-1 instructions for codes", "sort_order": 13},
+            {"line_number": "Box10", "description": "Other income (loss) (codes A–ZZ)", "line_type": "calculated", "destination_form": "See K-1 instructions per code", "sort_order": 13,
+             "notes": ("2025 codes (i1120s pp.30-31): A other portfolio income · B involuntary conversions · "
+                       "C §1256 contracts/straddles · D mining exploration recapture · E §951A(a) inclusions · "
+                       "F subpart F inclusions · G §951(a)(1)(B) inclusions · I oil/gas/geothermal disposition "
+                       "gain (loss) · J tax-benefit recoveries · K gambling gains/losses · M/N §1045 rollover "
+                       "gain · O QSB §1202 exclusion · S non-portfolio capital gain (loss) · ZZ other "
+                       "(ZZ* + typed statement). H, L, P–R, T–X reserved (2025).")},
             {"line_number": "Box11", "description": "§179 deduction", "line_type": "calculated", "source_rules": ["R011"], "destination_form": "Form 4562 (shareholder's own)", "sort_order": 14},
-            {"line_number": "Box12", "description": "Other deductions (coded: A=cash charitable, B=noncash, C=inv interest, etc.)", "line_type": "calculated", "destination_form": "Schedule A / Form 4952 / etc. per code", "sort_order": 15},
-            {"line_number": "Box13", "description": "Credits (coded: A-G per type)", "line_type": "calculated", "destination_form": "Form 3800 / Form 1116 / etc. per code", "sort_order": 16},
-            {"line_number": "Box16", "description": "Items affecting shareholder basis (A=tax-exempt interest, C=nondeductible, D=distributions)", "line_type": "calculated", "destination_form": "Form 7203", "sort_order": 17},
-            {"line_number": "Box17", "description": "Other information — §199A QBI, investment income/expenses", "line_type": "calculated", "source_rules": ["R017"], "destination_form": "Form 8995 or 8995-A", "sort_order": 18},
+            {"line_number": "Box12", "description": "Other deductions (codes A–ZZ per the 2025 table)", "line_type": "calculated", "source_rules": ["R012"], "destination_form": "Schedule A / Form 4952 / etc. per code", "sort_order": 15,
+             "notes": ("2025 codes (i1120s pp.32-34): A cash charitable 60% · B cash charitable 30% · C noncash "
+                       "50% · D noncash 30% · E cap-gain property to 50% org (30%) · F cap-gain property 20% · "
+                       "G contributions 100% · H investment interest expense · I deductions—royalty income · "
+                       "J §59(e)(2) expenditures · L deductions—portfolio (other) · M preproductive period · "
+                       "O reforestation · W soil/water conservation · X film/TV/sound production · Y barrier "
+                       "removal · Z itemized deductions · AA CCF contributions · AB early-withdrawal penalty · "
+                       "AC interest on debt-financed distributions · ZZ other (ZZ* + typed statement). "
+                       "K, N, P–V, AD–AJ reserved (2025).")},
+            {"line_number": "Box13", "description": "Credits (2025 codes: 13a→C, 13b→D, 13c→E, 13d→F, 13e→G, 13f→I; 13g per-credit)", "line_type": "calculated", "source_rules": ["R013"], "destination_form": "Form 3800 / source-form per code", "sort_order": 16,
+             "notes": ("2025 codes (i1120s pp.34-37): C LIH §42(j)(5) · D LIH other · E qualified rehab (rental "
+                       "RE) · F other rental RE credits · G other rental credits · I biofuel producer. 13g "
+                       "credits carry their OWN codes: A zero-emission nuclear · B advanced nuclear · H "
+                       "undistributed capital gains · J work opportunity · K disabled access · L empowerment "
+                       "zone · M research · N employer SS/Medicare tips · O backup withholding · P–U unused "
+                       "investment credits from cooperatives · V advanced manufacturing production · W clean "
+                       "electricity production · X clean fuel · Y clean hydrogen · Z orphan drug · AA enhanced "
+                       "oil recovery · AB renewable electricity · AC biodiesel/SAF · AD new markets · AE small-"
+                       "employer pension startup · AF auto-enrollment · AG military spouse · AH employer "
+                       "childcare · AI low-sulfur diesel · AJ railroad track maintenance · AK marginal wells · "
+                       "AL distilled spirits · AM energy-efficient home · AO alt-fuel refueling · AP–AU bond "
+                       "credits · AV differential wage · AW/AX carbon oxide sequestration · AY new clean "
+                       "vehicle · AZ commercial clean vehicle · BA small-employer health insurance (8941) · "
+                       "BB paid family/medical leave · BC §6418 transferred credits · ZZ other. ⚠ NOT the "
+                       "Schedule K sub-line letters — A≠LIH on the 2025 face.")},
+            {"line_number": "Box14", "description": "Schedule K-3 is attached if checked", "line_type": "input", "source_rules": ["R014"], "source_facts": ["box_14_k3_attached"], "destination_form": "Schedule K-3", "sort_order": 17},
+            {"line_number": "Box15", "description": "Alternative minimum tax (AMT) items (codes A–F = K lines 15a–15f)", "line_type": "calculated", "source_rules": ["R015"], "destination_form": "Form 6251", "sort_order": 18,
+             "notes": "A post-1986 depreciation adjustment · B adjusted gain/loss · C depletion (non-oil/gas) · D oil/gas/geothermal gross income · E oil/gas/geothermal deductions · F other AMT items (F* + STMT when multiple)."},
+            {"line_number": "Box16", "description": "Items affecting shareholder basis (codes A–F)", "line_type": "calculated", "source_rules": ["R016"], "destination_form": "Form 7203", "sort_order": 19,
+             "notes": "A tax-exempt interest · B other tax-exempt income · C nondeductible expenses · D distributions (per-recipient) · E repayment of loans from shareholders (per-recipient) · F foreign taxes paid or accrued."},
+            {"line_number": "Box17", "description": "Other information (codes A–BA + ZZ; V = §199A)", "line_type": "calculated", "source_rules": ["R017", "R021"], "destination_form": "Form 8995/8995-A (V) / per code", "sort_order": 20,
+             "notes": ("A investment income · B investment expenses · C qualified rehab (non-rental) · D energy-"
+                       "property basis · E/F LIH recapture · G investment-credit recapture · H other credit "
+                       "recapture · I/J look-back interest · K §179-property dispositions · L §179 recapture · "
+                       "M §453(l)(3) · N §453A(c) · O §1260(b) · P production-expenditure interest · Q CCF "
+                       "withdrawals · R oil/gas depletion · U net investment income · V §199A (V* + STMT) · "
+                       "AA excess taxable income · AB excess business interest income · AC §448(c) gross "
+                       "receipts · AJ excess business loss · AN farming/fishing · AP inversion gain · AS–AV "
+                       "credit-property bases · AW reportable transactions · BA domestic research expenditures · "
+                       "ZZ other information. W–Z, AD–AI, AK–AM, AO, AQ–AR, AX–AZ reserved (2025). K line 17c "
+                       "AE&P dividends NEVER print here (1099-DIV only).")},
+            {"line_number": "Box18", "description": "More than one activity for at-risk purposes (checkbox; attach statement)", "line_type": "input", "source_facts": ["box_18_multiple_at_risk"], "destination_form": "Form 6198 (per activity)", "sort_order": 21},
+            {"line_number": "Box19", "description": "More than one activity for passive activity purposes (checkbox; attach statement)", "line_type": "input", "source_facts": ["box_19_multiple_passive"], "destination_form": "Form 8582 (per activity)", "sort_order": 22},
+            # Part I / Part II header items (2025 face)
+            {"line_number": "ItemA", "description": "Part I A — Corporation's employer identification number", "line_type": "input", "sort_order": 30},
+            {"line_number": "ItemB", "description": "Part I B — Corporation's name, address, city, state, and ZIP code", "line_type": "input", "sort_order": 31},
+            {"line_number": "ItemC", "description": "Part I C — IRS Center where corporation filed return", "line_type": "input", "sort_order": 32},
+            {"line_number": "ItemD", "description": "Part I D — Corporation's total number of shares (beginning/end of tax year)", "line_type": "input", "source_facts": ["corp_total_shares_boy", "corp_total_shares_eoy"], "sort_order": 33},
+            {"line_number": "ItemE", "description": "Part II E — Shareholder's identifying number", "line_type": "input", "source_facts": ["shareholder_tin"], "sort_order": 34},
+            {"line_number": "ItemF1", "description": "Part II F1 — Shareholder's name, address, city, state, and ZIP code", "line_type": "input", "source_facts": ["shareholder_name"], "sort_order": 35},
+            {"line_number": "ItemF2", "description": "Part II F2 — Responsible party (disregarded entity/trust/estate/nominee shareholder): TIN + name", "line_type": "input", "source_facts": ["responsible_party_tin", "responsible_party_name"], "sort_order": 36},
+            {"line_number": "ItemF3", "description": "Part II F3 — What type of entity is this shareholder?", "line_type": "input", "source_facts": ["shareholder_entity_type"], "sort_order": 37},
+            {"line_number": "ItemG", "description": "Part II G — Current year allocation percentage", "line_type": "input", "source_facts": ["ownership_percentage"], "sort_order": 38},
+            {"line_number": "ItemH", "description": "Part II H — Shareholder's number of shares (beginning/end of tax year)", "line_type": "input", "source_facts": ["shares_owned_start", "shares_owned_end"], "sort_order": 39},
+            {"line_number": "ItemI", "description": "Part II I — Loans from shareholder (beginning/end of tax year)", "line_type": "input", "source_facts": ["loans_from_shareholder_boy", "loans_from_shareholder_eoy"], "sort_order": 40},
         ])
+
+        # In-loader stale-line self-heal (2025 face set; the s56 rename-orphan guard).
+        _K1_LINES = {
+            "Box1", "Box2", "Box3", "Box4", "Box5a", "Box5b", "Box6", "Box7",
+            "Box8a", "Box8b", "Box8c", "Box9", "Box10", "Box11", "Box12", "Box13",
+            "Box14", "Box15", "Box16", "Box17", "Box18", "Box19",
+            "ItemA", "ItemB", "ItemC", "ItemD", "ItemE", "ItemF1", "ItemF2",
+            "ItemF3", "ItemG", "ItemH", "ItemI",
+        }
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_K1_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale K-1 line rows: "
+                              + ", ".join(sorted(stale_lines.values_list("line_number", flat=True))))
+            stale_lines.delete()
 
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "Loss exceeds basis", "severity": "error",
@@ -649,6 +858,15 @@ class Command(BaseCommand):
             {"diagnostic_id": "D003", "title": "Passive activity indicator", "severity": "info",
              "condition": "shareholder does not materially participate",
              "message": "Reminder: if the shareholder does not materially participate in the S corporation's activities, losses may be subject to passive activity limitations under §469. Check Form 8582."},
+            {"diagnostic_id": "D004", "title": "Pre-2023 box 13 code letters", "severity": "error",
+             "condition": "box 13 code letters mirror the Schedule K sub-line letters (A=LIH §42(j)(5), B=LIH other, C=rehab, D=other rental RE, F=biofuel)",
+             "message": "The 2025 K-1 box 13 codes are NOT the Schedule K sub-line letters: 13a→C, 13b→D, 13c→E, 13d→F, 13e→G, 13f→I (i1120s 2025 pp.34-37). On the 2025 table, codes A/B mean the zero-emission / advanced nuclear power credits — printing A for a low-income housing credit claims the wrong credit."},
+            {"diagnostic_id": "D005", "title": "Health insurance is not box 17 code AC", "severity": "error",
+             "condition": ">2%-shareholder health insurance premiums reported in box 17 under code AC",
+             "message": "i1120s 2025 p.17: report >2%-shareholder health insurance as an information item in box 14 of that shareholder's Form W-2. It has NO enumerated K-1 code; box 17 code AC means gross receipts for section 448(c) on the 2025 table. If shown on the K-1 at all, it rides code ZZ (other information) with a statement."},
+            {"diagnostic_id": "D006", "title": "Charitable code A assumes 60%-limit cash", "severity": "warning",
+             "condition": "all charitable contributions coded A without a limitation-category split",
+             "message": "Box 12 code A = cash contributions (60% AGI limit) only. 30%-limit cash = code B; noncash = codes C–G by category (i1120s 2025 pp.32-33). Verify the contribution category before coding."},
         ])
 
         self._upsert_tests(form, [
@@ -673,9 +891,144 @@ class Command(BaseCommand):
                        "shareholder = 3,575 − 1,788 = 1,787 (the residual). Σ == Schedule K line 2 "
                        "EXACTLY (never 1,788+1,788=3,576). Matches the ATS Scenario-5 key. Same "
                        "mechanics: K11 11,463 → 5,732/5,731."), "sort_order": 3},
+            # ── 2025 CODE-TABLE PINS (renumber unit #3, 2026-07-11) ──
+            {"scenario_name": "Box 13 code letters — 2025 table",
+             "scenario_type": "normal",
+             "inputs": {"ownership_percentage": 1.0, "lih_credit_42j5": 5000, "biofuel_producer_credit": 1200, "credit_8941": 51014},
+             "expected_outputs": {"box13_code_lih_42j5": "C", "box13_code_biofuel": "I", "box13_code_8941": "BA"},
+             "notes": ("R013: K 13a → box 13 code C (NOT A — A means zero-emission nuclear on the 2025 "
+                       "table); 13f biofuel → code I (NOT F — F means other rental RE credits); the 8941 "
+                       "small-employer health premium credit on 13g → code BA (i8941 2025 verbatim)."),
+             "sort_order": 4},
+            {"scenario_name": "Box 12 code letters — H / J / ZZ",
+             "scenario_type": "normal",
+             "inputs": {"ownership_percentage": 1.0, "investment_interest_expense": 3000, "sec_59e2_expenditures": 8000, "other_deductions": 500},
+             "expected_outputs": {"box12_code_inv_interest": "H", "box12_code_59e2": "J", "box12_code_other": "ZZ"},
+             "notes": ("R012: investment interest → H; §59(e)(2) → J (NOT I — I means deductions—royalty "
+                       "income); an uncategorized other-deductions amount → ZZ (ZZ* + typed statement), "
+                       "NOT L (L means deductions—portfolio (other))."),
+             "sort_order": 5},
+            {"scenario_name": "Box 16 D/E per-recipient — never allocated",
+             "scenario_type": "edge",
+             "inputs": {"shareholders": [{"ownership_percentage": 0.5, "distributions": 30000},
+                                          {"ownership_percentage": 0.5, "distributions": 10000}]},
+             "expected_outputs": {"box16d_first_shareholder": 30000, "box16d_last_shareholder": 10000},
+             "notes": "R016: 16d/16e go on the RECEIVING shareholder's K-1 as actuals (codes D/E) — a 50/50 ownership split does NOT split a 40,000 distribution 20,000/20,000.",
+             "sort_order": 6},
+            {"scenario_name": "Health insurance — ZZ information item, never AC",
+             "scenario_type": "edge",
+             "inputs": {"ownership_percentage": 1.0, "shareholder_health_insurance_premiums": 12000},
+             "expected_outputs": {"box17_code_health_insurance": "ZZ", "w2_box14_item": 12000},
+             "notes": ("R021/D005: i1120s 2025 p.17 — the official channel is W-2 box 14; box 17 code AC "
+                       "means §448(c) gross receipts. Any K-1 presentation rides ZZ + statement."),
+             "sort_order": 7},
         ])
 
+        # In-loader stale-scenario self-heal (the RET-G5 rename-orphan guard).
+        _K1_SCENARIOS = {
+            "Simple K-1 — all income, no limitations",
+            "Loss limitation triggered",
+            "Residual-offset rounding — 50/50 split of an odd K line (ATS S5 K2)",
+            "Box 13 code letters — 2025 table",
+            "Box 12 code letters — H / J / ZZ",
+            "Box 16 D/E per-recipient — never allocated",
+            "Health insurance — ZZ information item, never AC",
+        }
+        stale_tests = TestScenario.objects.filter(tax_form=form).exclude(scenario_name__in=_K1_SCENARIOS)
+        if stale_tests.exists():
+            self.stdout.write(f"  deleting {stale_tests.count()} stale K-1 scenarios: "
+                              + ", ".join(sorted(stale_tests.values_list("scenario_name", flat=True))))
+            stale_tests.delete()
+
+        # Verbatim i1120s 2025 code-table excerpts on the existing corporation-
+        # instructions source (fetched from resources/irs_forms/2025/i1120s.pdf,
+        # pymupdf extraction 2026-07-11).
+        instr = sources.get("IRS_2025_1120S_INSTR")
+        if instr:
+            for exc in [
+                {"excerpt_label": "K-1 box 13 code assignments — 13a→C … 13f→I (2025)",
+                 "location_reference": "i1120s (2025) pp.34-35, Lines 13a-13f Schedule K-1 paragraphs",
+                 "excerpt_text": (
+                     "Line 13a: \"Report in box 13 of Schedule K-1 each shareholder's pro rata share of the "
+                     "low-income housing credit reported on Schedule K, line 13a. Use code C to report the "
+                     "portion of the credit attributable to buildings placed in service after 2007.\" · Line "
+                     "13b: \"Use code D…\" · Line 13c: \"Report each shareholder's pro rata share of qualified "
+                     "rehabilitation expenditures related to rental real estate activities in box 13 of "
+                     "Schedule K-1 using code E.\" · Line 13d: \"…other rental real estate credits using code "
+                     "F.\" · Line 13e: \"…other rental credits using code G.\" · Line 13f: \"Report in box 13 of "
+                     "Schedule K-1 each shareholder's pro rata share of the biofuel producer credit reported "
+                     "on line 13f using code I.\""),
+                 "summary_text": "2025 box 13 codes: 13a→C, 13b→D, 13c→E, 13d→F, 13e→G, 13f→I — NOT the Schedule K sub-line letters.",
+                 "is_key_excerpt": True},
+                {"excerpt_label": "K-1 box 13g — own code alphabet incl. 8941 = BA (2025)",
+                 "location_reference": "i1120s (2025) pp.35-37, Line 13g",
+                 "excerpt_text": (
+                     "\"Enter the applicable code, A, B, H, or J through BC, in the column to the left of the "
+                     "dollar amount entry space.\" The category list assigns: \"Zero-emission nuclear power "
+                     "production credit (code A)\" · \"Credit for production from advanced nuclear power "
+                     "facilities (code B)\" · … · \"Credit for small employer health insurance premiums "
+                     "(code BA)\" · \"Employer credit for paid family and medical leave (code BB)\" · \"Eligible "
+                     "credits from transferor(s) under section 6418 (code BC)\" · \"Other credits (code ZZ)\"."),
+                 "summary_text": "13g credits carry their own codes (A, B, H, J–BC + ZZ); the 8941 credit = code BA.",
+                 "is_key_excerpt": True},
+                {"excerpt_label": "K-1 box 12 code assignments (2025)",
+                 "location_reference": "i1120s (2025) pp.32-34, Lines 12a-12e",
+                 "excerpt_text": (
+                     "\"Report each shareholder's pro rata share of cash charitable contributions in box 12 of "
+                     "Schedule K-1 using code A or B, as applicable.\" · \"Report each shareholder's pro rata "
+                     "share of charitable contributions in box 12 of Schedule K-1 using codes C through G for "
+                     "each of the contribution categories shown earlier.\" · \"Report each shareholder's pro "
+                     "rata share of investment interest expense in box 12 of Schedule K-1 using code H.\" · "
+                     "\"Report each shareholder's pro rata share of section 59(e) expenditures in box 12 of "
+                     "Schedule K-1 using code J.\" · \"Deductions—Royalty income (code I).\" · \"Deductions—"
+                     "Portfolio income (other) (code L).\" · \"Other deductions (code ZZ).\""),
+                 "summary_text": "2025 box 12: cash charitable A/B, noncash C–G, investment interest H, §59(e)(2) J (not I), other ZZ (not L).",
+                 "is_key_excerpt": True},
+                {"excerpt_label": "K-1 box 15 codes A–F respectively (2025)",
+                 "location_reference": "i1120s (2025) p.39, Schedule K-1 AMT paragraph",
+                 "excerpt_text": (
+                     "Report each shareholder's pro rata share of amounts reported on lines 15a through 15f "
+                     "in box 15 of Schedule K-1 using codes A through F, respectively."),
+                 "summary_text": "Box 15 AMT items: K 15a–15f → codes A–F respectively.",
+                 "is_key_excerpt": True},
+                {"excerpt_label": "K-1 box 16 codes — A/B/C/F pro rata; D/E per-recipient (2025)",
+                 "location_reference": "i1120s (2025) pp.39-40, Lines 16a-16f Schedule K-1 paragraphs",
+                 "excerpt_text": (
+                     "\"Report each shareholder's pro rata share of amounts reported on lines 16a, 16b, 16c, "
+                     "and 16f (concerning items affecting shareholder basis) in box 16 of Schedule K-1 using "
+                     "codes A, B, C, and F, respectively.\" · \"Report property distributions (line 16d) and "
+                     "repayment of loans from shareholders (line 16e) on the Schedule K-1 of the "
+                     "shareholder(s) that received the distributions or repayments (using codes D and E).\""),
+                 "summary_text": "Box 16: A/B/C/F allocated pro rata; D (distributions) and E (loan repayments) are per-recipient actuals.",
+                 "is_key_excerpt": True},
+                {"excerpt_label": "K-1 box 17 codes A/B; 17d list runs C–BA + ZZ (2025)",
+                 "location_reference": "i1120s (2025) pp.40-48, Lines 17a-17d",
+                 "excerpt_text": (
+                     "\"Report each shareholder's pro rata share of amounts reported on lines 17a and 17b "
+                     "(investment income and expenses) in box 17 of Schedule K-1 using codes A and B, "
+                     "respectively.\" Line 17d items carry their own codes, including \"Dispositions of "
+                     "property with section 179 deductions (code K)\" · \"Net investment income (code U)\" · "
+                     "\"Section 199A information (code V)\" · \"Gross receipts for section 448(c) (code AC)\" · "
+                     "\"Domestic research or experimental expenditures (code BA)\" · \"Other information "
+                     "(code ZZ)\"."),
+                 "summary_text": "Box 17: 17a→A, 17b→B; 17d statement items C–BA + ZZ (V=§199A, K=§179 dispositions, AC=§448(c) gross receipts).",
+                 "is_key_excerpt": True},
+                {"excerpt_label": ">2%-shareholder health insurance → W-2 box 14 (2025)",
+                 "location_reference": "i1120s (2025) p.17, Line 8 wages",
+                 "excerpt_text": (
+                     "Report amounts paid for health insurance coverage for a more-than-2% shareholder "
+                     "(including that shareholder's spouse, dependents, and any children under age 27 who "
+                     "aren't dependents) as an information item in box 14 of that shareholder's Form W-2."),
+                 "summary_text": "Health insurance for >2% shareholders is a W-2 box 14 information item — no enumerated K-1 code exists (box 17 AC = §448(c) gross receipts).",
+                 "is_key_excerpt": True},
+            ]:
+                AuthorityExcerpt.objects.update_or_create(
+                    authority_source=instr, excerpt_label=exc["excerpt_label"], defaults=exc,
+                )
+            self.stdout.write("  7 i1120s code-table excerpts")
+
         self._upsert_form_links("K1_1120S", sources, [
+            ("IRS_2025_1120S_INSTR", "governs"),
             ("IRS_2025_1120S_K1_INSTR", "governs"),
             ("IRC_1366", "governs"),
             ("IRC_1377", "governs"),
