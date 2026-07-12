@@ -2071,6 +2071,22 @@ class Command(BaseCommand):
             TestScenario.objects.update_or_create(
                 tax_form=form, scenario_name=t.pop("scenario_name"), defaults=t,
             )
+        # Scenario renames orphan the old row (update_or_create keys on
+        # scenario_name and cannot delete) — e.g. the RET-G5 "unsupported
+        # exception 13" -> "invalid exception 25" rename (REVIEW_QUEUE s54:
+        # the 5329 full unit made 13 a VALID §457 exception, so the old
+        # scenario asserted a false diagnostic). Delete anything not in the
+        # current authored list so a reseed self-heals the DB.
+        current_names = {t["scenario_name"] for t in scenarios}
+        stale = TestScenario.objects.filter(tax_form=form).exclude(
+            scenario_name__in=current_names,
+        )
+        if stale.exists():
+            self.stdout.write(
+                f"  deleting {stale.count()} stale scenario rows: "
+                + "; ".join(stale.values_list("scenario_name", flat=True))
+            )
+            stale.delete()
         self.stdout.write(f"  {len(scenarios)} test scenarios")
 
     def _upsert_form_links(self, sources):

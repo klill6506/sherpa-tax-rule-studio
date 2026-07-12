@@ -850,9 +850,9 @@ class Command(BaseCommand):
 
         # Add new flow-in rules that document WHERE each K line comes from
         rules = self._upsert_rules(form, [
-            {"rule_id": "R010", "title": "K Line 1 source: Page 1 Line 21",
-             "description": "Schedule K Line 1 = Page 1 Line 21 (ordinary business income/loss). This is the direct flow of the S-Corp's operating result to Schedule K for shareholder allocation.",
-             "rule_type": "routing", "formula": "K1 = Page1_Line21",
+            {"rule_id": "R010", "title": "K Line 1 source: Page 1 Line 22",
+             "description": "Schedule K Line 1 = Page 1 Line 22 (ordinary business income/loss; 2025 face — renumbered 2026-07-11, the prior text said line 21). This is the direct flow of the S-Corp's operating result to Schedule K for shareholder allocation.",
+             "rule_type": "routing", "formula": "K1 = Page1_Line22",
              "inputs": ["page1_ordinary_income"], "outputs": ["K1"],
              "precedence": 1, "sort_order": 10},
             {"rule_id": "R011", "title": "K Line 4 = Interest income",
@@ -893,24 +893,24 @@ class Command(BaseCommand):
              "inputs": ["total_distributions"], "outputs": ["K16d"],
              "precedence": 1, "sort_order": 17},
             {"rule_id": "R018", "title": "K Line 18 = Income/loss reconciliation",
-             "description": "Schedule K Line 18 is a reconciliation total. It should equal Page 1 Line 21. This is the same number that M-1 Line 7/8 must also equal.",
-             "rule_type": "validation", "formula": "K18 = Page1_Line21",
+             "description": "Schedule K Line 18 combines lines 1-10 and subtracts lines 11-12e and 16f (2025 face verbatim). Per i1120s (2025) p.49 it must equal Schedule M-1 line 8 (or M-3 Part II line 26(d)). CORRECTED 2026-07-11: the prior text said K18 should equal Page 1 Line 21 — WRONG; separately stated items (rental, portfolio, capital gains, 179, charitable, 16f) make K18 differ from page-1 ordinary income.",
+             "rule_type": "validation", "formula": "K18 = sum(K1..K10) - sum(K11..K12e) - K16f = M1_Line8",
              "inputs": ["K1_through_K10_net"], "outputs": ["K18"],
              "precedence": 50, "sort_order": 18},
         ])
 
         self._upsert_links(rules, sources, [
-            ("R010", "IRS_2025_1120S_INSTR_FULL", "primary", "K1 = Page 1 Line 21"),
+            ("R010", "IRS_2025_1120S_INSTR_FULL", "primary", "K1 = Page 1 Line 22 (2025 face)"),
             ("R011", "IRS_2025_1120S_INSTR_FULL", "primary", "K4 = interest income (portfolio)"),
             ("R012", "IRS_2025_1120S_INSTR_FULL", "primary", "K5a/5b = dividends"),
-            ("R013", "IRS_2025_1120S_SCHD_INSTR_FULL", "primary", "Schedule D Part I Line 5 -> K7"),
-            ("R014", "IRS_2025_1120S_SCHD_INSTR_FULL", "primary", "Schedule D Part II Line 12 -> K8a"),
+            ("R013", "IRS_2025_1120S_SCHD_INSTR_FULL", "primary", "Schedule D Part I Line 7 -> K7 (2025 face)"),
+            ("R014", "IRS_2025_1120S_SCHD_INSTR_FULL", "primary", "Schedule D Part II Line 15 -> K8a (2025 face)"),
             ("R015", "IRS_2025_1120S_INSTR_FULL", "primary", "K9 = Form 4797 Part I Line 7 (verified)"),
             ("R015", "IRS_2025_4797_INSTR", "secondary", "4797 bypasses Schedule D on 1120-S"),
             ("R016", "IRS_2025_1120S_INSTR_FULL", "primary", "K16c = nondeductible expenses"),
             ("R017", "IRS_2025_1120S_INSTR_FULL", "primary", "K16d = distributions"),
             ("R017", "IRC_1368", "secondary", "Section 1368 distribution rules"),
-            ("R018", "IRS_2025_1120S_INSTR_FULL", "primary", "K18 must equal Page 1 Line 21"),
+            ("R018", "IRS_2025_1120S_INSTR_FULL", "primary", "K18 must equal M-1 line 8 (i1120s 2025 p.49)"),
         ])
 
         # Add K-1 box mapping lines
@@ -997,10 +997,10 @@ class Command(BaseCommand):
              "severity": "warning",
              "condition": "page1_line4 != form_4797_part2_line17",
              "message": "Page 1 Line 4 does not match Form 4797 Part II Line 17. Line 4 should equal the ordinary gain/loss from 4797 Part II, NOT the Section 1231 gain from Part I."},
-            {"diagnostic_id": "D012", "title": "K18 does not equal Page 1 Line 21",
+            {"diagnostic_id": "D012", "title": "K18 does not equal M-1 line 8",
              "severity": "error",
-             "condition": "K18 != page1_line21",
-             "message": "Schedule K Line 18 (income/loss reconciliation) does not equal Page 1 Line 21. These must match."},
+             "condition": "K18 != m1_line_8",
+             "message": "Schedule K line 18 (income/loss reconciliation: lines 1-10 minus 11-12e and 16f) does not equal Schedule M-1 line 8 (or M-3 Part II line 26(d)). These must match per i1120s (2025) p.49. Note: K18 does NOT have to equal Page 1 line 22 — separately stated items differ."},
             {"diagnostic_id": "D013", "title": "Schedule D Section 1231 contamination",
              "severity": "error",
              "condition": "schedule_d includes section_1231_amounts",

@@ -1,4 +1,28 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-11 — SCH_K_1120S renumbered to the 2025 face (audit unit #2, WO-25) + RET-G5 orphan fix (tts s56)
+- **SCH_K_1120S rebuilt verbatim** vs f1120s.pdf (2025) pp.3-4 + i1120s pp.40/49: the
+  fabricated 13f "Foreign tax credit" → **Biofuel producer credit** (foreign taxes = 16f);
+  rehab credit 13d → 13c; 12d/12e fixed; added 3a/3b/3c (R009 netting), 8b/8c, 13b/13e,
+  14a/b K-2 checkboxes, 15a-f, 16e/16f, the **17a-d split — 17c AE&P dividends are
+  1099-DIV-only, never K-1 (i1120s p.40 verbatim, now diagnostic D005)**; L18 = combine
+  1-10 − (11-12e) − 16f (R019), ties to **M-1 line 8** per i1120s p.49.
+- **Tax-law error corrected in load_1120s_full**: R018 + D012 said "K18 must equal Page 1
+  Line 21" — WRONG (separately stated items differ; the tie is M-1 L8 / M-3 II-26(d)).
+  R010's "Page 1 Line 21" → 22 (2025 face inserted line 19, Form 7205).
+- In-loader stale deletes: line "17" catch-all, fact `foreign_tax_credit`; the line
+  allow-set includes load_1120s_full's K*->Box* rows so a base reseed can't stomp them.
+- Seeded (52 facts / 19 rules / 47 face lines / 6 diag / 6 scenarios) + export verified
+  (lookup/SCH_K_1120S/export/ = 200, content-checked) + tts mirror refreshed.
+- **NEW audit finding (queued after SCHL): 1120S_PAGE1 + M1 + M2 blocks in load_1120s_full
+  are pre-Form-7205 numbering** (OBI on 21 vs face 22; tax/payments restructured 23/24a-z)
+  **+ the M-1 "verbatim" excerpt contains a fabricated line** ("3a guaranteed payments" is
+  a 1065 M-1 line; the 1120-S 3a is depreciation). Ledger: tts docs/rs_handoff.
+- **RET-G5**: `load_1040_retirement._upsert_tests` now deletes orphaned scenario rows
+  (renames leave the old scenario_name row behind — the rename-orphan class); reseeded,
+  the stale "unsupported exception 13" row deleted from the DB; re-exported.
+- tts-side print fixes from this trip (page-1 row shift, K13/K12 shifts, K17c off the
+  K-1) live in the tts repo — see tts STATUS_ARCHIVE s56.
+
 ## 2026-07-10 (later again) — 8825 renumbered to the Dec-2025 face + Schedule A (Form 8825) mechanics (tts s48)
 - The batch-2 8825 group's spec-first leg. **The Session-10 8825 block was ANOTHER
   early-era drifted spec, found OUTSIDE the s44 audit queue** — its numbering (other 15 /

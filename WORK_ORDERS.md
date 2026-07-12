@@ -66,6 +66,23 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-25] SCH_K_1120S 2025-face renumber (early-era audit queue unit #2) · AMENDMENT ·
+  status `✅ DONE — seeded + exported 2026-07-11`.** Not greenfield — the s44 face-audit queue
+  (Ken-approved retrospective item B) is the standing Gate-1 for the renumber units; same recipe
+  as unit #1 (4562, s45). Rebuilt verbatim vs f1120s.pdf (2025) pages 3-4 + i1120s p.40/p.49:
+  fabricated 13f FTC → Biofuel producer credit (foreign taxes = 16f); rehab credit 13d → 13c;
+  12d/12e fixed (§59(e)(2) / other deductions); added 3b/3c, 8b/8c, 13b/13e, 14a/b, 15a-f,
+  16e/16f, the 17a-d split (**17c AE&P dividends → 1099-DIV, never K-1** — i1120s p.40); L18
+  formula fixed (combine 1-10 − 11-12e − 16f; ties to **M-1 line 8**, NOT page-1 — i1120s p.49);
+  "page 1 line 21" refs → 22. **`load_1120s_full` amendments corrected too: R010 (line 22),
+  R018 + D012 (K18 = M-1 L8 — the old "K18 must equal Page 1 Line 21" was a tax-law ERROR).**
+  In-loader stale deletes (line "17" catch-all, fact `foreign_tax_credit`); allow-set protects
+  the full-loader's K*->Box* rows. 52 facts / 19 rules / 47 face lines / 6 diag / 6 scenarios;
+  `lookup/SCH_K_1120S/export/` = 200, content-verified; tts mirror `1120s_sched_k_spec.json`
+  refreshed. **NEW audit finding filed: 1120S_PAGE1 + M1 + M2 blocks (load_1120s_full) still
+  on pre-Form-7205 numbering (OBI line 21 vs face 22) + a fabricated M-1 excerpt line (1065
+  guaranteed payments) — QUEUED in the audit ledger (tts docs/rs_handoff), not drive-by-patched.**
+
 - **▶ [WO-23] Form 3115 · Application for Change in Accounting Method (§481(a)) · greenfield RS-first ·
   status `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 10th — the LAST S-16 item;
   QUEUE DRAINED).**

@@ -172,53 +172,92 @@ class Command(BaseCommand):
             notes="Heart of the S-Corp return. All income/deduction/credit items flow through K before K-1 allocation.",
         )
 
+        # 2025-face renumber (2026-07-11): rebuilt verbatim against
+        # resources/irs_forms/2025/f1120s.pdf pages 3-4 (pymupdf extraction).
+        # Fixed from the s44 audit: fabricated 13f FTC (face 13f = biofuel;
+        # foreign taxes live on 16f), rehab credit on 13d (face: 13c),
+        # 12d/12e misassignment, "page 1 line 21" refs (face: 22), the
+        # missing 3b/3c 8b/8c 13b/13e 14a/b 15a-f 16e/16f rows, and the
+        # 17a-d split (17c AE&P dividends — i1120s 2025 p.40).
         self._upsert_facts(form, [
-            # Income/Loss (K Lines 1-10)
-            {"fact_key": "ordinary_business_income", "label": "Ordinary business income (loss) — from Page 1 Line 21", "data_type": "decimal", "required": True, "sort_order": 1},
+            # Income/Loss (K lines 1-10)
+            {"fact_key": "ordinary_business_income", "label": "Ordinary business income (loss) — from Page 1 Line 22", "data_type": "decimal", "required": True, "sort_order": 1},
             {"fact_key": "net_rental_real_estate_income", "label": "Net rental real estate income (loss) — from Form 8825", "data_type": "decimal", "sort_order": 2},
-            {"fact_key": "other_net_rental_income", "label": "Other net rental income (loss)", "data_type": "decimal", "sort_order": 3},
-            {"fact_key": "interest_income", "label": "Interest income", "data_type": "decimal", "sort_order": 4},
-            {"fact_key": "dividend_income", "label": "Ordinary dividends", "data_type": "decimal", "sort_order": 5},
-            {"fact_key": "qualified_dividends", "label": "Qualified dividends", "data_type": "decimal", "sort_order": 6},
-            {"fact_key": "royalties", "label": "Royalties", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "net_short_term_capital_gain", "label": "Net short-term capital gain (loss) — from Schedule D", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "net_long_term_capital_gain", "label": "Net long-term capital gain (loss) — from Schedule D", "data_type": "decimal", "sort_order": 9},
-            {"fact_key": "net_section_1231_gain", "label": "Net §1231 gain (loss) — from Form 4797 Part I", "data_type": "decimal", "sort_order": 10},
-            {"fact_key": "other_income", "label": "Other income (loss)", "data_type": "decimal", "sort_order": 11},
-            # Deductions (K Lines 11-12)
-            {"fact_key": "section_179_deduction", "label": "§179 deduction — from Form 4562", "data_type": "decimal", "sort_order": 12},
-            {"fact_key": "charitable_contributions_cash", "label": "Charitable contributions — cash", "data_type": "decimal", "sort_order": 13},
-            {"fact_key": "charitable_contributions_noncash", "label": "Charitable contributions — noncash", "data_type": "decimal", "sort_order": 14},
-            {"fact_key": "investment_interest_expense", "label": "Investment interest expense — §163(d)", "data_type": "decimal", "sort_order": 15},
-            {"fact_key": "other_deductions", "label": "Other deductions", "data_type": "decimal", "sort_order": 16},
-            # Credits (K Line 13)
-            {"fact_key": "low_income_housing_credit", "label": "Low-income housing credit — §42", "data_type": "decimal", "sort_order": 17},
-            {"fact_key": "rehabilitation_credit", "label": "Qualified rehabilitation expenditures", "data_type": "decimal", "sort_order": 18},
-            {"fact_key": "other_rental_credits", "label": "Other rental credits", "data_type": "decimal", "sort_order": 19},
-            {"fact_key": "foreign_tax_credit", "label": "Foreign tax credit", "data_type": "decimal", "sort_order": 20},
-            {"fact_key": "other_credits", "label": "Other credits", "data_type": "decimal", "sort_order": 21},
-            # Other Items (K Lines 14-17)
-            {"fact_key": "tax_exempt_interest", "label": "Tax-exempt interest income", "data_type": "decimal", "sort_order": 22},
-            {"fact_key": "other_tax_exempt_income", "label": "Other tax-exempt income", "data_type": "decimal", "sort_order": 23},
-            {"fact_key": "nondeductible_expenses", "label": "Nondeductible expenses", "data_type": "decimal", "sort_order": 24},
-            {"fact_key": "distributions_cash", "label": "Distributions — cash and marketable securities", "data_type": "decimal", "sort_order": 25},
-            {"fact_key": "distributions_property", "label": "Distributions — other property", "data_type": "decimal", "sort_order": 26},
-            {"fact_key": "investment_income", "label": "Investment income for Form 4952", "data_type": "decimal", "sort_order": 27},
-            {"fact_key": "investment_expenses", "label": "Investment expenses for Form 4952", "data_type": "decimal", "sort_order": 28},
-            {"fact_key": "qbi_ordinary_income", "label": "§199A QBI — ordinary income component", "data_type": "decimal", "sort_order": 29},
-            {"fact_key": "qbi_w2_wages", "label": "§199A QBI — W-2 wages", "data_type": "decimal", "sort_order": 30},
-            {"fact_key": "qbi_ubia", "label": "§199A QBI — UBIA of qualified property", "data_type": "decimal", "sort_order": 31},
-            {"fact_key": "qbi_sstb_indicator", "label": "§199A — Specified service trade or business (SSTB) indicator", "data_type": "boolean", "sort_order": 32},
+            {"fact_key": "other_gross_rental_income", "label": "Other gross rental income (loss) — line 3a", "data_type": "decimal", "sort_order": 3},
+            {"fact_key": "other_rental_expenses", "label": "Expenses from other rental activities (attach statement) — line 3b", "data_type": "decimal", "sort_order": 4},
+            {"fact_key": "other_net_rental_income", "label": "Other net rental income (loss) — line 3c = 3a minus 3b", "data_type": "decimal", "sort_order": 5},
+            {"fact_key": "interest_income", "label": "Interest income", "data_type": "decimal", "sort_order": 6},
+            {"fact_key": "dividend_income", "label": "Ordinary dividends", "data_type": "decimal", "sort_order": 7},
+            {"fact_key": "qualified_dividends", "label": "Qualified dividends", "data_type": "decimal", "sort_order": 8},
+            {"fact_key": "royalties", "label": "Royalties", "data_type": "decimal", "sort_order": 9},
+            {"fact_key": "net_short_term_capital_gain", "label": "Net short-term capital gain (loss) — from Schedule D", "data_type": "decimal", "sort_order": 10},
+            {"fact_key": "net_long_term_capital_gain", "label": "Net long-term capital gain (loss) — from Schedule D", "data_type": "decimal", "sort_order": 11},
+            {"fact_key": "collectibles_28_gain", "label": "Collectibles (28%) gain (loss) — line 8b", "data_type": "decimal", "sort_order": 12},
+            {"fact_key": "unrecaptured_1250_gain", "label": "Unrecaptured section 1250 gain (attach statement) — line 8c", "data_type": "decimal", "sort_order": 13},
+            {"fact_key": "net_section_1231_gain", "label": "Net §1231 gain (loss) — from Form 4797 Part I", "data_type": "decimal", "sort_order": 14},
+            {"fact_key": "other_income", "label": "Other income (loss)", "data_type": "decimal", "sort_order": 15},
+            # Deductions (K lines 11-12e)
+            {"fact_key": "section_179_deduction", "label": "§179 deduction — from Form 4562", "data_type": "decimal", "sort_order": 16},
+            {"fact_key": "charitable_contributions_cash", "label": "Cash charitable contributions — line 12a", "data_type": "decimal", "sort_order": 17},
+            {"fact_key": "charitable_contributions_noncash", "label": "Noncash charitable contributions — line 12b", "data_type": "decimal", "sort_order": 18},
+            {"fact_key": "investment_interest_expense", "label": "Investment interest expense §163(d) — line 12c", "data_type": "decimal", "sort_order": 19},
+            {"fact_key": "section_59e2_expenditures", "label": "Section 59(e)(2) expenditures — line 12d", "data_type": "decimal", "sort_order": 20},
+            {"fact_key": "other_deductions", "label": "Other deductions — line 12e", "data_type": "decimal", "sort_order": 21},
+            # Credits (K lines 13a-13g)
+            {"fact_key": "low_income_housing_credit", "label": "Low-income housing credit (section 42(j)(5)) — line 13a", "data_type": "decimal", "sort_order": 22},
+            {"fact_key": "low_income_housing_other", "label": "Low-income housing credit (other) — line 13b", "data_type": "decimal", "sort_order": 23},
+            {"fact_key": "rehabilitation_credit", "label": "Qualified rehabilitation expenditures (rental real estate) — line 13c", "data_type": "decimal", "sort_order": 24},
+            {"fact_key": "other_rental_re_credits", "label": "Other rental real estate credits — line 13d", "data_type": "decimal", "sort_order": 25},
+            {"fact_key": "other_rental_credits", "label": "Other rental credits — line 13e", "data_type": "decimal", "sort_order": 26},
+            {"fact_key": "biofuel_producer_credit", "label": "Biofuel producer credit (attach Form 6478) — line 13f", "data_type": "decimal", "sort_order": 27},
+            {"fact_key": "other_credits", "label": "Other credits — line 13g", "data_type": "decimal", "sort_order": 28},
+            # International (K lines 14a-14b)
+            {"fact_key": "k2_attached", "label": "Schedule K-2 attached — line 14a checkbox", "data_type": "boolean", "sort_order": 29},
+            {"fact_key": "k2_exception", "label": "Qualified for Schedule K-2 filing exception — line 14b checkbox", "data_type": "boolean", "sort_order": 30},
+            # AMT items (K lines 15a-15f)
+            {"fact_key": "post1986_depr_adjustment", "label": "Post-1986 depreciation adjustment — line 15a", "data_type": "decimal", "sort_order": 31},
+            {"fact_key": "amt_adjusted_gain_loss", "label": "Adjusted gain or loss — line 15b", "data_type": "decimal", "sort_order": 32},
+            {"fact_key": "amt_depletion", "label": "Depletion (other than oil and gas) — line 15c", "data_type": "decimal", "sort_order": 33},
+            {"fact_key": "oil_gas_gross_income", "label": "Oil, gas, and geothermal properties — gross income — line 15d", "data_type": "decimal", "sort_order": 34},
+            {"fact_key": "oil_gas_deductions", "label": "Oil, gas, and geothermal properties — deductions — line 15e", "data_type": "decimal", "sort_order": 35},
+            {"fact_key": "other_amt_items", "label": "Other AMT items (attach statement) — line 15f", "data_type": "decimal", "sort_order": 36},
+            # Items affecting shareholder basis (K lines 16a-16f)
+            {"fact_key": "tax_exempt_interest", "label": "Tax-exempt interest income — line 16a", "data_type": "decimal", "sort_order": 37},
+            {"fact_key": "other_tax_exempt_income", "label": "Other tax-exempt income — line 16b", "data_type": "decimal", "sort_order": 38},
+            {"fact_key": "nondeductible_expenses", "label": "Nondeductible expenses — line 16c", "data_type": "decimal", "sort_order": 39},
+            {"fact_key": "distributions_cash", "label": "Distributions — cash and marketable securities (line 16d)", "data_type": "decimal", "sort_order": 40},
+            {"fact_key": "distributions_property", "label": "Distributions — other property (line 16d)", "data_type": "decimal", "sort_order": 41},
+            {"fact_key": "loan_repayments", "label": "Repayment of loans from shareholders — line 16e", "data_type": "decimal", "sort_order": 42},
+            {"fact_key": "foreign_taxes_paid", "label": "Foreign taxes paid or accrued — line 16f", "data_type": "decimal", "sort_order": 43},
+            # Other information (K lines 17a-17d)
+            {"fact_key": "investment_income", "label": "Investment income for Form 4952 — line 17a", "data_type": "decimal", "sort_order": 44},
+            {"fact_key": "investment_expenses", "label": "Investment expenses for Form 4952 — line 17b", "data_type": "decimal", "sort_order": 45},
+            {"fact_key": "aep_distributions", "label": "Dividend distributions paid from accumulated earnings and profits — line 17c", "data_type": "decimal", "sort_order": 46},
+            {"fact_key": "qbi_ordinary_income", "label": "§199A QBI — ordinary income component (line 17d statement)", "data_type": "decimal", "sort_order": 47},
+            {"fact_key": "qbi_w2_wages", "label": "§199A QBI — W-2 wages (line 17d statement)", "data_type": "decimal", "sort_order": 48},
+            {"fact_key": "qbi_ubia", "label": "§199A QBI — UBIA of qualified property (line 17d statement)", "data_type": "decimal", "sort_order": 49},
+            {"fact_key": "qbi_sstb_indicator", "label": "§199A — Specified service trade or business (SSTB) indicator (line 17d statement)", "data_type": "boolean", "sort_order": 50},
             # Allocation inputs
-            {"fact_key": "total_shares_outstanding", "label": "Total shares outstanding", "data_type": "integer", "required": True, "sort_order": 40},
-            {"fact_key": "days_in_year", "label": "Days in tax year", "data_type": "integer", "default_value": "365", "sort_order": 41},
+            {"fact_key": "total_shares_outstanding", "label": "Total shares outstanding", "data_type": "integer", "required": True, "sort_order": 60},
+            {"fact_key": "days_in_year", "label": "Days in tax year", "data_type": "integer", "default_value": "365", "sort_order": 61},
         ])
+
+        # Stale fact rows superseded by the 2025-face rebuild: the fabricated
+        # 13f "foreign_tax_credit" (face 13f = biofuel producer credit; foreign
+        # taxes are line 16f = foreign_taxes_paid). update_or_create cannot
+        # remove rows, so a reseed self-heals here.
+        stale_facts = FormFact.objects.filter(
+            tax_form=form, fact_key__in=["foreign_tax_credit"],
+        )
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale fact rows (foreign_tax_credit)")
+            stale_facts.delete()
 
         rules = self._upsert_rules(form, [
             {"rule_id": "R001", "title": "Ordinary business income passthrough", "rule_type": "routing",
              "formula": "ordinary_business_income",
              "inputs": ["ordinary_business_income"], "outputs": ["k_line_1"],
-             "description": "Page 1 Line 21 flows directly to Schedule K Line 1. No modification.",
+             "description": "Page 1 Line 22 flows directly to Schedule K Line 1. No modification. (2025 face: 'Ordinary business income (loss) (page 1, line 22)'.)",
              "sort_order": 1, "precedence": 1},
 
             {"rule_id": "R002", "title": "Rental real estate from Form 8825", "rule_type": "routing",
@@ -266,6 +305,20 @@ class Command(BaseCommand):
              "outputs": ["shareholder_allocation"],
              "description": "Each K line item is allocated to shareholders based on pro rata share (daily ownership percentage). Unlike partnerships, S-Corps cannot do special allocations — must be pro rata per share per day.",
              "sort_order": 8, "precedence": 10},
+
+            {"rule_id": "R009", "title": "Other net rental income — line 3c netting", "rule_type": "calculation",
+             "formula": "other_gross_rental_income - other_rental_expenses",
+             "inputs": ["other_gross_rental_income", "other_rental_expenses"],
+             "outputs": ["k_line_3c"],
+             "description": "2025 face line 3c: 'Other net rental income (loss). Subtract line 3b from line 3a.' Only the NET (3c) flows to K-1 Box 3; 3a/3b are the on-face worksheet columns.",
+             "sort_order": 9, "precedence": 5},
+
+            {"rule_id": "R019", "title": "Line 18 income (loss) reconciliation", "rule_type": "calculation",
+             "formula": "sum(k_lines_1_to_10) - sum(k_lines_11_to_12e) - k_line_16f",
+             "inputs": ["ordinary_business_income", "net_rental_real_estate_income", "other_net_rental_income", "interest_income", "dividend_income", "royalties", "net_short_term_capital_gain", "net_long_term_capital_gain", "net_section_1231_gain", "other_income", "section_179_deduction", "charitable_contributions_cash", "charitable_contributions_noncash", "investment_interest_expense", "section_59e2_expenditures", "other_deductions", "foreign_taxes_paid"],
+             "outputs": ["k_line_18"],
+             "description": "2025 face line 18: 'Combine the total amounts on lines 1 through 10. From the result, subtract the sum of the amounts on lines 11 through 12e and 16f.' Per i1120s (2025) p.49 the result must equal Schedule M-1 line 8 (or Schedule M-3 Part II line 26(d)). It does NOT generally equal Page 1 line 22 — separately stated items differ. Lines 5b, 8b, 8c are sub-detail of 5a/8a and are NOT added again.",
+             "sort_order": 19, "precedence": 20},
         ])
 
         self._upsert_links(rules, sources, [
@@ -285,36 +338,83 @@ class Command(BaseCommand):
             ("R007", "IRS_2025_1120S_INSTR", "secondary", "Schedule K Line 17 — other information"),
             ("R008", "IRC_1366", "primary", "§1366(a) — pro rata share determination"),
             ("R008", "IRC_1377", "primary", "§1377(a) — per share per day allocation rule"),
+            ("R009", "IRS_2025_1120S_INSTR", "primary", "2025 face line 3c — subtract line 3b from line 3a"),
+            ("R019", "IRS_2025_1120S_INSTR", "primary", "i1120s (2025) p.49 Line 18 — combine 1-10, subtract 11-12e and 16f; must equal M-1 line 8"),
         ])
 
         self._upsert_lines(form, [
-            {"line_number": "1", "description": "Ordinary business income (loss) (page 1, line 21)", "line_type": "input", "source_facts": ["ordinary_business_income"], "source_rules": ["R001"], "destination_form": "Schedule K-1 Box 1", "sort_order": 1},
-            {"line_number": "2", "description": "Net rental real estate income (loss) (Form 8825)", "line_type": "input", "source_facts": ["net_rental_real_estate_income"], "source_rules": ["R002"], "destination_form": "Schedule K-1 Box 2", "sort_order": 2},
-            {"line_number": "3a", "description": "Other gross rental income (loss)", "line_type": "input", "source_facts": ["other_net_rental_income"], "destination_form": "Schedule K-1 Box 3", "sort_order": 3},
-            {"line_number": "4", "description": "Interest income", "line_type": "input", "source_facts": ["interest_income"], "destination_form": "Schedule K-1 Box 4", "sort_order": 4},
-            {"line_number": "5a", "description": "Ordinary dividends", "line_type": "input", "source_facts": ["dividend_income"], "destination_form": "Schedule K-1 Box 5a", "sort_order": 5},
-            {"line_number": "5b", "description": "Qualified dividends", "line_type": "input", "source_facts": ["qualified_dividends"], "destination_form": "Schedule K-1 Box 5b", "sort_order": 6},
-            {"line_number": "6", "description": "Royalties", "line_type": "input", "source_facts": ["royalties"], "destination_form": "Schedule K-1 Box 6", "sort_order": 7},
-            {"line_number": "7", "description": "Net short-term capital gain (loss) (Schedule D)", "line_type": "input", "source_facts": ["net_short_term_capital_gain"], "source_rules": ["R003"], "destination_form": "Schedule K-1 Box 7", "sort_order": 8},
-            {"line_number": "8a", "description": "Net long-term capital gain (loss) (Schedule D)", "line_type": "input", "source_facts": ["net_long_term_capital_gain"], "source_rules": ["R003"], "destination_form": "Schedule K-1 Box 8a", "sort_order": 9},
-            {"line_number": "9", "description": "Net section 1231 gain (loss) (Form 4797)", "line_type": "input", "source_facts": ["net_section_1231_gain"], "source_rules": ["R004"], "destination_form": "Schedule K-1 Box 9", "sort_order": 10},
-            {"line_number": "10", "description": "Other income (loss)", "line_type": "input", "source_facts": ["other_income"], "destination_form": "Schedule K-1 Box 10", "sort_order": 11},
-            {"line_number": "11", "description": "Section 179 deduction (Form 4562)", "line_type": "input", "source_facts": ["section_179_deduction"], "source_rules": ["R005"], "destination_form": "Schedule K-1 Box 11", "sort_order": 12},
-            {"line_number": "12a", "description": "Charitable contributions — cash", "line_type": "input", "source_facts": ["charitable_contributions_cash"], "source_rules": ["R006"], "destination_form": "Schedule K-1 Box 12 Code A", "sort_order": 13},
-            {"line_number": "12b", "description": "Charitable contributions — noncash", "line_type": "input", "source_facts": ["charitable_contributions_noncash"], "source_rules": ["R006"], "destination_form": "Schedule K-1 Box 12 Code B", "sort_order": 14},
-            {"line_number": "12c", "description": "Investment interest expense — §163(d)", "line_type": "input", "source_facts": ["investment_interest_expense"], "destination_form": "Schedule K-1 Box 12 Code C", "sort_order": 15},
-            {"line_number": "12d", "description": "Other deductions", "line_type": "input", "source_facts": ["other_deductions"], "destination_form": "Schedule K-1 Box 12", "sort_order": 16},
-            {"line_number": "13a", "description": "Low-income housing credit (§42) — current year", "line_type": "input", "source_facts": ["low_income_housing_credit"], "destination_form": "Schedule K-1 Box 13 Code A", "sort_order": 17},
-            {"line_number": "13d", "description": "Other rental real estate credits", "line_type": "input", "source_facts": ["rehabilitation_credit"], "destination_form": "Schedule K-1 Box 13 Code D", "sort_order": 18},
-            {"line_number": "13f", "description": "Foreign tax credit (Form 1116)", "line_type": "input", "source_facts": ["foreign_tax_credit"], "destination_form": "Schedule K-1 Box 13 Code F", "sort_order": 19},
-            {"line_number": "13g", "description": "Other credits", "line_type": "input", "source_facts": ["other_credits"], "destination_form": "Schedule K-1 Box 13 Code G", "sort_order": 20},
-            {"line_number": "16a", "description": "Tax-exempt interest income", "line_type": "input", "source_facts": ["tax_exempt_interest"], "destination_form": "Schedule K-1 Box 16 Code A", "sort_order": 21},
-            {"line_number": "16b", "description": "Other tax-exempt income", "line_type": "input", "source_facts": ["other_tax_exempt_income"], "destination_form": "Schedule K-1 Box 16 Code B", "sort_order": 22},
-            {"line_number": "16c", "description": "Nondeductible expenses", "line_type": "input", "source_facts": ["nondeductible_expenses"], "destination_form": "Schedule K-1 Box 16 Code C", "sort_order": 23},
-            {"line_number": "16d", "description": "Distributions — cash and marketable securities", "line_type": "input", "source_facts": ["distributions_cash"], "destination_form": "Schedule K-1 Box 16 Code D", "sort_order": 24},
-            {"line_number": "17", "description": "Other information — §199A QBI items, investment income/expenses", "line_type": "input", "source_facts": ["qbi_ordinary_income", "qbi_w2_wages", "qbi_ubia", "qbi_sstb_indicator"], "source_rules": ["R007"], "destination_form": "Schedule K-1 Box 17", "sort_order": 25},
-            {"line_number": "18", "description": "Total income (loss) — combine lines 1 through 10", "line_type": "total", "calculation": "Sum of lines 1-10", "sort_order": 26, "notes": "Informational total. Each line item flows separately to K-1."},
+            {"line_number": "1", "description": "Ordinary business income (loss) (page 1, line 22)", "line_type": "input", "source_facts": ["ordinary_business_income"], "source_rules": ["R001"], "destination_form": "Schedule K-1 Box 1", "sort_order": 1},
+            {"line_number": "2", "description": "Net rental real estate income (loss) (attach Form 8825)", "line_type": "input", "source_facts": ["net_rental_real_estate_income"], "source_rules": ["R002"], "destination_form": "Schedule K-1 Box 2", "sort_order": 2},
+            {"line_number": "3a", "description": "Other gross rental income (loss)", "line_type": "input", "source_facts": ["other_gross_rental_income"], "sort_order": 3, "notes": "On-face worksheet column; only the 3c net flows onward."},
+            {"line_number": "3b", "description": "Expenses from other rental activities (attach statement)", "line_type": "input", "source_facts": ["other_rental_expenses"], "sort_order": 4, "notes": "On-face worksheet column; only the 3c net flows onward."},
+            {"line_number": "3c", "description": "Other net rental income (loss). Subtract line 3b from line 3a", "line_type": "total", "source_facts": ["other_net_rental_income"], "source_rules": ["R009"], "calculation": "line 3a - line 3b", "destination_form": "Schedule K-1 Box 3", "sort_order": 5},
+            {"line_number": "4", "description": "Interest income", "line_type": "input", "source_facts": ["interest_income"], "destination_form": "Schedule K-1 Box 4", "sort_order": 6},
+            {"line_number": "5a", "description": "Ordinary dividends", "line_type": "input", "source_facts": ["dividend_income"], "destination_form": "Schedule K-1 Box 5a", "sort_order": 7},
+            {"line_number": "5b", "description": "Qualified dividends", "line_type": "input", "source_facts": ["qualified_dividends"], "destination_form": "Schedule K-1 Box 5b", "sort_order": 8, "notes": "Sub-detail of 5a — not added again in line 18."},
+            {"line_number": "6", "description": "Royalties", "line_type": "input", "source_facts": ["royalties"], "destination_form": "Schedule K-1 Box 6", "sort_order": 9},
+            {"line_number": "7", "description": "Net short-term capital gain (loss) (attach Schedule D (Form 1120-S))", "line_type": "input", "source_facts": ["net_short_term_capital_gain"], "source_rules": ["R003"], "destination_form": "Schedule K-1 Box 7", "sort_order": 10},
+            {"line_number": "8a", "description": "Net long-term capital gain (loss) (attach Schedule D (Form 1120-S))", "line_type": "input", "source_facts": ["net_long_term_capital_gain"], "source_rules": ["R003"], "destination_form": "Schedule K-1 Box 8a", "sort_order": 11},
+            {"line_number": "8b", "description": "Collectibles (28%) gain (loss)", "line_type": "input", "source_facts": ["collectibles_28_gain"], "destination_form": "Schedule K-1 Box 8b", "sort_order": 12, "notes": "Sub-detail of 8a — not added again in line 18."},
+            {"line_number": "8c", "description": "Unrecaptured section 1250 gain (attach statement)", "line_type": "input", "source_facts": ["unrecaptured_1250_gain"], "destination_form": "Schedule K-1 Box 8c", "sort_order": 13, "notes": "Sub-detail of 8a — not added again in line 18."},
+            {"line_number": "9", "description": "Net section 1231 gain (loss) (attach Form 4797)", "line_type": "input", "source_facts": ["net_section_1231_gain"], "source_rules": ["R004"], "destination_form": "Schedule K-1 Box 9", "sort_order": 14},
+            {"line_number": "10", "description": "Other income (loss) (see instructions)", "line_type": "input", "source_facts": ["other_income"], "destination_form": "Schedule K-1 Box 10", "sort_order": 15},
+            {"line_number": "11", "description": "Section 179 deduction (attach Form 4562)", "line_type": "input", "source_facts": ["section_179_deduction"], "source_rules": ["R005"], "destination_form": "Schedule K-1 Box 11", "sort_order": 16},
+            {"line_number": "12a", "description": "Cash charitable contributions", "line_type": "input", "source_facts": ["charitable_contributions_cash"], "source_rules": ["R006"], "destination_form": "Schedule K-1 Box 12", "sort_order": 17},
+            {"line_number": "12b", "description": "Noncash charitable contributions", "line_type": "input", "source_facts": ["charitable_contributions_noncash"], "source_rules": ["R006"], "destination_form": "Schedule K-1 Box 12", "sort_order": 18},
+            {"line_number": "12c", "description": "Investment interest expense", "line_type": "input", "source_facts": ["investment_interest_expense"], "destination_form": "Schedule K-1 Box 12", "sort_order": 19},
+            {"line_number": "12d", "description": "Section 59(e)(2) expenditures", "line_type": "input", "source_facts": ["section_59e2_expenditures"], "destination_form": "Schedule K-1 Box 12", "sort_order": 20},
+            {"line_number": "12e", "description": "Other deductions (see instructions)", "line_type": "input", "source_facts": ["other_deductions"], "destination_form": "Schedule K-1 Box 12", "sort_order": 21},
+            {"line_number": "13a", "description": "Low-income housing credit (section 42(j)(5))", "line_type": "input", "source_facts": ["low_income_housing_credit"], "destination_form": "Schedule K-1 Box 13", "sort_order": 22},
+            {"line_number": "13b", "description": "Low-income housing credit (other)", "line_type": "input", "source_facts": ["low_income_housing_other"], "destination_form": "Schedule K-1 Box 13", "sort_order": 23},
+            {"line_number": "13c", "description": "Qualified rehabilitation expenditures (rental real estate) (attach Form 3468, if applicable)", "line_type": "input", "source_facts": ["rehabilitation_credit"], "destination_form": "Schedule K-1 Box 13", "sort_order": 24},
+            {"line_number": "13d", "description": "Other rental real estate credits (see instructions)", "line_type": "input", "source_facts": ["other_rental_re_credits"], "destination_form": "Schedule K-1 Box 13", "sort_order": 25},
+            {"line_number": "13e", "description": "Other rental credits (see instructions)", "line_type": "input", "source_facts": ["other_rental_credits"], "destination_form": "Schedule K-1 Box 13", "sort_order": 26},
+            {"line_number": "13f", "description": "Biofuel producer credit (attach Form 6478)", "line_type": "input", "source_facts": ["biofuel_producer_credit"], "destination_form": "Schedule K-1 Box 13", "sort_order": 27},
+            {"line_number": "13g", "description": "Other credits (see instructions)", "line_type": "input", "source_facts": ["other_credits"], "destination_form": "Schedule K-1 Box 13", "sort_order": 28},
+            {"line_number": "14a", "description": "Attach Schedule K-2 (Form 1120-S) and check this box to indicate international tax relevance", "line_type": "input", "source_facts": ["k2_attached"], "sort_order": 29, "notes": "Checkbox line — K-2/K-3 carry the international detail."},
+            {"line_number": "14b", "description": "Check this box if you qualified for an exception to filing Schedule K-2 (Form 1120-S)", "line_type": "input", "source_facts": ["k2_exception"], "sort_order": 30, "notes": "Checkbox line."},
+            {"line_number": "15a", "description": "Post-1986 depreciation adjustment", "line_type": "input", "source_facts": ["post1986_depr_adjustment"], "destination_form": "Schedule K-1 Box 15", "sort_order": 31},
+            {"line_number": "15b", "description": "Adjusted gain or loss", "line_type": "input", "source_facts": ["amt_adjusted_gain_loss"], "destination_form": "Schedule K-1 Box 15", "sort_order": 32},
+            {"line_number": "15c", "description": "Depletion (other than oil and gas)", "line_type": "input", "source_facts": ["amt_depletion"], "destination_form": "Schedule K-1 Box 15", "sort_order": 33},
+            {"line_number": "15d", "description": "Oil, gas, and geothermal properties — gross income", "line_type": "input", "source_facts": ["oil_gas_gross_income"], "destination_form": "Schedule K-1 Box 15", "sort_order": 34},
+            {"line_number": "15e", "description": "Oil, gas, and geothermal properties — deductions", "line_type": "input", "source_facts": ["oil_gas_deductions"], "destination_form": "Schedule K-1 Box 15", "sort_order": 35},
+            {"line_number": "15f", "description": "Other AMT items (attach statement)", "line_type": "input", "source_facts": ["other_amt_items"], "destination_form": "Schedule K-1 Box 15", "sort_order": 36},
+            {"line_number": "16a", "description": "Tax-exempt interest income", "line_type": "input", "source_facts": ["tax_exempt_interest"], "destination_form": "Schedule K-1 Box 16", "sort_order": 37},
+            {"line_number": "16b", "description": "Other tax-exempt income", "line_type": "input", "source_facts": ["other_tax_exempt_income"], "destination_form": "Schedule K-1 Box 16", "sort_order": 38},
+            {"line_number": "16c", "description": "Nondeductible expenses", "line_type": "input", "source_facts": ["nondeductible_expenses"], "destination_form": "Schedule K-1 Box 16", "sort_order": 39},
+            {"line_number": "16d", "description": "Distributions (attach statement if required) (see instructions)", "line_type": "input", "source_facts": ["distributions_cash", "distributions_property"], "destination_form": "Schedule K-1 Box 16", "sort_order": 40, "notes": "Distributions OTHER than the line 17c AE&P dividends (i1120s 2025 p.40)."},
+            {"line_number": "16e", "description": "Repayment of loans from shareholders", "line_type": "input", "source_facts": ["loan_repayments"], "destination_form": "Schedule K-1 Box 16", "sort_order": 41},
+            {"line_number": "16f", "description": "Foreign taxes paid or accrued", "line_type": "input", "source_facts": ["foreign_taxes_paid"], "destination_form": "Schedule K-1 Box 16", "sort_order": 42, "notes": "Subtracted in the line 18 reconciliation per the face."},
+            {"line_number": "17a", "description": "Investment income", "line_type": "input", "source_facts": ["investment_income"], "destination_form": "Schedule K-1 Box 17", "sort_order": 43},
+            {"line_number": "17b", "description": "Investment expenses", "line_type": "input", "source_facts": ["investment_expenses"], "destination_form": "Schedule K-1 Box 17", "sort_order": 44},
+            {"line_number": "17c", "description": "Dividend distributions paid from accumulated earnings and profits", "line_type": "input", "source_facts": ["aep_distributions"], "destination_form": "Form 1099-DIV (NOT Schedule K-1)", "sort_order": 45, "notes": "i1120s (2025) p.40: report these dividends to shareholders on Form 1099-DIV; do NOT report them on Schedule K-1."},
+            {"line_number": "17d", "description": "Other items and amounts (attach statement)", "line_type": "input", "source_facts": ["qbi_ordinary_income", "qbi_w2_wages", "qbi_ubia", "qbi_sstb_indicator"], "source_rules": ["R007"], "destination_form": "Schedule K-1 Box 17 (statement)", "sort_order": 46, "notes": "§199A QBI package and other statement items ride 17d."},
+            {"line_number": "18", "description": "Income (loss) reconciliation. Combine the total amounts on lines 1 through 10. From the result, subtract the sum of the amounts on lines 11 through 12e and 16f", "line_type": "total", "source_rules": ["R019"], "calculation": "sum(lines 1-10) - sum(lines 11-12e) - line 16f", "sort_order": 47, "notes": "Must equal Schedule M-1 line 8 (or M-3 Part II line 26(d)) per i1120s (2025) p.49. NOT generally equal to Page 1 line 22."},
         ])
+
+        # Stale line rows superseded by the 2025-face rebuild: the pre-rebuild
+        # catch-all "17" (now split 17a-17d). The allow-set includes the
+        # K*->Box* informational rows added by load_1120s_full so a base
+        # reseed never deletes the amendment loader's rows (s48 lesson).
+        _2025_K_LINES = {
+            "1", "2", "3a", "3b", "3c", "4", "5a", "5b", "6", "7",
+            "8a", "8b", "8c", "9", "10", "11",
+            "12a", "12b", "12c", "12d", "12e",
+            "13a", "13b", "13c", "13d", "13e", "13f", "13g",
+            "14a", "14b",
+            "15a", "15b", "15c", "15d", "15e", "15f",
+            "16a", "16b", "16c", "16d", "16e", "16f",
+            "17a", "17b", "17c", "17d", "18",
+        } | {
+            "K1->Box1", "K2->Box2", "K3->Box3", "K4->Box4", "K5->Box5",
+            "K6->Box6", "K7->Box7", "K8->Box8", "K9->Box9", "K10->Box10",
+            "K11->Box11", "K12->Box12", "K13->Box13", "K16->Box16", "K17->Box17",
+        }
+        stale = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_2025_K_LINES)
+        if stale.exists():
+            self.stdout.write(f"  deleting {stale.count()} stale pre-rebuild K line rows: "
+                              + ", ".join(sorted(stale.values_list("line_number", flat=True))))
+            stale.delete()
 
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "§179 on Page 1", "severity": "error",
@@ -328,7 +428,10 @@ class Command(BaseCommand):
              "message": "Capital gains and losses must be separately stated on K Lines 7-8. They should not be included in ordinary business income (K Line 1)."},
             {"diagnostic_id": "D004", "title": "Missing QBI information", "severity": "warning",
              "condition": "ordinary_business_income != 0 AND qbi_ordinary_income is null",
-             "message": "Ordinary business income exists but no §199A QBI information on Line 17. Most S-Corps must report QBI items for the shareholder's §199A computation."},
+             "message": "Ordinary business income exists but no §199A QBI information on line 17d. Most S-Corps must report QBI items for the shareholder's §199A computation."},
+            {"diagnostic_id": "D005", "title": "AE&P dividends on 17c — 1099-DIV, not K-1", "severity": "info",
+             "condition": "aep_distributions > 0",
+             "message": "Line 17c dividend distributions paid from accumulated earnings and profits must be reported to shareholders on Form 1099-DIV — do NOT report them on Schedule K-1, and do NOT include them in line 16d distributions (i1120s 2025 p.40)."},
         ])
 
         self._upsert_tests(form, [
@@ -350,6 +453,24 @@ class Command(BaseCommand):
              "expected_outputs": {"shareholder_allocation": 50000},
              "notes": "50/100 shares × 365/365 days = 50% pro rata share.",
              "sort_order": 3},
+            {"scenario_name": "Other rental netting — line 3c = 3a minus 3b",
+             "scenario_type": "normal",
+             "inputs": {"other_gross_rental_income": 12000, "other_rental_expenses": 4000},
+             "expected_outputs": {"k_line_3c": 8000},
+             "notes": "Face line 3c: subtract 3b from 3a. Only the 8,000 net flows to K-1 Box 3.",
+             "sort_order": 4},
+            {"scenario_name": "Line 18 reconciliation — separately stated items and 16f",
+             "scenario_type": "normal",
+             "inputs": {"ordinary_business_income": 150000, "interest_income": 5000, "section_179_deduction": 30000, "charitable_contributions_cash": 10000, "foreign_taxes_paid": 2000},
+             "expected_outputs": {"k_line_18": 113000},
+             "notes": "150,000 + 5,000 (lines 1-10) - 40,000 (lines 11-12e) - 2,000 (16f) = 113,000. K18 equals M-1 line 8, NOT Page 1 line 22 (which stays 150,000).",
+             "sort_order": 5},
+            {"scenario_name": "AE&P dividend distributions — 17c to 1099-DIV",
+             "scenario_type": "normal",
+             "inputs": {"ordinary_business_income": 80000, "aep_distributions": 25000},
+             "expected_outputs": {"k_line_17c": 25000},
+             "notes": "17c dividends from accumulated E&P are 1099-DIV items — never on the K-1 and never in 16d.",
+             "sort_order": 6},
         ])
 
         self._upsert_form_links("SCH_K_1120S", sources, [
