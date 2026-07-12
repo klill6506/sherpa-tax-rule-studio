@@ -1407,7 +1407,7 @@ FLOW_ASSERTIONS: list[dict] = [
                     "formula": ("k12b_default == sum(amount over rows not withheld); "
                                 "typed_k12b_nonzero -> k12b == typed value (GREEN wins); "
                                 "feed_flows_below_500 == True; form_engaged iff total > 500")},
-     "status": "draft", "sort_order": 6},
+     "status": "active", "sort_order": 6},   # ACTIVATED with the S-20a tts leg (runner _run_ent8283_assertion, s65)
     {"assertion_id": "FA-ENT-8283-02", "assertion_type": "flow_assertion", "entity_types": ["1120S", "1065"],
      "title": "Entity engagement + Section B at the entity level: form joins the entity packet iff total > $500; the $5,000 Section-B test reads the entity item amount, never the per-member allocation",
      "description": ("Validates R-8283-ENTFILE + R-8283-ENTSECB (i8283 PTE verbatim; "
@@ -1418,7 +1418,7 @@ FLOW_ASSERTIONS: list[dict] = [
      "definition": {"kind": "conditional_check", "form": "8283",
                     "checks": [{"when": "f8283_total > 500", "assert": "f8283_engaged and form_8283_in_entity_packet"},
                                {"when": "row amount > 5000", "assert": "row_section == 'B' regardless of member allocations"}]},
-     "status": "draft", "sort_order": 7},
+     "status": "active", "sort_order": 7},   # ACTIVATED with the S-20a tts leg (runner _run_ent8283_assertion, s65)
 ]
 
 
