@@ -118,6 +118,38 @@ REDs fire, amounts still flow — the withhold recommendation was rejected);
 J2 default-50%-bucket + bind-gated warning approved; J4 conservation RED-defer
 WITH feed withhold approved; J1/J3/J5/J7 + the stub retirement approved;
 flip-seed-build approved.
+
+═══════════════════════════════════════════════════════════════════════════
+ENTITY-ARM AMENDMENT (2026-07-12, tts Spine S-20a — the s63 D_SCHK_8283
+"form not built" boundary closes). Replaces the old v1 boundary "entity-side
+flow: no change rides this unit": the ENTITY side (1120S/1065) is now modeled
+— R-8283-ENTFILE / R-8283-ENTSECB / R-8283-ENTFEED / R-8283-ENTCOPY +
+D_8283_014/015/016 + scenarios T14-T16 + FA-ENT-8283-01/02. D_8283_010 is
+re-scoped to the MEMBER-side attach choreography only (still a boundary).
+Sources fetched 2026-07-12, verbatim: i8283 (Rev. December 2025)
+"Partnerships and S corporations (pass-through entities)" + "Members of
+pass-through entities" (NEW_EXCERPTS_ON_EXISTING); §170(f)(11)(G) entity-level
+application was already excerpted 2026-07-03.
+
+ENTITY JUDGMENT ITEMS (queued in tts REVIEW_QUEUE s65 with recommendations —
+the s59 shipped-plus-ratification-queued pattern):
+  J-E1. 1120-S feeder: non-withheld row totals feed Schedule K line 12b
+        (noncash) as the YELLOW default; the typed K12b entry stays the GREEN
+        override (the J1 house convention, entity sibling; the s63 K12b input
+        is unchanged). The 50%/30% bucket split does NOT split K-1 box 12
+        codes in v1 (tts K-1 emits code C for noncash; the 30%-property codes
+        D/E ride a later refinement — stated boundary). RECOMMEND: yes.
+  J-E2. 1065: NO feed. The 2025 Form 1065 Schedule K face has a SINGLE
+        combined line 13a "Contributions" (cash + noncash; the split lives in
+        the K-1 box 13 code letters) — auto-adding the noncash total would
+        stomp cash entries. Rows print/attach the form; D_8283_016 nudges the
+        preparer to verify 13a covers the noncash total. A 13a cash/noncash
+        input split is a face-design question deferred to its own unit.
+        RECOMMEND: print+diagnose only.
+  J-E3. Copy-to-members (i8283 verbatim: a completed copy to each member
+        receiving an allocation): v1 = D_8283_015 info reminder on the entity
+        return + the K-1 package note; automatic per-member 8283 copies in
+        the K-1 print packet ride a later leg. RECOMMEND: info-first.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -457,7 +489,58 @@ AUTHORITY_SOURCES: list[dict] = [
     },
 ]
 
-NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = []
+NEW_EXCERPTS_ON_EXISTING: list[tuple[str, dict]] = [
+    # Entity-arm amendment 2026-07-12 — i8283 (Rev. December 2025), fetched same day.
+    ("IRS_2025_8283_INSTR", {
+        "excerpt_label": "Partnerships and S corporations — entity filing, Section B at entity level, copy to members (Rev. 12-2025, verbatim)",
+        "location_reference": "i8283 (Rev. 12-2025), Who Must File — Partnerships and S corporations (pass-through entities)",
+        "excerpt_text": (
+            "Partnerships and S corporations (pass-through entities). A partnership or S "
+            "corporation that claims a charitable contribution for noncash gifts of more than $500 "
+            "must file Form 8283 (Section A or Section B) with its Form 1065 or 1120-S. "
+            "If the total contribution for any item or group of similar items is more than $5,000, "
+            "the partnership or S corporation must complete Section B of Form 8283 even if the "
+            "amount allocated to each member (that is, each partner or shareholder) is $5,000 or "
+            "less. "
+            "The partnership or S corporation must give a completed copy of Form 8283 (Section A "
+            "or Section B) to each member receiving an allocation of the contribution shown in "
+            "Section A or Section B of the partnership’s or S corporation’s Form 8283."
+        ),
+        "summary_text": (
+            "The entity arm's three pillars: >$500 files with the 1065/1120-S (R-8283-ENTFILE); "
+            "Section B decided at the ENTITY item/group level, never per member allocation "
+            "(R-8283-ENTSECB); a completed copy goes to each allocated member (R-8283-ENTCOPY / "
+            "D_8283_015)."
+        ),
+        "is_key_excerpt": True,
+    }),
+    ("IRS_2025_8283_INSTR", {
+        "excerpt_label": "Members of pass-through entities — attach copies + use the K-1 amounts (Rev. 12-2025, verbatim)",
+        "location_reference": "i8283 (Rev. 12-2025), Who Must File — Members of pass-through entities",
+        "excerpt_text": (
+            "Members of pass-through entities. If you are a member of a pass-through entity (such "
+            "as a partner in a partnership or a shareholder in an S corporation) that made a "
+            "noncash charitable contribution in excess of $500, you must attach multiple Forms "
+            "8283 to your return. Specifically, you must attach the following: • A copy of the "
+            "Form(s) 8283 from the donating entity where the contribution was originally reported, "
+            "• A copy (or copies) of the Form 8283 from any other pass-through entities between "
+            "you and the donating entity (such as an upper-tier partnership), and • Your own "
+            "separate Form 8283 with respect to the contribution made by the donating pass-through "
+            "entity. For your own Form 8283, the entity in which you hold a direct interest will "
+            "provide information about your share of the contribution on your Schedule K-1 (Form "
+            "1065 or 1120-S). Use the amounts shown on your Schedule K-1 and other supplemental "
+            "information you have been provided by the entity—not the amounts shown on the "
+            "entity’s Form 8283 (except for Section B, Part I, line 3, Column(c))—to figure the "
+            "amount of your contribution."
+        ),
+        "summary_text": (
+            "The MEMBER side (stays a stated boundary — D_8283_010 re-scoped): the member attaches "
+            "the entity's 8283 + any intermediate tier's + their own, and figures amounts from the "
+            "K-1, not the entity form (except SB P1 L3 col (c))."
+        ),
+        "is_key_excerpt": True,
+    }),
+]
 
 AUTHORITY_FORM_LINKS: list[tuple[str, str, str]] = [
     ("USC_26_170F11", "8283", "governs"),
@@ -775,9 +858,85 @@ F8283_RULES: list[dict] = [
      "outputs": [],
      "description": ("J1 — the house feeder convention. The entity side (1120S/1065) never runs "
                      "this rule; its charitable flow is Schedule K machinery.")},
+    # ── Entity arm (amendment 2026-07-12 — tts Spine S-20a) ──
+    {"rule_id": "R-8283-ENTFILE",
+     "title": "Entity filing gate (1120S/1065): PTE noncash gifts > $500 file Form 8283 with the entity return",
+     "rule_type": "routing", "precedence": 6, "sort_order": 6,
+     "formula": (
+         "1120S/1065 ONLY. §170(f)(11)(G): the paragraph applies AT THE ENTITY LEVEL (denial at "
+         "the member level). f8283_engaged on the entity return = (f8283_total > 500) — the same "
+         "R-8283-FILE mechanics measured on the ENTITY's claimed noncash deduction (before "
+         "AGI-type limits, after §170(e) reductions; i8283 PTE verbatim: 'A partnership or S "
+         "corporation that claims a charitable contribution for noncash gifts of more than $500 "
+         "must file Form 8283 (Section A or Section B) with its Form 1065 or 1120-S'). Engaged -> "
+         "the form joins the ENTITY print packet and the e-file submission (1120-S: IRS8283 is a "
+         "declared ReturnData1120S document, Section A rows; Section B signature parts are "
+         "wet-ink and ride the PDF-attachment seam — the 1040 lane's J7 mechanics; 1065 e-file "
+         "rides the future 1065 MeF mapper). Noncash claimed on Schedule K with NO rows entered "
+         "-> D_8283_014 (the D_8283_001 entity sibling)."),
+     "inputs": ["f8283_amount"],
+     "outputs": ["f8283_total", "f8283_engaged"],
+     "description": ("The s63 D_SCHK_8283 'form not built' boundary closes here. Substantiation "
+                     "tiers (R-8283-SUBST) and Section routing (R-8283-SECTION) run UNCHANGED on "
+                     "entity rows — the row model is shared.")},
+    {"rule_id": "R-8283-ENTSECB",
+     "title": "Section B is decided at the ENTITY level — item/group > $5,000 routes B even when every member's allocation is $5,000 or less",
+     "rule_type": "routing", "precedence": 7, "sort_order": 7,
+     "formula": (
+         "1120S/1065 ONLY. The R-8283-SECTION $5,000 test reads the ENTITY's item/group amount — "
+         "NEVER the per-member allocation (i8283 PTE verbatim: 'must complete Section B of Form "
+         "8283 even if the amount allocated to each member (that is, each partner or shareholder) "
+         "is $5,000 or less'). A $6,000 item in a two-50%-shareholder S corp is Section B, though "
+         "each K-1 carries $3,000. The §170(f)(11)(C) appraisal tier therefore also binds at the "
+         "entity level (D_8283_002 unchanged on entity rows)."),
+     "inputs": ["f8283_amount"],
+     "outputs": ["f8283_row_section"],
+     "description": ("Statutory home: §170(f)(11)(G) entity-level application. Mechanically this "
+                     "is R-8283-SECTION unchanged (the row amount IS the entity amount) — the "
+                     "rule pins the no-per-member-division reading against a future 'divide by "
+                     "ownership' regression."),},
+    {"rule_id": "R-8283-ENTFEED",
+     "title": "Entity feed: 1120-S rows total into Schedule K line 12b as the YELLOW default (typed K12b = GREEN override); 1065 = print-only, NO feed",
+     "rule_type": "calculation", "precedence": 8, "sort_order": 8,
+     "formula": (
+         "1120-S: K12b (noncash contributions, the s63 face input) DEFAULTS to f8283_total "
+         "(bucket_50 + bucket_30 over non-withheld rows — J-E1, the J1 house feeder convention) "
+         "unless the preparer typed K12b non-zero (GREEN override wins; override-respecting "
+         "pre-formula pass, never a registry formula — the tts B11/K16e recipe). The bucket split "
+         "does NOT split K-1 box 12 codes in v1 (noncash emits code C; the 30%-property code "
+         "refinement is a stated boundary). "
+         "1065: NO FEED (J-E2). The 2025 Form 1065 Schedule K face line 13a 'Contributions' is a "
+         "SINGLE combined cash+noncash line — an auto-add would stomp cash entries. Rows print/"
+         "attach the form; D_8283_016 warns when noncash rows exist and line 13a is less than "
+         "the rows' total (the preparer keys the combined line)."),
+     "inputs": ["f8283_total", "f8283_bucket_50", "f8283_bucket_30"],
+     "outputs": [],
+     "description": ("J-E1/J-E2 (queued for Ken ratification, tts REVIEW_QUEUE s65 — recommend "
+                     "yes/print-only). Backward-compatible: existing 1120-S returns with typed "
+                     "K12b never move.")},
+    {"rule_id": "R-8283-ENTCOPY",
+     "title": "Copy to members: each member receiving an allocation gets a completed copy of the entity's Form 8283",
+     "rule_type": "routing", "precedence": 9, "sort_order": 9,
+     "formula": (
+         "1120S/1065, engaged returns: the entity must give a COMPLETED COPY of Form 8283 "
+         "(Section A or Section B) to each member receiving an allocation of the contribution "
+         "(i8283 PTE verbatim). v1 = D_8283_015 info on the entity return + the K-1 package note "
+         "(J-E3; automatic per-member copies in the K-1 print packet ride a later leg). The "
+         "member-side attach choreography (member attaches the entity's copy + any intermediate "
+         "tier's + their own, using K-1 amounts except SB P1 L3 col (c)) stays the D_8283_010 "
+         "stated boundary — re-scoped to the member side only by this amendment."),
+     "inputs": [],
+     "outputs": [],
+     "description": "J-E3 (recommend info-first). The 1040 member side is unchanged."},
 ]
 
 F8283_RULE_LINKS: list[tuple[str, str, str, str]] = [
+    ("R-8283-ENTFILE", "IRS_2025_8283_INSTR", "primary", "PTE paragraph verbatim: >$500 files Section A or B with the 1065/1120-S"),
+    ("R-8283-ENTFILE", "USC_26_170F11", "primary", "(G) special rule for pass-thru entities: applied at the entity level, denied at the member level"),
+    ("R-8283-ENTSECB", "IRS_2025_8283_INSTR", "primary", "PTE paragraph verbatim: Section B even if each member's allocation is $5,000 or less"),
+    ("R-8283-ENTSECB", "USC_26_170F11", "secondary", "(G) entity-level application — the statutory home of the no-per-member-division reading"),
+    ("R-8283-ENTFEED", "IRS_2025_8283_INSTR", "secondary", "Who Must File: the claimed-deduction basis the K12b default totals"),
+    ("R-8283-ENTCOPY", "IRS_2025_8283_INSTR", "primary", "PTE paragraph verbatim: completed copy to each member receiving an allocation; Members paragraph (the D_8283_010 member-side boundary)"),
     ("R-8283-FILE", "USC_26_170F11", "primary", "(A)(i)+(B): >$500 threshold; (F) similar-items aggregation"),
     ("R-8283-FILE", "IRS_2025_8283_INSTR", "primary", "Who Must File verbatim: before income limits, after reductions"),
     ("R-8283-SECTION", "IRS_2025_8283_INSTR", "primary", "Which Sections To Complete verbatim incl. the over-$5,000 Section-A exceptions and not-good-condition clothing"),
@@ -927,14 +1086,43 @@ F8283_DIAGNOSTICS: list[dict] = [
                  "entered amount, or classify the item as capital gain property if it would produce "
                  "long-term gain."),
      "notes": "J3 — the reduction stays preparer-applied; this is the guardrail."},
-    {"diagnostic_id": "D_8283_010", "title": "Pass-through-entity 8283 mechanics not modeled (stated boundary)", "severity": "info",
-     "condition": "the donating-PTE header name/EIN or the family-PTE checkbox is filled",
-     "message": ("A pass-through entity's Form 8283 is referenced. The member-of-PTE attachment "
-                 "choreography (attach the donating entity's Form 8283 plus any intermediate "
-                 "tier's, in addition to this one) is manual — include the copies as PDF "
-                 "attachments (e-file) or with the paper return. Signature parts III-V are not "
-                 "required on a member's own copy."),
-     "notes": "Stated boundary. Header fields render as entered."},
+    {"diagnostic_id": "D_8283_010", "title": "Member-of-PTE 8283 attach choreography is manual (stated boundary)", "severity": "info",
+     "condition": "1040 return: the donating-PTE header name/EIN or the family-PTE checkbox is filled",
+     "message": ("A pass-through entity's Form 8283 is referenced on this member return. The "
+                 "member-of-PTE attachment choreography (attach the donating entity's Form 8283 "
+                 "plus any intermediate tier's, in addition to this one, using the K-1 amounts — "
+                 "not the entity form's — except Section B Part I line 3 column (c)) is manual — "
+                 "include the copies as PDF attachments (e-file) or with the paper return. "
+                 "Signature parts III-V are not required on a member's own copy."),
+     "notes": ("Re-scoped 2026-07-12 (entity-arm amendment): the ENTITY side is now modeled "
+               "(R-8283-ENTFILE/ENTSECB/ENTFEED/ENTCOPY); only the MEMBER-side choreography "
+               "remains a boundary. Header fields render as entered.")},
+    # ── Entity arm (amendment 2026-07-12) ──
+    {"diagnostic_id": "D_8283_014", "title": "Entity noncash charitable over $500 with no Form 8283 items", "severity": "error",
+     "condition": "1120-S: Schedule K line 12b > $500 with NO NoncashContribution rows; 1065: (sibling condition once a noncash split exists — v1 fires on the 1120-S arm only)",
+     "message": ("Noncash charitable contributions over $500 are claimed on the entity return, but "
+                 "no Form 8283 items are entered. §170(f)(11)(B)+(G) require Form 8283 filed WITH "
+                 "the entity return — enter the donated items so the form can be produced (a bare "
+                 "Schedule K total cannot populate the form's required columns), or reduce the "
+                 "entry to $500 or less."),
+     "notes": ("The D_8283_001 entity sibling; replaces the s63 tts D_SCHK_8283 'form not built' "
+               "warning. 1065 v1: no noncash-only Schedule K line exists (combined 13a), so the "
+               "1065 arm is D_8283_016's job instead.")},
+    {"diagnostic_id": "D_8283_015", "title": "Give each allocated member a completed copy of the entity's Form 8283", "severity": "info",
+     "condition": "1120S/1065 return with the Form 8283 engaged (total > $500)",
+     "message": ("This return files Form 8283. The partnership or S corporation must give a "
+                 "completed copy of Form 8283 (Section A or Section B) to each member receiving "
+                 "an allocation of the contribution (i8283). Include the copy with each K-1 "
+                 "package — members need it to complete their own Forms 8283."),
+     "notes": "R-8283-ENTCOPY (J-E3 info-first; automatic K-1-packet copies ride a later leg)."},
+    {"diagnostic_id": "D_8283_016", "title": "1065: verify Schedule K line 13a includes the noncash total", "severity": "warning",
+     "condition": "1065 return with non-withheld NoncashContribution rows whose total exceeds Schedule K line 13a",
+     "message": ("Form 8283 items are entered but Schedule K line 13a (Contributions — the "
+                 "combined cash + noncash face line) is less than the noncash total. There is no "
+                 "separate noncash line on the 2025 Form 1065 Schedule K, so nothing feeds "
+                 "automatically (J-E2) — verify line 13a includes these items, and that the K-1 "
+                 "box 13 code letters split cash and noncash correctly."),
+     "notes": "J-E2: the 1065 no-feed guardrail. A 13a cash/noncash input split is a deferred face-design unit."},
     {"diagnostic_id": "D_8283_011", "title": "Section B appraiser / donee-acknowledgment block incomplete", "severity": "warning",
      "condition": "a Section B row missing the donee EIN, or the appraiser name/identifying number (conservation defers excluded)",
      "message": ("Section B requires the appraiser's declaration (Part IV — name, address, "
@@ -1111,6 +1299,44 @@ F8283_SCENARIOS: list[dict] = [
                "the warning fires (the deduction should be 300 — J3 keeps the reduction "
                "preparer-applied, so the feed follows the ENTERED amount; the warning is the "
                "guardrail, not a silent rewrite).")},
+    # ── Entity arm (amendment 2026-07-12) ──
+    {"scenario_name": "8283-T14 — 1120-S entity engagement + the K12b YELLOW default / GREEN override", "scenario_type": "normal", "sort_order": 14,
+     "inputs": {"tax_year": 2025, "entity_type": "1120S", "rows": [
+         {"donee_name": "Food Bank of NE Georgia", "description": "Warehouse shelving and pallet racks",
+          "date_contributed": "2025-09-15", "date_acquired": "02/2019", "how_acquired": "Purchase",
+          "cost_basis": 5200, "amount": 3000, "valuation_method": "Comparable sales",
+          "capgain_property": False}]},
+     "expected_outputs": {"f8283_total": 3000, "f8283_engaged": True, "row_sections": ["A"],
+                          "k12b_default": 3000, "k12b_with_typed_override_2500": 2500,
+                          "D_8283_014": False, "D_8283_015": True},
+     "notes": ("R-8283-ENTFILE + R-8283-ENTFEED (J-E1): 3,000 > 500 engages the form on the "
+               "1120-S; K12b defaults YELLOW 3,000; a typed K12b 2,500 (GREEN) wins and never "
+               "moves. D_8283_015 reminds: completed copy to each shareholder's K-1 package. "
+               "FMV below basis — no §170(e) exposure (D_8283_009 quiet).")},
+    {"scenario_name": "8283-T15 — entity-level Section B: $6,000 item, two 50% shareholders", "scenario_type": "edge_case", "sort_order": 15,
+     "inputs": {"tax_year": 2025, "entity_type": "1120S", "shareholders": [{"pct": 50}, {"pct": 50}],
+      "rows": [
+         {"donee_name": "Regional Museum", "description": "Antique printing press", "condition": "Good",
+          "property_type": "collectibles", "date_contributed": "2025-03-10", "date_acquired": "07/2001",
+          "how_acquired": "Purchase", "cost_basis": 1500, "amount": 6000, "capgain_property": True,
+          "appraisal_obtained": True}]},
+     "expected_outputs": {"row_sections": ["B"], "f8283_engaged": True, "f8283_total": 6000,
+                          "per_member_allocation": 3000, "D_8283_002": False},
+     "notes": ("THE R-8283-ENTSECB PIN (i8283 PTE verbatim): the $5,000 test reads the ENTITY "
+               "item amount — 6,000 routes Section B even though each shareholder's allocation "
+               "is 3,000. Dividing by ownership first (each 3,000 -> Section A, no appraisal "
+               "tier) is the regression this scenario exists to catch.")},
+    {"scenario_name": "8283-T16 — 1065: form prints, nothing feeds, the 13a coverage nudge", "scenario_type": "normal", "sort_order": 16,
+     "inputs": {"tax_year": 2025, "entity_type": "1065", "k13a_entered": 0, "rows": [
+         {"donee_name": "Habitat for Humanity ReStore", "description": "Surplus lumber and fixtures",
+          "date_contributed": "2025-05-20", "date_acquired": "Various", "how_acquired": "Purchase",
+          "cost_basis": 4100, "amount": 2000, "valuation_method": "Thrift shop value",
+          "capgain_property": False}]},
+     "expected_outputs": {"f8283_total": 2000, "f8283_engaged": True, "row_sections": ["A"],
+                          "k13a_after_compute": 0, "D_8283_016": True, "D_8283_015": True},
+     "notes": ("R-8283-ENTFEED's 1065 arm (J-E2): the form engages and prints with the 1065, but "
+               "line 13a is NEVER auto-written (the face line is combined cash+noncash). 13a "
+               "entered 0 < rows 2,000 -> D_8283_016 warns; keying 13a = 2,000 clears it.")},
 ]
 
 FLOW_ASSERTIONS: list[dict] = [
@@ -1168,6 +1394,31 @@ FLOW_ASSERTIONS: list[dict] = [
                                 "never_write_to": ["SCHEDULE_A.line14_face_direct"],
                                 "chain": "8283 buckets -> Sch A 12 -> 14 (limits) -> 17 -> 1040 12e"}]},
      "sort_order": 5},
+    # ── Entity arm (amendment 2026-07-12 — tts runners land with the S-20a tts leg) ──
+    {"assertion_id": "FA-ENT-8283-01", "assertion_type": "flow_assertion", "entity_types": ["1120S"],
+     "title": "1120-S feeder: non-withheld 8283 row totals default Schedule K line 12b (YELLOW); a typed K12b entry wins (GREEN, override-respecting pre-pass)",
+     "description": ("Validates R-8283-ENTFEED's 1120-S arm (J-E1). Bugs it catches: the feeder "
+                     "stomping a typed K12b on reseed/recompute (the tts derived-write class — "
+                     "must ride the override-respecting _set_field_value pre-pass, never a "
+                     "registry formula), withheld conservation rows leaking into K12b, or the "
+                     "feed engaging only above $500 (the feed flows regardless; only the FORM "
+                     "gates at $500)."),
+     "definition": {"kind": "formula_check", "form": "8283",
+                    "formula": ("k12b_default == sum(amount over rows not withheld); "
+                                "typed_k12b_nonzero -> k12b == typed value (GREEN wins); "
+                                "feed_flows_below_500 == True; form_engaged iff total > 500")},
+     "status": "draft", "sort_order": 6},
+    {"assertion_id": "FA-ENT-8283-02", "assertion_type": "flow_assertion", "entity_types": ["1120S", "1065"],
+     "title": "Entity engagement + Section B at the entity level: form joins the entity packet iff total > $500; the $5,000 Section-B test reads the entity item amount, never the per-member allocation",
+     "description": ("Validates R-8283-ENTFILE + R-8283-ENTSECB (i8283 PTE verbatim; "
+                     "§170(f)(11)(G)). Bugs it catches: a $6,000 item escaping Section B because "
+                     "someone divided by ownership percentage first (T15's regression), or an "
+                     "engaged entity 8283 missing from the entity print packet / 1120-S e-file "
+                     "(IRS8283 is a declared ReturnData1120S document)."),
+     "definition": {"kind": "conditional_check", "form": "8283",
+                    "checks": [{"when": "f8283_total > 500", "assert": "f8283_engaged and form_8283_in_entity_packet"},
+                               {"when": "row amount > 5000", "assert": "row_section == 'B' regardless of member allocations"}]},
+     "status": "draft", "sort_order": 7},
 ]
 
 

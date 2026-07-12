@@ -1,4 +1,41 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — 8283 ENTITY ARM amendment (tts Spine S-20a RS leg, tts s65) — the D_8283_010 "not modeled" boundary closes on the entity side
+- **Additive amendment to the shared 8283 spec** (load_1040_form_8283.py amends by
+  lookup, entity_types preserved 1120S/1065/1040): rules 5→9, diagnostics 13→16,
+  scenarios 13→16 (T14-T16), FAs 5→7. Sources: i8283 (Rev. December 2025) PTE +
+  Members paragraphs fetched 2026-07-12 and excerpted VERBATIM on
+  IRS_2025_8283_INSTR; §170(f)(11)(G) was already excerpted 2026-07-03.
+- **New rules**: R-8283-ENTFILE (PTE noncash > $500 files Section A or B WITH the
+  1065/1120-S; 1120-S e-file: IRS8283 is a declared ReturnData1120S document —
+  2025v6.2 verified; 1065 e-file rides the future 1065 mapper) · **R-8283-ENTSECB
+  (the $5,000 Section-B test reads the ENTITY item/group amount — NEVER the
+  per-member allocation; i8283 verbatim "even if the amount allocated to each
+  member ... is $5,000 or less")** · R-8283-ENTFEED (1120-S: rows total → K12b
+  YELLOW default, typed K12b = GREEN override, the tts B11/K16e override-respecting
+  pre-pass recipe; **1065: NO FEED — the 2025 face line 13a is a single combined
+  cash+noncash Contributions line; print+diagnose only**) · R-8283-ENTCOPY
+  (completed copy to each allocated member; v1 = D_8283_015 info + K-1 package
+  note).
+- **Diagnostics**: D_8283_010 re-scoped IN PLACE to the member-side attach
+  choreography (the entity side is now modeled); NEW D_8283_014 error (entity
+  noncash > $500 with no rows — replaces the tts s63 D_SCHK_8283 "form not built"
+  warning) · D_8283_015 info (copy to members) · D_8283_016 warning (1065: 13a
+  must cover the noncash total).
+- **FAs staged DRAFT** (FA-ENT-8283-01/02) — the new-FAs-default-ACTIVE trap:
+  the tts s64 export-verbatim gate mirrors must not pick them up before their
+  runners land (the tts S-20a tts leg activates them + refreshes the mirrors
+  together).
+- Judgment items J-E1 (1120-S K12b feeder) / J-E2 (1065 no-feed) / J-E3
+  (copy-to-members info-first) queued in tts REVIEW_QUEUE s65 with
+  recommendations — the s59 shipped-plus-ratification-queued pattern.
+- Harness scratchpad/validate_8283_entity.py: 45 checks green (twice-run
+  idempotent; pre-polluted old D_8283_010 title overwritten; T14/T15/T16
+  arithmetic oracles; draft-status pins; verbatim-phrase pins). Prod seeded
+  (9 rules / 16 diags / 16 scenarios / 7 FAs, all rules cited); deployed
+  export verified (the 1120S FA export still serves exactly 30 — drafts
+  excluded); tts mirror server/specs/8283_spec.json refreshed; tts flow gate
+  460 + test_compute_8283 green against the refreshed mirror.
+
 ## 2026-07-12 — 1120S_M3 line_map renumbered to the REAL face (audit unit #7) — the queue's last standalone item; the $50M tier un-conflated (tts s62)
 - **The face finally entered the repo**: f1120ss3.pdf (Rev. December 2019 — the CURRENT
   revision; its instructions i1120ss3 are also Rev. 12-2019), fetched + pymupdf-extracted
