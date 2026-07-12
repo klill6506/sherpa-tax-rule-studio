@@ -1,4 +1,56 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — 1120S_M3 line_map renumbered to the REAL face (audit unit #7) — the queue's last standalone item; the $50M tier un-conflated (tts s62)
+- **The face finally entered the repo**: f1120ss3.pdf (Rev. December 2019 — the CURRENT
+  revision; its instructions i1120ss3 are also Rev. 12-2019), fetched + pymupdf-extracted
+  2026-07-12 and registered in the tts manifest (84). **⚠ irs.gov filename trap: the
+  obvious guess `f1120sm3.pdf` is the Form 1120 (C-corp) M-3 — in that name "s" means
+  "schedule"; the 1120-S schedule is `f1120ss3.pdf`** (found via the IRS search index).
+- The old block's P1-*/P2-*/P3-* line_map — flagged "unverifiable, no face in repo" by
+  the s44 audit — proved FABRICATED: Part III ends at line 32 (the spec ran P3-33..36,
+  shifting "other items with no differences"/"reconciliation totals" onto phantom rows);
+  Part I "line 1" was labeled net income (the real line 1 is the 1a/1b income-statement
+  questions; net income per statement is line 11 = COMBINE 4-10); and P1-FS/P1-RS/
+  P2-DEP/P3-DEP exist on no revision.
+- Rebuilt verbatim (`_load_m3` in load_1120s_complete): 30 face-keyed facts (1a/1b
+  booleans · line-2 period dates · 3a/3b restatements · 4a + the 4b GAAP/IFRS/tax-basis/
+  other choice · 5a-10 reconciliation amounts w/ the parenthesized-subtraction notes ·
+  the 12a-d entity asset/liability grid · the filing gates) · **R001-R005** (R001 $10M
+  filing gate — reads SCHEDULE L EOY assets, i1120ss3 Who Must File verbatim; R002 P1
+  L11 combine; R003 Part II columns + L23/L26 + the tie notes; R004 P3 L32 = combine
+  1-31 carried to P2 L24 SIGN-FLIPPED, face verbatim; **NEW R005 = the completion
+  tiers: >= $50M must complete ENTIRELY; required-under-$50M or voluntary filers may
+  complete through Part I + Schedule M-1 with M-1 L1 == P1 L11 — this $50M tier is
+  what the pre-s44 spec had conflated into a $50M FILING threshold**) · 87 face lines
+  (I-1a..I-12d · II-1..26 incl. 21a-g · III-1..32 incl. 23a/23b + the Reserved 22) ·
+  D001-D007 (NEW: the $50M-entirely error arm, the L26(a)/L26(d)/M-1-L1 tie errors,
+  the item-C checkbox warning) · 5 scenarios (kept 2 threshold pins now tier-aware +
+  NEW published Example 1 "$12M consolidated FS / $8M Schedule L = NOT required" +
+  the P1 L11 combine oracle + the P3 L32 sign-flip/L26(d)=K18 oracle).
+- **Tie chain now specced end-to-end**: P1 L11 = P2 L26(a) (or Schedule M-1 line 1
+  under the through-Part-I option); **P2 L26(d) = Form 1120-S Schedule K line 18** —
+  the same K18 anchor the s56/s59 units established for M-1 L8. Excerpts: 5 verbatim
+  (Who Must File · the Completing tiers — **transcribed verbatim incl. the IRS's own
+  "(Form 1065)" typo, flagged in a NOTE and not propagated into rules** · the
+  Purpose/tie notes · the L32 sign-flip · the item-C checkbox); the old excerpt's
+  "UNVERIFIED against the face" warning retired; source citation → (Rev. December 2019).
+- Link hygiene: RuleAuthorityLink refresh-deletes on BOTH the M-3 block and the SCHB
+  block — **the s44 $10M threshold fix had left SCHB R003's link note still reading
+  "M-3 threshold: $50M total assets" in prod** (get_or_create never updates notes);
+  healed and verified in the deployed SCHB export.
+- Validation: `scratchpad/validate_m3_renumber.py` **165/0** on throwaway SQLite —
+  twice-run pre-polluted (incl. a re-created stale SCHB note shape), scenario oracles,
+  link coverage, excerpt labels, caps. Prod seeded — stale-deletes exact (13 fabricated
+  facts + all 20 fabricated line rows); idempotent rerun clean; deployed
+  lookup/1120S_M3/export/ verified (87 lines / R001-R005 / 30 facts / D001-D007 / 5
+  tests); NEW tts mirror `server/specs/1120s_m3_spec.json`.
+- tts drift check: **boundary-RED by design** — no M-3 render/compute/MeF leg exists
+  season one; the three $10M threshold constants (rules_entity_boundary/rules_8825/
+  rules_1065_l) verified correct and reading Schedule L 15d; the "prepare manually"
+  routing unaffected by the through-Part-I nuance.
+- **The s44 renumber queue is CLEARED**: 4562 ✅s45 · SCH_K ✅s56 · K1 ✅s57 · SCHL ✅s58 ·
+  PAGE1+M1+M2 ✅s59/s60 · 6198 ✅s61 · M3 line_map ✅s62 — remaining: **3800**, deferred
+  by design to the future 3800/GBC entity unit (the largest rebuild; pre-2023 layout).
+
 ## 2026-07-12 — Form 6198 renumbered to the REAL face (audit unit #6) — a NEW Rev. 11-2025 revision; tts leg-less, no drift possible (tts s61)
 - **6198 rebuilt verbatim** (load_1120s_complete `_load_6198`) vs f6198.pdf **Rev.
   November 2025** — a NEW revision (Created 9/9/25; the local template hash-matches a

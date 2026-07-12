@@ -182,31 +182,107 @@ FRESH_SOURCES = [
         "source_type": "official_instruction",
         "source_rank": "primary_official",
         "jurisdiction_code": "FED",
-        "title": "Instructions for Schedule M-3 (Form 1120-S) — Net Income Reconciliation (2025)",
-        "citation": "Schedule M-3 (Form 1120-S) Instructions (2025)",
+        "title": "Instructions for Schedule M-3 (Form 1120-S) — Net Income (Loss) Reconciliation (Rev. December 2019, current)",
+        "citation": "Instructions for Schedule M-3 (Form 1120-S) (Rev. December 2019)",
         "issuer": "IRS",
         "current_status": "active",
         "is_substantive_authority": True,
         "requires_human_review": True,
         "trust_score": 9.0,
         "topics": ["1120s", "book_tax_reconciliation"],
+        # Excerpts rebuilt 2026-07-12 (renumber unit #7): the face (f1120ss3.pdf,
+        # Rev. 12-2019 — the CURRENT revision) + its instructions (i1120ss3, also
+        # Rev. 12-2019) were downloaded from irs.gov and pymupdf-extracted; the
+        # old "UNVERIFIED against the face" warning is retired. ⚠ irs.gov
+        # filename trap: f1120sm3.pdf is the Form 1120 (C-corp) M-3 — the
+        # 1120-S schedule is f1120ss3.pdf.
         "excerpts": [
             {
                 "excerpt_label": "Schedule M-3 — filing threshold and structure",
                 "excerpt_text": (
-                    "Instructions for Form 1120-S (2025), p.49 (verbatim): 'Corporations with total "
+                    "Instructions for Schedule M-3 (Form 1120-S) (Rev. 12-2019), Who Must File "
+                    "(verbatim): 'Any corporation required to file Form 1120-S, U.S. Income Tax "
+                    "Return for an S Corporation, that reports on Schedule L of Form 1120-S total "
+                    "assets at the end of the corporation's tax year that equal or exceed $10 "
+                    "million must file Schedule M-3 (Form 1120-S). A corporation or group of "
+                    "corporations that completes Parts II and III of Schedule M-3, isn't required "
+                    "to complete Form 1120-S, Schedule M-1... A U.S. corporation filing Form 1120-S "
+                    "that isn't required to file Schedule M-3 may voluntarily file Schedule M-3 "
+                    "instead of Schedule M-1.' i1120s (2025) p.49 agrees: 'Corporations with total "
                     "assets of $10 million or more on the last day of the tax year must file "
-                    "Schedule M-3 (Form 1120-S) instead of Schedule M-1.' And from the Schedule M-1 "
-                    "instructions (same page, verbatim): 'A corporation filing Form 1120-S that "
-                    "isn't required to file Schedule M-3 may voluntarily file Schedule M-3 instead "
-                    "of Schedule M-1.' (The pre-2026-07-09 paraphrase carried a $50 million "
-                    "threshold — a tax-law error corrected in the retrospective-B face audit.) "
-                    "Structure: Part I reconciles financial statement net income; Parts II/III "
-                    "detail income and expense items in book / temporary difference / permanent "
-                    "difference / tax return columns. ⚠ The M-3 face PDF is not yet in the template "
-                    "repo — Part/line numbering in this spec is UNVERIFIED against the face."
+                    "Schedule M-3 (Form 1120-S) instead of Schedule M-1.' (The pre-2026-07-09 "
+                    "paraphrase put the FILING threshold at $50 million — a tax-law error; $50M is "
+                    "the complete-ENTIRELY threshold, see the Completing excerpt.) The threshold "
+                    "reads SCHEDULE L total assets — published Example 1: consolidated financial-"
+                    "statement assets of $12 million with Schedule L assets of $8 million is NOT "
+                    "required to file (may file voluntarily)."
                 ),
-                "summary_text": "M-3 required if assets >= $10M (i1120s 2025 p.49 verbatim); voluntary below. Line numbering unverified pending the face template.",
+                "summary_text": "M-3 required when SCHEDULE L EOY total assets >= $10M (i1120ss3 Who Must File verbatim); voluntary below; Parts II/III replace M-1.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Completing Schedule M-3 — the $50M entirely / through-Part-I tiers (verbatim)",
+                "excerpt_text": (
+                    "i1120ss3 (Rev. 12-2019), Completing Schedule M-3 (verbatim): 'A corporation "
+                    "that is required to file Schedule M-3 (Form 1120-S) and has at least $50 "
+                    "million total assets at the end of the tax year must complete Schedule M-3 "
+                    "(Form 1120-S) entirely. A corporation that (a) is required to file "
+                    "Schedule M-3 (Form 1120-S) and has less than $50 million total assets at the "
+                    "end of the tax year or (b) isn't required to file Schedule M-3 (Form 1120-S) "
+                    "and voluntarily files Schedule M-3 (Form 1120-S) must either (i) complete "
+                    "Schedule M-3 (Form 1065) entirely or (ii) complete Schedule M-3 (Form 1120-S) "
+                    "through Part I and complete Form 1120-S, Schedule M-1 instead of completing "
+                    "Parts II and III of Schedule M-3 (Form 1120-S). If the corporation chooses to "
+                    "complete Form 1120-S, Schedule M-1 instead of completing Parts II and III of "
+                    "Schedule M-3 (Form 1120-S), line 1 of Form 1120-S, Schedule M-1 must equal "
+                    "line 11 of Part I of Schedule M-3 (Form 1120-S).' [NOTE: the '(Form 1065)' in "
+                    "clause (i) is the IRS's own typo in the published instructions — context makes "
+                    "it (Form 1120-S); transcribed verbatim, do not propagate the 1065 reference.] "
+                    "For any part completed, all columns must be completed and all applicable "
+                    "questions answered."
+                ),
+                "summary_text": ">= $50M: complete the M-3 ENTIRELY. $10-50M required, or voluntary: entirely OR through Part I + Schedule M-1 (M-1 line 1 must equal Part I line 11). Distinct from the $10M FILING threshold.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Purpose — Part I line 11 reconciles to Schedule K line 18 (verbatim)",
+                "excerpt_text": (
+                    "i1120ss3 (Rev. 12-2019), Purpose of Schedule (verbatim): 'Schedule M-3, "
+                    "Parts II and III, reconcile financial statement net income (loss) for the "
+                    "U.S. tax return (per Schedule M-3, Part I, line 11) to total income (loss) on "
+                    "Form 1120-S, Schedule K, line 18.' Face notes (f1120ss3 Rev. 12-2019, "
+                    "verbatim): Part I: 'Note: Part I, line 11, must equal Part II, line 26, "
+                    "column (a); or Schedule M-1, line 1.' Part II line 26: 'Note: Line 26, "
+                    "column (a), must equal Part I, line 11, and column (d) must equal Form "
+                    "1120-S, Schedule K, line 18.' Part I line 11 (face): 'Net income (loss) per "
+                    "income statement of the corporation. Combine lines 4 through 10.'"
+                ),
+                "summary_text": "The tie chain: P1 L11 = P2 L26(a) (or M-1 L1); P2 L26(d) = Schedule K line 18 (the same K18 anchor as M-1 line 8). P1 L11 = combine 4-10.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Part III line 32 — sign-flip carry to Part II line 24 (face verbatim)",
+                "excerpt_text": (
+                    "f1120ss3 (Rev. 12-2019) Part III line 32 (verbatim): 'Total expense/deduction "
+                    "items. Combine lines 1 through 31. Enter here and on Part II, line 24, "
+                    "reporting positive amounts as negative and negative amounts as positive.' "
+                    "Part II line 23 (verbatim): 'Total income (loss) items. Combine lines 1 "
+                    "through 22.' Part II line 26 (verbatim): 'Reconciliation totals. Combine "
+                    "lines 23 through 25.' Each Part II/III row carries four columns: (a) Income "
+                    "(Loss)/Expense per Income Statement, (b) Temporary Difference, (c) Permanent "
+                    "Difference, (d) Income (Loss)/Deduction per Tax Return."
+                ),
+                "summary_text": "P3 L32 = combine 1-31, carried to P2 L24 SIGN-FLIPPED; P2 L23 = combine 1-22; P2 L26 = combine 23-25; every row has the (a)/(b)/(c)/(d) columns.",
+                "is_key_excerpt": True,
+            },
+            {
+                "excerpt_label": "Item C checkbox — M-3 attached (verbatim)",
+                "excerpt_text": (
+                    "i1120ss3 (Rev. 12-2019), Who Must File (verbatim): 'Any corporation filing "
+                    "Schedule M-3 must check the box on Form 1120-S, item C, indicating that "
+                    "Schedule M-3 is attached (whether required or voluntary).'"
+                ),
+                "summary_text": "Page-1 item C box must be checked whenever an M-3 is attached, required or voluntary.",
                 "is_key_excerpt": True,
             },
         ],
@@ -610,10 +686,14 @@ class Command(BaseCommand):
                             "when positive — an understatement flagged for review.",
              "notes": "TY2026 re-verify: thresholds are statutory-instruction values ($250,000) — confirm on the 2026 face."},
         ])
+        # Refresh authority-link notes (get_or_create keeps stale relevance notes —
+        # the s44 R003 $10M fix left this block's "$50M" note behind in prod;
+        # caught + corrected in the s62 M-3 renumber trip).
+        RuleAuthorityLink.objects.filter(form_rule__tax_form=form).delete()
         self._upsert_links(rules, sources, [
             ("R001", "IRS_2025_1120S_SCHB_INSTR", "primary", "Accounting method consistency requirement"),
             ("R002", "IRS_2025_1120S_INSTR_FULL", "secondary", "Page 1 item I shareholder count vs K-1s (practice cross-check)"),
-            ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 threshold: $50M total assets"),
+            ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 FILING threshold: $10M Schedule L total assets (i1120s 2025 p.49; the $50M figure is the complete-entirely tier)"),
             ("R004", "IRC_1374", "primary", "Section 1375 tax on excess net passive income with AE&P"),
             ("R005", "IRC_1361", "primary", "100-shareholder limit for S-Corp eligibility"),
             ("R006", "IRS_2025_1120S_SCHB_INSTR", "primary", "Q11 face text + total-receipts definition (verbatim excerpt)"),
@@ -1453,110 +1533,400 @@ class Command(BaseCommand):
     # ═══════════════════════════════════════════════════════════════════════════
 
     def _load_m3(self, sources):
+        # Renumbered to the REAL face 2026-07-12 (audit-ledger unit #7): the old
+        # block's P1-*/P2-*/P3-* line_map was flagged unverifiable (no face in the
+        # repo) and proved FABRICATED once the face arrived — Part III ends at 32
+        # (the spec had P3-33..36), Part I line 1 is the 1a/1b income-statement
+        # questions (the spec called it net income), and the P1-FS/P1-RS/P2-DEP/
+        # P3-DEP rows exist on no revision. Rebuilt verbatim vs f1120ss3.pdf
+        # (Rev. December 2019 — the CURRENT revision; irs.gov filename trap:
+        # f1120sm3.pdf is the Form 1120 C-corp M-3) + i1120ss3 (Rev. 12-2019),
+        # both fetched + pymupdf-extracted 2026-07-12. The $10M filing rule
+        # (fixed s44) stands; NEW: the $50M complete-ENTIRELY tier the old $50M
+        # error had conflated with the filing threshold.
         form = self._upsert_form(
             "1120S_M3", "Schedule M-3 (Form 1120-S) — Net Income (Loss) Reconciliation for S Corporations",
             ["1120S"],
-            notes="Required when total assets >= $10 MILLION (i1120s 2025 p.49 verbatim: 'Corporations "
-                  "with total assets of $10 million or more on the last day of the tax year must file "
-                  "Schedule M-3 (Form 1120-S) instead of Schedule M-1.'). The pre-2026-07-09 spec said "
-                  "$50M — a tax-law error corrected in the retrospective-B face audit. Detailed book-tax "
-                  "reconciliation. Lower priority for Ken's target market. ⚠ line_map is UNVERIFIED "
-                  "against the M-3 face (no f1120ssm3 template in the repo) — treat P1-*/P2-*/P3-* "
-                  "numbering as suspect until the face is downloaded and audited (2026-07-09 ledger).",
+            notes="Face = Rev. December 2019 (f1120ss3.pdf, verified verbatim 2026-07-12; the current "
+                  "revision — its instructions are also Rev. 12-2019). FILING: required when SCHEDULE L "
+                  "total assets at EOY >= $10 MILLION (i1120ss3 Who Must File + i1120s 2025 p.49, both "
+                  "verbatim; the pre-2026-07-09 spec's $50M was a conflation — $50M is the "
+                  "complete-ENTIRELY tier, R005). Structure: Part I financial info + net income "
+                  "reconciliation (L11 = combine 4-10); Part II income items 1-26 and Part III "
+                  "expense/deduction items 1-32, each row in (a) income statement / (b) temporary / "
+                  "(c) permanent / (d) tax return columns. Tie chain: P1 L11 = P2 L26(a) (or Schedule "
+                  "M-1 L1 under the through-Part-I option); P2 L26(d) = Schedule K line 18 (the same "
+                  "K18 anchor as M-1 L8). Filers must check page-1 item C. Lower priority for Ken's "
+                  "target market (no tts build leg yet).",
         )
         self._upsert_facts(form, [
-            {"fact_key": "total_assets_eoy", "label": "Total assets at end of tax year", "data_type": "decimal", "required": True, "sort_order": 1},
-            {"fact_key": "net_income_per_books", "label": "Part I — Net income (loss) per financial statements", "data_type": "decimal", "sort_order": 2},
-            {"fact_key": "net_income_per_tax_return", "label": "Part I — Net income (loss) per income tax return", "data_type": "decimal", "sort_order": 3},
-            {"fact_key": "income_temporary_diff", "label": "Part II — Income items: temporary differences", "data_type": "decimal", "sort_order": 4},
-            {"fact_key": "income_permanent_diff", "label": "Part II — Income items: permanent differences", "data_type": "decimal", "sort_order": 5},
-            {"fact_key": "income_book_amount", "label": "Part II — Income items: book amount", "data_type": "decimal", "sort_order": 6},
-            {"fact_key": "income_tax_amount", "label": "Part II — Income items: per tax return", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "expense_temporary_diff", "label": "Part III — Expense items: temporary differences", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "expense_permanent_diff", "label": "Part III — Expense items: permanent differences", "data_type": "decimal", "sort_order": 9},
-            {"fact_key": "expense_book_amount", "label": "Part III — Expense items: book amount", "data_type": "decimal", "sort_order": 10},
-            {"fact_key": "expense_tax_amount", "label": "Part III — Expense items: per tax return", "data_type": "decimal", "sort_order": 11},
-            {"fact_key": "voluntary_filing", "label": "Filing voluntarily (assets < $10M)?", "data_type": "boolean", "sort_order": 12},
-            {"fact_key": "financial_statement_type", "label": "Type of financial statements", "data_type": "choice",
-             "choices": ["certified_audited", "compiled", "internal", "sec_10k", "other"], "sort_order": 13},
-            {"fact_key": "restatement_indicator", "label": "Financial statements restated for this year?", "data_type": "boolean", "sort_order": 14},
-            {"fact_key": "m3_reconciliation_total", "label": "Total reconciliation (book to tax)", "data_type": "decimal", "sort_order": 15},
+            # ── Filing gates ──
+            {"fact_key": "total_assets_eoy", "label": "Schedule L total assets at end of tax year (filing gate)", "data_type": "decimal", "required": True, "sort_order": 1,
+             "notes": "The $10M filing threshold reads SCHEDULE L total assets (i1120ss3 Who Must File verbatim; published Example 1: $12M consolidated FS assets with $8M Schedule L assets = NOT required). Also drives the $50M complete-entirely tier (R005)."},
+            {"fact_key": "voluntary_filing", "label": "Filing voluntarily (Schedule L assets < $10M)?", "data_type": "boolean", "sort_order": 2},
+            {"fact_key": "through_part_i_only", "label": "Completing through Part I only (+ Schedule M-1 for Parts II/III)?", "data_type": "boolean", "sort_order": 3,
+             "notes": "Allowed only below $50M (required filers) or for voluntary filers (R005). When set, Schedule M-1 line 1 must equal Part I line 11 (D006)."},
+            # ── Part I — financial information (face 1a-3b) ──
+            {"fact_key": "fs_certified_audited", "label": "L1a — Certified audited non-tax-basis income statement prepared?", "data_type": "boolean", "sort_order": 4,
+             "notes": "Yes: skip 1b, complete 2-11 from that statement. No: go to 1b. (Face verbatim.)"},
+            {"fact_key": "fs_non_tax_basis", "label": "L1b — Non-tax-basis income statement prepared?", "data_type": "boolean", "sort_order": 5,
+             "notes": "Yes: complete 2-11 from that statement. No: skip 2-3b and enter net income (loss) per books and records on line 4a. (Face verbatim.)"},
+            {"fact_key": "is_period_beginning", "label": "L2 — Income statement period beginning", "data_type": "date", "sort_order": 6},
+            {"fact_key": "is_period_ending", "label": "L2 — Income statement period ending", "data_type": "date", "sort_order": 7},
+            {"fact_key": "restated_current_period", "label": "L3a — Income statement restated for the line-2 period?", "data_type": "boolean", "sort_order": 8,
+             "notes": "Yes requires an attached explanation with the amount of each item restated."},
+            {"fact_key": "restated_preceding_periods", "label": "L3b — Restated for any of the five preceding periods?", "data_type": "boolean", "sort_order": 9,
+             "notes": "Yes requires an attached explanation with the amount of each item restated."},
+            # ── Part I — reconciliation amounts (face 4a-10) ──
+            {"fact_key": "ww_consolidated_net_income", "label": "L4a — Worldwide consolidated net income (loss) per the line-1 income statement source", "data_type": "decimal", "sort_order": 10},
+            {"fact_key": "accounting_standard", "label": "L4b — Accounting standard used for line 4a", "data_type": "choice",
+             "choices": ["gaap", "ifrs", "tax_basis", "other"], "sort_order": 11,
+             "notes": "Face checkboxes (1) GAAP (2) IFRS (3) Tax-basis (4) Other (specify)."},
+            {"fact_key": "accounting_standard_other", "label": "L4b(4) — Other accounting standard (specify)", "data_type": "string", "sort_order": 12},
+            {"fact_key": "nonincl_foreign_income", "label": "L5a — Net income from nonincludible foreign entities (parenthesized subtraction)", "data_type": "decimal", "sort_order": 13,
+             "notes": "Attach statement. Face prints parentheses — a subtraction in the L11 combine."},
+            {"fact_key": "nonincl_foreign_loss", "label": "L5b — Net loss from nonincludible foreign entities (enter as positive)", "data_type": "decimal", "sort_order": 14,
+             "notes": "Attach statement; face: 'enter as a positive amount' (an addition in the combine)."},
+            {"fact_key": "nonincl_us_income", "label": "L6a — Net income from nonincludible U.S. entities (parenthesized subtraction)", "data_type": "decimal", "sort_order": 15,
+             "notes": "Attach statement."},
+            {"fact_key": "nonincl_us_loss", "label": "L6b — Net loss from nonincludible U.S. entities (enter as positive)", "data_type": "decimal", "sort_order": 16,
+             "notes": "Attach statement."},
+            {"fact_key": "dre_foreign_ni", "label": "L7a — Net income (loss) of other foreign disregarded entities", "data_type": "decimal", "sort_order": 17,
+             "notes": "Attach statement."},
+            {"fact_key": "dre_us_ni", "label": "L7b — Net income (loss) of other U.S. disregarded entities (except QSubs)", "data_type": "decimal", "sort_order": 18,
+             "notes": "Attach statement."},
+            {"fact_key": "qsub_ni", "label": "L7c — Net income (loss) of other qualified subchapter S subsidiaries (QSubs)", "data_type": "decimal", "sort_order": 19,
+             "notes": "Attach statement."},
+            {"fact_key": "eliminations_adjustment", "label": "L8 — Adjustment to eliminations between includible and nonincludible entities", "data_type": "decimal", "sort_order": 20,
+             "notes": "Attach statement."},
+            {"fact_key": "period_adjustment", "label": "L9 — Adjustment to reconcile income statement period to tax year", "data_type": "decimal", "sort_order": 21,
+             "notes": "Attach statement."},
+            {"fact_key": "other_adjustments", "label": "L10 — Other adjustments to reconcile to line 11", "data_type": "decimal", "sort_order": 22,
+             "notes": "Attach statement."},
+            # ── Part I line 12 — entity asset/liability totals ──
+            {"fact_key": "l12a_assets", "label": "L12a — Total assets of entities included on Part I line 4", "data_type": "decimal", "sort_order": 23,
+             "notes": "Line 12 header (face): 'Enter the total amount (not just the corporation's share) of the assets and liabilities of all entities included or removed on the following lines.'"},
+            {"fact_key": "l12a_liabilities", "label": "L12a — Total liabilities of entities included on Part I line 4", "data_type": "decimal", "sort_order": 24},
+            {"fact_key": "l12b_assets", "label": "L12b — Total assets removed on Part I line 5", "data_type": "decimal", "sort_order": 25},
+            {"fact_key": "l12b_liabilities", "label": "L12b — Total liabilities removed on Part I line 5", "data_type": "decimal", "sort_order": 26},
+            {"fact_key": "l12c_assets", "label": "L12c — Total assets removed on Part I line 6", "data_type": "decimal", "sort_order": 27},
+            {"fact_key": "l12c_liabilities", "label": "L12c — Total liabilities removed on Part I line 6", "data_type": "decimal", "sort_order": 28},
+            {"fact_key": "l12d_assets", "label": "L12d — Total assets included on Part I line 7", "data_type": "decimal", "sort_order": 29},
+            {"fact_key": "l12d_liabilities", "label": "L12d — Total liabilities included on Part I line 7", "data_type": "decimal", "sort_order": 30},
         ])
 
         rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "Required if total assets >= $10M", "rule_type": "conditional",
-             "formula": "if total_assets_eoy >= 10000000 then must_file_m3 = True",
+            {"rule_id": "R001", "title": "Required if Schedule L total assets >= $10M", "rule_type": "conditional",
+             "formula": "if total_assets_eoy >= 10000000 then must_file_m3 = True  # total_assets_eoy = SCHEDULE L EOY total assets",
              "inputs": ["total_assets_eoy"], "outputs": ["must_file_m3"], "precedence": 1, "sort_order": 1,
-             "description": "Schedule M-3 is required instead of Schedule M-1 when total assets on the "
-                            "last day of the tax year are $10 MILLION or more (i1120s 2025 p.49 verbatim; "
-                            "corrected 2026-07-09 from the prior spec's erroneous $50M — the tts engine "
-                            "was already correct at $10M in rules_entity_boundary/rules_1065_l)."},
-            {"rule_id": "R002", "title": "Part I — Financial information reconciliation", "rule_type": "calculation",
-             "formula": "net_income_per_tax_return = net_income_per_books + temporary_differences + permanent_differences",
-             "inputs": ["net_income_per_books", "income_temporary_diff", "income_permanent_diff"],
-             "outputs": ["net_income_per_tax_return"], "precedence": 2, "sort_order": 2,
-             "description": "Part I reconciles financial statement net income to net income per income tax return."},
-            {"rule_id": "R003", "title": "Part II — Income items (book vs tax)", "rule_type": "calculation",
-             "formula": "income_tax_amount = income_book_amount + income_temporary_diff + income_permanent_diff",
-             "inputs": ["income_book_amount", "income_temporary_diff", "income_permanent_diff"],
-             "outputs": ["income_tax_amount"], "precedence": 3, "sort_order": 3,
-             "description": "Part II details each income item showing book amount, temporary and permanent differences, and tax return amount."},
-            {"rule_id": "R004", "title": "Part III — Expense items (book vs tax)", "rule_type": "calculation",
-             "formula": "expense_tax_amount = expense_book_amount + expense_temporary_diff + expense_permanent_diff",
-             "inputs": ["expense_book_amount", "expense_temporary_diff", "expense_permanent_diff"],
-             "outputs": ["expense_tax_amount"], "precedence": 4, "sort_order": 4,
-             "description": "Part III details each expense/deduction item showing book amount, temporary and permanent differences, and tax return amount."},
+             "description": "Schedule M-3 is required instead of Schedule M-1 when SCHEDULE L total assets "
+                            "at the end of the tax year equal or exceed $10 MILLION (i1120ss3 Who Must File "
+                            "+ i1120s 2025 p.49, both verbatim; corrected 2026-07-09 from the prior spec's "
+                            "erroneous $50M — that figure is the complete-ENTIRELY tier, R005). The gate "
+                            "reads Schedule L, not financial-statement assets (published Example 1: $12M "
+                            "consolidated FS / $8M Schedule L = not required; may file voluntarily). Any "
+                            "filer (required or voluntary) checks page-1 item C (see the item C excerpt)."},
+            {"rule_id": "R002", "title": "Part I — L11 net income per income statement = combine 4 through 10", "rule_type": "calculation",
+             "formula": "line_11 = ww_consolidated_net_income - nonincl_foreign_income + nonincl_foreign_loss - nonincl_us_income + nonincl_us_loss + dre_foreign_ni + dre_us_ni + qsub_ni + eliminations_adjustment + period_adjustment + other_adjustments  # 5a/6a are parenthesized (entered positive, subtracted); 5b/6b entered positive and added",
+             "inputs": ["ww_consolidated_net_income", "nonincl_foreign_income", "nonincl_foreign_loss",
+                        "nonincl_us_income", "nonincl_us_loss", "dre_foreign_ni", "dre_us_ni", "qsub_ni",
+                        "eliminations_adjustment", "period_adjustment", "other_adjustments"],
+             "outputs": ["p1_net_income_per_statement"], "precedence": 2, "sort_order": 2,
+             "description": "Face L11 verbatim: 'Net income (loss) per income statement of the corporation. "
+                            "Combine lines 4 through 10.' Entry routing (face 1a/1b): certified audited "
+                            "non-tax-basis statement -> use it; else other non-tax-basis statement -> use "
+                            "it; else skip 2-3b and enter net income (loss) per BOOKS AND RECORDS on 4a. "
+                            "Face note: 'Part I, line 11, must equal Part II, line 26, column (a); or "
+                            "Schedule M-1, line 1.'"},
+            {"rule_id": "R003", "title": "Part II — row columns (d)=(a)+(b)+(c); L23 = combine 1-22; L26 = combine 23-25; the L26 ties", "rule_type": "calculation",
+             "formula": "per row: col_d = col_a + col_b + col_c; line_23 = combine(lines 1-22); line_26 = combine(lines 23-25); line_26(a) == part_i_line_11; line_26(d) == schedule_k_line_18",
+             "inputs": [], "outputs": ["p2_reconciliation_totals"], "precedence": 3, "sort_order": 3,
+             "description": "Part II rows 1-22 (incl. the 21a-21g disposition split) each carry (a) income "
+                            "(loss) per income statement / (b) temporary difference / (c) permanent "
+                            "difference / (d) income (loss) per tax return. L23 verbatim: 'Total income "
+                            "(loss) items. Combine lines 1 through 22.' L24 = total expense/deduction items "
+                            "FROM Part III line 32 (sign-flipped, R004). L25 = other items with no "
+                            "differences. L26 verbatim: 'Reconciliation totals. Combine lines 23 through "
+                            "25' with the face note: 'Line 26, column (a), must equal Part I, line 11, and "
+                            "column (d) must equal Form 1120-S, Schedule K, line 18' — the same K18 anchor "
+                            "as Schedule M-1 line 8."},
+            {"rule_id": "R004", "title": "Part III — L32 = combine 1-31, carried to Part II L24 SIGN-FLIPPED", "rule_type": "calculation",
+             "formula": "per row: col_d = col_a + col_b + col_c; line_32 = combine(lines 1-31); part_ii_line_24 = -line_32  # face: 'reporting positive amounts as negative and negative amounts as positive'",
+             "inputs": [], "outputs": ["p3_total_expense_items"], "precedence": 3, "sort_order": 4,
+             "description": "Part III rows 1-31 (incl. 23a/23b depletion; line 22 Reserved) in the same "
+                            "four columns ((a) expense per income statement / (d) deduction per tax "
+                            "return). L32 verbatim: 'Total expense/deduction items. Combine lines 1 "
+                            "through 31. Enter here and on Part II, line 24, reporting positive amounts "
+                            "as negative and negative amounts as positive.'"},
+            {"rule_id": "R005", "title": "Completion tiers — $50M entirely; below: entirely OR through Part I + M-1", "rule_type": "conditional",
+             "formula": "if must_file_m3 and total_assets_eoy >= 50000000 then complete_entirely = REQUIRED; elif must_file_m3 or voluntary_filing then complete_entirely OR (through_part_i_only and schedule_m1_line_1 == part_i_line_11)",
+             "inputs": ["total_assets_eoy", "voluntary_filing", "through_part_i_only"],
+             "outputs": ["m3_completion_tier"], "precedence": 2, "sort_order": 5,
+             "description": "i1120ss3 Completing Schedule M-3 verbatim: at least $50 million total assets "
+                            "at the end of the tax year must complete Schedule M-3 ENTIRELY; a required "
+                            "filer under $50M, or a voluntary filer, must either complete it entirely or "
+                            "complete it through Part I and file Schedule M-1 instead of Parts II/III — in "
+                            "which case 'line 1 of Form 1120-S, Schedule M-1 must equal line 11 of Part I "
+                            "of Schedule M-3.' (The published text's clause (i) says '(Form 1065)' — the "
+                            "IRS's own typo; context makes it (Form 1120-S).) This $50M tier is what the "
+                            "pre-2026-07-09 spec had conflated with the $10M FILING threshold. For any "
+                            "part completed, all columns must be completed and all applicable questions "
+                            "answered."},
         ])
+
+        # Refresh authority-link notes (get_or_create keeps stale relevance notes —
+        # the s59 renumber-unit rule).
+        RuleAuthorityLink.objects.filter(form_rule__tax_form=form).delete()
         self._upsert_links(rules, sources, [
-            ("R001", "IRS_2025_1120S_M3_INSTR", "primary", "M-3 filing threshold: $10M total assets (i1120s 2025 p.49)"),
-            ("R001", "IRS_2025_1120S_SCHB_INSTR", "secondary", "Schedule B references M-3 threshold"),
-            ("R002", "IRS_2025_1120S_M3_INSTR", "primary", "Part I — financial statement reconciliation"),
-            ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "Part II — income items"),
-            ("R004", "IRS_2025_1120S_M3_INSTR", "primary", "Part III — expense items"),
+            ("R001", "IRS_2025_1120S_M3_INSTR", "primary", "Who Must File — $10M SCHEDULE L total assets (i1120ss3 verbatim + i1120s 2025 p.49)"),
+            ("R001", "IRS_2025_1120S_SCHB_INSTR", "secondary", "Schedule B references the M-3 threshold"),
+            ("R002", "IRS_2025_1120S_M3_INSTR", "primary", "Part I face 1a-11 — the L11 combine + the 1a/1b entry routing"),
+            ("R003", "IRS_2025_1120S_M3_INSTR", "primary", "Part II face 1-26 — the four columns + the L26(a)/L26(d) tie notes"),
+            ("R004", "IRS_2025_1120S_M3_INSTR", "primary", "Part III face 1-32 — the L32 sign-flip carry to Part II L24"),
+            ("R005", "IRS_2025_1120S_M3_INSTR", "primary", "Completing Schedule M-3 — the $50M entirely / through-Part-I tiers (verbatim)"),
         ])
+        _P2_COLS = ("Columns: (a) income (loss) per income statement / (b) temporary difference / "
+                    "(c) permanent difference / (d) income (loss) per tax return.")
+        _P3_COLS = ("Columns: (a) expense per income statement / (b) temporary difference / "
+                    "(c) permanent difference / (d) deduction per tax return.")
         self._upsert_lines(form, [
-            {"line_number": "P1-1", "description": "Part I Line 1 — Net income (loss) per financial statements", "line_type": "input", "sort_order": 1},
-            {"line_number": "P1-2", "description": "Part I Line 2 — Net income of includible entities not on financial statements", "line_type": "input", "sort_order": 2},
-            {"line_number": "P1-3", "description": "Part I Line 3 — Net income of entities on financial statements not included", "line_type": "input", "sort_order": 3},
-            {"line_number": "P1-4", "description": "Part I Line 4 — Adjustments to reconcile", "line_type": "input", "sort_order": 4},
-            {"line_number": "P1-11", "description": "Part I Line 11 — Net income per income tax return", "line_type": "total", "source_rules": ["R002"], "sort_order": 5},
-            {"line_number": "P2-1", "description": "Part II Line 1 — Income (loss) from equity method foreign corps", "line_type": "input", "sort_order": 6},
-            {"line_number": "P2-2", "description": "Part II Line 2 — Gross foreign dividends not included in Part I", "line_type": "input", "sort_order": 7},
-            {"line_number": "P2-25", "description": "Part II Line 25 — Other income items with differences", "line_type": "input", "sort_order": 8},
-            {"line_number": "P2-26", "description": "Part II Line 26 — Total income items", "line_type": "subtotal", "source_rules": ["R003"], "sort_order": 9},
-            {"line_number": "P3-1", "description": "Part III Line 1 — U.S. current income tax expense", "line_type": "input", "sort_order": 10},
-            {"line_number": "P3-2", "description": "Part III Line 2 — U.S. deferred income tax expense", "line_type": "input", "sort_order": 11},
-            {"line_number": "P3-3", "description": "Part III Line 3 — State and local income tax expense", "line_type": "input", "sort_order": 12},
-            {"line_number": "P3-33", "description": "Part III Line 33 — Other expense/deduction items with differences", "line_type": "input", "sort_order": 13},
-            {"line_number": "P3-34", "description": "Part III Line 34 — Total expense/deduction items", "line_type": "subtotal", "source_rules": ["R004"], "sort_order": 14},
-            {"line_number": "P3-35", "description": "Part III Line 35 — Other items with no differences", "line_type": "input", "sort_order": 15},
-            {"line_number": "P3-36", "description": "Part III Line 36 — Reconciliation totals", "line_type": "total", "sort_order": 16},
-            {"line_number": "P1-FS", "description": "Part I — Type of financial statements", "line_type": "informational", "sort_order": 17},
-            {"line_number": "P1-RS", "description": "Part I — Restatement indicator", "line_type": "informational", "sort_order": 18},
-            {"line_number": "P2-DEP", "description": "Part II — Depreciation book vs tax differences", "line_type": "input", "sort_order": 19},
-            {"line_number": "P3-DEP", "description": "Part III — Depreciation expense differences", "line_type": "input", "sort_order": 20},
+            # ── Part I — Financial Information and Net Income (Loss) Reconciliation ──
+            {"line_number": "I-1a", "description": "Did the corporation prepare a certified audited non-tax-basis income statement for the period ending with or within this tax year? Yes: skip 1b, complete 2-11 from that statement. No: go to 1b",
+             "line_type": "input", "source_facts": ["fs_certified_audited"], "sort_order": 1},
+            {"line_number": "I-1b", "description": "Did the corporation prepare a non-tax-basis income statement for that period? Yes: complete 2-11 from it. No: skip 2-3b and enter net income (loss) per books and records on line 4a",
+             "line_type": "input", "source_facts": ["fs_non_tax_basis"], "sort_order": 2},
+            {"line_number": "I-2", "description": "Enter the income statement period: Beginning / Ending",
+             "line_type": "input", "source_facts": ["is_period_beginning", "is_period_ending"], "sort_order": 3},
+            {"line_number": "I-3a", "description": "Has the corporation's income statement been restated for the income statement period on line 2? (Yes: attach explanation + amount of each item restated)",
+             "line_type": "input", "source_facts": ["restated_current_period"], "sort_order": 4},
+            {"line_number": "I-3b", "description": "Has the income statement been restated for any of the five preceding periods? (Yes: attach explanation + amounts)",
+             "line_type": "input", "source_facts": ["restated_preceding_periods"], "sort_order": 5},
+            {"line_number": "I-4a", "description": "Worldwide consolidated net income (loss) from income statement source identified in Part I, line 1",
+             "line_type": "input", "source_facts": ["ww_consolidated_net_income"], "sort_order": 6},
+            {"line_number": "I-4b", "description": "Indicate accounting standard used for line 4a: (1) GAAP (2) IFRS (3) Tax-basis (4) Other (specify)",
+             "line_type": "input", "source_facts": ["accounting_standard", "accounting_standard_other"], "sort_order": 7},
+            {"line_number": "I-5a", "description": "Net income from nonincludible foreign entities (attach statement) — parenthesized subtraction",
+             "line_type": "input", "source_facts": ["nonincl_foreign_income"], "sort_order": 8},
+            {"line_number": "I-5b", "description": "Net loss from nonincludible foreign entities (attach statement and enter as a positive amount)",
+             "line_type": "input", "source_facts": ["nonincl_foreign_loss"], "sort_order": 9},
+            {"line_number": "I-6a", "description": "Net income from nonincludible U.S. entities (attach statement) — parenthesized subtraction",
+             "line_type": "input", "source_facts": ["nonincl_us_income"], "sort_order": 10},
+            {"line_number": "I-6b", "description": "Net loss from nonincludible U.S. entities (attach statement and enter as a positive amount)",
+             "line_type": "input", "source_facts": ["nonincl_us_loss"], "sort_order": 11},
+            {"line_number": "I-7a", "description": "Net income (loss) of other foreign disregarded entities (attach statement)",
+             "line_type": "input", "source_facts": ["dre_foreign_ni"], "sort_order": 12},
+            {"line_number": "I-7b", "description": "Net income (loss) of other U.S. disregarded entities (except qualified subchapter S subsidiaries) (attach statement)",
+             "line_type": "input", "source_facts": ["dre_us_ni"], "sort_order": 13},
+            {"line_number": "I-7c", "description": "Net income (loss) of other qualified subchapter S subsidiaries (QSubs) (attach statement)",
+             "line_type": "input", "source_facts": ["qsub_ni"], "sort_order": 14},
+            {"line_number": "I-8", "description": "Adjustment to eliminations of transactions between includible entities and nonincludible entities (attach statement)",
+             "line_type": "input", "source_facts": ["eliminations_adjustment"], "sort_order": 15},
+            {"line_number": "I-9", "description": "Adjustment to reconcile income statement period to tax year (attach statement)",
+             "line_type": "input", "source_facts": ["period_adjustment"], "sort_order": 16},
+            {"line_number": "I-10", "description": "Other adjustments to reconcile to amount on line 11 (attach statement)",
+             "line_type": "input", "source_facts": ["other_adjustments"], "sort_order": 17},
+            {"line_number": "I-11", "description": "Net income (loss) per income statement of the corporation. Combine lines 4 through 10. Note: Part I, line 11, must equal Part II, line 26, column (a); or Schedule M-1, line 1",
+             "line_type": "total", "calculation": "combine lines 4 through 10", "source_rules": ["R002"], "sort_order": 18},
+            {"line_number": "I-12a", "description": "Total assets / total liabilities of all entities included on Part I, line 4 (total amount, not just the corporation's share)",
+             "line_type": "input", "source_facts": ["l12a_assets", "l12a_liabilities"], "sort_order": 19},
+            {"line_number": "I-12b", "description": "Total assets / total liabilities removed on Part I, line 5",
+             "line_type": "input", "source_facts": ["l12b_assets", "l12b_liabilities"], "sort_order": 20},
+            {"line_number": "I-12c", "description": "Total assets / total liabilities removed on Part I, line 6",
+             "line_type": "input", "source_facts": ["l12c_assets", "l12c_liabilities"], "sort_order": 21},
+            {"line_number": "I-12d", "description": "Total assets / total liabilities included on Part I, line 7",
+             "line_type": "input", "source_facts": ["l12d_assets", "l12d_liabilities"], "sort_order": 22},
+            # ── Part II — Income (Loss) Items (four columns per row; attach
+            #    statements for lines 1 through 10) ──
+            {"line_number": "II-1", "description": "Income (loss) from equity method foreign corporations. " + _P2_COLS, "line_type": "input", "sort_order": 30},
+            {"line_number": "II-2", "description": "Gross foreign dividends not previously taxed", "line_type": "input", "sort_order": 31},
+            {"line_number": "II-3", "description": "Subpart F, QEF, and similar income inclusions", "line_type": "input", "sort_order": 32},
+            {"line_number": "II-4", "description": "Gross foreign distributions previously taxed", "line_type": "input", "sort_order": 33},
+            {"line_number": "II-5", "description": "Income (loss) from equity method U.S. corporations", "line_type": "input", "sort_order": 34},
+            {"line_number": "II-6", "description": "U.S. dividends not eliminated in tax consolidation", "line_type": "input", "sort_order": 35},
+            {"line_number": "II-7", "description": "Income (loss) from U.S. partnerships", "line_type": "input", "sort_order": 36},
+            {"line_number": "II-8", "description": "Income (loss) from foreign partnerships", "line_type": "input", "sort_order": 37},
+            {"line_number": "II-9", "description": "Income (loss) from other pass-through entities", "line_type": "input", "sort_order": 38},
+            {"line_number": "II-10", "description": "Items relating to reportable transactions", "line_type": "input", "sort_order": 39},
+            {"line_number": "II-11", "description": "Interest income (see instructions)", "line_type": "input", "sort_order": 40},
+            {"line_number": "II-12", "description": "Total accrual to cash adjustment", "line_type": "input", "sort_order": 41},
+            {"line_number": "II-13", "description": "Hedging transactions", "line_type": "input", "sort_order": 42},
+            {"line_number": "II-14", "description": "Mark-to-market income (loss)", "line_type": "input", "sort_order": 43},
+            {"line_number": "II-15", "description": "Cost of goods sold (see instructions)", "line_type": "input", "sort_order": 44},
+            {"line_number": "II-16", "description": "Sale versus lease (for sellers and/or lessors)", "line_type": "input", "sort_order": 45},
+            {"line_number": "II-17", "description": "Section 481(a) adjustments", "line_type": "input", "sort_order": 46},
+            {"line_number": "II-18", "description": "Unearned/deferred revenue", "line_type": "input", "sort_order": 47},
+            {"line_number": "II-19", "description": "Income recognition from long-term contracts", "line_type": "input", "sort_order": 48},
+            {"line_number": "II-20", "description": "Original issue discount and other imputed interest", "line_type": "input", "sort_order": 49},
+            {"line_number": "II-21a", "description": "Income statement gain/loss on sale, exchange, abandonment, worthlessness, or other disposition of assets other than inventory and pass-through entities", "line_type": "input", "sort_order": 50},
+            {"line_number": "II-21b", "description": "Gross capital gains from Schedule D, excluding amounts from pass-through entities", "line_type": "input", "sort_order": 51},
+            {"line_number": "II-21c", "description": "Gross capital losses from Schedule D, excluding amounts from pass-through entities, abandonment losses, and worthless stock losses", "line_type": "input", "sort_order": 52},
+            {"line_number": "II-21d", "description": "Net gain/loss reported on Form 4797, line 17, excluding amounts from pass-through entities, abandonment losses, and worthless stock losses", "line_type": "input", "sort_order": 53},
+            {"line_number": "II-21e", "description": "Abandonment losses", "line_type": "input", "sort_order": 54},
+            {"line_number": "II-21f", "description": "Worthless stock losses (attach statement)", "line_type": "input", "sort_order": 55},
+            {"line_number": "II-21g", "description": "Other gain/loss on disposition of assets other than inventory", "line_type": "input", "sort_order": 56},
+            {"line_number": "II-22", "description": "Other income (loss) items with differences (attach statement)", "line_type": "input", "sort_order": 57},
+            {"line_number": "II-23", "description": "Total income (loss) items. Combine lines 1 through 22",
+             "line_type": "subtotal", "calculation": "combine lines 1 through 22", "source_rules": ["R003"], "sort_order": 58},
+            {"line_number": "II-24", "description": "Total expense/deduction items (from Part III, line 32) — carried sign-flipped",
+             "line_type": "calculated", "calculation": "-(Part III line 32)", "source_rules": ["R004"], "sort_order": 59},
+            {"line_number": "II-25", "description": "Other items with no differences", "line_type": "input", "sort_order": 60},
+            {"line_number": "II-26", "description": "Reconciliation totals. Combine lines 23 through 25. Note: Line 26, column (a), must equal Part I, line 11, and column (d) must equal Form 1120-S, Schedule K, line 18",
+             "line_type": "total", "calculation": "combine lines 23 through 25", "source_rules": ["R003"],
+             "destination_form": "col (a) ties Part I line 11; col (d) ties Form 1120-S Schedule K line 18 (the M-1 L8 anchor)", "sort_order": 61},
+            # ── Part III — Expense/Deduction Items (four columns per row) ──
+            {"line_number": "III-1", "description": "U.S. current income tax expense. " + _P3_COLS, "line_type": "input", "sort_order": 70},
+            {"line_number": "III-2", "description": "U.S. deferred income tax expense", "line_type": "input", "sort_order": 71},
+            {"line_number": "III-3", "description": "State and local current income tax expense", "line_type": "input", "sort_order": 72},
+            {"line_number": "III-4", "description": "State and local deferred income tax expense", "line_type": "input", "sort_order": 73},
+            {"line_number": "III-5", "description": "Foreign current income tax expense (other than foreign withholding taxes)", "line_type": "input", "sort_order": 74},
+            {"line_number": "III-6", "description": "Foreign deferred income tax expense", "line_type": "input", "sort_order": 75},
+            {"line_number": "III-7", "description": "Equity-based compensation", "line_type": "input", "sort_order": 76},
+            {"line_number": "III-8", "description": "Meals and entertainment", "line_type": "input", "sort_order": 77},
+            {"line_number": "III-9", "description": "Fines and penalties", "line_type": "input", "sort_order": 78},
+            {"line_number": "III-10", "description": "Judgments, damages, awards, and similar costs", "line_type": "input", "sort_order": 79},
+            {"line_number": "III-11", "description": "Pension and profit-sharing", "line_type": "input", "sort_order": 80},
+            {"line_number": "III-12", "description": "Other post-retirement benefits", "line_type": "input", "sort_order": 81},
+            {"line_number": "III-13", "description": "Deferred compensation", "line_type": "input", "sort_order": 82},
+            {"line_number": "III-14", "description": "Charitable contribution of cash and tangible property", "line_type": "input", "sort_order": 83},
+            {"line_number": "III-15", "description": "Charitable contribution of intangible property", "line_type": "input", "sort_order": 84},
+            {"line_number": "III-16", "description": "Current year acquisition or reorganization investment banking fees", "line_type": "input", "sort_order": 85},
+            {"line_number": "III-17", "description": "Current year acquisition or reorganization legal and accounting fees", "line_type": "input", "sort_order": 86},
+            {"line_number": "III-18", "description": "Current year acquisition/reorganization other costs", "line_type": "input", "sort_order": 87},
+            {"line_number": "III-19", "description": "Amortization/impairment of goodwill", "line_type": "input", "sort_order": 88},
+            {"line_number": "III-20", "description": "Amortization of acquisition, reorganization, and start-up costs", "line_type": "input", "sort_order": 89},
+            {"line_number": "III-21", "description": "Other amortization or impairment write-offs", "line_type": "input", "sort_order": 90},
+            {"line_number": "III-22", "description": "Reserved", "line_type": "informational", "sort_order": 91},
+            {"line_number": "III-23a", "description": "Depletion — Oil & Gas", "line_type": "input", "sort_order": 92},
+            {"line_number": "III-23b", "description": "Depletion — Other than Oil & Gas", "line_type": "input", "sort_order": 93},
+            {"line_number": "III-24", "description": "Depreciation", "line_type": "input", "sort_order": 94},
+            {"line_number": "III-25", "description": "Bad debt expense", "line_type": "input", "sort_order": 95},
+            {"line_number": "III-26", "description": "Interest expense (see instructions)", "line_type": "input", "sort_order": 96},
+            {"line_number": "III-27", "description": "Corporate-owned life insurance premiums", "line_type": "input", "sort_order": 97},
+            {"line_number": "III-28", "description": "Purchase versus lease (for purchasers and/or lessees)", "line_type": "input", "sort_order": 98},
+            {"line_number": "III-29", "description": "Research and development costs", "line_type": "input", "sort_order": 99},
+            {"line_number": "III-30", "description": "Section 118 exclusion (attach statement)", "line_type": "input", "sort_order": 100},
+            {"line_number": "III-31", "description": "Other expense/deduction items with differences (attach statement)", "line_type": "input", "sort_order": 101},
+            {"line_number": "III-32", "description": "Total expense/deduction items. Combine lines 1 through 31. Enter here and on Part II, line 24, reporting positive amounts as negative and negative amounts as positive",
+             "line_type": "total", "calculation": "combine lines 1 through 31; carry to Part II line 24 sign-flipped",
+             "source_rules": ["R004"], "destination_form": "Part II line 24 (sign-flipped)", "sort_order": 102},
         ])
+
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "M-3 required but M-1 filed", "severity": "error",
              "condition": "total_assets_eoy >= 10000000 AND filing_m1_instead_of_m3",
-             "message": "Total assets >= $10 million but filing Schedule M-1 instead of M-3. Schedule M-3 is required (i1120s 2025 p.49)."},
+             "message": "Schedule L total assets >= $10 million but filing Schedule M-1 instead of M-3. Schedule M-3 is required (i1120ss3 Who Must File; i1120s 2025 p.49)."},
             {"diagnostic_id": "D002", "title": "M-3 filed voluntarily", "severity": "info",
              "condition": "total_assets_eoy < 10000000 AND filing_m3",
-             "message": "Schedule M-3 filed but total assets < $10 million. Voluntary filing is allowed (i1120s: a corporation not required to file M-3 may do so instead of M-1)."},
+             "message": "Schedule M-3 filed but Schedule L total assets < $10 million. Voluntary filing is allowed (may complete entirely, or through Part I with Schedule M-1). Check page-1 item C either way."},
+            {"diagnostic_id": "D003", "title": ">= $50M — M-3 must be completed ENTIRELY", "severity": "error",
+             "condition": "total_assets_eoy >= 50000000 AND through_part_i_only",
+             "message": "Total assets are $50 million or more — the through-Part-I option is not available; Schedule M-3 must be completed entirely (i1120ss3 Completing Schedule M-3, verbatim)."},
+            {"diagnostic_id": "D004", "title": "Part II line 26(d) must equal Schedule K line 18", "severity": "error",
+             "condition": "parts_ii_iii_completed AND p2_line26_col_d != schedule_k_line_18",
+             "message": "Part II, line 26, column (d) does not equal Form 1120-S, Schedule K, line 18 (face note, verbatim). The M-3 reconciles to the same K18 anchor as Schedule M-1 line 8."},
+            {"diagnostic_id": "D005", "title": "Part I line 11 must equal Part II line 26(a)", "severity": "error",
+             "condition": "parts_ii_iii_completed AND p1_line_11 != p2_line26_col_a",
+             "message": "Part I, line 11 does not equal Part II, line 26, column (a) (face note, verbatim)."},
+            {"diagnostic_id": "D006", "title": "Through-Part-I option — Schedule M-1 line 1 must equal Part I line 11", "severity": "error",
+             "condition": "through_part_i_only AND schedule_m1_line_1 != p1_line_11",
+             "message": "Completing Schedule M-3 through Part I with Schedule M-1 for the reconciliation: 'line 1 of Form 1120-S, Schedule M-1 must equal line 11 of Part I of Schedule M-3' (i1120ss3, verbatim)."},
+            {"diagnostic_id": "D007", "title": "Item C checkbox not checked with an M-3 attached", "severity": "warning",
+             "condition": "filing_m3 AND NOT page1_item_c_checked",
+             "message": "An M-3 is attached (required or voluntary) but the Form 1120-S page-1 item C box is not checked (i1120ss3 Who Must File, verbatim)."},
         ])
+
         self._upsert_tests(form, [
             {"scenario_name": "Threshold check — M-3 required", "scenario_type": "normal",
              "inputs": {"total_assets_eoy": 75000000},
-             "expected_outputs": {"must_file_m3": True},
+             "expected_outputs": {"must_file_m3": True, "complete_entirely_required": True},
              "sort_order": 1,
-             "notes": "$75M total assets — above the $10M threshold, M-3 required."},
+             "notes": "$75M Schedule L total assets — above the $10M filing threshold AND the $50M tier: M-3 required and must be completed entirely (R001 + R005)."},
             {"scenario_name": "Threshold check — $12M filer (the $10M-$50M band)", "scenario_type": "edge",
              "inputs": {"total_assets_eoy": 12000000},
-             "expected_outputs": {"must_file_m3": True},
+             "expected_outputs": {"must_file_m3": True, "complete_entirely_required": False},
              "sort_order": 2,
-             "notes": "The band the pre-2026-07-09 $50M threshold silently mis-gated: a $12M filer "
-                      "MUST file M-3 per i1120s 2025 p.49."},
+             "notes": "The band the pre-2026-07-09 $50M threshold silently mis-gated: a $12M filer MUST file M-3 (i1120ss3 Who Must File; i1120s 2025 p.49) but may complete it through Part I + Schedule M-1 (R005)."},
+            {"scenario_name": "Schedule L reads the gate — published Example 1", "scenario_type": "edge",
+             "inputs": {"consolidated_fs_assets": 12000000, "total_assets_eoy": 8000000},
+             "expected_outputs": {"must_file_m3": False, "may_file_voluntarily": True},
+             "sort_order": 3,
+             "notes": "i1120ss3 Example 1 (published): consolidated financial statements report $12M total assets but Schedule L reports $8M — NOT required to file M-3; may file voluntarily (and then either complete entirely or through Part I + M-1)."},
+            {"scenario_name": "Part I line 11 combine (4 through 10)", "scenario_type": "normal",
+             "inputs": {"ww_consolidated_net_income": 1000000, "nonincl_foreign_income": 200000,
+                        "nonincl_us_loss": 50000, "period_adjustment": 10000},
+             "expected_outputs": {"line_11": 860000},
+             "sort_order": 4,
+             "notes": "L11 = 1,000,000 - 200,000 (5a parenthesized) + 50,000 (6b entered positive) + 10,000 (9) = 860,000. Face: 'Combine lines 4 through 10.'"},
+            {"scenario_name": "Part III line 32 sign-flip + the line 26 ties", "scenario_type": "normal",
+             "inputs": {"p2_line_23_col_d": 900000, "p3_line_32_col_d": 700000, "p2_line_25": 0,
+                        "p1_line_11": 150000, "schedule_k_line_18": 200000},
+             "expected_outputs": {"p2_line_24_col_d": -700000, "p2_line_26_col_d": 200000},
+             "sort_order": 5,
+             "notes": "P3 L32 (700,000 of deductions) carries to P2 L24 as -700,000 (face sign-flip verbatim); L26(d) = 900,000 - 700,000 + 0 = 200,000, which must equal Schedule K line 18 (face note). Col (a) of L26 must equal P1 L11."},
         ])
+
+        # ── In-loader self-heal (the rename-orphan class): the fabricated
+        # P1-*/P2-*/P3-* map and the generic aggregate facts must DELETE on
+        # reseed. 1120S_M3 has a single owner (this loader) — exact whitelists.
+        _M3_FACTS = {
+            "total_assets_eoy", "voluntary_filing", "through_part_i_only",
+            "fs_certified_audited", "fs_non_tax_basis", "is_period_beginning",
+            "is_period_ending", "restated_current_period", "restated_preceding_periods",
+            "ww_consolidated_net_income", "accounting_standard", "accounting_standard_other",
+            "nonincl_foreign_income", "nonincl_foreign_loss", "nonincl_us_income",
+            "nonincl_us_loss", "dre_foreign_ni", "dre_us_ni", "qsub_ni",
+            "eliminations_adjustment", "period_adjustment", "other_adjustments",
+            "l12a_assets", "l12a_liabilities", "l12b_assets", "l12b_liabilities",
+            "l12c_assets", "l12c_liabilities", "l12d_assets", "l12d_liabilities",
+        }
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_M3_FACTS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale M-3 facts: "
+                              + ", ".join(sorted(stale_facts.values_list("fact_key", flat=True))))
+            stale_facts.delete()
+
+        _M3_LINES = (
+            {"I-1a", "I-1b", "I-2", "I-3a", "I-3b", "I-4a", "I-4b", "I-5a", "I-5b",
+             "I-6a", "I-6b", "I-7a", "I-7b", "I-7c", "I-8", "I-9", "I-10", "I-11",
+             "I-12a", "I-12b", "I-12c", "I-12d"}
+            | {f"II-{n}" for n in list(range(1, 21)) + list(range(22, 27))}
+            | {f"II-21{c}" for c in "abcdefg"}
+            | {f"III-{n}" for n in list(range(1, 23)) + list(range(24, 33))}
+            | {"III-23a", "III-23b"}
+        )
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_M3_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale M-3 line rows: "
+                              + ", ".join(sorted(stale_lines.values_list("line_number", flat=True))))
+            stale_lines.delete()
+
+        _M3_RULES = {"R001", "R002", "R003", "R004", "R005"}
+        stale_rules = FormRule.objects.filter(tax_form=form).exclude(rule_id__in=_M3_RULES)
+        if stale_rules.exists():
+            self.stdout.write(f"  deleting {stale_rules.count()} stale M-3 rules: "
+                              + ", ".join(sorted(stale_rules.values_list("rule_id", flat=True))))
+            stale_rules.delete()
+
+        _M3_DIAGS = {"D001", "D002", "D003", "D004", "D005", "D006", "D007"}
+        stale_diags = FormDiagnostic.objects.filter(tax_form=form).exclude(diagnostic_id__in=_M3_DIAGS)
+        if stale_diags.exists():
+            self.stdout.write(f"  deleting {stale_diags.count()} stale M-3 diagnostics: "
+                              + ", ".join(sorted(stale_diags.values_list("diagnostic_id", flat=True))))
+            stale_diags.delete()
+
+        _M3_SCENARIOS = {
+            "Threshold check — M-3 required",
+            "Threshold check — $12M filer (the $10M-$50M band)",
+            "Schedule L reads the gate — published Example 1",
+            "Part I line 11 combine (4 through 10)",
+            "Part III line 32 sign-flip + the line 26 ties",
+        }
+        stale_tests = TestScenario.objects.filter(tax_form=form).exclude(scenario_name__in=_M3_SCENARIOS)
+        if stale_tests.exists():
+            self.stdout.write(f"  deleting {stale_tests.count()} stale M-3 scenarios: "
+                              + ", ".join(sorted(stale_tests.values_list("scenario_name", flat=True))))
+            stale_tests.delete()
+
         self._upsert_form_links("1120S_M3", sources, [
             ("IRS_2025_1120S_M3_INSTR", "governs"),
             ("IRS_2025_1120S_INSTR", "informs"),
