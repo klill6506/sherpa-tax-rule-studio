@@ -130,33 +130,49 @@ FRESH_SOURCES = [
         "excerpts": [
             {
                 "excerpt_label": "Schedule L — structure and line descriptions",
+                "location_reference": "i1120s (2025) p.49, Schedule L + the f1120s 2025 face p.4",
                 "excerpt_text": (
-                    "Schedule L reports the balance sheet per books with beginning-of-year (BOY) "
-                    "and end-of-year (EOY) columns. Assets (Lines 1-15): Cash (L1), Trade notes & "
-                    "accounts receivable net of allowance (L2a/2b), Inventories (L3), Tax-exempt "
-                    "securities (L5), Other investments (L6), Buildings & depreciable assets net (L7), "
-                    "Intangible assets net (L8), Land (L9), Other assets (L10a/10b), Total assets (L14). "
-                    "Liabilities (Lines 15-21): Accounts payable (L15), Mortgages <1yr (L16), Other "
-                    "current liabilities (L17), Shareholder loans (L18), Mortgages >=1yr (L19), Other "
-                    "liabilities (L20), Total liabilities (L21). Equity (Lines 22-27): Capital stock "
-                    "(L22), Additional paid-in capital (L23), Retained earnings (L24), Adjustments to "
-                    "shareholders' equity (L25), Less treasury stock (L26), Total L&SE (L27)."
+                    "i1120s p.49 verbatim: \"The balance sheets should agree with the corporation's "
+                    "books and records. Schedule L isn't required to be completed if the corporation "
+                    "answered 'Yes' to question 11 on Schedule B. If the corporation is required to "
+                    "complete Schedule L, include total assets reported on Schedule L, line 15, "
+                    "column (d), on page 1, item F.\" 2025 face rows (f1120s p.4 verbatim): assets "
+                    "1 Cash · 2a Trade notes and accounts receivable / 2b Less allowance for bad "
+                    "debts · 3 Inventories · 4 U.S. government obligations · 5 Tax-exempt securities "
+                    "· 6 Other current assets · 7 Loans to shareholders · 8 Mortgage and real estate "
+                    "loans · 9 Other investments · 10a Buildings and other depreciable assets / 10b "
+                    "Less accumulated depreciation · 11a Depletable assets / 11b Less accumulated "
+                    "depletion · 12 Land (net of any amortization) · 13a Intangible assets "
+                    "(amortizable only) / 13b Less accumulated amortization · 14 Other assets · "
+                    "15 Total assets; liabilities 16 Accounts payable · 17 Mortgages, notes, bonds "
+                    "payable in less than 1 year · 18 Other current liabilities · 19 Loans from "
+                    "shareholders · 20 Mortgages, notes, bonds payable in 1 year or more · 21 Other "
+                    "liabilities; equity 22 Capital stock · 23 Additional paid-in capital · 24 "
+                    "Retained earnings · 25 Adjustments to shareholders' equity · 26 Less cost of "
+                    "treasury stock · 27 Total liabilities and shareholders' equity. There is NO "
+                    "total-liabilities subtotal line on the face."
                 ),
-                "summary_text": "Schedule L: BOY/EOY balance sheet. Assets L1-14, Liabilities L15-21, Equity L22-27.",
+                "summary_text": "2025 Schedule L: assets 1-15, liabilities 16-21 (no subtotal), equity 22-26, total 27; L15(d) → page 1 item F; not required if Sch B Q11 is Yes.",
                 "is_key_excerpt": True,
             },
             {
                 "excerpt_label": "Schedule L — small corporation exception and cross-checks",
+                "location_reference": "i1120s (2025) p.49, Schedule L / Line 24 / Line 25",
                 "excerpt_text": (
-                    "Schedule L is not required if: (a) total receipts for the tax year are less "
-                    "than $250,000, AND (b) total assets at end of tax year are less than $250,000. "
-                    "However, the corporation must still answer the Schedule B question about total "
-                    "assets. Line 24 (retained earnings) EOY should tie to Schedule M-2 ending "
-                    "balance. Line 7 (depreciable assets) should be consistent with the "
-                    "depreciation module. Line 27 (total L&SE) must equal Line 14 (total assets) "
-                    "for both BOY and EOY columns."
+                    "\"Schedule L isn't required to be completed if the corporation answered 'Yes' to "
+                    "question 11 on Schedule B.\" (Question 11: receipts AND total assets each under "
+                    "$250,000 — see 1120S_SCHB.) \"Line 24. Retained Earnings — If the corporation "
+                    "maintains separate accounts for appropriated and unappropriated retained "
+                    "earnings, it may want to continue such accounting for purposes of preparing its "
+                    "financial balance sheet.\" \"Line 25. Adjustments to Shareholders' Equity — The "
+                    "following are some examples of adjustments to report on this line: unrealized "
+                    "gains and losses on securities held 'available for sale'; foreign currency "
+                    "translation adjustments; the excess of additional pension liability over "
+                    "unrecognized prior service cost; guarantees of employee stock ownership plan "
+                    "(ESOP) debt; compensation related to employee stock award plans. If the total "
+                    "adjustment to be entered is a negative amount, enter the amount in parentheses.\""
                 ),
-                "summary_text": "Small corp exception: receipts <$250K AND assets <$250K. L24 ties to M-2. L27 = L14.",
+                "summary_text": "Not required if Sch B Q11 Yes; Line 24 retained-earnings and Line 25 adjustments guidance (verbatim).",
                 "is_key_excerpt": True,
             },
         ],
@@ -580,95 +596,112 @@ class Command(BaseCommand):
     # Schedule L — Balance Sheet per Books
     # ═══════════════════════════════════════════════════════════════════════════
 
+    # 2025 Schedule L face rows (f1120s.pdf 2025 p.4 verbatim, renumber unit #4
+    # 2026-07-11): assets 1-15 (contra pairs 2a/2b, 10a/10b, 11a/11b, 13a/13b),
+    # liabilities 16-21 (NO total-liabilities line on the face), equity 22-26,
+    # total 27. The old block ran TWO fabricated numbering systems (facts had
+    # total assets at l14/liabilities 15-21; the line map invented an L22
+    # "Total liabilities" + an L28) — both replaced with the face.
+    _SCHL_FACE_ROWS = [
+        ("l1_cash", "L1 Cash"),
+        ("l2a_trade_receivables", "L2a Trade notes and accounts receivable"),
+        ("l2b_allowance", "L2b Less allowance for bad debts"),
+        ("l3_inventories", "L3 Inventories"),
+        ("l4_us_gov_obligations", "L4 U.S. government obligations"),
+        ("l5_tax_exempt_securities", "L5 Tax-exempt securities"),
+        ("l6_other_current_assets", "L6 Other current assets (attach statement)"),
+        ("l7_loans_to_shareholders", "L7 Loans to shareholders"),
+        ("l8_mortgage_re_loans", "L8 Mortgage and real estate loans"),
+        ("l9_other_investments", "L9 Other investments (attach statement)"),
+        ("l10a_buildings_gross", "L10a Buildings and other depreciable assets"),
+        ("l10b_accum_depreciation", "L10b Less accumulated depreciation"),
+        ("l11a_depletable_assets", "L11a Depletable assets"),
+        ("l11b_accum_depletion", "L11b Less accumulated depletion"),
+        ("l12_land", "L12 Land (net of any amortization)"),
+        ("l13a_intangibles_gross", "L13a Intangible assets (amortizable only)"),
+        ("l13b_accum_amortization", "L13b Less accumulated amortization"),
+        ("l14_other_assets", "L14 Other assets (attach statement)"),
+        ("l15_total_assets", "L15 Total assets"),
+        ("l16_accounts_payable", "L16 Accounts payable"),
+        ("l17_mortgages_short", "L17 Mortgages, notes, bonds payable in less than 1 year"),
+        ("l18_other_current_liab", "L18 Other current liabilities (attach statement)"),
+        ("l19_shareholder_loans", "L19 Loans from shareholders"),
+        ("l20_mortgages_long", "L20 Mortgages, notes, bonds payable in 1 year or more"),
+        ("l21_other_liabilities", "L21 Other liabilities (attach statement)"),
+        ("l22_capital_stock", "L22 Capital stock"),
+        ("l23_paid_in_capital", "L23 Additional paid-in capital"),
+        ("l24_retained_earnings", "L24 Retained earnings"),
+        ("l25_adjustments_equity", "L25 Adjustments to shareholders' equity (attach statement)"),
+        ("l26_treasury_stock", "L26 Less cost of treasury stock"),
+        ("l27_total_lse", "L27 Total liabilities and shareholders' equity"),
+    ]
+
     def _load_schedule_l(self, sources):
         form = self._upsert_form(
-            "1120S_SCHL", "Schedule L (Form 1120-S) — Balance Sheet per Books",
+            "1120S_SCHL", "Schedule L (Form 1120-S) — Balance Sheets per Books",
             ["1120S"],
-            notes="BOY and EOY balance sheet. Assets L1-14, Liabilities L15-21, Equity L22-27. Small corp exception if receipts < $250K AND assets < $250K.",
+            notes=(
+                "BOY and EOY balance sheet, 2025 face (renumbered verbatim 2026-07-11, "
+                "audit unit #4): Assets L1-15 (contra pairs 2a/2b, 10a/10b, 11a/11b, "
+                "13a/13b), Liabilities L16-21 (the face has NO total-liabilities "
+                "subtotal), Equity L22-26, Total L&SE L27. Not required if Schedule B "
+                "question 11 is 'Yes' (receipts < $250K AND assets < $250K); when "
+                "required, L15 column (d) also goes to page 1 item F (i1120s 2025 p.49)."
+            ),
         )
-        self._upsert_facts(form, [
-            # Assets — BOY
-            {"fact_key": "l1_cash_boy", "label": "L1 Cash (BOY)", "data_type": "decimal", "sort_order": 1},
-            {"fact_key": "l2a_trade_receivables_boy", "label": "L2a Trade notes & accounts receivable (BOY)", "data_type": "decimal", "sort_order": 2},
-            {"fact_key": "l2b_allowance_boy", "label": "L2b Less allowance for bad debts (BOY)", "data_type": "decimal", "sort_order": 3},
-            {"fact_key": "l3_inventories_boy", "label": "L3 Inventories (BOY)", "data_type": "decimal", "sort_order": 4},
-            {"fact_key": "l5_tax_exempt_securities_boy", "label": "L5 Tax-exempt securities (BOY)", "data_type": "decimal", "sort_order": 5},
-            {"fact_key": "l6_other_investments_boy", "label": "L6 Other investments (BOY)", "data_type": "decimal", "sort_order": 6},
-            {"fact_key": "l7_buildings_depreciable_boy", "label": "L7 Buildings & depreciable assets net (BOY)", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "l8_intangible_assets_boy", "label": "L8 Intangible assets net (BOY)", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "l9_land_boy", "label": "L9 Land (BOY)", "data_type": "decimal", "sort_order": 9},
-            {"fact_key": "l10_other_assets_boy", "label": "L10 Other assets (BOY)", "data_type": "decimal", "sort_order": 10},
-            {"fact_key": "l14_total_assets_boy", "label": "L14 Total assets (BOY)", "data_type": "decimal", "sort_order": 11},
-            # Assets — EOY
-            {"fact_key": "l1_cash_eoy", "label": "L1 Cash (EOY)", "data_type": "decimal", "sort_order": 12},
-            {"fact_key": "l2a_trade_receivables_eoy", "label": "L2a Trade notes & accounts receivable (EOY)", "data_type": "decimal", "sort_order": 13},
-            {"fact_key": "l2b_allowance_eoy", "label": "L2b Less allowance for bad debts (EOY)", "data_type": "decimal", "sort_order": 14},
-            {"fact_key": "l3_inventories_eoy", "label": "L3 Inventories (EOY)", "data_type": "decimal", "sort_order": 15},
-            {"fact_key": "l5_tax_exempt_securities_eoy", "label": "L5 Tax-exempt securities (EOY)", "data_type": "decimal", "sort_order": 16},
-            {"fact_key": "l6_other_investments_eoy", "label": "L6 Other investments (EOY)", "data_type": "decimal", "sort_order": 17},
-            {"fact_key": "l7_buildings_depreciable_eoy", "label": "L7 Buildings & depreciable assets net (EOY)", "data_type": "decimal", "sort_order": 18},
-            {"fact_key": "l8_intangible_assets_eoy", "label": "L8 Intangible assets net (EOY)", "data_type": "decimal", "sort_order": 19},
-            {"fact_key": "l9_land_eoy", "label": "L9 Land (EOY)", "data_type": "decimal", "sort_order": 20},
-            {"fact_key": "l10_other_assets_eoy", "label": "L10 Other assets (EOY)", "data_type": "decimal", "sort_order": 21},
-            {"fact_key": "l14_total_assets_eoy", "label": "L14 Total assets (EOY)", "data_type": "decimal", "sort_order": 22},
-            # Liabilities — BOY
-            {"fact_key": "l15_accounts_payable_boy", "label": "L15 Accounts payable (BOY)", "data_type": "decimal", "sort_order": 23},
-            {"fact_key": "l16_mortgages_short_boy", "label": "L16 Mortgages, notes, bonds < 1 year (BOY)", "data_type": "decimal", "sort_order": 24},
-            {"fact_key": "l17_other_current_liab_boy", "label": "L17 Other current liabilities (BOY)", "data_type": "decimal", "sort_order": 25},
-            {"fact_key": "l18_shareholder_loans_boy", "label": "L18 Loans from shareholders (BOY)", "data_type": "decimal", "sort_order": 26},
-            {"fact_key": "l19_mortgages_long_boy", "label": "L19 Mortgages, notes, bonds >= 1 year (BOY)", "data_type": "decimal", "sort_order": 27},
-            {"fact_key": "l20_other_liabilities_boy", "label": "L20 Other liabilities (BOY)", "data_type": "decimal", "sort_order": 28},
-            {"fact_key": "l21_total_liabilities_boy", "label": "L21 Total liabilities (BOY)", "data_type": "decimal", "sort_order": 29},
-            # Liabilities — EOY
-            {"fact_key": "l15_accounts_payable_eoy", "label": "L15 Accounts payable (EOY)", "data_type": "decimal", "sort_order": 30},
-            {"fact_key": "l16_mortgages_short_eoy", "label": "L16 Mortgages, notes, bonds < 1 year (EOY)", "data_type": "decimal", "sort_order": 31},
-            {"fact_key": "l17_other_current_liab_eoy", "label": "L17 Other current liabilities (EOY)", "data_type": "decimal", "sort_order": 32},
-            {"fact_key": "l18_shareholder_loans_eoy", "label": "L18 Loans from shareholders (EOY)", "data_type": "decimal", "sort_order": 33},
-            {"fact_key": "l19_mortgages_long_eoy", "label": "L19 Mortgages, notes, bonds >= 1 year (EOY)", "data_type": "decimal", "sort_order": 34},
-            {"fact_key": "l20_other_liabilities_eoy", "label": "L20 Other liabilities (EOY)", "data_type": "decimal", "sort_order": 35},
-            {"fact_key": "l21_total_liabilities_eoy", "label": "L21 Total liabilities (EOY)", "data_type": "decimal", "sort_order": 36},
-            # Equity — BOY
-            {"fact_key": "l22_capital_stock_boy", "label": "L22 Capital stock (BOY)", "data_type": "decimal", "sort_order": 37},
-            {"fact_key": "l23_paid_in_capital_boy", "label": "L23 Additional paid-in capital (BOY)", "data_type": "decimal", "sort_order": 38},
-            {"fact_key": "l24_retained_earnings_boy", "label": "L24 Retained earnings (BOY)", "data_type": "decimal", "sort_order": 39},
-            {"fact_key": "l25_adjustments_equity_boy", "label": "L25 Adjustments to shareholders' equity (BOY)", "data_type": "decimal", "sort_order": 40},
-            {"fact_key": "l26_treasury_stock_boy", "label": "L26 Less cost of treasury stock (BOY)", "data_type": "decimal", "sort_order": 41},
-            {"fact_key": "l27_total_lse_boy", "label": "L27 Total liabilities & shareholders' equity (BOY)", "data_type": "decimal", "sort_order": 42},
-            # Equity — EOY
-            {"fact_key": "l22_capital_stock_eoy", "label": "L22 Capital stock (EOY)", "data_type": "decimal", "sort_order": 43},
-            {"fact_key": "l23_paid_in_capital_eoy", "label": "L23 Additional paid-in capital (EOY)", "data_type": "decimal", "sort_order": 44},
-            {"fact_key": "l24_retained_earnings_eoy", "label": "L24 Retained earnings (EOY)", "data_type": "decimal", "sort_order": 45},
-            {"fact_key": "l25_adjustments_equity_eoy", "label": "L25 Adjustments to shareholders' equity (EOY)", "data_type": "decimal", "sort_order": 46},
-            {"fact_key": "l26_treasury_stock_eoy", "label": "L26 Less cost of treasury stock (EOY)", "data_type": "decimal", "sort_order": 47},
-            {"fact_key": "l27_total_lse_eoy", "label": "L27 Total liabilities & shareholders' equity (EOY)", "data_type": "decimal", "sort_order": 48},
+        facts = []
+        for i, (key, label) in enumerate(self._SCHL_FACE_ROWS):
+            facts.append({"fact_key": f"{key}_boy", "label": f"{label} (BOY)",
+                          "data_type": "decimal", "sort_order": 1 + i * 2})
+            facts.append({"fact_key": f"{key}_eoy", "label": f"{label} (EOY)",
+                          "data_type": "decimal", "sort_order": 2 + i * 2})
+        facts += [
             # Cross-check facts
-            {"fact_key": "total_receipts", "label": "Total receipts (for small corp exception)", "data_type": "decimal", "sort_order": 49},
-            {"fact_key": "m2_ending_balance", "label": "M-2 ending balance (for retained earnings tie)", "data_type": "decimal", "sort_order": 50},
-            {"fact_key": "f1125a_boy_inventory", "label": "Form 1125-A line 1 beginning inventory (cross-form, for the R008 no-prior-year default)", "data_type": "decimal", "sort_order": 51},
-        ])
+            {"fact_key": "total_receipts", "label": "Total receipts (for the Schedule B question 11 exception)", "data_type": "decimal", "sort_order": 90},
+            {"fact_key": "m2_ending_balance", "label": "M-2 ending balance (for retained earnings tie)", "data_type": "decimal", "sort_order": 91},
+            {"fact_key": "f1125a_boy_inventory", "label": "Form 1125-A line 1 beginning inventory (cross-form, for the R008 no-prior-year default)", "data_type": "decimal", "sort_order": 92},
+        ]
+        self._upsert_facts(form, facts)
+
+        # In-loader stale-fact self-heal (the rename-orphan class guard): the old
+        # block's second fabricated numbering (l14_total_assets, l15_accounts_
+        # payable … l21_total_liabilities, l6_other_investments, l7_buildings…)
+        # dies here.
+        _SCHL_FACT_KEYS = {f["fact_key"] for f in facts}
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_SCHL_FACT_KEYS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale Schedule L facts: "
+                              + ", ".join(sorted(stale_facts.values_list("fact_key", flat=True))))
+            stale_facts.delete()
 
         rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "Total assets = sum of asset lines", "rule_type": "calculation",
-             "formula": "l14 = l1 + (l2a - l2b) + l3 + l5 + l6 + l7 + l8 + l9 + l10 (both BOY and EOY)",
+            {"rule_id": "R001", "title": "L15 Total assets = sum of asset lines (contra rows subtract)", "rule_type": "calculation",
+             "formula": ("l15 = l1 + (l2a - l2b) + l3 + l4 + l5 + l6 + l7 + l8 + l9 "
+                         "+ (l10a - l10b) + (l11a - l11b) + l12 + (l13a - l13b) + l14 "
+                         "(both BOY and EOY; the contra rows 2b/10b/11b/13b print in "
+                         "columns (a)/(c) and subtract into (b)/(d))"),
              "inputs": ["l1_cash_boy", "l2a_trade_receivables_boy", "l2b_allowance_boy", "l3_inventories_boy",
-                        "l5_tax_exempt_securities_boy", "l6_other_investments_boy", "l7_buildings_depreciable_boy",
-                        "l8_intangible_assets_boy", "l9_land_boy", "l10_other_assets_boy"],
-             "outputs": ["l14_total_assets_boy", "l14_total_assets_eoy"], "precedence": 1, "sort_order": 1},
-            {"rule_id": "R002", "title": "Total liabilities = sum of liability lines", "rule_type": "calculation",
-             "formula": "l21 = l15 + l16 + l17 + l18 + l19 + l20 (both BOY and EOY)",
-             "inputs": ["l15_accounts_payable_boy", "l16_mortgages_short_boy", "l17_other_current_liab_boy",
-                        "l18_shareholder_loans_boy", "l19_mortgages_long_boy", "l20_other_liabilities_boy"],
-             "outputs": ["l21_total_liabilities_boy", "l21_total_liabilities_eoy"], "precedence": 2, "sort_order": 2},
-            {"rule_id": "R003", "title": "Total L&SE = liabilities + equity", "rule_type": "calculation",
-             "formula": "l27 = l21 + l22 + l23 + l24 + l25 - l26 (both BOY and EOY)",
-             "inputs": ["l21_total_liabilities_boy", "l22_capital_stock_boy", "l23_paid_in_capital_boy",
-                        "l24_retained_earnings_boy", "l25_adjustments_equity_boy", "l26_treasury_stock_boy"],
+                        "l4_us_gov_obligations_boy", "l5_tax_exempt_securities_boy", "l6_other_current_assets_boy",
+                        "l7_loans_to_shareholders_boy", "l8_mortgage_re_loans_boy", "l9_other_investments_boy",
+                        "l10a_buildings_gross_boy", "l10b_accum_depreciation_boy", "l11a_depletable_assets_boy",
+                        "l11b_accum_depletion_boy", "l12_land_boy", "l13a_intangibles_gross_boy",
+                        "l13b_accum_amortization_boy", "l14_other_assets_boy"],
+             "outputs": ["l15_total_assets_boy", "l15_total_assets_eoy"], "precedence": 1, "sort_order": 1,
+             "description": "2025 face: total assets is LINE 15 (the old spec said L14 and omitted lines 4/6/7/8 and the 10-13 contra pairs)."},
+            {"rule_id": "R003", "title": "L27 Total liabilities and shareholders' equity", "rule_type": "calculation",
+             "formula": ("l27 = l16 + l17 + l18 + l19 + l20 + l21 + l22 + l23 + l24 + l25 - l26 "
+                         "(both BOY and EOY). The 2025 face has NO total-liabilities subtotal "
+                         "line — liabilities 16-21 sum directly into L27 with the equity block."),
+             "inputs": ["l16_accounts_payable_boy", "l17_mortgages_short_boy", "l18_other_current_liab_boy",
+                        "l19_shareholder_loans_boy", "l20_mortgages_long_boy", "l21_other_liabilities_boy",
+                        "l22_capital_stock_boy", "l23_paid_in_capital_boy", "l24_retained_earnings_boy",
+                        "l25_adjustments_equity_boy", "l26_treasury_stock_boy"],
              "outputs": ["l27_total_lse_boy", "l27_total_lse_eoy"], "precedence": 3, "sort_order": 3},
-            {"rule_id": "R004", "title": "Balance sheet must balance (L14 = L27)", "rule_type": "validation",
-             "formula": "l14_total_assets == l27_total_lse (both BOY and EOY)",
-             "inputs": ["l14_total_assets_boy", "l14_total_assets_eoy", "l27_total_lse_boy", "l27_total_lse_eoy"],
+            {"rule_id": "R004", "title": "Balance sheet must balance (L15 = L27)", "rule_type": "validation",
+             "formula": "l15_total_assets == l27_total_lse (both BOY and EOY)",
+             "inputs": ["l15_total_assets_boy", "l15_total_assets_eoy", "l27_total_lse_boy", "l27_total_lse_eoy"],
              "outputs": [], "precedence": 4, "sort_order": 4,
-             "description": "Total assets must equal total liabilities & shareholders' equity for both BOY and EOY."},
+             "description": "Total assets (L15) must equal total liabilities & shareholders' equity (L27) for both BOY and EOY."},
             {"rule_id": "R005", "title": "Retained earnings tie to M-2", "rule_type": "validation",
              "formula": "l24_retained_earnings_eoy == m2_ending_balance",
              "inputs": ["l24_retained_earnings_eoy", "m2_ending_balance"], "outputs": [], "precedence": 5, "sort_order": 5,
@@ -678,10 +711,12 @@ class Command(BaseCommand):
              "inputs": ["l3_inventories_boy"], "outputs": [], "precedence": 6, "sort_order": 6,
              "description": "L3 inventories BOY should equal prior year L3 inventories EOY. "
                             "(When no prior-year return exists, R008 supplies the default.)"},
-            {"rule_id": "R007", "title": "Small corporation exception", "rule_type": "conditional",
-             "formula": "schedule_l_not_required = (total_receipts < 250000 AND l14_total_assets_eoy < 250000)",
-             "inputs": ["total_receipts", "l14_total_assets_eoy"], "outputs": ["schedule_l_not_required"], "precedence": 0, "sort_order": 7,
-             "description": "Schedule L not required if total receipts < $250K AND total assets < $250K."},
+            {"rule_id": "R007", "title": "Small corporation exception (Schedule B question 11)", "rule_type": "conditional",
+             "formula": "schedule_l_not_required = (total_receipts < 250000 AND l15_total_assets_eoy < 250000)",
+             "inputs": ["total_receipts", "l15_total_assets_eoy"], "outputs": ["schedule_l_not_required"], "precedence": 0, "sort_order": 7,
+             "description": ("i1120s 2025 p.49 verbatim: 'Schedule L isn't required to be completed if "
+                             "the corporation answered Yes to question 11 on Schedule B.' The $250K "
+                             "receipts/assets test itself is the SCHB Q11 derivation (1120S_SCHB R006).")},
             {"rule_id": "R008", "title": "BOY inventory default when no prior-year return", "rule_type": "conditional",
              "formula": "IF no prior-year return prepared AND l3_inventories_boy is blank "
                         "THEN l3_inventories_boy defaults to f1125a_boy_inventory (fill-blank-only; preparer entry always wins)",
@@ -690,59 +725,92 @@ class Command(BaseCommand):
                             "Only when no prior-year return was prepared does BOY inventory default from Form "
                             "1125-A line 1 (beginning inventory). Fill-blank-only — never overwrites a preparer "
                             "entry; the preparer may change or clear it."},
+            {"rule_id": "R009", "title": "L15(d) total assets → page 1 item F", "rule_type": "validation",
+             "formula": "page1_item_f == l15_total_assets_eoy",
+             "inputs": ["l15_total_assets_eoy"], "outputs": [], "precedence": 8, "sort_order": 9,
+             "description": ("i1120s 2025 p.49 verbatim: 'If the corporation is required to complete "
+                             "Schedule L, include total assets reported on Schedule L, line 15, "
+                             "column (d), on page 1, item F.'")},
         ])
+
+        # In-loader stale-rule self-heal: R002 ("Total liabilities") is DELETED —
+        # the 2025 face has no total-liabilities line (it was one of the two
+        # fabricated numbering systems).
+        _SCHL_RULE_IDS = {"R001", "R003", "R004", "R005", "R006", "R007", "R008", "R009"}
+        stale_rules = FormRule.objects.filter(tax_form=form).exclude(rule_id__in=_SCHL_RULE_IDS)
+        if stale_rules.exists():
+            self.stdout.write(f"  deleting {stale_rules.count()} stale Schedule L rules: "
+                              + ", ".join(sorted(stale_rules.values_list("rule_id", flat=True))))
+            stale_rules.delete()
+
         self._upsert_links(rules, sources, [
-            ("R001", "IRS_2025_1120S_SCHL_INSTR", "primary", "Asset line summation"),
-            ("R002", "IRS_2025_1120S_SCHL_INSTR", "primary", "Liability line summation"),
-            ("R003", "IRS_2025_1120S_SCHL_INSTR", "primary", "L&SE = liabilities + equity"),
-            ("R004", "IRS_2025_1120S_SCHL_INSTR", "primary", "L14 must equal L27"),
+            ("R001", "IRS_2025_1120S_SCHL_INSTR", "primary", "Asset line summation — total assets = LINE 15 (i1120s p.49: 'total assets reported on Schedule L, line 15, column (d)')"),
+            ("R003", "IRS_2025_1120S_SCHL_INSTR", "primary", "L&SE total = liabilities 16-21 + equity 22-25 − 26 (2025 face: no total-liabilities subtotal)"),
+            ("R004", "IRS_2025_1120S_SCHL_INSTR", "primary", "L15 must equal L27"),
             ("R005", "IRS_2025_1120S_SCHL_INSTR", "primary", "L24 ties to M-2 ending balance"),
             ("R006", "IRS_2025_1120S_INSTR", "secondary", "BOY should equal prior year EOY"),
-            ("R007", "IRS_2025_1120S_SCHL_INSTR", "primary", "Small corp exception: <$250K receipts AND assets"),
+            ("R007", "IRS_2025_1120S_SCHL_INSTR", "primary", "i1120s p.49 verbatim: not required if Schedule B question 11 is Yes"),
             ("R008", "IRS_2025_1120S_SCHL_INSTR", "secondary",
              "Line 3 = inventories per the instructions; the no-prior-year default from 1125-A line 1 "
              "is practice logic (Ken ruling 2026-07-09)"),
+            ("R009", "IRS_2025_1120S_SCHL_INSTR", "primary", "i1120s p.49 verbatim: L15 column (d) → page 1 item F"),
         ])
         self._upsert_lines(form, [
             {"line_number": "L1", "description": "Cash", "line_type": "input", "sort_order": 1},
-            {"line_number": "L2a", "description": "Trade notes & accounts receivable", "line_type": "input", "sort_order": 2},
+            {"line_number": "L2a", "description": "Trade notes and accounts receivable", "line_type": "input", "sort_order": 2},
             {"line_number": "L2b", "description": "Less allowance for bad debts", "line_type": "input", "sort_order": 3},
             {"line_number": "L3", "description": "Inventories", "line_type": "input", "sort_order": 4},
             {"line_number": "L4", "description": "U.S. government obligations", "line_type": "input", "sort_order": 5},
-            {"line_number": "L5", "description": "Tax-exempt securities", "line_type": "input", "sort_order": 6},
-            {"line_number": "L6", "description": "Other current assets", "line_type": "input", "sort_order": 7},
+            {"line_number": "L5", "description": "Tax-exempt securities (see instructions)", "line_type": "input", "sort_order": 6},
+            {"line_number": "L6", "description": "Other current assets (attach statement)", "line_type": "input", "sort_order": 7},
             {"line_number": "L7", "description": "Loans to shareholders", "line_type": "input", "sort_order": 8},
             {"line_number": "L8", "description": "Mortgage and real estate loans", "line_type": "input", "sort_order": 9},
-            {"line_number": "L9", "description": "Other investments", "line_type": "input", "sort_order": 10},
-            {"line_number": "L10a", "description": "Buildings and other depreciable assets (gross)", "line_type": "input", "sort_order": 11},
+            {"line_number": "L9", "description": "Other investments (attach statement)", "line_type": "input", "sort_order": 10},
+            {"line_number": "L10a", "description": "Buildings and other depreciable assets", "line_type": "input", "sort_order": 11},
             {"line_number": "L10b", "description": "Less accumulated depreciation", "line_type": "input", "sort_order": 12},
-            {"line_number": "L11", "description": "Depletable assets", "line_type": "input", "sort_order": 13},
-            {"line_number": "L12", "description": "Land (net of any amortization)", "line_type": "input", "sort_order": 14},
-            {"line_number": "L13a", "description": "Intangible assets (amortizable only, gross)", "line_type": "input", "sort_order": 15},
-            {"line_number": "L13b", "description": "Less accumulated amortization", "line_type": "input", "sort_order": 16},
-            {"line_number": "L14", "description": "Other assets", "line_type": "input", "sort_order": 17},
-            {"line_number": "L15", "description": "Total assets", "line_type": "total", "source_rules": ["R001"], "sort_order": 18},
-            {"line_number": "L16", "description": "Accounts payable", "line_type": "input", "sort_order": 19},
-            {"line_number": "L17", "description": "Mortgages, notes, bonds payable < 1 year", "line_type": "input", "sort_order": 20},
-            {"line_number": "L18", "description": "Other current liabilities", "line_type": "input", "sort_order": 21},
-            {"line_number": "L19", "description": "Loans from shareholders", "line_type": "input", "sort_order": 22},
-            {"line_number": "L20", "description": "Mortgages, notes, bonds payable >= 1 year", "line_type": "input", "sort_order": 23},
-            {"line_number": "L21", "description": "Other liabilities", "line_type": "input", "sort_order": 24},
-            {"line_number": "L22", "description": "Total liabilities", "line_type": "total", "source_rules": ["R002"], "sort_order": 25},
-            {"line_number": "L23", "description": "Capital stock", "line_type": "input", "sort_order": 26},
-            {"line_number": "L24", "description": "Additional paid-in capital", "line_type": "input", "sort_order": 27},
-            {"line_number": "L25", "description": "Retained earnings", "line_type": "input", "sort_order": 28},
-            {"line_number": "L26", "description": "Adjustments to shareholders' equity", "line_type": "input", "sort_order": 29},
-            {"line_number": "L27", "description": "Less cost of treasury stock", "line_type": "input", "sort_order": 30},
-            {"line_number": "L28", "description": "Total liabilities and shareholders' equity", "line_type": "total", "source_rules": ["R003"], "sort_order": 31},
+            {"line_number": "L11a", "description": "Depletable assets", "line_type": "input", "sort_order": 13},
+            {"line_number": "L11b", "description": "Less accumulated depletion", "line_type": "input", "sort_order": 14},
+            {"line_number": "L12", "description": "Land (net of any amortization)", "line_type": "input", "sort_order": 15},
+            {"line_number": "L13a", "description": "Intangible assets (amortizable only)", "line_type": "input", "sort_order": 16},
+            {"line_number": "L13b", "description": "Less accumulated amortization", "line_type": "input", "sort_order": 17},
+            {"line_number": "L14", "description": "Other assets (attach statement)", "line_type": "input", "sort_order": 18},
+            {"line_number": "L15", "description": "Total assets", "line_type": "total", "source_rules": ["R001"], "sort_order": 19,
+             "notes": "Column (d) also goes to page 1 item F when Schedule L is required (i1120s 2025 p.49; R009)."},
+            {"line_number": "L16", "description": "Accounts payable", "line_type": "input", "sort_order": 20},
+            {"line_number": "L17", "description": "Mortgages, notes, bonds payable in less than 1 year", "line_type": "input", "sort_order": 21},
+            {"line_number": "L18", "description": "Other current liabilities (attach statement)", "line_type": "input", "sort_order": 22},
+            {"line_number": "L19", "description": "Loans from shareholders", "line_type": "input", "sort_order": 23},
+            {"line_number": "L20", "description": "Mortgages, notes, bonds payable in 1 year or more", "line_type": "input", "sort_order": 24},
+            {"line_number": "L21", "description": "Other liabilities (attach statement)", "line_type": "input", "sort_order": 25},
+            {"line_number": "L22", "description": "Capital stock", "line_type": "input", "sort_order": 26},
+            {"line_number": "L23", "description": "Additional paid-in capital", "line_type": "input", "sort_order": 27},
+            {"line_number": "L24", "description": "Retained earnings", "line_type": "input", "sort_order": 28},
+            {"line_number": "L25", "description": "Adjustments to shareholders' equity (attach statement)", "line_type": "input", "sort_order": 29},
+            {"line_number": "L26", "description": "Less cost of treasury stock", "line_type": "input", "sort_order": 30},
+            {"line_number": "L27", "description": "Total liabilities and shareholders' equity", "line_type": "total", "source_rules": ["R003"], "sort_order": 31},
         ])
+
+        # In-loader stale-line self-heal: the fabricated L22 "Total liabilities"
+        # row is overwritten in place (same line_number, face description); L11
+        # (split to 11a/11b) and L28 (the face total is L27) are DELETED.
+        _SCHL_LINES = {
+            "L1", "L2a", "L2b", "L3", "L4", "L5", "L6", "L7", "L8", "L9",
+            "L10a", "L10b", "L11a", "L11b", "L12", "L13a", "L13b", "L14", "L15",
+            "L16", "L17", "L18", "L19", "L20", "L21",
+            "L22", "L23", "L24", "L25", "L26", "L27",
+        }
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_SCHL_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale Schedule L line rows: "
+                              + ", ".join(sorted(stale_lines.values_list("line_number", flat=True))))
+            stale_lines.delete()
         self._upsert_diagnostics(form, [
             {"diagnostic_id": "D001", "title": "Balance sheet out of balance (BOY)", "severity": "error",
-             "condition": "l14_total_assets_boy != l27_total_lse_boy",
-             "message": "BOY balance sheet out of balance: Total assets does not equal total liabilities & shareholders' equity."},
+             "condition": "l15_total_assets_boy != l27_total_lse_boy",
+             "message": "BOY balance sheet out of balance: Total assets (L15) does not equal total liabilities & shareholders' equity (L27)."},
             {"diagnostic_id": "D002", "title": "Balance sheet out of balance (EOY)", "severity": "error",
-             "condition": "l14_total_assets_eoy != l27_total_lse_eoy",
-             "message": "EOY balance sheet out of balance: Total assets does not equal total liabilities & shareholders' equity."},
+             "condition": "l15_total_assets_eoy != l27_total_lse_eoy",
+             "message": "EOY balance sheet out of balance: Total assets (L15) does not equal total liabilities & shareholders' equity (L27)."},
             {"diagnostic_id": "D003", "title": "Retained earnings don't tie to M-2", "severity": "warning",
              "condition": "l24_retained_earnings_eoy != m2_ending_balance",
              "message": "L24 retained earnings (EOY) does not match Schedule M-2 ending balance."},
@@ -753,27 +821,55 @@ class Command(BaseCommand):
              "condition": "l3_inventories_eoy > 0 AND no_form_1125a",
              "message": "Inventory on L3 but no Form 1125-A (COGS) filed."},
             {"diagnostic_id": "D006", "title": "Shareholder loans without interest", "severity": "warning",
-             "condition": "l18_shareholder_loans_eoy > 0 AND page1_interest_expense == 0",
-             "message": "Shareholder loans on L18 but no interest expense on Page 1. Verify below-market loan rules."},
+             "condition": "l19_shareholder_loans_eoy > 0 AND page1_interest_expense == 0",
+             "message": "Loans from shareholders on L19 but no interest expense on Page 1. Verify below-market loan rules."},
+            {"diagnostic_id": "D007", "title": "Total assets don't match page 1 item F", "severity": "warning",
+             "condition": "schedule_l_required AND page1_item_f != l15_total_assets_eoy",
+             "message": "Page 1 item F should equal Schedule L line 15 column (d) when Schedule L is required (i1120s 2025 p.49)."},
         ])
         self._upsert_tests(form, [
             {"scenario_name": "Balanced balance sheet", "scenario_type": "normal",
              "inputs": {
-                 "l1_cash_boy": 50000, "l7_buildings_depreciable_boy": 200000, "l9_land_boy": 100000,
-                 "l14_total_assets_boy": 350000,
-                 "l15_accounts_payable_boy": 20000, "l19_mortgages_long_boy": 150000, "l21_total_liabilities_boy": 170000,
+                 "l1_cash_boy": 50000, "l10a_buildings_gross_boy": 220000, "l10b_accum_depreciation_boy": 20000,
+                 "l12_land_boy": 100000, "l15_total_assets_boy": 350000,
+                 "l16_accounts_payable_boy": 20000, "l20_mortgages_long_boy": 150000,
                  "l22_capital_stock_boy": 1000, "l24_retained_earnings_boy": 179000, "l27_total_lse_boy": 350000,
              },
-             "expected_outputs": {"balance_sheet_balances_boy": True, "balance_sheet_balances_eoy": True}, "sort_order": 1},
+             "expected_outputs": {"balance_sheet_balances_boy": True, "balance_sheet_balances_eoy": True},
+             "notes": "R001: 50,000 + (220,000 − 20,000) + 100,000 = 350,000 = L27 (16 20,000 + 20 150,000 + 22 1,000 + 24 179,000).",
+             "sort_order": 1},
             {"scenario_name": "Out-of-balance balance sheet", "scenario_type": "failure",
              "inputs": {
-                 "l14_total_assets_eoy": 500000, "l27_total_lse_eoy": 490000,
+                 "l15_total_assets_eoy": 500000, "l27_total_lse_eoy": 490000,
              },
              "expected_outputs": {"balance_sheet_balances_eoy": False, "diagnostic_D002_fires": True}, "sort_order": 2},
             {"scenario_name": "Small corporation exception", "scenario_type": "edge",
-             "inputs": {"total_receipts": 180000, "l14_total_assets_eoy": 200000},
+             "inputs": {"total_receipts": 180000, "l15_total_assets_eoy": 200000},
              "expected_outputs": {"schedule_l_not_required": True}, "sort_order": 3},
+            {"scenario_name": "Contra-pair netting — R001 sums the face rows", "scenario_type": "normal",
+             "inputs": {
+                 "l2a_trade_receivables_eoy": 80000, "l2b_allowance_eoy": 5000,
+                 "l11a_depletable_assets_eoy": 40000, "l11b_accum_depletion_eoy": 15000,
+                 "l13a_intangibles_gross_eoy": 90000, "l13b_accum_amortization_eoy": 30000,
+                 "l4_us_gov_obligations_eoy": 10000, "l7_loans_to_shareholders_eoy": 25000,
+             },
+             "expected_outputs": {"l15_total_assets_eoy": 195000},
+             "notes": ("(80,000−5,000) + (40,000−15,000) + (90,000−30,000) + 10,000 + 25,000 = 195,000. "
+                       "Pins the four asset lines (4/6/7/8) and the three contra pairs the old R001 "
+                       "omitted entirely."),
+             "sort_order": 4},
         ])
+
+        # In-loader stale-scenario self-heal (the RET-G5 rename-orphan guard).
+        _SCHL_SCENARIOS = {
+            "Balanced balance sheet", "Out-of-balance balance sheet",
+            "Small corporation exception", "Contra-pair netting — R001 sums the face rows",
+        }
+        stale_tests = TestScenario.objects.filter(tax_form=form).exclude(scenario_name__in=_SCHL_SCENARIOS)
+        if stale_tests.exists():
+            self.stdout.write(f"  deleting {stale_tests.count()} stale Schedule L scenarios: "
+                              + ", ".join(sorted(stale_tests.values_list("scenario_name", flat=True))))
+            stale_tests.delete()
         self._upsert_form_links("1120S_SCHL", sources, [
             ("IRS_2025_1120S_SCHL_INSTR", "governs"),
             ("IRS_2025_1120S_INSTR", "informs"),
