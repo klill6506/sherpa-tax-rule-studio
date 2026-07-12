@@ -1,4 +1,31 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-11 — 1120S_SCHL renumbered to the 2025 face (audit unit #4) — tts verified face-correct, RS-only drift (tts s58)
+- **1120S_SCHL rebuilt verbatim** (`bfcb95a`) vs f1120s.pdf (2025) p.4 + i1120s p.49. The
+  old block ran TWO fabricated numbering systems at once: facts had total assets at l14 /
+  liabilities 15-21 / l6 "other investments" / l7 "buildings" (face: 6 = other current
+  assets, 7 = loans to shareholders), while the line map invented an "L22 Total
+  liabilities" (no such face line) shifting equity +1 into a phantom L28. Now: 65 facts
+  (31 face rows × BOY/EOY + 3 cross-checks) · 8 rules (R001 total-assets sum gains lines
+  4/6/7/8 + the 2/10/11/13 contra pairs; **fabricated R002 total-liabilities rule
+  DELETED — first use of a stale-RULE self-heal**; R004 = L15==L27; R007 tied to the
+  Sch B Q11 gate verbatim; **NEW R009 = L15 col (d) → page 1 item F**, p.49 verbatim;
+  R005/R006/R008 substance kept per the audit) · 31 face lines · 7 diagnostics (NEW D007
+  item-F mismatch) · 4 scenarios (NEW contra-pair netting pin).
+- **⚠ Fabricated-excerpt class:** the block's two AuthorityExcerpt rows were paraphrases
+  carrying the same wrong numbering — the drift had manufactured its own "authority."
+  Replaced with real p.49 verbatim text, KEEPING the excerpt labels (update_or_create
+  keys on label; a label change would orphan the old row — the rename-orphan class).
+  Audit rule going forward: verify a block's excerpts against the PDF too.
+- Prod stale-deletes fired exactly: 26 orphan facts + R002 + lines L11/L28. SQLite
+  validate first; idempotent rerun clean; deployed export verified; tts mirror refreshed.
+- **tts verified FACE-CORRECT end-to-end** (seeds L1a-L27d · compute L15/L27 sums match
+  R001/R003 exactly · L24d←M-2 · $250K check reads L15d · MeF SCHL_LINE_ORDER incl.
+  derived contra nets · item F ← L15d in both print and MeF) — no app change; the zone
+  y-band-pinned (tts TestScheduleLRowPins).
+- Renumber queue remaining: **PAGE1+M1+M2 (unit #5** — pre-7205 numbering + the
+  fabricated M-1 excerpt; the tts FFV re-key + data migration + the seven s56 deferrals
+  ride it**)** → 6198 → M3 line_map → 3800.
+
 ## 2026-07-11 — K1_1120S renumbered to the 2025 face (audit unit #3) — the tts "codes mirror the tables" belief FALSIFIED (tts s57)
 - **K1_1120S rebuilt verbatim** (`a0e908c`) vs f1120ssk.pdf (2025) + i1120s (2025)
   pp.30-48: full boxes 1-19 line map (14 = Schedule K-3 checkbox, 15 = AMT codes A-F,
