@@ -195,29 +195,135 @@ SOURCES_SUPPORTING = [
     # ───────────────────────────────────────────────────────────────────────
     # Form 6198 — At-Risk Limitations
     # ───────────────────────────────────────────────────────────────────────
+    # Excerpts replaced 2026-07-12 (renumber unit #6): the old "At-risk computation"
+    # row was a PARAPHRASE (the fabricated-excerpt class). This set is now VERBATIM
+    # from i6198 (Rev. November 2025), pymupdf-extracted from the fetched irs.gov
+    # PDF, and MIRRORS `_6198_INSTR_EXCERPTS` in specs/management/commands/
+    # load_1120s_complete.py (the renumber loader upserts the same rows in prod —
+    # keep the two lists in agreement).
     _instr(
         "IRS_2025_6198_INSTR",
         "Instructions for Form 6198 — At-Risk Limitations",
-        "Form 6198 Instructions (2025)",
+        "Instructions for Form 6198 (Rev. November 2025)",
         "https://www.irs.gov/instructions/i6198",
         "shared",
         excerpts=[
             {
                 "excerpt_label": "At-risk computation",
-                "location_reference": "Line Instructions",
+                "location_reference": "Purpose of Form (Rev. 11-2025), p.1",
                 "excerpt_text": (
-                    "Form 6198 determines the amount of loss you can deduct based on the amount "
-                    "you have at risk in the activity. Part I: Current year profit (loss) from "
-                    "the activity. Part II: Simplified computation of amount at risk (if only one "
-                    "activity and not a partnership/S-Corp with nonrecourse financing). Part III: "
-                    "Detailed computation. At-risk amount = adjusted basis of property contributed + "
-                    "money contributed + amounts borrowed for which you are personally liable or "
-                    "have pledged other property as security. NOT at risk: nonrecourse loans "
-                    "(except qualified nonrecourse financing on real estate — loans from a qualified "
-                    "lender secured by real estate used in the activity). Part IV: Deductible loss — "
-                    "limited to at-risk amount. Excess loss carries forward."
+                    "Instructions for Form 6198 (Rev. November 2025), Purpose of Form (verbatim): "
+                    "'Use Form 6198 to figure: • The profit (loss) from an at-risk activity for the "
+                    "current year (Part I), • The amount at risk for the current year (Part II or "
+                    "Part III), and • The deductible loss for the current year (Part IV). The at-risk "
+                    "rules of section 465 limit the amount of the loss you can deduct to the amount "
+                    "at risk. For more details, see Pub. 925, Passive Activity and At-Risk Rules.' "
+                    "(This excerpt SUPERSEDES the pre-2026-07-12 paraphrase under the same label, "
+                    "which carried a non-face structural summary.)"
                 ),
-                "summary_text": "At-risk = contributions + recourse debt (+ qualified nonrecourse for realty). Loss limited to at-risk amount.",
+                "summary_text": "Purpose of Form verbatim: Part I profit/loss, Part II/III amount at risk, Part IV deductible loss; §465 caps the loss at the amount at risk.",
+                "is_key_excerpt": True,
+                "topic_tags": ["at_risk", "form_6198"],
+            },
+            {
+                "excerpt_label": "Part I — prior year nondeductible amounts (verbatim)",
+                "location_reference": "Part I instructions (Rev. 11-2025), p.2",
+                "excerpt_text": (
+                    "'Partners and S corporation shareholders. If you have a loss or a deduction "
+                    "from an earlier tax year that you could not deduct because of the at-risk "
+                    "rules, these losses and deductions must be included in the current year "
+                    "amounts you enter in Part I. For example, if your prior year Schedule K-1 had "
+                    "a $1,500 loss in box 1, but because of the at-risk rules your loss was limited "
+                    "to $500, include both the $1,000 loss from your prior year and the amount from "
+                    "your current year Schedule K-1 on line 1 of Form 6198.' Taxpayers other than "
+                    "partners or S corporation shareholders instead include the disallowed amounts "
+                    "'on the appropriate form or schedule of your current year tax return before "
+                    "starting Part I.'"
+                ),
+                "summary_text": "Prior-year at-risk-disallowed losses ride the CURRENT-year Part I entries (K-1 filers) or the source schedule (others) — there is no 'prior year unallowed losses' face line.",
+                "is_key_excerpt": True,
+                "topic_tags": ["at_risk", "form_6198"],
+            },
+            {
+                "excerpt_label": "Qualified nonrecourse financing (verbatim)",
+                "location_reference": "General Instructions (Rev. 11-2025), pp.1-2",
+                "excerpt_text": (
+                    "'Qualified nonrecourse financing is financing for which no one is personally "
+                    "liable for repayment and is: • Borrowed by you in connection with holding real "
+                    "property; • Secured by real property used in the activity; • Not convertible "
+                    "debt; and • Loaned or guaranteed by any federal, state, or local government, or "
+                    "borrowed by you from a qualified person (defined below). See Regulations "
+                    "section 1.465-27 for details... A qualified person is a person who actively and "
+                    "regularly engages in the business of lending money (for example, a bank or "
+                    "savings and loan association). A qualified person is not: • A person related to "
+                    "you unless the person would be a qualified person but for the relationship and "
+                    "the nonrecourse financing is commercially reasonable and on the same terms as "
+                    "loans to unrelated persons, • The seller of the property (or a person related "
+                    "to the seller), or • A person who receives a fee as a result of your investment "
+                    "in the property (or a person related to that person).'"
+                ),
+                "summary_text": "QNF (§465(b)(6)/Reg. 1.465-27) verbatim: no personal liability, real-property activity, secured by activity realty, not convertible, government or qualified-person lender.",
+                "is_key_excerpt": True,
+                "topic_tags": ["at_risk", "form_6198"],
+            },
+            {
+                "excerpt_label": "Line 15 — prior-year 19b caution (verbatim)",
+                "location_reference": "Line 15 instructions (Rev. 11-2025), p.7",
+                "excerpt_text": (
+                    "'If you completed Part III of Form 6198 for the prior tax year, check box b and "
+                    "enter the amount from line 19b of the prior year form on this line. [CAUTION] "
+                    "Do not enter the amount from line 10b of the prior year tax form. Also, do not "
+                    "include on this line any amounts that are not at risk.' The face box b text "
+                    "agrees: 'From your prior year Form 6198, line 19b. Do not enter the amount from "
+                    "line 10b of your prior year form.'"
+                ),
+                "summary_text": "Line 15 box b carries the prior-year 19b — never the prior-year 10b, and never not-at-risk amounts.",
+                "is_key_excerpt": True,
+                "topic_tags": ["at_risk", "form_6198"],
+            },
+            {
+                "excerpt_label": "Line 21 — deductible loss and examples (verbatim)",
+                "location_reference": "Part IV, Line 21 instructions (Rev. 11-2025), p.8",
+                "excerpt_text": (
+                    "'If the loss on line 5 is equal to or less than the amount on line 20, report "
+                    "the items in Part I in full on your return, subject to any other limitations "
+                    "such as the passive activity and capital loss limitations. ... If the loss on "
+                    "line 5 is more than the amount on line 20, you must limit your deductible loss "
+                    "to the amount on line 20, subject to any other limitations. Examples. (a) If "
+                    "line 5 is a loss of $400 and line 20 is $1,000, enter ($400) on line 21. (b) If "
+                    "line 5 is a loss of $1,600 and line 20 is $1,200, enter ($1,200) on line 21. "
+                    "(c) If line 5 is a loss of $800 and line 20 is zero, enter -0- on line 21. "
+                    "[TIP] When comparing lines 5 and 20, treat the loss on line 5 as a positive "
+                    "number only for purposes of determining the amount to enter on line 21. ... If "
+                    "the amount on line 21 is made up of more than one deduction or loss item in "
+                    "Part I (such as a Schedule C loss and a Schedule D loss), a portion of each "
+                    "such deduction or loss item is allowed (subject to other limitations) for the "
+                    "year. Determine this portion by multiplying the loss on line 21 by a fraction. "
+                    "Figure the fraction by dividing each item of deduction or loss from the "
+                    "activity by the total loss from the activity on line 5. The remaining portion "
+                    "of each deduction or loss item from the activity is disallowed and must be "
+                    "carried over to next year.'"
+                ),
+                "summary_text": "Line 21 = smaller of the line-5 loss (as positive) or line 20; three published examples; multi-item pro-rata allocation; excess carries over.",
+                "is_key_excerpt": True,
+                "topic_tags": ["at_risk", "form_6198"],
+            },
+            {
+                "excerpt_label": "Line 10b / Line 5 — Part III and recapture cautions (verbatim)",
+                "location_reference": "Line 10b (p.4) + Line 5 (p.3) instructions (Rev. 11-2025)",
+                "excerpt_text": (
+                    "Line 10b: 'If the amount on this line is smaller than your overall loss from "
+                    "the activity (line 5), you may want to complete Part III to see if Part III "
+                    "gives you a larger amount at risk. [CAUTION] If the amount on line 10b is "
+                    "zero, you may be subject to the recapture rules. See Pub. 925.' Line 5: "
+                    "'[CAUTION] Even if you have a current year profit on line 5, you may have "
+                    "recapture income if you received a distribution or had a transaction during "
+                    "the year that reduced your amount at risk in the activity to less than zero "
+                    "at the close of the tax year. See Pub. 925 for information on the recapture "
+                    "rules.' Line 19b agrees: 'If the amount on line 19b is zero, you may be "
+                    "subject to the recapture rules. See Pub. 925.'"
+                ),
+                "summary_text": "Part III may beat Part II; a zero 10b/19b (or an at-risk amount below zero, even in a profit year) routes to the Pub. 925 §465(e) recapture rules.",
                 "is_key_excerpt": True,
                 "topic_tags": ["at_risk", "form_6198"],
             },

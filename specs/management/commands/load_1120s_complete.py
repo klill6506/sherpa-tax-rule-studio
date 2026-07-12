@@ -257,6 +257,130 @@ FRESH_SOURCES = [
     },
 ]
 
+# ═══════════════════════════════════════════════════════════════════════════
+# Form 6198 — verbatim i6198 (Rev. November 2025) excerpts, pymupdf-extracted
+# from the fetched irs.gov PDF 2026-07-12. These REPLACE the pre-2026-07-12
+# "At-risk computation" paraphrase (the fabricated-excerpt class): same label
+# kept where a row exists (update_or_create keys on label), text now verbatim.
+# forms_supporting.py mirrors this set for load_all_federal reruns.
+# ═══════════════════════════════════════════════════════════════════════════
+
+_6198_INSTR_EXCERPTS = [
+    {
+        "excerpt_label": "At-risk computation",
+        "location_reference": "Purpose of Form (Rev. 11-2025), p.1",
+        "excerpt_text": (
+            "Instructions for Form 6198 (Rev. November 2025), Purpose of Form (verbatim): "
+            "'Use Form 6198 to figure: • The profit (loss) from an at-risk activity for the "
+            "current year (Part I), • The amount at risk for the current year (Part II or "
+            "Part III), and • The deductible loss for the current year (Part IV). The at-risk "
+            "rules of section 465 limit the amount of the loss you can deduct to the amount "
+            "at risk. For more details, see Pub. 925, Passive Activity and At-Risk Rules.' "
+            "(This excerpt SUPERSEDES the pre-2026-07-12 paraphrase under the same label, "
+            "which carried a non-face structural summary.)"
+        ),
+        "summary_text": "Purpose of Form verbatim: Part I profit/loss, Part II/III amount at risk, Part IV deductible loss; §465 caps the loss at the amount at risk.",
+        "is_key_excerpt": True,
+    },
+    {
+        "excerpt_label": "Part I — prior year nondeductible amounts (verbatim)",
+        "location_reference": "Part I instructions (Rev. 11-2025), p.2",
+        "excerpt_text": (
+            "'Partners and S corporation shareholders. If you have a loss or a deduction "
+            "from an earlier tax year that you could not deduct because of the at-risk "
+            "rules, these losses and deductions must be included in the current year "
+            "amounts you enter in Part I. For example, if your prior year Schedule K-1 had "
+            "a $1,500 loss in box 1, but because of the at-risk rules your loss was limited "
+            "to $500, include both the $1,000 loss from your prior year and the amount from "
+            "your current year Schedule K-1 on line 1 of Form 6198.' Taxpayers other than "
+            "partners or S corporation shareholders instead include the disallowed amounts "
+            "'on the appropriate form or schedule of your current year tax return before "
+            "starting Part I.'"
+        ),
+        "summary_text": "Prior-year at-risk-disallowed losses ride the CURRENT-year Part I entries (K-1 filers) or the source schedule (others) — there is no 'prior year unallowed losses' face line.",
+        "is_key_excerpt": True,
+    },
+    {
+        "excerpt_label": "Qualified nonrecourse financing (verbatim)",
+        "location_reference": "General Instructions (Rev. 11-2025), pp.1-2",
+        "excerpt_text": (
+            "'Qualified nonrecourse financing is financing for which no one is personally "
+            "liable for repayment and is: • Borrowed by you in connection with holding real "
+            "property; • Secured by real property used in the activity; • Not convertible "
+            "debt; and • Loaned or guaranteed by any federal, state, or local government, or "
+            "borrowed by you from a qualified person (defined below). See Regulations "
+            "section 1.465-27 for details... A qualified person is a person who actively and "
+            "regularly engages in the business of lending money (for example, a bank or "
+            "savings and loan association). A qualified person is not: • A person related to "
+            "you unless the person would be a qualified person but for the relationship and "
+            "the nonrecourse financing is commercially reasonable and on the same terms as "
+            "loans to unrelated persons, • The seller of the property (or a person related "
+            "to the seller), or • A person who receives a fee as a result of your investment "
+            "in the property (or a person related to that person).'"
+        ),
+        "summary_text": "QNF (§465(b)(6)/Reg. 1.465-27) verbatim: no personal liability, real-property activity, secured by activity realty, not convertible, government or qualified-person lender.",
+        "is_key_excerpt": True,
+    },
+    {
+        "excerpt_label": "Line 15 — prior-year 19b caution (verbatim)",
+        "location_reference": "Line 15 instructions (Rev. 11-2025), p.7",
+        "excerpt_text": (
+            "'If you completed Part III of Form 6198 for the prior tax year, check box b and "
+            "enter the amount from line 19b of the prior year form on this line. [CAUTION] "
+            "Do not enter the amount from line 10b of the prior year tax form. Also, do not "
+            "include on this line any amounts that are not at risk.' The face box b text "
+            "agrees: 'From your prior year Form 6198, line 19b. Do not enter the amount from "
+            "line 10b of your prior year form.'"
+        ),
+        "summary_text": "Line 15 box b carries the prior-year 19b — never the prior-year 10b, and never not-at-risk amounts.",
+        "is_key_excerpt": True,
+    },
+    {
+        "excerpt_label": "Line 21 — deductible loss and examples (verbatim)",
+        "location_reference": "Part IV, Line 21 instructions (Rev. 11-2025), p.8",
+        "excerpt_text": (
+            "'If the loss on line 5 is equal to or less than the amount on line 20, report "
+            "the items in Part I in full on your return, subject to any other limitations "
+            "such as the passive activity and capital loss limitations. ... If the loss on "
+            "line 5 is more than the amount on line 20, you must limit your deductible loss "
+            "to the amount on line 20, subject to any other limitations. Examples. (a) If "
+            "line 5 is a loss of $400 and line 20 is $1,000, enter ($400) on line 21. (b) If "
+            "line 5 is a loss of $1,600 and line 20 is $1,200, enter ($1,200) on line 21. "
+            "(c) If line 5 is a loss of $800 and line 20 is zero, enter -0- on line 21. "
+            "[TIP] When comparing lines 5 and 20, treat the loss on line 5 as a positive "
+            "number only for purposes of determining the amount to enter on line 21. ... If "
+            "the amount on line 21 is made up of more than one deduction or loss item in "
+            "Part I (such as a Schedule C loss and a Schedule D loss), a portion of each "
+            "such deduction or loss item is allowed (subject to other limitations) for the "
+            "year. Determine this portion by multiplying the loss on line 21 by a fraction. "
+            "Figure the fraction by dividing each item of deduction or loss from the "
+            "activity by the total loss from the activity on line 5. The remaining portion "
+            "of each deduction or loss item from the activity is disallowed and must be "
+            "carried over to next year.'"
+        ),
+        "summary_text": "Line 21 = smaller of the line-5 loss (as positive) or line 20; three published examples; multi-item pro-rata allocation; excess carries over.",
+        "is_key_excerpt": True,
+    },
+    {
+        "excerpt_label": "Line 10b / Line 5 — Part III and recapture cautions (verbatim)",
+        "location_reference": "Line 10b (p.4) + Line 5 (p.3) instructions (Rev. 11-2025)",
+        "excerpt_text": (
+            "Line 10b: 'If the amount on this line is smaller than your overall loss from "
+            "the activity (line 5), you may want to complete Part III to see if Part III "
+            "gives you a larger amount at risk. [CAUTION] If the amount on line 10b is "
+            "zero, you may be subject to the recapture rules. See Pub. 925.' Line 5: "
+            "'[CAUTION] Even if you have a current year profit on line 5, you may have "
+            "recapture income if you received a distribution or had a transaction during "
+            "the year that reduced your amount at risk in the activity to less than zero "
+            "at the close of the tax year. See Pub. 925 for information on the recapture "
+            "rules.' Line 19b agrees: 'If the amount on line 19b is zero, you may be "
+            "subject to the recapture rules. See Pub. 925.'"
+        ),
+        "summary_text": "Part III may beat Part II; a zero 10b/19b (or an at-risk amount below zero, even in a profit year) routes to the Pub. 925 §465(e) recapture rules.",
+        "is_key_excerpt": True,
+    },
+]
+
 # Sources already in the database — referenced by source_code
 EXISTING_SOURCES = [
     "IRS_2025_1120S_INSTR", "IRS_2025_1120S_INSTR_FULL",
@@ -878,94 +1002,350 @@ class Command(BaseCommand):
 
     # ═══════════════════════════════════════════════════════════════════════════
     # Form 6198 — At-Risk Limitations
+    # Renumbered to the REAL face 2026-07-12 (audit-ledger unit #6): the old block
+    # carried a FABRICATED line_map (an invented "prior year unallowed losses"
+    # line 2, deductible loss on 20 instead of 21, 13 of 21 face lines missing —
+    # matched no published revision). Rebuilt verbatim vs f6198.pdf (Rev. November
+    # 2025, resources/irs_forms/2025/, pymupdf-extracted 2026-07-12) + i6198
+    # (Rev. November 2025, fetched from irs.gov 2026-07-12). The IRC §465 rule
+    # substance (composition / QNF exception / loss cap / recapture / ordering)
+    # was sound and is KEPT, re-keyed to the face.
     # ═══════════════════════════════════════════════════════════════════════════
 
     def _load_6198(self, sources):
         form = self._upsert_form(
             "6198", "Form 6198 — At-Risk Limitations",
             ["1040"],
-            notes="Limits loss deductions to amount at risk. Applied BEFORE passive activity rules (8582). At shareholder level.",
+            notes=(
+                "Face = Rev. November 2025 (f6198.pdf, verified verbatim 2026-07-12). "
+                "Limits loss deductions to the amount at risk (§465). Filed by individuals "
+                "(incl. Schedules C, E, F filers), estates, trusts, and certain closely held "
+                "C corporations (i6198 Who Must File) — applied at the PARTNER/SHAREHOLDER "
+                "level for 1065/1120-S activities, one form per at-risk activity (see the "
+                "aggregation/separation rules). Ordering: basis -> §465 at-risk -> §469 "
+                "passive (8582/8810) -> §461(l)."
+            ),
         )
+
+        # Refresh the governing-instruction excerpts IN-LOADER so the scoped seed
+        # fixes prod: the old "At-risk computation" excerpt was a PARAPHRASE (the
+        # fabricated-excerpt class, s58 audit rule). Same labels are kept where a
+        # row exists (update_or_create keys on label — a label change would orphan
+        # the old row); text replaced with i6198 (Rev. 11-2025) verbatim.
+        # forms_supporting.py carries the same excerpts for load_all_federal reruns.
+        instr = sources.get("IRS_2025_6198_INSTR")
+        if instr:
+            AuthoritySource.objects.filter(pk=instr.pk).update(
+                citation="Instructions for Form 6198 (Rev. November 2025)")
+            for exc in _6198_INSTR_EXCERPTS:
+                AuthorityExcerpt.objects.update_or_create(
+                    authority_source=instr, excerpt_label=exc["excerpt_label"],
+                    defaults=exc)
         self._upsert_facts(form, [
-            {"fact_key": "cash_invested", "label": "Cash invested in the activity", "data_type": "decimal", "sort_order": 1},
-            {"fact_key": "basis_property_contributed", "label": "Adjusted basis of property contributed", "data_type": "decimal", "sort_order": 2},
-            {"fact_key": "personal_liability_debt", "label": "Amounts borrowed for which personally liable", "data_type": "decimal", "sort_order": 3},
-            {"fact_key": "qualified_nonrecourse_financing", "label": "Qualified nonrecourse financing (real estate only)", "data_type": "decimal", "sort_order": 4,
-             "notes": "IRC 465(b)(6): Qualified nonrecourse financing secured by real property used in the activity."},
-            {"fact_key": "income_from_activity", "label": "Income included from the activity (current year)", "data_type": "decimal", "sort_order": 5},
-            {"fact_key": "prior_year_at_risk", "label": "At-risk amount at beginning of year", "data_type": "decimal", "sort_order": 6},
-            {"fact_key": "distributions_received", "label": "Distributions/withdrawals during year", "data_type": "decimal", "sort_order": 7},
-            {"fact_key": "loss_from_activity", "label": "Loss from the activity (current year)", "data_type": "decimal", "sort_order": 8},
-            {"fact_key": "at_risk_amount", "label": "At-risk amount at end of year", "data_type": "decimal", "sort_order": 9},
-            {"fact_key": "allowable_loss", "label": "Deductible loss (limited to at-risk amount)", "data_type": "decimal", "sort_order": 10},
+            # ── Header ──
+            {"fact_key": "activity_description", "label": "Description of activity", "data_type": "string",
+             "required": True, "sort_order": 1,
+             "notes": "Face header. i6198: after the description, if applicable, enter the name and identifying number of the partnership or S corporation."},
+            # ── Part I — current year profit (loss), INCLUDING prior year nondeductible amounts ──
+            {"fact_key": "ordinary_income_loss", "label": "L1 — Ordinary income (loss) from the activity", "data_type": "decimal", "sort_order": 2,
+             "notes": "Partners/S-corp shareholders: Schedule K-1 box 1 PLUS any prior year ordinary loss not deducted because of the at-risk rules (i6198 Line 1). Excludes disposition gains/losses (those go on 2a-2c) and casualty/theft + investment interest (2c/4)."},
+            {"fact_key": "gain_loss_sched_d", "label": "L2a — Gain (loss) from dispositions reported on Schedule D", "data_type": "decimal", "sort_order": 3,
+             "notes": "Sale/other disposition of assets used in the activity (or of the interest in the activity). Entered WITHOUT regard to at-risk, capital-loss, or passive limits (i6198 Lines 2a-2c)."},
+            {"fact_key": "gain_loss_4797", "label": "L2b — Gain (loss) from dispositions reported on Form 4797", "data_type": "decimal", "sort_order": 4},
+            {"fact_key": "gain_loss_other_form", "label": "L2c — Gain (loss) from dispositions reported on another form or schedule", "data_type": "decimal", "sort_order": 5},
+            {"fact_key": "other_form_label", "label": "L2c — form number or schedule letter (dotted-line entry)", "data_type": "string", "sort_order": 6,
+             "notes": "Face: 'Enter the form number or schedule letter to the left of the entry space for line 2c' (i6198 p.3; e.g. 'Form 4684')."},
+            {"fact_key": "other_income_gains", "label": "L3 — Other income and gains from the activity (Sch K-1) not on lines 1-2c", "data_type": "decimal", "sort_order": 7},
+            {"fact_key": "other_deductions_losses", "label": "L4 — Other deductions and losses from the activity not on lines 1-2c (negative)", "data_type": "decimal", "sort_order": 8,
+             "notes": "Face prints parentheses (a loss entry). Includes the ALLOWABLE Form 4952 investment interest attributable to the at-risk activity, plus prior-year investment interest limited by at-risk (i6198 Line 4)."},
+            # ── Part II — simplified computation ──
+            {"fact_key": "adjusted_basis_first_day", "label": "L6 — Adjusted basis (§1011) in the activity on the first day of the tax year", "data_type": "decimal",
+             "validation_rule": "must be >= 0 (face: 'Do not enter less than zero')", "sort_order": 9,
+             "notes": "Sole proprietors do NOT reduce by liabilities (Pub. 551); partners Pub. 541; S-corp shareholders per the 1120-S instructions (i6198 Line 6)."},
+            {"fact_key": "increases_tax_year", "label": "L7 — Increases for the tax year", "data_type": "decimal", "sort_order": 10,
+             "notes": "i6198 Line 7 items (1)-(4): net FMV of own non-activity property securing nonrecourse loans; cash + adjusted basis of property contributed; personally-liable loans AND qualified nonrecourse financing; excess percentage depletion. Do NOT include current-year income/gains from lines 1-3."},
+            {"fact_key": "qualified_nonrecourse_financing", "label": "Qualified nonrecourse financing component of increases (real property)", "data_type": "decimal", "sort_order": 11,
+             "notes": "COMPONENT breakdown of L7/L16 item (3) kept for D002. §465(b)(6) + Reg. 1.465-27: no personal liability, borrowed for holding real property, secured by real property used in the activity, not convertible, government or qualified-person lender."},
+            {"fact_key": "decreases_tax_year", "label": "L9 — Decreases for the tax year", "data_type": "decimal", "sort_order": 12,
+             "notes": "i6198 Line 9 items (1)-(5): nonrecourse conversions, loss-protected amounts, related/interested-party loans, withdrawals and distributions, contributed-property nonrecourse liabilities. Do NOT include current-year deductions/losses from lines 1-4."},
+            # ── Part III — detailed computation ──
+            {"fact_key": "investment_at_effective_date", "label": "L11 — Investment in the activity at the effective date", "data_type": "decimal",
+             "validation_rule": "must be >= 0 (face: 'Do not enter less than zero')", "sort_order": 13,
+             "notes": "Non-partner/shareholder filers use the published Line 11 Worksheet (cash-basis add lines 1,2,4,6,7,8; accrual-basis continue 10a-14). Partners/shareholders: basis of the investment at the effective date (i6198 pp.4-5). Skip 11-14 if Part III was completed for the prior year."},
+            {"fact_key": "increases_at_effective_date", "label": "L12 — Increases at effective date", "data_type": "decimal", "sort_order": 14,
+             "notes": "Incl. pre-effective-date losses for which there were equal or greater amounts not at risk at year end (the published Line 12 Worksheet, i6198 p.6)."},
+            {"fact_key": "decreases_at_effective_date", "label": "L14 — Decreases at effective date", "data_type": "decimal", "sort_order": 15},
+            {"fact_key": "line15_basis", "label": "L15 checkbox — amount-at-risk source", "data_type": "choice",
+             "choices": ["effective_date", "prior_year_19b"], "sort_order": 16,
+             "notes": "Face box a: at effective date = L13 - L14 (not below zero). Box b: prior year Form 6198 line 19b — the face + i6198 CAUTION: 'Do not enter the amount from line 10b of your prior year form.'"},
+            {"fact_key": "prior_year_line19b", "label": "L15b — amount from the prior year Form 6198, line 19b", "data_type": "decimal", "sort_order": 17},
+            {"fact_key": "increases_since", "label": "L16 — Increases since effective date / end of prior year", "data_type": "decimal", "sort_order": 18,
+             "notes": "i6198 Line 16 items (1)-(9) incl. contributions, personally-liable loans + QNF, total net income since (profit years only, not below zero), §465(e) amounts previously recaptured, shareholder loans TO the S corporation. Excludes current-year income/gains."},
+            {"fact_key": "since_when_16", "label": "L16 checkbox — increases measured since", "data_type": "choice",
+             "choices": ["effective_date", "end_of_prior_year"], "sort_order": 19,
+             "notes": "Box b (end of prior year) when Part III was completed for the prior tax year."},
+            {"fact_key": "decreases_since", "label": "L18 — Decreases since effective date / end of prior year", "data_type": "decimal", "sort_order": 20,
+             "notes": "i6198 Line 18 items (1)-(8) incl. withdrawals/distributions, recourse-to-nonrecourse conversions, net-loss years deducted since ('Your prior tax year line 21 deductible loss reduces your at-risk investment as of the beginning of your current tax year'). Excludes current-year losses/deductions."},
+            {"fact_key": "since_when_18", "label": "L18 checkbox — decreases measured since", "data_type": "choice",
+             "choices": ["effective_date", "end_of_prior_year"], "sort_order": 21},
         ])
 
         rules = self._upsert_rules(form, [
-            {"rule_id": "R001", "title": "At-risk = contributions + personal liability debt", "rule_type": "calculation",
-             "formula": "at_risk_amount = cash_invested + basis_property_contributed + personal_liability_debt + qualified_nonrecourse_financing + income_from_activity - distributions_received - prior_losses_allowed",
-             "inputs": ["cash_invested", "basis_property_contributed", "personal_liability_debt",
-                        "qualified_nonrecourse_financing", "income_from_activity", "distributions_received"],
-             "outputs": ["at_risk_amount"], "precedence": 1, "sort_order": 1,
-             "description": "IRC 465(b): At-risk amount = cash + basis of contributed property + amounts for which taxpayer is personally liable + qualified nonrecourse financing (real estate)."},
-            {"rule_id": "R002", "title": "Nonrecourse debt excluded unless qualified RE financing", "rule_type": "validation",
-             "formula": "nonrecourse_debt NOT included in at_risk unless qualified_nonrecourse_financing for real_estate",
-             "inputs": ["qualified_nonrecourse_financing"], "outputs": [], "precedence": 0, "sort_order": 2,
-             "description": "IRC 465(b)(6): Nonrecourse debt generally NOT at risk. Exception for qualified nonrecourse financing secured by real property."},
-            {"rule_id": "R003", "title": "Loss limited to at-risk amount", "rule_type": "calculation",
-             "formula": "allowable_loss = min(loss_from_activity, at_risk_amount)",
-             "inputs": ["loss_from_activity", "at_risk_amount"], "outputs": ["allowable_loss"],
-             "precedence": 2, "sort_order": 3,
-             "description": "Loss deduction limited to the amount the taxpayer has at risk. Excess is suspended."},
-            {"rule_id": "R004", "title": "Recapture if at-risk drops below zero", "rule_type": "conditional",
-             "formula": "if at_risk_amount < 0 then recapture_income = abs(at_risk_amount)",
-             "inputs": ["at_risk_amount"], "outputs": [], "precedence": 3, "sort_order": 4,
-             "description": "IRC 465(e): If at-risk amount drops below zero, income must be recaptured."},
-            {"rule_id": "R005", "title": "Applied BEFORE passive activity limitations", "rule_type": "validation",
-             "formula": "at_risk_limitation applied before passive_activity_limitation (ordering)",
-             "inputs": [], "outputs": [], "precedence": 0, "sort_order": 5,
-             "description": "At-risk limitations (section 465) are applied BEFORE passive activity limitations (section 469). The ordering is: (1) basis, (2) at-risk, (3) passive activity."},
+            {"rule_id": "R001", "title": "Part I — L5 current year profit (loss) = combine lines 1-4", "rule_type": "calculation",
+             "formula": "line_5 = ordinary_income_loss + gain_loss_sched_d + gain_loss_4797 + gain_loss_other_form + other_income_gains + other_deductions_losses  # L4 entered as a negative (face parentheses)",
+             "inputs": ["ordinary_income_loss", "gain_loss_sched_d", "gain_loss_4797",
+                        "gain_loss_other_form", "other_income_gains", "other_deductions_losses"],
+             "outputs": ["current_year_profit_loss"], "precedence": 1, "sort_order": 1,
+             "description": "Face L5: 'Current year profit (loss) from the activity. Combine lines 1 through 4.' Amounts include prior-year nondeductible (at-risk-limited) amounts per the Part I heading. If L5 is a PROFIT, the rest of the form may be unnecessary (report Part I items normally, attach the 6198) — but recapture can still apply (R007). If L5 is a loss, income/gains on lines 1-3 remain fully reportable; deductions/losses are allowed to the extent of that income plus the Part II/III amount at risk (i6198 Line 5 + example)."},
+            {"rule_id": "R002", "title": "Part II — simplified amount at risk (L6-L10b)", "rule_type": "calculation",
+             "formula": "line_8 = adjusted_basis_first_day + increases_tax_year; line_10a = line_8 - decreases_tax_year; line_10b = line_10a if line_10a > 0 else 0",
+             "inputs": ["adjusted_basis_first_day", "increases_tax_year", "decreases_tax_year"],
+             "outputs": ["amount_at_risk_simplified"], "precedence": 2, "sort_order": 2,
+             "description": "Face L6-L10b. Usable only if the adjusted basis in the activity is known (i6198 Part II). L10b face: 'If line 10a is more than zero, enter that amount here and go to line 20 (or complete Part III). Otherwise, enter -0- and see Pub. 925 for information on the recapture rules.' §465(b) composition rides the L7/L9 item lists (see the fact notes): contributions + personally-liable loans + qualified nonrecourse financing increase; nonrecourse/protected/related-party amounts and withdrawals decrease."},
+            {"rule_id": "R003", "title": "Part III — detailed amount at risk (L11-L19b)", "rule_type": "calculation",
+             "formula": "line_13 = investment_at_effective_date + increases_at_effective_date; line_15 = max(0, line_13 - decreases_at_effective_date) if line15_basis == 'effective_date' else prior_year_line19b; line_17 = line_15 + increases_since; line_19a = line_17 - decreases_since; line_19b = line_19a if line_19a > 0 else 0",
+             "inputs": ["investment_at_effective_date", "increases_at_effective_date",
+                        "decreases_at_effective_date", "line15_basis", "prior_year_line19b",
+                        "increases_since", "decreases_since"],
+             "outputs": ["amount_at_risk_detailed"], "precedence": 2, "sort_order": 3,
+             "description": "Face L11-L19b. May allow a LARGER amount at risk than Part II (i6198: 'Part III is a longer method... which may allow a larger amount at risk'). L15 box b carries the prior year line 19b — NEVER the prior year 10b (face + i6198 caution). If Part III was completed for the prior year, skip 11-14 and measure 16/18 'since the end of your prior tax year' (boxes b)."},
+            {"rule_id": "R004", "title": "L20 amount at risk = larger of 10b or 19b", "rule_type": "calculation",
+             "formula": "line_20 = max(line_10b, line_19b)",
+             "inputs": [], "outputs": ["amount_at_risk"], "precedence": 3, "sort_order": 4,
+             "description": "Face L20 verbatim: 'Amount at risk. Enter the larger of line 10b or line 19b.' A filer may complete both parts and take the larger."},
+            {"rule_id": "R005", "title": "L21 deductible loss = smaller of the L5 loss (as positive) or L20", "rule_type": "calculation",
+             "formula": "line_21 = -min(abs(line_5), line_20) if line_5 < 0 else None  # no limitation computed on a profit year",
+             "inputs": [], "outputs": ["deductible_loss"], "precedence": 4, "sort_order": 5,
+             "description": "Face L21: 'Deductible loss. Enter the smaller of the line 5 loss (treated as a positive number) or line 20' — printed in parentheses. Published pins (i6198 Line 21 Examples): L5 (400)/L20 1,000 -> (400); L5 (1,600)/L20 1,200 -> (1,200); L5 (800)/L20 0 -> -0-. The disallowed excess is suspended under §465 and carried to next year; when L21 spans multiple Part I deduction items, each item is allowed pro rata (item / total L5 loss fraction, i6198 p.8)."},
+            {"rule_id": "R006", "title": "Nonrecourse amounts not at risk; qualified nonrecourse financing exception", "rule_type": "validation",
+             "formula": "nonrecourse loans / loss-protected amounts / interested-or-related-party loans are NOT at risk (i6198 Amounts Not at Risk (1)-(4)); EXCEPTION: qualified nonrecourse financing secured by real property used in an activity of holding real property (other than mineral property) IS at risk",
+             "inputs": ["qualified_nonrecourse_financing"], "outputs": [], "precedence": 0, "sort_order": 6,
+             "description": "§465(b)(6) + Reg. 1.465-27. QNF = no one personally liable, borrowed in connection with holding real property, secured by real property used in the activity, not convertible debt, and loaned/guaranteed by a government or borrowed from a qualified person (a regular money-lender that is not related, not the seller, and not fee-interested)."},
+            {"rule_id": "R007", "title": "Recapture when the amount at risk falls below zero", "rule_type": "conditional",
+             "formula": "if amount_at_risk_at_close < 0 then recapture income (§465(e)) — flagged when line_10b == 0 or line_19b == 0; possible EVEN IF line_5 shows a profit",
+             "inputs": [], "outputs": [], "precedence": 5, "sort_order": 7,
+             "description": "§465(e). Face L10b/L19b route a zero to Pub. 925 recapture. i6198 Line 5 caution verbatim: 'Even if you have a current year profit on line 5, you may have recapture income if you received a distribution or had a transaction during the year that reduced your amount at risk in the activity to less than zero at the close of the tax year.'"},
+            {"rule_id": "R008", "title": "Ordering — basis, then §465 at-risk, then §469 passive", "rule_type": "validation",
+             "formula": "basis limitation -> §465 at-risk (this form) -> §469 passive (Form 8582 / 8810) -> §461(l)",
+             "inputs": [], "outputs": [], "precedence": 0, "sort_order": 8,
+             "description": "Face Note after L21 verbatim: 'If the loss is from a passive activity, see the Instructions for Form 8582... or the Instructions for Form 8810... If only part of the loss is subject to the passive activity loss rules, report only that part on Form 8582 or Form 8810, whichever applies.' Reg. 1.469-2T(d)(6) puts §465 before §469; the FORM_8582 spec's R-8582-ATRISK-ORDER routes here."},
+            {"rule_id": "R009", "title": "Prior year at-risk-disallowed amounts ride the current-year Part I entries", "rule_type": "validation",
+             "formula": "partners / S-corp shareholders: include prior-year at-risk-limited losses IN the amounts entered on lines 1-4; other taxpayers: include them on the current-year form or schedule BEFORE starting Part I",
+             "inputs": [], "outputs": [], "precedence": 0, "sort_order": 9,
+             "description": "i6198 Part I verbatim (partners/shareholders): 'If you have a loss or a deduction from an earlier tax year that you could not deduct because of the at-risk rules, these losses and deductions must be included in the current year amounts you enter in Part I' — e.g. a prior-year box 1 loss of $1,500 limited to $500 puts the $1,000 plus the current-year box 1 amount on line 1. (This is what the old fabricated 'line 2 — prior year unallowed losses' row distorted: no such face line exists.)"},
         ])
+
+        # Refresh authority-link notes (get_or_create keeps stale relevance notes —
+        # the s59 renumber-unit rule).
+        RuleAuthorityLink.objects.filter(form_rule__tax_form=form).delete()
         self._upsert_links(rules, sources, [
-            ("R001", "IRC_465", "primary", "Section 465(b) — amounts at risk"),
-            ("R001", "IRS_2025_6198_INSTR", "secondary", "Form 6198 at-risk computation"),
-            ("R002", "IRC_465", "primary", "Section 465(b)(6) — qualified nonrecourse financing exception"),
-            ("R003", "IRC_465", "primary", "Section 465(a) — loss limited to at-risk amount"),
-            ("R004", "IRC_465", "primary", "Section 465(e) — recapture when at-risk goes below zero"),
-            ("R005", "IRC_465", "primary", "At-risk before passive activity — ordering rule"),
-            ("R005", "IRC_469", "secondary", "Section 469 applies after section 465"),
+            ("R001", "IRS_2025_6198_INSTR", "primary", "Part I face lines 1-4 + Line 5 instructions (Rev. 11-2025)"),
+            ("R001", "IRC_465", "secondary", "Section 465(a) — the loss being limited"),
+            ("R002", "IRS_2025_6198_INSTR", "primary", "Part II face L6-L10b + Line 7/9 item lists"),
+            ("R002", "IRC_465", "primary", "Section 465(b) — amounts considered at risk"),
+            ("R003", "IRS_2025_6198_INSTR", "primary", "Part III face L11-L19b + the L15 prior-year-19b caution"),
+            ("R003", "IRC_465", "secondary", "Section 465(b) — detailed at-risk computation"),
+            ("R004", "IRS_2025_6198_INSTR", "primary", "Face L20 — larger of line 10b or line 19b"),
+            ("R005", "IRS_2025_6198_INSTR", "primary", "Face L21 + Line 21 instructions and published examples"),
+            ("R005", "IRC_465", "primary", "Section 465(a) — loss limited to the amount at risk"),
+            ("R006", "IRC_465", "primary", "Section 465(b)(6) — qualified nonrecourse financing exception"),
+            ("R006", "IRS_2025_6198_INSTR", "secondary", "Qualified Nonrecourse Financing definition (Reg. 1.465-27)"),
+            ("R007", "IRC_465", "primary", "Section 465(e) — recapture when at-risk goes below zero"),
+            ("R007", "IRS_2025_6198_INSTR", "secondary", "L10b/L19b zero -> Pub. 925 recapture; Line 5 profit-year caution"),
+            ("R008", "IRC_465", "primary", "At-risk before passive activity — ordering rule"),
+            ("R008", "IRC_469", "secondary", "Section 469 applies after section 465"),
+            ("R008", "IRS_2025_6198_INSTR", "secondary", "Face Note after L21 — route passive losses to 8582/8810"),
+            ("R009", "IRS_2025_6198_INSTR", "primary", "Part I — prior year nondeductible amounts (verbatim)"),
         ])
         self._upsert_lines(form, [
-            {"line_number": "1", "description": "Current year profit (loss) from the activity", "line_type": "input", "sort_order": 1},
-            {"line_number": "2", "description": "Prior year unallowed losses", "line_type": "input", "sort_order": 2},
-            {"line_number": "3", "description": "Current year overall gain or loss (Line 1 + Line 2)", "line_type": "subtotal", "sort_order": 3},
-            {"line_number": "5", "description": "Investment in the activity at the effective date", "line_type": "input", "sort_order": 4},
-            {"line_number": "6", "description": "Increases at effective date", "line_type": "input", "sort_order": 5},
-            {"line_number": "10", "description": "Decreases at effective date", "line_type": "input", "sort_order": 6},
-            {"line_number": "15", "description": "Amount at risk (effective date)", "line_type": "calculated", "source_rules": ["R001"], "sort_order": 7},
-            {"line_number": "20", "description": "Deductible loss (limited to at-risk amount)", "line_type": "total", "source_rules": ["R003"], "sort_order": 8},
+            # ── Part I — Current Year Profit (Loss) From the Activity, Including
+            #    Prior Year Nondeductible Amounts (face verbatim, Rev. 11-2025) ──
+            {"line_number": "1", "description": "Ordinary income (loss) from the activity (see instructions)",
+             "line_type": "input", "source_facts": ["ordinary_income_loss"], "sort_order": 1},
+            {"line_number": "2a", "description": "Gain (loss) from the sale or other disposition of assets used in the activity (or of your interest in the activity) that you are reporting on: Schedule D",
+             "line_type": "input", "source_facts": ["gain_loss_sched_d"], "sort_order": 2},
+            {"line_number": "2b", "description": "— reported on Form 4797",
+             "line_type": "input", "source_facts": ["gain_loss_4797"], "sort_order": 3},
+            {"line_number": "2c", "description": "— reported on other form or schedule (enter the form number or schedule letter to the left of the entry space)",
+             "line_type": "input", "source_facts": ["gain_loss_other_form", "other_form_label"], "sort_order": 4},
+            {"line_number": "3", "description": "Other income and gains from the activity, from Schedule K-1 (Form 1065) or Schedule K-1 (Form 1120-S), that were not included on lines 1 through 2c",
+             "line_type": "input", "source_facts": ["other_income_gains"], "sort_order": 5},
+            {"line_number": "4", "description": "Other deductions and losses from the activity, including investment interest expense allowed from Form 4952, that were not included on lines 1 through 2c (parenthesized loss entry)",
+             "line_type": "input", "source_facts": ["other_deductions_losses"], "sort_order": 6},
+            {"line_number": "5", "description": "Current year profit (loss) from the activity. Combine lines 1 through 4. See the instructions before completing the rest of this form",
+             "line_type": "subtotal", "calculation": "combine lines 1 through 4",
+             "source_rules": ["R001"], "sort_order": 7},
+            # ── Part II — Simplified Computation of Amount at Risk ──
+            {"line_number": "6", "description": "Adjusted basis (as defined in section 1011) in the activity (or in your interest in the activity) on the first day of the tax year. Do not enter less than zero",
+             "line_type": "input", "source_facts": ["adjusted_basis_first_day"], "sort_order": 8},
+            {"line_number": "7", "description": "Increases for the tax year (see instructions)",
+             "line_type": "input", "source_facts": ["increases_tax_year"], "sort_order": 9},
+            {"line_number": "8", "description": "Add lines 6 and 7",
+             "line_type": "subtotal", "calculation": "line 6 + line 7", "source_rules": ["R002"], "sort_order": 10},
+            {"line_number": "9", "description": "Decreases for the tax year (see instructions)",
+             "line_type": "input", "source_facts": ["decreases_tax_year"], "sort_order": 11},
+            {"line_number": "10a", "description": "Subtract line 9 from line 8",
+             "line_type": "calculated", "calculation": "line 8 - line 9", "source_rules": ["R002"], "sort_order": 12},
+            {"line_number": "10b", "description": "If line 10a is more than zero, enter that amount here and go to line 20 (or complete Part III). Otherwise, enter -0- and see Pub. 925 for information on the recapture rules",
+             "line_type": "calculated", "calculation": "max(0, line 10a)", "source_rules": ["R002", "R007"], "sort_order": 13},
+            # ── Part III — Detailed Computation of Amount at Risk ──
+            {"line_number": "11", "description": "Investment in the activity (or in your interest in the activity) at the effective date. Do not enter less than zero",
+             "line_type": "input", "source_facts": ["investment_at_effective_date"], "sort_order": 14,
+             "notes": "Skip 11-14 if Part III was completed for the prior year (i6198 Part III intro); the published Line 11 Worksheet feeds this line for non-partner/shareholder filers."},
+            {"line_number": "12", "description": "Increases at effective date",
+             "line_type": "input", "source_facts": ["increases_at_effective_date"], "sort_order": 15},
+            {"line_number": "13", "description": "Add lines 11 and 12",
+             "line_type": "subtotal", "calculation": "line 11 + line 12", "source_rules": ["R003"], "sort_order": 16},
+            {"line_number": "14", "description": "Decreases at effective date",
+             "line_type": "input", "source_facts": ["decreases_at_effective_date"], "sort_order": 17},
+            {"line_number": "15", "description": "Amount at risk (check box that applies): a — At effective date (subtract line 14 from line 13; do not enter less than zero); b — From your prior year Form 6198, line 19b (do NOT enter the amount from line 10b of your prior year form)",
+             "line_type": "calculated", "calculation": "box a: max(0, line 13 - line 14); box b: prior year line 19b",
+             "source_facts": ["line15_basis", "prior_year_line19b"], "source_rules": ["R003"], "sort_order": 18},
+            {"line_number": "16", "description": "Increases since (check box that applies): a — Effective date; b — The end of your prior year",
+             "line_type": "input", "source_facts": ["increases_since", "since_when_16"], "sort_order": 19},
+            {"line_number": "17", "description": "Add lines 15 and 16",
+             "line_type": "subtotal", "calculation": "line 15 + line 16", "source_rules": ["R003"], "sort_order": 20},
+            {"line_number": "18", "description": "Decreases since (check box that applies): a — Effective date; b — The end of your prior year",
+             "line_type": "input", "source_facts": ["decreases_since", "since_when_18"], "sort_order": 21},
+            {"line_number": "19a", "description": "Subtract line 18 from line 17",
+             "line_type": "calculated", "calculation": "line 17 - line 18", "source_rules": ["R003"], "sort_order": 22},
+            {"line_number": "19b", "description": "If line 19a is more than zero, enter that amount here and go to line 20. Otherwise, enter -0- and see Pub. 925 for information on the recapture rules",
+             "line_type": "calculated", "calculation": "max(0, line 19a)", "source_rules": ["R003", "R007"], "sort_order": 23},
+            # ── Part IV — Deductible Loss ──
+            {"line_number": "20", "description": "Amount at risk. Enter the larger of line 10b or line 19b",
+             "line_type": "calculated", "calculation": "max(line 10b, line 19b)", "source_rules": ["R004"], "sort_order": 24},
+            {"line_number": "21", "description": "Deductible loss. Enter the smaller of the line 5 loss (treated as a positive number) or line 20. See the instructions to find out how to report any deductible loss and any carryover (parenthesized loss entry)",
+             "line_type": "total", "calculation": "-min(abs(line 5 loss), line 20)",
+             "source_rules": ["R005"], "sort_order": 25,
+             "destination_form": "back to the loss source (Sch C/E/F, K-1 forms) per i6198; passive portion routes through Form 8582/8810 (face Note)",
+             "notes": "Face Note after line 21: passive-activity losses go to the 8582/8810 instructions to find out if the loss is allowed under the passive rules."},
         ])
+
         self._upsert_diagnostics(form, [
-            {"diagnostic_id": "D001", "title": "Loss exceeds at-risk amount", "severity": "warning",
-             "condition": "loss_from_activity > at_risk_amount",
-             "message": "Loss exceeds shareholder at-risk amount — excess losses should be suspended and carried forward."},
-            {"diagnostic_id": "D002", "title": "Nonrecourse debt in at-risk", "severity": "warning",
+            {"diagnostic_id": "D001", "title": "Loss exceeds the amount at risk", "severity": "warning",
+             "condition": "abs(line_5_loss) > line_20",
+             "message": "The line 5 loss exceeds the line 20 amount at risk — line 21 is capped at line 20 and the excess is suspended under §465 and carried to next year (allocated pro rata across the Part I deduction items when more than one)."},
+            {"diagnostic_id": "D002", "title": "Qualified nonrecourse financing claimed", "severity": "warning",
              "condition": "qualified_nonrecourse_financing > 0",
-             "message": "Nonrecourse financing included in at-risk amount — verify it qualifies as qualified nonrecourse financing for real estate."},
+             "message": "Nonrecourse financing is being treated as at risk — verify it meets ALL the §465(b)(6)/Reg. 1.465-27 tests: no personal liability, borrowed in connection with holding real property, secured by real property used in the activity, not convertible, and government-loaned/guaranteed or from a qualified person (regular money-lender; not related, not the seller, not fee-interested)."},
+            {"diagnostic_id": "D003", "title": "Amount at risk is zero — possible §465(e) recapture", "severity": "warning",
+             "condition": "line_10b == 0 or line_19b == 0",
+             "message": "Line 10b/19b is -0- — the face routes to Pub. 925: if the amount at risk fell below zero at the close of the year, prior losses may be recaptured as income (§465(e)). Recapture can apply even in a line 5 profit year."},
+            {"diagnostic_id": "D004", "title": "Line 15 box b — verify prior year 19b (not 10b)", "severity": "warning",
+             "condition": "line15_basis == 'prior_year_19b'",
+             "message": "Line 15 box b is checked — the amount must come from the PRIOR year Form 6198 line 19b. Face + i6198 caution: 'Do not enter the amount from line 10b of your prior year form.' Also exclude any amounts not at risk."},
+            {"diagnostic_id": "D005", "title": "Part II smaller than the loss — Part III may allow more", "severity": "warning",
+             "condition": "line_10b < abs(line_5_loss) and part_iii_not_completed",
+             "message": "The simplified (Part II) amount at risk is smaller than the line 5 loss — i6198 Line 10b: 'you may want to complete Part III to see if Part III gives you a larger amount at risk.'"},
+            {"diagnostic_id": "D006", "title": "Passive activity — 8582/8810 applies after this form", "severity": "warning",
+             "condition": "activity_is_passive and line_21 < 0",
+             "message": "The line 21 deductible loss is from a passive activity — it must still pass Form 8582 (or 8810) under §469. Report only the passive-rule-subject part there (face Note after line 21). The FORM_8582 spec's R-8582-ATRISK-ORDER documents the §465-before-§469 ordering."},
         ])
+
         self._upsert_tests(form, [
-            {"scenario_name": "Standard at-risk — loss within amount", "scenario_type": "normal",
-             "inputs": {"cash_invested": 50000, "personal_liability_debt": 30000, "loss_from_activity": 20000,
-                        "at_risk_amount": 80000},
-             "expected_outputs": {"allowable_loss": 20000},
+            # Published pins — i6198 (Rev. 11-2025) Line 21 Examples, p.8 verbatim.
+            {"scenario_name": "L21 example (a) — loss within the amount at risk", "scenario_type": "normal",
+             "inputs": {"line_5": -400, "line_20": 1000},
+             "expected_outputs": {"line_21": -400},
              "sort_order": 1,
-             "notes": "At-risk $80K ($50K cash + $30K personal debt). $20K loss fully allowed."},
-            {"scenario_name": "Nonrecourse real estate exception", "scenario_type": "edge",
-             "inputs": {"cash_invested": 20000, "qualified_nonrecourse_financing": 180000, "loss_from_activity": 25000,
-                        "at_risk_amount": 200000},
-             "expected_outputs": {"allowable_loss": 25000},
+             "notes": "i6198 Line 21 Examples (a) verbatim: 'If line 5 is a loss of $400 and line 20 is $1,000, enter ($400) on line 21.'"},
+            {"scenario_name": "L21 example (b) — loss capped at line 20", "scenario_type": "normal",
+             "inputs": {"line_5": -1600, "line_20": 1200},
+             "expected_outputs": {"line_21": -1200, "suspended_465_carryover": 400},
              "sort_order": 2,
-             "notes": "At-risk = $20K cash + $180K qualified nonrecourse RE = $200K. $25K loss fully allowed."},
+             "notes": "i6198 Line 21 Examples (b) verbatim: 'If line 5 is a loss of $1,600 and line 20 is $1,200, enter ($1,200) on line 21.' The $400 excess is suspended under §465."},
+            {"scenario_name": "L21 example (c) — zero at risk", "scenario_type": "edge",
+             "inputs": {"line_5": -800, "line_20": 0},
+             "expected_outputs": {"line_21": 0, "suspended_465_carryover": 800},
+             "sort_order": 3,
+             "notes": "i6198 Line 21 Examples (c) verbatim: 'If line 5 is a loss of $800 and line 20 is zero, enter -0- on line 21.' D003 fires (possible recapture)."},
+            {"scenario_name": "Line 5 income-offset example (i6198 p.3)", "scenario_type": "normal",
+             "inputs": {"ordinary_income_loss": -4600, "gain_loss_sched_d": 3100, "line_20": 600},
+             "expected_outputs": {"line_5": -1500, "line_21": -600, "total_loss_allowed": 3700},
+             "sort_order": 4,
+             "notes": "i6198 Line 5 example verbatim: Schedule C loss $4,600 on line 1, Schedule D gain $3,100 on line 2a -> line 5 loss $1,500. The $3,100 gain is fully reportable and absorbs $3,100 of the loss; Part II/III allows $600 of the $1,500 excess -> total allowed $3,700 ($3,100 + $600)."},
+            {"scenario_name": "Part II simplified computation", "scenario_type": "normal",
+             "inputs": {"adjusted_basis_first_day": 80000, "increases_tax_year": 5000,
+                        "decreases_tax_year": 10000, "line_5": -20000},
+             "expected_outputs": {"line_8": 85000, "line_10a": 75000, "line_10b": 75000,
+                                  "line_20": 75000, "line_21": -20000},
+             "sort_order": 5,
+             "notes": "L8 = 80,000 + 5,000; L10a = 85,000 - 10,000 = 75,000 > 0 -> L10b; loss 20,000 within the amount at risk -> fully deductible."},
+            {"scenario_name": "Part III detailed + larger-of on line 20", "scenario_type": "normal",
+             "inputs": {"investment_at_effective_date": 5000, "increases_at_effective_date": 2000,
+                        "decreases_at_effective_date": 1000, "line15_basis": "effective_date",
+                        "increases_since": 3000, "decreases_since": 500,
+                        "line_10b": 4000, "line_5": -12000},
+             "expected_outputs": {"line_13": 7000, "line_15": 6000, "line_17": 9000,
+                                  "line_19a": 8500, "line_19b": 8500, "line_20": 8500,
+                                  "line_21": -8500, "suspended_465_carryover": 3500},
+             "sort_order": 6,
+             "notes": "Part III: 13 = 5,000+2,000; 15 box a = 7,000-1,000; 17 = 6,000+3,000; 19a = 9,000-500 = 8,500 -> 19b. L20 = max(4,000, 8,500) = 8,500 — the detailed method allows more than Part II. Loss 12,000 capped at 8,500."},
+            {"scenario_name": "Qualified nonrecourse real-estate financing at risk", "scenario_type": "edge",
+             "inputs": {"adjusted_basis_first_day": 20000, "increases_tax_year": 180000,
+                        "qualified_nonrecourse_financing": 180000, "decreases_tax_year": 0, "line_5": -25000},
+             "expected_outputs": {"line_8": 200000, "line_10b": 200000, "line_20": 200000, "line_21": -25000},
+             "sort_order": 7,
+             "notes": "The kept §465(b)(6) substance re-keyed to the face: $180K qualified nonrecourse financing rides the L7 increases item (3) -> amount at risk $200K; the $25K loss is fully allowed. D002 fires (verify the QNF tests)."},
         ])
+
+        # ── In-loader self-heal (the rename-orphan class, standard since s56/s57):
+        # the fabricated pre-face rows must DELETE on reseed, not linger. The 6198
+        # TaxForm has a single owner (this loader) — the whitelists are exact.
+        _6198_FACTS = {
+            "activity_description", "ordinary_income_loss", "gain_loss_sched_d",
+            "gain_loss_4797", "gain_loss_other_form", "other_form_label",
+            "other_income_gains", "other_deductions_losses", "adjusted_basis_first_day",
+            "increases_tax_year", "qualified_nonrecourse_financing", "decreases_tax_year",
+            "investment_at_effective_date", "increases_at_effective_date",
+            "decreases_at_effective_date", "line15_basis", "prior_year_line19b",
+            "increases_since", "since_when_16", "decreases_since", "since_when_18",
+        }
+        stale_facts = FormFact.objects.filter(tax_form=form).exclude(fact_key__in=_6198_FACTS)
+        if stale_facts.exists():
+            self.stdout.write(f"  deleting {stale_facts.count()} stale Form 6198 facts: "
+                              + ", ".join(sorted(stale_facts.values_list("fact_key", flat=True))))
+            stale_facts.delete()
+
+        _6198_LINES = {
+            "1", "2a", "2b", "2c", "3", "4", "5", "6", "7", "8", "9", "10a", "10b",
+            "11", "12", "13", "14", "15", "16", "17", "18", "19a", "19b", "20", "21",
+        }
+        stale_lines = FormLine.objects.filter(tax_form=form).exclude(line_number__in=_6198_LINES)
+        if stale_lines.exists():
+            self.stdout.write(f"  deleting {stale_lines.count()} stale Form 6198 line rows: "
+                              + ", ".join(sorted(stale_lines.values_list("line_number", flat=True))))
+            stale_lines.delete()
+
+        _6198_RULES = {"R001", "R002", "R003", "R004", "R005", "R006", "R007", "R008", "R009"}
+        stale_rules = FormRule.objects.filter(tax_form=form).exclude(rule_id__in=_6198_RULES)
+        if stale_rules.exists():
+            self.stdout.write(f"  deleting {stale_rules.count()} stale Form 6198 rules: "
+                              + ", ".join(sorted(stale_rules.values_list("rule_id", flat=True))))
+            stale_rules.delete()
+
+        _6198_DIAGS = {"D001", "D002", "D003", "D004", "D005", "D006"}
+        stale_diags = FormDiagnostic.objects.filter(tax_form=form).exclude(diagnostic_id__in=_6198_DIAGS)
+        if stale_diags.exists():
+            self.stdout.write(f"  deleting {stale_diags.count()} stale Form 6198 diagnostics: "
+                              + ", ".join(sorted(stale_diags.values_list("diagnostic_id", flat=True))))
+            stale_diags.delete()
+
+        _6198_SCENARIOS = {
+            "L21 example (a) — loss within the amount at risk",
+            "L21 example (b) — loss capped at line 20",
+            "L21 example (c) — zero at risk",
+            "Line 5 income-offset example (i6198 p.3)",
+            "Part II simplified computation",
+            "Part III detailed + larger-of on line 20",
+            "Qualified nonrecourse real-estate financing at risk",
+        }
+        stale_tests = TestScenario.objects.filter(tax_form=form).exclude(scenario_name__in=_6198_SCENARIOS)
+        if stale_tests.exists():
+            self.stdout.write(f"  deleting {stale_tests.count()} stale Form 6198 scenarios: "
+                              + ", ".join(sorted(stale_tests.values_list("scenario_name", flat=True))))
+            stale_tests.delete()
+
         self._upsert_form_links("6198", sources, [
             ("IRS_2025_6198_INSTR", "governs"),
             ("IRC_465", "governs"),

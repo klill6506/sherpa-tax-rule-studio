@@ -1,4 +1,47 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — Form 6198 renumbered to the REAL face (audit unit #6) — a NEW Rev. 11-2025 revision; tts leg-less, no drift possible (tts s61)
+- **6198 rebuilt verbatim** (load_1120s_complete `_load_6198`) vs f6198.pdf **Rev.
+  November 2025** — a NEW revision (Created 9/9/25; the local template hash-matches a
+  fresh irs.gov download) — + i6198 (Rev. November 2025, fetched + pymupdf-extracted
+  2026-07-12). The old block was the audit's FABRICATED-line_map verdict: an invented
+  "prior year unallowed losses" line 2 (the face folds prior-year nondeductible amounts
+  INTO the Part I lines-1-4 entries — now rule R009), deductible loss on 20 (face: 21;
+  20 = amount at risk, larger of 10b/19b), and 13 of 21 face lines missing.
+- Now: 21 face-keyed facts (incl. line15_basis/since_when_16/since_when_18 choice facts
+  for the three a/b checkbox pairs; qualified_nonrecourse_financing KEPT as the L7/L16
+  component breakdown driving D002) · **R001-R009 — the §465 substance kept, re-keyed**
+  (R001 Part I combine 1-4 · R002 Part II 6-10b · R003 Part III 11-19b incl. the 15b
+  prior-year-19b-NEVER-10b caution · R004 L20 larger-of · R005 L21 smaller-of + the
+  multi-item pro-rata carryover · R006 QNF §465(b)(6)/Reg. 1.465-27 · R007 §465(e)
+  recapture incl. the profit-year caution · R008 basis→at-risk→passive ordering, ties
+  the FORM_8582 spec's R-8582-ATRISK-ORDER · R009 prior-year nondeductible) · 25 face
+  lines · D001-D006 · 7 scenarios: the THREE published i6198 Line 21 examples, the p.3
+  Line 5 income-offset example (-4,600 + 3,100 → allowed 3,700), Part II, Part III +
+  larger-of, and the kept QNF-substance pin.
+- **Fabricated-excerpt class (again):** IRS_2025_6198_INSTR's sole "At-risk computation"
+  excerpt was a paraphrase. Replaced VERBATIM under the SAME label (rename-orphan guard)
+  + 5 new verbatim excerpts; citation → "(Rev. November 2025)"; `forms_supporting.py`
+  mirrors the set so a load_all_federal rerun agrees (sibling-drift guard). In-loader
+  RuleAuthorityLink refresh-delete (the s59 stale-note rule) + fact/line/rule/diag/
+  scenario self-heal whitelists (6198 is single-owner — exact).
+- Validation: `scratchpad/validate_6198_renumber.py` **144/0** on throwaway SQLite —
+  twice-run against a pre-polluted DB (self-heal proof), arithmetic oracles for all 7
+  scenarios, link coverage, excerpt labels, CharField caps. Prod seeded — stale-deletes
+  fired exactly (9 facts / lines 2+10 / 2 scenarios); idempotent rerun clean; deployed
+  `lookup/6198/export/` verified (25 lines / R001-R009 / 21 facts / D001-D006 / 7
+  tests); tts mirror NEW `server/specs/form_6198_spec.json`.
+- **tts drift check: NO 6198 leg exists** — field map is an unmapped stub (not in the
+  renderer registry), zero MeF/seed refs; compute references are ordering comments +
+  compute_4835's at-risk cap (min(|loss|, at_risk_amount)) which matches R005. The
+  fabricated map never leaked into the app. Housekeeping: f6198.pdf was an UNREGISTERED
+  template — registered in tts forms_manifest.json (83; trip-wire bumped).
+- Renumber queue remaining: **M3 line_map (unit #7 — M-3 face template download first)
+  → 3800 (rides the GBC entity unit)**.
+- *(Log continuity note: the s59 PAGE1/M1/M2 RS leg (RS `bb42381`, load_1120s_full) and
+  the s60 tts FFV re-key were run from the tax-app context and are documented in
+  BUILD_ORDER.md (tts-tax-status) + tts STATUS_ARCHIVE/form_coverage_tracker — this
+  log skipped from s58 to here.)*
+
 ## 2026-07-11 — 1120S_SCHL renumbered to the 2025 face (audit unit #4) — tts verified face-correct, RS-only drift (tts s58)
 - **1120S_SCHL rebuilt verbatim** (`bfcb95a`) vs f1120s.pdf (2025) p.4 + i1120s p.49. The
   old block ran TWO fabricated numbering systems at once: facts had total assets at l14 /
