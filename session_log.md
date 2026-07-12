@@ -1,4 +1,37 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — Form 2848 greenfield DRAFTED to Gate-1 (WO-27, tts Spine S-20c RS leg, tts s68) — ⏳ AWAITING KEN; NOT seeded
+- **Second run of the s67 draft-to-gate recipe** (gap 404 → verbatim research →
+  `f2848_source_brief.md` → gated `load_2848.py` (READY_TO_SEED=False) → harness
+  **73/0** → WO-27 `⏳ AWAITING KEN`). 34 facts / 9 rules / 30 lines / 17 diag /
+  9 scenarios / 3 FAs staged DRAFT; entity_types all six suite types; print-first
+  (no MeF). The app value-add specced: **L2 preparer autofill from the Preparer
+  record** (FA-2848-CAFFILL pins the CAF 9-digit-or-'None' shape).
+- **⚠⚠ Research catch — a Recent Development posted FOUR DAYS before the draft
+  (08-Jul-2026)**: 5a entries beyond disclosure/substitution/return-signing OR
+  any 5b limitation record the POA as **"MODIFIED" on the CAF → the rep loses
+  Transcript Delivery System access and Tax Pro Account installment agreements**;
+  and "never check line 4 unless Form 2848 is, in fact, a specific-use form."
+  Encoded as D_2848_MODCAF / D_2848_L4CAF (warnings with the verbatim substance
+  + date pinned in the harness). The About-page Recent-Developments sweep is now
+  PROVEN load-bearing — a 2021-revision form carried 2026 guidance.
+- Rules: R-2848-MATTER (L3 validity; "All years" → the IRS RETURNS the POA) ·
+  R-2848-FUTURE (the CAF future-period clock = Dec 31 receipt-year + 3) ·
+  R-2848-SIGNSEQ (**taxpayer-first gives the rep 45 days / 60 abroad; rep-first
+  = no limit**; handwritten for mail/fax, e-sign online-only) · R-2848-REPS
+  (4 blocks / 2 notice copies / CAF-PTIN) · R-2848-URP (the h-designation
+  four-condition gate: PTIN + prepared-signed + AFSP BOTH years; 8821 fallback) ·
+  R-2848-AUTH (5a acts + §1.6012-1(a)(5) sign-a-return + modified-CAF) ·
+  R-2848-REVOKE (L6 attach-to-retain; REVOKE/WITHDRAW margins; never revokes an
+  8821) · R-2848-SCOPE (8821/Form 56 boundaries; one 2848 PER taxpayer) ·
+  R-2848-FILE (Memphis/Ogden/Philadelphia chart, year-watched).
+- ⚠ topic_name > 255 hit AGAIN (fourth time: WO-22/23/26/27) — trim the topic
+  description to a clause list; consider a loader-side truncation guard on the
+  next RS maintenance pass.
+- ⏭ Ken now holds TWO Gate-1 walks (WO-26 2553 + WO-27 2848) — one "approve
+  both" clears the whole S-20b/c RS lane; the tts print units can then build as
+  a pair. Next autonomous item: **S-20d 3115 tts app build** (WO-23 DONE, no
+  gate).
+
 ## 2026-07-12 — Form 2553 greenfield DRAFTED to Gate-1 (WO-26, tts Spine S-20b RS leg, tts s67) — ⏳ AWAITING KEN; NOT seeded
 - **The first post-S-16 greenfield order, and the first one drafted-to-gate under
   autonomous mode**: the two human gates are non-negotiable, so the draft stops AT

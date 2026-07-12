@@ -66,6 +66,35 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-27] Form 2848 · Power of Attorney and Declaration of Representative · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)` (2026-07-12; SPINE
+  S-20c).** Gap re-confirmed 2026-07-12 (`lookup/2848/export/` = 404). Administrative POA — print-first (mail/fax/
+  online at IRS.gov/Submit2848; NO MeF); the app value-add = **line-2 preparer autofill (name/address/CAF/PTIN/
+  phone/fax) from the Preparer record**. **✅ RESEARCH-VERIFIED (2026-07-12, verbatim vs FINAL Form 2848 Rev.
+  January 2021 + i2848 Rev. September 2021 + the "Items to consider while completing Form 2848" Recent Development
+  posted 08-Jul-2026 — FOUR DAYS OLD; About page reviewed 09-Jul-2026) → `f2848_source_brief.md`.** No annual
+  reissue; no OBBBA impact. **Research catches:** the fresh Rec. Dev.: **5a entries beyond disclosure/substitution/
+  return-signing OR any 5b limitation record the POA as "MODIFIED" on the CAF — blocking the rep's Transcript
+  Delivery System access and Tax Pro Account installment agreements; "never check line 4 unless Form 2848 is, in
+  fact, a specific-use form"** (encoded as D_2848_MODCAF / D_2848_L4CAF — practitioner-workflow gold); the printed
+  where-to-file chart stands (Memphis 855-214-7519 / Ogden 855-214-7522 / Philadelphia Intl 855-772-3156 —
+  year-watched, "may change without notice"); the printed "Secure Access" login is superseded but IRS.gov/Submit2848
+  stands. **✅ AUTHORED (draft) + SQLite-VALIDATED** (`load_2848.py`, 34 facts / 9 rules / 30 lines / 17 diag /
+  9 scenarios / 3 FA staged DRAFT; `scratchpad/validate_2848.py` = **73 pass / 0 fail** — the future-period CAF
+  clock (Dec 31 receipt-year + 3: 2026→2029 yes / 2030 no); the 45/60-day rep-signature window incl. the day-45/46
+  boundary + rep-signed-first-no-limit; the URP (h) four-condition gate; 4-rep/2-notice-copy counts; the
+  modified-CAF and filing-route routers; scenario outputs recomputed; guard-refusal + twice-run pins; the
+  Rec-Dev language pinned in the diagnostics). **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT
+  exported.** **Gate-1 walk for Ken (W1-W4, recommendations = approve all):** W1 line-3 validity + the future-period
+  clock (the "All years" RETURN-the-POA error); W2 rep constraints (4 blocks / 2 notice copies / CAF-PTIN) + the
+  unenrolled-preparer representation gate (PTIN + prepared-signed + AFSP both years; 8821 fallback); W3 signature
+  mechanics (45/60-day sequence window; e-sign online-only; joint filers separate; entity signer rules as print
+  guidance); W4 CAF hygiene (the 08-Jul-2026 modified-CAF + line-4 diagnostics) + line-6 attach-to-retain +
+  REVOKE/WITHDRAW info + entity_types ['1040','1120S','1065','1120','1041','709'] print-first scope. On approval:
+  flip READY_TO_SEED, seed, verify the deployed export, refresh the tts mirror → dispatch the tts print unit
+  (Gate 2; pairs naturally with the 2553 tts leg if both gates clear together). ⏭ Queue: **S-20d 3115 tts app
+  build** (RS DONE at WO-23 — buildable now, no gate).
+
 - **▶ [WO-26] Form 2553 · Election by a Small Business Corporation · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)` (2026-07-12; SPINE
   S-20b).** Gap re-confirmed 2026-07-12 (`lookup/2553/export/` = 404; first flagged at the WO-22 gap-check). The

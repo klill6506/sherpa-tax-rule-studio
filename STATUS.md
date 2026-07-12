@@ -12,6 +12,16 @@ last_updated: 2026-07-12
 
 ## Current state
 
+**NEW 2026-07-12 (later) — WO-27 Form 2848 (SPINE S-20c) DRAFTED TO GATE-1 — ⏳ AWAITING KEN; NOT seeded, NOT exported.**
+The s67 draft-to-gate recipe re-run: `load_2848.py` (34 facts / 9 rules / 30 lines / 17 diag / 9 scenarios / 3 FA
+staged DRAFT; entity_types all six suite types; print-first, no MeF; the L2 preparer-autofill value-add specced)
+ships `READY_TO_SEED = False`; harness `scratchpad/validate_2848.py` **73/0** (future-period clock, 45/60-day
+signature window, URP gate, modified-CAF, guard-refusal, twice-run). **⚠⚠ Research catch: an IRS Recent Development
+posted 08-Jul-2026 (four days before the draft)** — 5a-other/any-5b entries record the POA as "MODIFIED" on the CAF
+(rep loses TDS + Tax Pro Account IAs); "never check line 4 unless truly specific-use" — encoded as D_2848_MODCAF /
+D_2848_L4CAF. **Ken now holds TWO Gate-1 walks (WO-26 2553 + WO-27 2848)** — approve both to clear the S-20b/c RS
+lane; the tts print units then build as a pair. Next autonomous item: the 3115 tts app build (WO-23 DONE, no gate).
+
 **NEW 2026-07-12 — WO-26 Form 2553 (SPINE S-20b) DRAFTED TO GATE-1 — ⏳ AWAITING KEN; NOT seeded, NOT exported.**
 The first post-S-16 greenfield order: `load_2553.py` (28 facts / 8 rules / 45 lines / 19 diag / 10 scenarios / 3 FA
 staged DRAFT, entity_types ['1120S'], print-first — no MeF channel) ships `READY_TO_SEED = False`; the harness
