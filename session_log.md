@@ -1,4 +1,19 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — Form 3115 FA activation (tts s70 print unit — Gate-2 shipped; WO-23 fully closed)
+- FLOW_ASSERTIONS in `load_3115.py` flipped draft→active (FA-3115-CATCHUP/
+  SPREAD/SCHA); prod reseeded (idempotent, status-only; verified active
+  in-DB). tts runners (_run_3115_assertion in BOTH dispatch chains) + all
+  three gate mirrors refreshed from the deployed export same-session —
+  tts flow gate 475 → 484. The tts 3115 print unit is COMPLETE (S-20d);
+  **the S-20 admin-forms block (8283-entity/2553/2848/3115) is fully done.**
+- ⚠ Citation nit filed (tts REVIEW_QUEUE s70): the spec's IRS_F3115
+  citation strings say OMB 1545-0152; the Rev. 12-2022 face prints OMB
+  1545-2070 (Cat. No. 19280E matches). Cosmetic — fold into the next 3115
+  amendment.
+- ⚠ Tooling: PS5.1 `Set-Content -Encoding UTF8` added a BOM to the loader
+  during the status flip (stripped). Use python byte-rewrites / Git-Bash
+  sed for loader edits.
+
 ## 2026-07-12 — GATE-1 ×2 APPROVED + SEEDED: 2553 (WO-26) + 2848 (WO-27) — the S-20b/c RS lane CLEARS (tts s68, live Ken walk)
 - Ken asked for the Gate-1 questions "more clearly" → the walks were re-presented
   in plain English (what each spec makes the app DO for a preparer, not spec

@@ -153,7 +153,9 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   guaranteed payments) — QUEUED in the audit ledger (tts docs/rs_handoff), not drive-by-patched.**
 
 - **▶ [WO-23] Form 3115 · Application for Change in Accounting Method (§481(a)) · greenfield RS-first ·
-  status `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE` (2026-07-06; SPINE S-16, 10th — the LAST S-16 item;
+  status `GAP-CHECKED → research-verified → Gate-1 APPROVED → ✅ DONE → ✅ tts APP BUILD DONE (Gate-2, tts s70
+  2026-07-12: print unit shipped; FA-3115-CATCHUP/SPREAD/SCHA ACTIVATED with runners; tts flow gate 484;
+  OMB-citation nit → tts REVIEW_QUEUE s70)` (RS DONE 2026-07-06; SPINE S-16, 10th — the LAST S-16 item;
   QUEUE DRAINED).**
   Ken's specialty (§481(a) depreciation catch-up). Gap-check (2026-07-06): no `load_3115*` loader; the only on-disk
   `3115` ref is diagnostic text in `load_1120s_complete.py` (not an authoring surface); `lookup/3115/export/` = GAP

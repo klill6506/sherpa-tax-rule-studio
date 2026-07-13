@@ -422,15 +422,15 @@ FORMS: list[dict] = [
 
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-3115-CATCHUP", "title": "Schedule E depreciation §481(a) = taken - allowable", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "active", "sort_order": 1,
      "description": "The Schedule E depreciation catch-up equals depreciation taken under the present method minus depreciation allowable under the proposed method, as of the beginning of the year of change (DCN 7).",
      "definition": {"rule": "R-3115-CATCHUP", "check": "sch_e_481a = depr_taken_present - depr_allowable_proposed"}},
     {"assertion_id": "FA-3115-SPREAD", "title": "§481(a) period follows sign + elections", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "active", "sort_order": 2,
      "description": "Adjustment period = 1 for negative; 4 for positive; 1 for positive < $50k with the de minimis election; 2 for positive under examination. Installments are ratable (net / period).",
      "definition": {"rule": "R-3115-PERIOD", "check": "period = 1 if net<=0 else (1 if deminimis&net<50k else (2 if under_exam else 4))"}},
     {"assertion_id": "FA-3115-SCHA", "title": "Schedule A 2h = combine 2a-2g", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040", "1065", "1120", "1120S"], "status": "active", "sort_order": 3,
      "description": "The Schedule A net §481(a) = AR - advance payments - AP + prepaids + supplies + inventory + other (standard cash->accrual signs), flowing to Part IV Line 26.",
      "definition": {"rule": "R-3115-SCHA", "check": "2h = 2a - 2b - 2c + 2d + 2e + 2f + 2g"}},
 ]
