@@ -527,6 +527,20 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-12 — FA-2553-*/FA-2848-* ACTIVATED (the tts 2553+2848 print-unit pair landed, tts s69)
+- The s66 one-motion recipe: both loaders' FLOW_ASSERTIONS flipped draft -> active
+  (+ the harness draft-pins flipped to active-pins; 2553 + 2848 harnesses re-run
+  ALL GREEN), both loaders re-run against RS prod (idempotent; status-only), the
+  deployed FA exports verified (1120S 38 = 32 + the 6 new / 1065 40 / 1040 395),
+  and all three tts gate mirrors refreshed from the deployed endpoint in the same
+  motion (1120S verbatim / 1065 minus the s64 4 staged-pending / 1040 ADDITIVE
+  append of the 3 FA-2848 only — the 1040 mirror's full rebase vs the 395-entry
+  export is a tracked tts follow-up, DEFERRAL_AUDIT s69).
+- tts runners: `_run_2553_assertion` (the three published i2553 window examples +
+  the count gate + the no-8832 seam) + `_run_2848_assertion` (future-clock /
+  45-60-day window / the CAFFILL 9-digit-or-'None' shape + autofill source pins);
+  tts flow gate 463 -> 475 GREEN. WO-26/WO-27 marked DONE (Gate-2 shipped).
+
 ## 2026-07-09 â€” FA-ENT-8824-01 ACTIVATED (the tts entity-8824 unit landed, S6 unit 2)
 *One-line status flip in `load_8824.py` (draft â†’ active), the FA-8941 recipe: the tts
 engine now routes R-8824-ENTROUTE (entity 4797 L5/L16 via aggregate_dispositions,

@@ -102,8 +102,8 @@ check(not (defined - linked), "every rule appears in rule_links", f"unlinked: {d
 # -- FAs staged DRAFT --
 fas = list(FlowAssertion.objects.filter(assertion_id__startswith="FA-2848"))
 check(len(fas) == 3, "3 FA-2848 assertions", f"FA count {len(fas)}")
-notdraft = [fa.assertion_id for fa in fas if fa.status != "draft"]
-check(not notdraft, "all FA-2848 staged DRAFT", f"NOT draft: {notdraft}")
+notactive = [fa.assertion_id for fa in fas if fa.status != "active"]
+check(not notactive, "all FA-2848 ACTIVE (s69 print unit; runners live in tts)", f"NOT active: {notactive}")
 
 # -- future-period clock oracles --
 check(L._future_period_recordable(2026, 2029) is True, "received 2026 -> 2029 recordable (Dec 31 + 3)", "future 2029 wrong")

@@ -105,8 +105,8 @@ check(not (defined - linked), "every rule appears in rule_links", f"unlinked: {d
 # -- FAs staged DRAFT (the new-FAs-default-ACTIVE trap) --
 fas = list(FlowAssertion.objects.filter(assertion_id__startswith="FA-2553"))
 check(len(fas) == 3, "3 FA-2553 assertions", f"FA count {len(fas)}")
-notdraft = [fa.assertion_id for fa in fas if fa.status != "draft"]
-check(not notdraft, "all FA-2553 staged DRAFT", f"NOT draft: {notdraft}")
+notactive = [fa.assertion_id for fa in fas if fa.status != "active"]
+check(not notactive, "all FA-2553 ACTIVE (s69 print unit; runners live in tts)", f"NOT active: {notactive}")
 
 # -- deadline oracles: the three published i2553 examples --
 check(L._election_deadline(date(2026, 1, 7)) == date(2026, 3, 21), "Example 1: Jan 7 -> Mar 21", f"Ex1 wrong: {L._election_deadline(date(2026, 1, 7))}")

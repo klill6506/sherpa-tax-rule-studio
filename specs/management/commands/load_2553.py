@@ -699,19 +699,20 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap, s6/s65 lessons): the tts build leg
-# activates + writes runners + refreshes the export-verbatim mirrors in ONE motion.
+# ACTIVATED 2026-07-12 (tts s69, the S-20b/c print-unit pair): runners live in
+# tts tests/test_flow_assertions.py (_run_2553_assertion/_run_2848_assertion);
+# mirrors refreshed from the deployed export in the same motion (the s66 recipe).
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-2553-WINDOW", "title": "The §1362(b) deadline matches the three published i2553 examples", "assertion_type": "reconciliation",
-     "entity_types": ["1120S"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1120S"], "status": "active", "sort_order": 1,
      "description": "The 2mo15d corresponding-day computation reproduces i2553 Examples 1-3 exactly (Jan 7 -> Mar 21; Jan 1 -> Mar 15 non-leap; Nov 8 -> Jan 22) and the no-corresponding-day branch (Dec 31 -> Mar 15).",
      "definition": {"rule": "R-2553-WINDOW", "check": "deadline(effective) = (day before corresponding day of month+2, else last day) + 15 days; pins: 01-07->03-21, 01-01->03-15, 11-08->01-22, 12-31->03-15"}},
     {"assertion_id": "FA-2553-COUNT", "title": "Shareholder gate reads the aggregated count; item G when raw > 100 >= aggregated", "assertion_type": "reconciliation",
-     "entity_types": ["1120S"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1120S"], "status": "active", "sort_order": 2,
      "description": "count_passes = min(raw, aggregated) <= 100; needs_item_g = raw > 100 and aggregated <= 100.",
      "definition": {"rule": "R-2553-COUNT", "check": "min(raw, agg) <= 100; item G iff raw > 100 and agg <= 100"}},
     {"assertion_id": "FA-2553-8832", "title": "A timely S-election is a deemed classification election (no Form 8832)", "assertion_type": "reconciliation",
-     "entity_types": ["1120S"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1120S"], "status": "active", "sort_order": 3,
      "description": "An eligible entity electing S files ONLY Form 2553 (deemed §301.7701-3(c)(1)(v) association election); the mirror of FA-8832-2553.",
      "definition": {"rule": "R-2553-ELIG", "check": "eligible-entity S election -> Form 2553 only; no 8832 document in the filing set"}},
 ]
@@ -850,7 +851,7 @@ class Command(BaseCommand):
         for a in FLOW_ASSERTIONS:
             a = dict(a)
             FlowAssertion.objects.update_or_create(assertion_id=a.pop("assertion_id"), defaults=a)
-        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (staged DRAFT)")
+        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (ACTIVE - s69 print unit)")
 
     def _report(self):
         self.stdout.write("\n" + "=" * 60)

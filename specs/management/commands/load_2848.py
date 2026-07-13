@@ -624,15 +624,15 @@ FORMS: list[dict] = [
 # runners + refreshes the export-verbatim mirrors in ONE motion.
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-2848-FUTURE", "title": "Future-period CAF recordability = receipt year + 3", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "active", "sort_order": 1,
      "description": "future_recordable iff period_year <= receipt_year + 3 (3 years from December 31 of the year the IRS receives the POA). Pins: (2026, 2029) -> True; (2026, 2030) -> False.",
      "definition": {"rule": "R-2848-FUTURE", "check": "period_year <= receipt_year + 3"}},
     {"assertion_id": "FA-2848-SIGN45", "title": "Representative signature window: 45 domestic / 60 abroad / none when rep-first", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "active", "sort_order": 2,
      "description": "rep_signature_timely = rep_signed_first OR days <= (60 if taxpayer_abroad else 45). Pins: (10, domestic) timely; (50, domestic) late; (50, abroad) timely.",
      "definition": {"rule": "R-2848-SIGNSEQ", "check": "days <= 45 (domestic) / 60 (abroad); rep-first = no limit"}},
     {"assertion_id": "FA-2848-CAFFILL", "title": "L2 preparer autofill carries a valid CAF/PTIN shape", "assertion_type": "reconciliation",
-     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040", "1120S", "1065", "1120", "1041", "709"], "status": "active", "sort_order": 3,
      "description": "The app-side value-add: line 2 autofilled from the Preparer record must carry a nine-digit CAF number or the literal 'None' (first-timer), plus the PTIN when the preparer holds one — never an SSN/EIN in the CAF box.",
      "definition": {"rule": "R-2848-REPS", "check": "rep_caf_no matches 9-digit or 'None'; PTIN present when held; sourced from the Preparer record"}},
 ]
@@ -769,7 +769,7 @@ class Command(BaseCommand):
         for a in FLOW_ASSERTIONS:
             a = dict(a)
             FlowAssertion.objects.update_or_create(assertion_id=a.pop("assertion_id"), defaults=a)
-        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (staged DRAFT)")
+        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (ACTIVE - s69 print unit)")
 
     def _report(self):
         self.stdout.write("\n" + "=" * 60)

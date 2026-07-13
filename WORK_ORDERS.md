@@ -67,8 +67,10 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
 - **▶ [WO-27] Form 2848 · Power of Attorney and Declaration of Representative · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → ✅ SEEDED + EXPORTED
-  2026-07-12` (SPINE S-20c). Ken APPROVED W1-W4 (live walk, tts s68 conversation: "Approve" ×2 with 2553);
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → SEEDED + EXPORTED
+  2026-07-12 → ✅ DONE (Gate-2: tts print unit SHIPPED, tts s69 2026-07-12 — input model + L2 preparer
+  autofill + D_2848_* code-registered + AcroForm render + FA-2848-FUTURE/SIGN45/CAFFILL ACTIVATED with
+  runners + all three tts gate mirrors refreshed; flow gate 475)` (SPINE S-20c). Ken APPROVED W1-W4 (live walk, tts s68 conversation: "Approve" ×2 with 2553);
   sentinel flipped, prod-seeded (34/9/30/17/9 + 3 draft FAs; 16 authority links), `lookup/2848/export/` = 200
   verified (60,684 bytes), tts mirror `server/specs/2848_spec.json` cached from the deployed endpoint; the FA
   export verified clean (drafts excluded — 1120S still serves 32). → DISPATCHED: the tts print unit (pairs with
@@ -100,8 +102,11 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   build** (RS DONE at WO-23 — buildable now, no gate).
 
 - **▶ [WO-26] Form 2553 · Election by a Small Business Corporation · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → ✅ SEEDED + EXPORTED
-  2026-07-12` (SPINE S-20b). Ken APPROVED W1-W4 (live walk, tts s68 conversation); sentinel flipped,
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → SEEDED + EXPORTED
+  2026-07-12 → ✅ DONE (Gate-2: tts print unit SHIPPED, tts s69 2026-07-12 — input model + consent/QSST
+  rows + §1362(b) window calculator + D_2553_* code-registered + AcroForm render w/ overflow copies +
+  the 2013-30 margin legend + FA-2553-WINDOW/COUNT/8832 ACTIVATED with runners; flow gate 475)`
+  (SPINE S-20b). Ken APPROVED W1-W4 (live walk, tts s68 conversation); sentinel flipped,
   prod-seeded (28/8/45/19/10 + 3 draft FAs; 18 authority links — IRC_1361/1362 bound on prod),
   `lookup/2553/export/` = 200 verified (68,235 bytes), tts mirror `server/specs/2553_spec.json` cached from
   the deployed endpoint. → DISPATCHED: the tts print unit (pairs with WO-27's).** Gap re-confirmed 2026-07-12 (`lookup/2553/export/` = 404; first flagged at the WO-22 gap-check). The
