@@ -35,6 +35,11 @@ Re-verify each season: the form revision (reissues irregularly), the Q1 user fee
 and the addresses.
 
 SAFETY GUARD — READY_TO_SEED stays False until Ken approves the Gate-1 walk (W1-W4).
+FLIPPED 2026-07-12 — Ken APPROVED (live Gate-1 walk, s68 conversation: "Approve" on the plain-English
+W1-W4 summary): W1 the eight eligibility tests as diagnostics; W2 the §1362(b) window calculator
+(published examples pinned); W3 the Rev. Proc. 2013-30 relief chooser + margin legend + PLR fallback;
+W4 consents + Part II ($5,750 fee year-keyed) + QSST gate + entity_types ['1120S'] print-first.
+Validated (scratchpad/validate_2553.py, 82/0).
 """
 import calendar
 from datetime import date, timedelta
@@ -50,7 +55,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # ⟨GATE 1⟩ — flip only on Ken's explicit approval of W1-W4.
+READY_TO_SEED = True  # ⟨GATE 1⟩ Ken APPROVED 2026-07-12 (live walk, s68) — see the docstring.
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025

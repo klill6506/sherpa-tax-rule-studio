@@ -12,7 +12,14 @@ last_updated: 2026-07-12
 
 ## Current state
 
-**NEW 2026-07-12 (later) — WO-27 Form 2848 (SPINE S-20c) DRAFTED TO GATE-1 — ⏳ AWAITING KEN; NOT seeded, NOT exported.**
+**NEW 2026-07-12 (latest) — GATE-1 ×2 APPROVED + SEEDED: 2553 (WO-26) + 2848 (WO-27) — S-20b/c RS lane CLEAR.**
+Ken approved both walks live (plain-English re-present → AskUserQuestion "Approve" ×2). Sentinels flipped +
+recorded; harnesses re-run post-flip (82/0 · 73/0); both prod-seeded (2553 bound 18 authority links incl.
+IRC_1361/1362; 2848 16); deployed exports verified 200; tts mirrors cached from the deployed endpoint; FA export
+clean (the 6 new FAs stay DRAFT — 1120S serves 32). **RS TaxForms = 122.** → DISPATCHED: the tts 2553+2848 print
+units as a pair. The two earlier entries below record the draft-to-gate legs.
+
+**2026-07-12 (later) — WO-27 Form 2848 (SPINE S-20c) DRAFTED TO GATE-1 — superseded same-day: APPROVED + SEEDED (above).**
 The s67 draft-to-gate recipe re-run: `load_2848.py` (34 facts / 9 rules / 30 lines / 17 diag / 9 scenarios / 3 FA
 staged DRAFT; entity_types all six suite types; print-first, no MeF; the L2 preparer-autofill value-add specced)
 ships `READY_TO_SEED = False`; harness `scratchpad/validate_2848.py` **73/0** (future-period clock, 45/60-day
@@ -22,7 +29,7 @@ posted 08-Jul-2026 (four days before the draft)** — 5a-other/any-5b entries re
 D_2848_L4CAF. **Ken now holds TWO Gate-1 walks (WO-26 2553 + WO-27 2848)** — approve both to clear the S-20b/c RS
 lane; the tts print units then build as a pair. Next autonomous item: the 3115 tts app build (WO-23 DONE, no gate).
 
-**NEW 2026-07-12 — WO-26 Form 2553 (SPINE S-20b) DRAFTED TO GATE-1 — ⏳ AWAITING KEN; NOT seeded, NOT exported.**
+**2026-07-12 — WO-26 Form 2553 (SPINE S-20b) DRAFTED TO GATE-1 — superseded same-day: APPROVED + SEEDED (above).**
 The first post-S-16 greenfield order: `load_2553.py` (28 facts / 8 rules / 45 lines / 19 diag / 10 scenarios / 3 FA
 staged DRAFT, entity_types ['1120S'], print-first — no MeF channel) ships `READY_TO_SEED = False`; the harness
 (`scratchpad/validate_2553.py`, **82/0**) proves the guard refuses, the §1362(b) 2mo15d deadline math reproduces all

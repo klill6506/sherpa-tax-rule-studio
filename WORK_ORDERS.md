@@ -67,8 +67,12 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
 - **▶ [WO-27] Form 2848 · Power of Attorney and Declaration of Representative · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)` (2026-07-12; SPINE
-  S-20c).** Gap re-confirmed 2026-07-12 (`lookup/2848/export/` = 404). Administrative POA — print-first (mail/fax/
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → ✅ SEEDED + EXPORTED
+  2026-07-12` (SPINE S-20c). Ken APPROVED W1-W4 (live walk, tts s68 conversation: "Approve" ×2 with 2553);
+  sentinel flipped, prod-seeded (34/9/30/17/9 + 3 draft FAs; 16 authority links), `lookup/2848/export/` = 200
+  verified (60,684 bytes), tts mirror `server/specs/2848_spec.json` cached from the deployed endpoint; the FA
+  export verified clean (drafts excluded — 1120S still serves 32). → DISPATCHED: the tts print unit (pairs with
+  WO-26's).** Gap re-confirmed 2026-07-12 (`lookup/2848/export/` = 404). Administrative POA — print-first (mail/fax/
   online at IRS.gov/Submit2848; NO MeF); the app value-add = **line-2 preparer autofill (name/address/CAF/PTIN/
   phone/fax) from the Preparer record**. **✅ RESEARCH-VERIFIED (2026-07-12, verbatim vs FINAL Form 2848 Rev.
   January 2021 + i2848 Rev. September 2021 + the "Items to consider while completing Form 2848" Recent Development
@@ -96,8 +100,11 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   build** (RS DONE at WO-23 — buildable now, no gate).
 
 - **▶ [WO-26] Form 2553 · Election by a Small Business Corporation · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)` (2026-07-12; SPINE
-  S-20b).** Gap re-confirmed 2026-07-12 (`lookup/2553/export/` = 404; first flagged at the WO-22 gap-check). The
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → ✅ SEEDED + EXPORTED
+  2026-07-12` (SPINE S-20b). Ken APPROVED W1-W4 (live walk, tts s68 conversation); sentinel flipped,
+  prod-seeded (28/8/45/19/10 + 3 draft FAs; 18 authority links — IRC_1361/1362 bound on prod),
+  `lookup/2553/export/` = 200 verified (68,235 bytes), tts mirror `server/specs/2553_spec.json` cached from
+  the deployed endpoint. → DISPATCHED: the tts print unit (pairs with WO-27's).** Gap re-confirmed 2026-07-12 (`lookup/2553/export/` = 404; first flagged at the WO-22 gap-check). The
   §1362(a) S-election — structural, print-first (paper/fax only, NO MeF channel); pairs with WO-22 (8832 routes
   S-elections here; 2553 is the deemed §301.7701-3(c)(1)(v) classification election). **✅ RESEARCH-VERIFIED
   (2026-07-12, verbatim vs FINAL Form 2553 Rev. December 2017 + i2553 Rev. December 2020 + Rev. Proc. 2026-1 App. A

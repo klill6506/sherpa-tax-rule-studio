@@ -1,4 +1,23 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-12 — GATE-1 ×2 APPROVED + SEEDED: 2553 (WO-26) + 2848 (WO-27) — the S-20b/c RS lane CLEARS (tts s68, live Ken walk)
+- Ken asked for the Gate-1 questions "more clearly" → the walks were re-presented
+  in plain English (what each spec makes the app DO for a preparer, not spec
+  jargon) and put through AskUserQuestion → **"Approve" on both**. The
+  plain-English re-present is the better Gate-1 format for autonomous-drafted
+  specs — record it as the house pattern.
+- Both sentinels flipped (approval + date + scope recorded in the docstrings);
+  harnesses re-run post-flip (2553 **82/0** · 2848 **73/0** — the guard-refusal
+  pin now proves the mechanism by flipping OFF in-memory); **both seeded to RS
+  prod** (2553: 18 authority links — IRC_1361/1362 bound on prod, unlike the
+  SQLite harness; 2848: 16 links); **deployed exports verified 200**
+  (2553 68,235 B / 2848 60,684 B); **tts mirrors cached from the deployed
+  endpoint** (`server/specs/2553_spec.json` / `2848_spec.json` — the s64
+  never-hand-splice rule); the FA export verified clean (the 6 new FAs are
+  DRAFT and excluded — 1120S still serves exactly 32).
+- **→ DISPATCHED to the tts lane: the 2553 + 2848 print units as a pair**
+  (render legs + diagnostics code-registration + FA runners/activate/mirror-
+  refresh in one motion, the s66 proven recipe). RS TaxForms now 122.
+
 ## 2026-07-12 — Form 2848 greenfield DRAFTED to Gate-1 (WO-27, tts Spine S-20c RS leg, tts s68) — ⏳ AWAITING KEN; NOT seeded
 - **Second run of the s67 draft-to-gate recipe** (gap 404 → verbatim research →
   `f2848_source_brief.md` → gated `load_2848.py` (READY_TO_SEED=False) → harness

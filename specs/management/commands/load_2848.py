@@ -35,6 +35,11 @@ fax numbers ("may change without notice"), the online-submission login flow (the
 Access" is superseded; the IRS.gov/Submit2848 URL stands), and the Recent Developments page.
 
 SAFETY GUARD — READY_TO_SEED stays False until Ken approves the Gate-1 walk (W1-W4).
+FLIPPED 2026-07-12 — Ken APPROVED (live Gate-1 walk, s68 conversation: "Approve" on the plain-English
+W1-W4 summary): W1 line-3 validity + the future-period clock; W2 rep constraints + the preparer
+L2-autofill value-add + the URP gate; W3 signature mechanics (45/60-day window; e-sign online-only);
+W4 the 08-Jul-2026 modified-CAF/line-4 diagnostics + retention + all-six entity_types print-first.
+Validated (scratchpad/validate_2848.py, 73/0).
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -47,7 +52,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # ⟨GATE 1⟩ — flip only on Ken's explicit approval of W1-W4.
+READY_TO_SEED = True  # ⟨GATE 1⟩ Ken APPROVED 2026-07-12 (live walk, s68) — see the docstring.
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025

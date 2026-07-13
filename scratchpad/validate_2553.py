@@ -39,15 +39,16 @@ def check(cond, ok, bad):
 
 call_command("migrate", run_syncdb=True, verbosity=0)
 
-# -- Gate-1 guard: the file ships READY_TO_SEED=False and the loader refuses --
-check(L.READY_TO_SEED is False, "READY_TO_SEED ships False (Gate-1 pending)", "READY_TO_SEED is not False in the file")
+# -- Gate-1 state: Ken APPROVED 2026-07-12 (s68 live walk) — the sentinel ships True; prove the
+# guard still exists by flipping it off in-memory and expecting the refusal.
+check(L.READY_TO_SEED is True, "READY_TO_SEED ships True (Gate-1 APPROVED 2026-07-12)", "READY_TO_SEED is not True post-approval")
+L.READY_TO_SEED = False
 try:
     call_command("load_2553", verbosity=0)
     FAILURES.append("guard FAILED to refuse while READY_TO_SEED=False")
 except CommandError:
-    PASSES.append("guard refuses to seed while READY_TO_SEED=False")
-
-L.READY_TO_SEED = True  # in-memory flip for the throwaway-SQLite run only
+    PASSES.append("guard still refuses when the sentinel is off (mechanism intact)")
+L.READY_TO_SEED = True
 try:
     call_command("load_2553", verbosity=0)
     PASSES.append("load_2553 ran + seeded into SQLite without error")
