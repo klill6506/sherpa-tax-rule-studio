@@ -1,4 +1,35 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-13/14 — PAYMENT-CLUSTER draft-to-gate BATCH ×3 (tts s77) — WO-28 9465 · WO-29 8888 · WO-30 1040-V/ES pair, ALL ⏳ AWAITING KEN; NOTHING seeded
+- **The s67 recipe run three times in one session** (the tts REVIEW_QUEUE s76 batch plan):
+  gap 404 ×4 re-confirmed → verbatim research (PDFs pymupdf-extracted; About pages checked;
+  the local TY2025v5.3 business-rules CSV + XSDs parsed for the two MeF-channel forms) →
+  source briefs (`f9465_source_brief.md` / `f8888_source_brief.md` / `f1040v_es_source_brief.md`)
+  → gated loaders (READY_TO_SEED=False ×3) → SQLite harnesses **85/0 · 53/0 · 63/0** →
+  WO-28/29/30 staged with W1-W4 walks. `seed_all` discovers the new loaders dynamically and
+  soft-fails them by name while gated (verified by reading the orchestrator — no wiring).
+- **9465 (WO-28)**: HAS a MeF channel (IRS9465 in ReturnData1040 — InstallmentAgreement family);
+  the e-file gate = the published Active F9465-* set, incl. **F9465-019-02 = the tts s76 EFW tie**
+  (line 8 == IRSPayment PaymentAmt). ⚠⚠ **Fee-currency catch (the s67 stale-fee class): T.D. 10045
+  (91 FR 20902, Apr-2026) amended 26 CFR 300 AFTER the printed i9465 table** — cross-checked the
+  LIVE IRS payment-plans page (reviewed 28-Jun-2026): IA fees UNCHANGED, the July-2024 table
+  stands ($22/$69/$107/$178; low-income DDIA-waived/$43; modify $89/$43/$10-OPA). Cornell's
+  §300.1 is 2016-era — never cite it. Line-10 "÷ 72.0" prints NO rounding → whole-dollar CEILING
+  convention, flagged in the walk.
+- **8888 (WO-29)**: ⚠⚠ **the Rev. 12-2025 continuous-use face RETIRED the savings-bond program**
+  (line 4 "Reserved for future use"; the 2025v5.3 XSD DROPPED the bond group; every bond rule
+  Disabled; F8888-023 Active forbids RefundByCheckAmt) — the form is now ONLY the 2-3-account
+  splitter; encoded as a refusal so no tts surface resurrects Part II. Both printed $300
+  adjustment examples pinned (decrease strips 3→2→1; increase → the last account; BFS offsets →
+  LOWEST routing number first — a different ordering, easy to conflate).
+- **1040-V/ES pair (WO-30, one order/loader, two TaxForms 1040V+1040ES)**: print-only complements
+  of the s76 EFW unit with SUPPRESSION ties (EFW → no V; debited quarter → no paper voucher).
+  ⚠⚠ **THREE-WAY address trap: GA mails the V to Charlotte Box 1214 but ES vouchers to Box 1300,
+  and the package forbids the Form-1040-instructions address** — both rosters encoded, year-
+  watched. ES dates = the FPYMT-088-11 calendar; RAP arms 90/100/110/66⅔ (farmers never 110%;
+  $150,000-exactly boundary pinned); the ES WORKSHEET math stays the tts engine's (boundary).
+- ⏭ **Ken holds THREE walks — one approve-all clears the whole payment-cluster RS lane**; then:
+  flip sentinels → seed prod → verify exports → cache tts mirrors → dispatch the four tts legs
+  as a set. Next autonomous tts item while gated: 4868 (spec-first gap check).
 ## 2026-07-12 — Form 3115 FA activation (tts s70 print unit — Gate-2 shipped; WO-23 fully closed)
 - FLOW_ASSERTIONS in `load_3115.py` flipped draft→active (FA-3115-CATCHUP/
   SPREAD/SCHA); prod reseeded (idempotent, status-only; verified active

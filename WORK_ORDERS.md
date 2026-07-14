@@ -66,6 +66,99 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-30] 1040-V + 1040-ES voucher pair · Payment Vouchers · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  (payment-cluster draft-to-gate batch order 3 of 3, tts s77 — ONE order, TWO TaxForms: `1040V` + `1040ES`,
+  one loader `load_1040v_es.py`).** Gaps re-confirmed 2026-07-13 (`lookup/1040V|1040ES/export/` = 404 ×2).
+  PRINT-ONLY pair — the electronic halves shipped in tts s76 (IRSPayment / IRSESPayment), and the spec TIES
+  them: an EFW-elected return SUPPRESSES the 1040-V; an ES-debited quarter suppresses its paper voucher
+  (both = double-payment guards). **✅ RESEARCH-VERIFIED (2026-07-13, verbatim vs Form 1040-V (2025, Created
+  12/22/25) + Form 1040-ES (2026, Feb 12 2026 — the correct vintage: the estimates a TY2025 client pays
+  DURING 2026)) → `f1040v_es_source_brief.md`.** **Research catch — the reason the pair is specced: a
+  THREE-WAY ADDRESS TRAP (the 2553 address-drift class).** The V chart, the ES chart, and the return address
+  all differ, year-watched; **GA mails the V to Charlotte P.O. Box 1214 but the ES vouchers to Charlotte
+  P.O. Box 1300**, and the ES package says verbatim "do not mail your estimated tax payments to the address
+  shown in the Form 1040 instructions"; USPS-only P.O. boxes (no FedEx/UPS); Guam/USVI bona-fide split.
+  Both full state rosters encoded as constants (29 Charlotte + 22 Louisville on the ES chart; 9 southern
+  states on the V chart). Also pinned: the ES due dates = the s76 FPYMT-088-11 calendar (Apr/Jun/Sep 15
+  2026 + Jan 15 2027; Feb-1 full-pay Q4 skip; farmer Jan-15/Mar-1 options); the RAP test (90/100/110/66⅔
+  incl. the farmers-never-110% arm and the $150,000-exactly boundary); joint-voucher bars (NRA/decree/
+  different-years/RDP); the overpayment-credit box exclusion; the $100M check cap; postmark = USPS
+  PROCESSING date (the new clarification). The ES WORKSHEET math stays the app engine's job — stated
+  boundary. **✅ AUTHORED (draft) + SQLite-VALIDATED** (`load_1040v_es.py`, 1040V 6 facts / 3 rules / 6
+  lines / 5 diag / 3 scenarios · 1040ES 19 facts / 4 rules / 8 lines / 10 diag / 7 scenarios · 3 FA staged
+  DRAFT; `scratchpad/validate_1040v_es.py` = **63 pass / 0 fail** — the GA 1214-vs-1300 drift pin, both
+  chart rosters counted, V-emission/EFW-suppression, RAP arms incl. MFS $75k and the 150k-exactly boundary,
+  the $1,000 gate + no-liability exception, joint bars, Q4 skip, box exclusion, guard-refusal + twice-run).
+  **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT exported.** **Gate-1 walk for Ken
+  (W1-W4, recommendations = approve all):** W1 1040-V mechanics + the EFW suppression tie; W2 the
+  required-annual-payment diagnostics; W3 dates + voucher mechanics + the ES-debit suppression tie; W4 the
+  three-way year-watched address charts (entity_types ['1040']; print-only both). On approval: flip, seed,
+  verify both exports, refresh both tts mirrors → dispatch the tts print unit (voucher renders + packet
+  emission rules + diagnostics + FA runners/activate/mirror-refresh). ⏭ The batch is COMPLETE at the gate —
+  Ken holds THREE walks (WO-28 9465 · WO-29 8888 · WO-30 the pair); one approve-all clears the whole
+  payment-cluster RS lane and the tts legs dispatch as a set.
+
+- **▶ [WO-29] Form 8888 · Allocation of Refund · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  (payment-cluster draft-to-gate batch order 2 of 3, tts s77).** Gap re-confirmed 2026-07-13
+  (`lookup/8888/export/` = 404). MeF channel EXISTS: IRS8888 rides ReturnData1040 (2025v5.3, ~1958 slot,
+  DirectDepositInfoGroup maxOccurs=3) — the tts leg on approval = print + MeF document + the 1040 line-35a
+  8888-attached checkbox wiring. **✅ RESEARCH-VERIFIED (2026-07-13, verbatim vs Form 8888 Rev. December
+  2025 — a CONTINUOUS-USE conversion with instructions included in the 3-page PDF; About page "None at this
+  time"; + the TY2025v5.3 business rules CSV + IRS8888.xsd) → `f8888_source_brief.md`.** **Research catches
+  (the structural pair):** (1) **the savings-bond purchase program is DISCONTINUED** (Rev. 12-2025 Reminders
+  verbatim: TreasuryDirect deposits AND paper bonds; "Form 8888 is now only used to split your direct
+  deposit refund between two or more accounts") — face line 4 prints "Reserved for future use", the 2025v5.3
+  XSD **dropped the bond group entirely**, every bond business rule is Disabled, and F8888-023 (Active)
+  forbids any RefundByCheckAmt value — the spec encodes the retirement as a REFUSAL (R-8888-RETIRED) so no
+  tts surface resurrects the old Part II; (2) **EO 14247** — paper refund checks generally end October 2025.
+  Both printed adjustment examples pinned as scenarios (decrease $300→$150 strips 3→2→1 to 100/50/0;
+  increase +$50 lands on line 3); BFS offsets hit the LOWEST routing number first (a DIFFERENT ordering than
+  federal offsets — easy to conflate). **✅ AUTHORED (draft) + SQLite-VALIDATED** (`load_8888.py`, 16 facts /
+  6 rules / 16 lines / 12 diag / 8 scenarios / 3 FA staged DRAFT; `scratchpad/validate_8888.py` = **53 pass /
+  0 fail** — the two-way tie (sum == L5 == RefundAmt), $1 minimum, single-account routing (return-DD path),
+  RTN prefix oracles shared with the S-17b rule, uniqueness/all-zeros, BOTH printed examples recomputed,
+  BFS ordering, e-file blockers, guard-refusal + twice-run pins). **⛔ GATE-1 PENDING — READY_TO_SEED ships
+  False; NOT seeded, NOT exported.** **Gate-1 walk for Ken (W1-W4, recommendations = approve all):** W1
+  allocation math + the single-account route-to-return rule; W2 account hygiene (prefix/17-char/one-box/
+  unique) + the 8379 bar + 3-per-year; W3 the RETIRED bond/check surface (refusal, line 4 blank, no
+  RefundByCheckAmt ever); W4 the fallback/offset orderings + IRA mechanics as info diagnostics
+  (entity_types ['1040']; print + MeF document). On approval: flip, seed, verify export, refresh the tts
+  mirror → dispatch the tts unit. ⏭ Batch continues: WO-30 the 1040-V/1040-ES voucher pair.
+
+- **▶ [WO-28] Form 9465 · Installment Agreement Request · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  (payment-cluster draft-to-gate batch order 1 of 3, tts s77; the batch plan is the tts REVIEW_QUEUE s76
+  recommendation Ken has not yet ratified — this draft parks AT the gate either way).** Gap re-confirmed
+  2026-07-13 (`lookup/9465/export/` = 404). UNLIKE 2553/2848 the 9465 HAS a MeF channel — IRS9465 rides
+  ReturnData1040 (2025v5.3 InstallmentAgreement family), so the tts leg on approval = print + MeF document
+  + diagnostics. **✅ RESEARCH-VERIFIED (2026-07-13, verbatim vs Form 9465 Rev. September 2020 + i9465 Rev.
+  July 2024 (About page: Recent Developments "None at this time") + the LIVE IRS payment-plans fee page
+  (reviewed 28-Jun-2026) + the TY2025v5.3 1040 business rules CSV + IRS9465.xsd) → `f9465_source_brief.md`.**
+  **Research catches:** (1) the fee-currency check (the s67 stale-fee class) surfaced **T.D. 10045 (91 FR
+  20902, Apr. 20, 2026)** amending 26 CFR Part 300 AFTER the printed i9465 table — cross-checked against the
+  live fee page (post-dating the T.D.): **IA fees UNCHANGED, the July-1-2024 table stands** ($22/$69 OPA,
+  $107/$178 form-channel, payroll $178, low-income DDIA-waived/$43/13c-reimbursed, modify $89/$43/$10-OPA;
+  YEAR-KEYED — Cornell's §300.1 text is 2016-era, do not cite it); (2) **F9465-019-02 is the s76 EFW tie**
+  — line 8 must EQUAL the IRSPayment record's PaymentAmt when both ride the return; (3) the e-file gate is
+  narrow (≤$50k, no payroll box, no can't-increase box, payment ≥ line 10, phone required) — every arm a
+  published Active reject, refusal-beats-fabrication on the tts side; (4) the line-10 divisor ("divide by
+  72.0") prints NO rounding — encoded as whole-dollar CEILING (the full-pay-within-72-months test), flagged
+  for the walk. **✅ AUTHORED (draft) + SQLite-VALIDATED** (`load_9465.py`, 46 facts / 9 rules / 46 lines /
+  17 diag / 10 scenarios / 3 FA staged DRAFT; `scratchpad/validate_9465.py` = **85 pass / 0 fail** — the
+  line-10 ceiling pins (8400→117 · 30000→417 · 50000→695 · exact-division 7200→100), guaranteed/streamlined
+  tier boundaries (10,000/10,001 · 25,000/25,001 · 50,000/50,001), the Part II three-condition gate incl.
+  each-absent arms, the e-file blocker router arm-by-arm, the full fee ladder, EFW consistency, guard-refusal
+  + twice-run pins). **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT exported.** **Gate-1
+  walk for Ken (W1-W4, recommendations = approve all):** W1 face math + the line-10 whole-dollar-ceiling
+  convention + day 1-28; W2 the agreement-tier router (guaranteed ≤$10k / streamlined ≤$25k or 25k-50k-with-
+  DD / 433-F paths) as diagnostics; W3 the F9465-* e-file gate + the EFW PaymentAmt tie (F9465-019-02); W4
+  the year-keyed fee schedule + Part II gate + where-to-file (entity_types ['1040']; print + MeF document).
+  On approval: flip READY_TO_SEED, seed, verify the deployed export, refresh the tts mirror → dispatch the
+  tts unit (render + IRS9465 extract/builder + diagnostics + FA runners/activate/mirror-refresh). ⏭ Batch
+  continues: WO-29 Form 8888 → WO-30 the 1040-V/1040-ES voucher pair.
+
 - **▶ [WO-27] Form 2848 · Power of Attorney and Declaration of Representative · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED → SEEDED + EXPORTED
   2026-07-12 → ✅ DONE (Gate-2: tts print unit SHIPPED, tts s69 2026-07-12 — input model + L2 preparer
