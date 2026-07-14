@@ -1,4 +1,31 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-14 — FORM 4868 draft-to-gate (tts s78) — WO-31 ⏳ AWAITING KEN; NOT seeded
+- **The s67 recipe, fourth consecutive gated order**: gap 404 confirmed → verbatim research
+  (f4868.pdf 2025 fresh-downloaded + pymupdf-extracted — a self-contained form+instructions doc,
+  no separate i4868; About page "None at this time" 30-Mar-2026; the MeF **4868_2026v1.0** package
+  found ALREADY LOCAL in tts `docs/mef/schemas/2026v1.0/` — XSDs + the 7-page rules PDF read
+  directly) → `f4868_source_brief.md` → gated `load_4868.py` (18/11/17/16/10 + 3 draft FAs) →
+  `scratchpad/validate_4868.py` **97/0** → WO-31 staged with the W1-W4 walk.
+- **Structural headline: the 4868 is its OWN MeF submission family** (ReturnTypeCd "4868";
+  Extensions-family XSDs) — the tts leg is a NEW submission builder, not a 1040 document slot.
+  ReturnData = six-element IRS4868 + the s76 IRSPayment (≤1) / IRSESPayment (≤4) records +
+  R0000-195 refuses binary attachments (despite the XSD slot).
+- ⚠⚠ **The signature story**: a no-payment e-filed 4868 needs NO signature at all (all header
+  signature groups optional; the paper face has no signature line). R0000-098 triggers the
+  PIN + jurat ladder ONLY when a payment record rides; jurat enum = exactly two values
+  (F4868-007/8/9). **FPYMT-052-02 = the EFW tie** (PaymentAmt == L7).
+- ⚠⚠ **Two seams FLAGGED for the walk, not resolved**: (1) the TY2026v1.0 FPYMT-088-11 ES-date
+  list still prints the 2026 calendar (self-contradictory with FPYMT-086 for a 2027-filed
+  extension — stale early-drop carryover; year-keyed); (2) the 2025-face/TY2026-package version
+  seam (the TY2026 face publishes ~Oct 2026; re-verify — the s48 face-drift class).
+- **The Charlotte trap is now FOUR-way**: GA 4868-with-payment → Box **1302** (V 1214 · ES 1300 ·
+  foreign 1303); rosters encoded, 51-jurisdiction partition pinned in the harness.
+- Also pinned: L6 "-0-" floor; the L5 Sch-3-L10 exclusion (double-count guard); the 90%-exactly
+  safe-harbor boundary; the $525 year-keyed minimum; line-9 Dec-15 landing (DERIVED, walk note);
+  the joint-ampersand rule both directions; the 709 filing rider (the 4868↔709 mission seam).
+- ⏭ **Ken now holds FOUR walks (WO-28/29/30/31)** — approve-all clears them together; tts legs
+  dispatch as a set. Next NEW autonomous item: 8915-F → W-2G → 8879/8878; A2A preempts on WSDLs.
+
 ## 2026-07-13/14 — PAYMENT-CLUSTER draft-to-gate BATCH ×3 (tts s77) — WO-28 9465 · WO-29 8888 · WO-30 1040-V/ES pair, ALL ⏳ AWAITING KEN; NOTHING seeded
 - **The s67 recipe run three times in one session** (the tts REVIEW_QUEUE s76 batch plan):
   gap 404 ×4 re-confirmed → verbatim research (PDFs pymupdf-extracted; About pages checked;

@@ -66,6 +66,51 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-31] Form 4868 · Automatic Extension of Time To File · greenfield RS-first · status
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  (post-payment-cluster order, tts s78 — the BUILD_ORDER "next NEW item: 4868, separate MeF family").**
+  Gap confirmed 2026-07-14 (`lookup/4868/export/` = 404). **The structural headline: the 4868 is its OWN
+  MeF submission family** (ReturnTypeCd "4868" — Return4868/ReturnHeader4868/ReturnData4868), NOT a
+  ReturnData1040 document — the tts leg on approval = print render + a NEW extension submission builder.
+  ReturnData = six-element IRS4868 (L4-L9) + ≤1 IRSPayment + ≤4 IRSESPayment (the s76 records, reused
+  verbatim) + NO binary attachments (R0000-195 Active despite the XSD slot — refusal-encoded).
+  **✅ RESEARCH-VERIFIED (2026-07-14, verbatim vs Form 4868 (2025, Created 10/1/25 — self-contained
+  form+instructions, no separate i4868; About page "None at this time") + the LOCAL MeF 4868_2026v1.0
+  package (XSDs + rules PDF read directly)) → `f4868_source_brief.md`.** **Research catches:** (1) **the
+  signature story — a no-payment e-filed 4868 carries NO signature at all** (every header signature group
+  minOccurs=0; the paper face has no signature line); R0000-098 triggers the PIN+jurat ladder ONLY when an
+  IRSPayment/IRSESPayment rides (jurat enum = exactly "Form 4868" / "Form 4868 with Practitioner PIN and
+  EFW", F4868-007/8/9); (2) **FPYMT-052-02 = the s76 EFW tie** (IRSPayment PaymentAmt == line 7 — the
+  4868's F9465-019-02 analogue); (3) **⚠ the TY2026v1.0 package's FPYMT-088-11 still lists the
+  2026-calendar ES dates** — self-contradictory with FPYMT-086 for a 2027-filed extension; flagged as a
+  stale early-drop carryover, year-keyed, re-pull later drops; (4) **⚠ version seam**: face = 2025 revision
+  (TY2025), local MeF package = TY2026v1.0 (the Jan-2027 season vintage; the TY2026 face publishes ~Oct
+  2026 — re-verify then, the s48 face-drift class); (5) **the Charlotte trap is now FOUR-way**: GA
+  4868-with-payment → **Box 1302** (V 1214 · ES 1300 · foreign 1303), rosters encoded + partition-pinned;
+  (6) the L5 exclusion (expected line 33 EXCLUDING Sch 3 L10 — which IS the 4868 payment; double-count
+  guard) + the L6 "-0-" floor; (7) the 90%-paid two-prong reasonable-cause safe harbor + the $525 (YEAR-
+  KEYED) >60-day minimum; (8) the 709/709-NA FILING rider (payment = 8892 — the 4868↔709 seam for the
+  mission's 709 lane); (9) line 9 (1040-NR June-15 due) lands **Dec 15 DERIVED** (6 months from the
+  June-15 due date; the face prints only "October 15, 2026, for most" — i1040-NR states it; walk note).
+  **✅ AUTHORED (draft) + SQLite-VALIDATED** (`load_4868.py`, 18 facts / 11 rules / 17 lines / 16 diag /
+  10 scenarios / 3 FA staged DRAFT; `scratchpad/validate_4868.py` = **97 pass / 0 fail** — L6 floor
+  oracles, both window arms incl. boundaries + the after-period-end floor, all four extension landings,
+  the 90%-exactly harbor boundary, the EFW tie, the payment-triggered signature + jurat ladder, the
+  joint-ampersand rule BOTH directions, the address chart incl. 51-jurisdiction partition pins + the
+  four-way divergence, every scenario recomputed, the flagged seams asserted PRESENT in the spec text,
+  guard-refusal + twice-run). **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT exported.**
+  **Gate-1 walk for Ken (W1-W4, recommendations = approve all):** W1 face math + qualifying (L6 floor;
+  L4 = expected line 24, zero → -0-, unreasonable = null-and-void; L5 exclusions); W2 windows (4/15 //
+  line 8/9 → 6/15; landings 10/15 // line-9 Dec-15 DERIVED; fiscal-year = paper only; the e-pay-marked-
+  extension no-form alternative); W3 the own-family MeF channel (no-payment-no-signature; the jurat
+  ladder; the EFW tie; no attachments; IND-900 duplicate; **+ ratify the two flagged seams: the stale
+  FPYMT-088-11 list + the 2025-face/TY2026-package anchoring**); W4 penalties/safe harbor ($525 year-
+  keyed) + Sch 3 L10 credit routing (joint/separate splits both directions) + the four-row year-watched
+  chart + the 709 rider (entity_types ['1040']; print + own-family MeF). On approval: flip, seed, verify
+  export, cache the tts mirror → dispatch the tts unit (4868 print render + extension submission builder +
+  the Sch 3 L10 derive tie + diagnostics + FA runners/activate/mirror-refresh). ⏭ Next NEW autonomous
+  item per BUILD_ORDER: 8915-F → W-2G → 8879/8878; A2A preempts the moment the WSDLs land.
+
 - **▶ [WO-30] 1040-V + 1040-ES voucher pair · Payment Vouchers · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
   (payment-cluster draft-to-gate batch order 3 of 3, tts s77 — ONE order, TWO TaxForms: `1040V` + `1040ES`,
