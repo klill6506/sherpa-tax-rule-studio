@@ -66,6 +66,55 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+- **▶ [WO-32] Form 8915-F · Qualified Disaster Retirement Plan Distributions and Repayments ·
+  greenfield RS-first · status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED →
+  ⏳ AWAITING KEN (Gate-1)` (post-payment-cluster order 2, tts s79 — BUILD_ORDER "next NEW item").**
+  Gap confirmed 2026-07-14 (`lookup/8915F|8915-F/export/` = 404 ×2). **The SECURE 2.0 §331 "forever
+  form"** — items A/B name the instance; married = a SEPARATE form per spouse; MeF channel EXISTS:
+  IRS8915F rides ReturnData1040 (2025v5.3, **maxOccurs=6**, per-document name/SSN) — the tts leg on
+  approval = inputs + per-disaster compute + print + MeF document (the s72 recipe). **✅ RESEARCH-
+  VERIFIED (2026-07-14, verbatim vs Form 8915-F Rev. December 2025 (Created 5/23/25) + i8915f Rev.
+  12-2025 (73 pp) + IRS8915F.xsd 2025v5.3 + the 1040 rules CSV — exactly 3 Active F8915F rules)** →
+  `f8915f_source_brief.md`. **Research catches:** (1) ⚠ the About page's Recent Developments ALL
+  target older revisions (the live form+instructions are Rev. 12-2025); the 20-Dec-2024 development
+  = the IRS's own **Appendix-D off-by-one** ("1 less day than is granted for repayments") — fixed in
+  the current tables AND it names the failure class the period helpers pin: **Part I distributions
+  get 179 days, Part IV repayments get 180** (one-day asymmetry, pinned in both directions against
+  all published examples: DR-4682-WA 7/10 vs 7/11 · DR-4681 6/27 vs 6/28 · DR-4685-GA 7/14 vs 7/15 ·
+  DR-4644-VA 6/26 vs 6/27 via the 12/29/2022 SECURE-floor arm); (2) **the Rev-12-2025 face REDESIGNED
+  Part I: NEW line 5a** (non-QDD carve-out; old 5 → 5b; the 2025v5.3 XSD already models it);
+  (3) the **$22,000-per-disaster cap is ALL-plans, ACROSS-YEARS** ($100,000 only for item-B-2020),
+  F8915F-003 Active caps line 1d; the single-new-disaster shortcut (skip to 1e = $22,000);
+  (4) **the designation rule**: once the 3-part test holds (period + main-home-in-area + economic
+  loss), ANY distribution — including RMDs and periodic payments — may be designated a QDD;
+  (5) the 11↔22 opt-out boxes MUST MATCH (face verbatim both lines); ÷3.0 prints no rounding →
+  whole-dollar convention FLAGGED (the 9465 ÷72 class); (6) repayments = day-after through
+  **3 years + 1 day**; this-year inclusion needs before-filing AND by-due-date, else forward/
+  carryback (the Rudy examples pinned); can't repay non-spouse-beneficiary/RMD/SEPP; (7) the 8606
+  15b/25b ties (lines 18/19, attributable-to-THIS-form — the tts s75 8606 unit is the producing
+  seam); (8) **line 6 QDDs are exempt from the 10%/25% early tax and NEVER generate a 5329** (the
+  tts 5329-unit seam: suppress the early-tax row for line-6 amounts; line 7 + Part IV line 32 route
+  normally); landings 15 → 1040 5b · 26 → 4b; (9) worksheet lines 12/14/23/25 carry BinaryAttachment
+  refs (the attach-worksheet-to-back e-file mirror); Worksheet 1B/2/3/4/5 internals + the Appendix
+  A/C/D tables = STATED BOUNDARY (engine-derived, never re-encoded). **✅ AUTHORED (draft) +
+  SQLite-VALIDATED** (`load_8915f.py`, 28 facts / 10 rules / 44 lines / 15 diag / 10 scenarios /
+  3 FA staged DRAFT; `scratchpad/validate_8915f.py` = **87 pass / 0 fail** — all eight published
+  date pins, the 1a-1e ladder incl. the 44,000 F8915F-003 boundary, the 5a/5b redesign math, spread/
+  opt-out consistency all four arms, the receipt-window edges, every scenario recomputed, the
+  flagged conventions asserted present, guard-refusal + twice-run). **⛔ GATE-1 PENDING —
+  READY_TO_SEED ships False; NOT seeded, NOT exported.** **Gate-1 walk for Ken (W1-W4,
+  recommendations = approve all):** W1 the QDD framework (3-part test + the any-distribution
+  designation rule + the 179-day period + the $22,000 cap + DR-majors-only); W2 the Part I ladder +
+  the 5a/5b redesign + the spread conventions (÷3.0 flag; 11↔22; death-collapse); W3 repayments
+  (3y+1d; Rudy both directions; can't-repay list) + the 8606 ties + Part IV (the [-180d, +30d]
+  window; the 180-day repayment period; re-designation); W4 the MeF document (max 6; year-enum
+  rejects; worksheet attachments) + the 4b/5b landings + the 5329-waiver seam (entity_types
+  ['1040']; print + MeF document). On approval: flip, seed, verify export, cache the tts mirror →
+  dispatch the tts unit (inputs + per-disaster compute engine + render + IRS8915F builder + the
+  4b/5b landing ties + the 5329 suppression seam). ⏭ Next NEW autonomous item per BUILD_ORDER:
+  W-2G → 8879/8878; A2A preempts the moment the WSDLs land. **Ken now holds FIVE walks
+  (WO-28/29/30/31/32).**
+
 - **▶ [WO-31] Form 4868 · Automatic Extension of Time To File · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
   (post-payment-cluster order, tts s78 — the BUILD_ORDER "next NEW item: 4868, separate MeF family").**

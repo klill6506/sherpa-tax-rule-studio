@@ -1,4 +1,28 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-14 — FORM 8915-F draft-to-gate (tts s79) — WO-32 ⏳ AWAITING KEN; NOT seeded
+- **The s67 recipe, fifth consecutive gated order**: gap 404 ×2 → verbatim research (f8915f +
+  i8915f BOTH **Rev. December 2025** — ⚠ the About page's developments all target older revisions;
+  IRS8915F.xsd 2025v5.3 read in full — ReturnData1040, **maxOccurs=6**, per-document name/SSN;
+  the 1040 rules CSV = exactly 3 Active F8915F rules) → `f8915f_source_brief.md` → gated
+  `load_8915f.py` (28/10/44/15/10 + 3 draft FAs) → `scratchpad/validate_8915f.py` **87/0**.
+- ⚠⚠ **The 179-vs-180 one-day asymmetry**: Part I distributions get 179 days after the latest of
+  begin/declaration/12-29-2022; Part IV repayments get 180. The IRS's OWN Appendix D (Rev. Jan
+  2024) once got this wrong by one day (the 20-Dec-2024 Recent Development) — the period helpers
+  pin all EIGHT published date examples in both directions (DR-4682-WA · DR-4681 · DR-4685-GA ·
+  DR-4644-VA incl. the SECURE-2.0 floor arm).
+- ⚠⚠ **Rev-12-2025 face redesign: NEW line 5a** (non-QDD carve-out; old line 5 → 5b) — the
+  2025v5.3 XSD already models it; older-revision guidance mis-numbers.
+- **The designation rule** (practitioner surprise): 3-part test holds → ANY distribution incl.
+  RMDs/periodic payments/loan offsets is designatable as a QDD, need-blind. $22,000/disaster
+  ALL-plans ACROSS-years (F8915F-003 caps 1d); $100,000 only item-B-2020.
+- The 11↔22 opt-out boxes MUST match (face verbatim); ÷3.0 rounding convention FLAGGED (the
+  9465 ÷72 class); repayments 3y+1d w/ the Rudy forward/carryback examples pinned; the 8606
+  15b/25b ties = the tts s75 8606 seam; **line 6 never generates a 5329** (suppression seam);
+  landings 15 → 1040 5b, 26 → 4b; worksheets 2-5 attach (BinaryAttachment refs 12/14/23/25);
+  Worksheet internals + Appendix A/C/D = stated boundaries (engine-derived).
+- ⏭ **Ken now holds FIVE walks (WO-28/29/30/31/32)** — approve-all clears the lane; the six tts
+  legs dispatch as a set. Next NEW autonomous item: W-2G → 8879/8878; A2A preempts on WSDLs.
+
 ## 2026-07-14 — FORM 4868 draft-to-gate (tts s78) — WO-31 ⏳ AWAITING KEN; NOT seeded
 - **The s67 recipe, fourth consecutive gated order**: gap 404 confirmed → verbatim research
   (f4868.pdf 2025 fresh-downloaded + pymupdf-extracted — a self-contained form+instructions doc,
