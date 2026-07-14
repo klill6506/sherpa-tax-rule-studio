@@ -674,19 +674,20 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap): the tts build leg activates + writes
-# runners + refreshes the export-verbatim mirrors in ONE motion.
+# ACTIVATED 2026-07-14 (tts s85 unit): the tts build leg landed — runners live in
+# tts tests/test_flow_assertions.py (_run_9465_assertion, both dispatch chains) and the
+# 1040 mirror was refreshed export-verbatim in the same motion (the s65 staging note done).
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-9465-MIN", "title": "Line 10 minimum = whole-dollar ceiling of balance/72", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "monthly_minimum = ceil(line9 / 72) whole-dollar. Pins: 8400 -> 117; 30000 -> 417; 50000 -> 695; 8000 -> 112; 0 -> 0. The e-file gate compares the 11a/11b effective payment against it (F9465-027-01/-039-01).",
      "definition": {"rule": "R-9465-MIN", "check": "minimum == ceil(balance / 72); effective payment >= minimum for e-file"}},
     {"assertion_id": "FA-9465-EFILE", "title": "E-file gate refuses the paper-only arms", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "Blockers fire exactly per the Active F9465-* set: > $50,000 (001-03) / payroll box (026-01) / can't-increase (037-01) / below-minimum (027-01 or 039-01) / missing phone (018-01) / unpaired 13a-13b (016-01) / 13c with routing (040) / the 25k-50k no-DD band (044). Empty blocker list == transmittable.",
      "definition": {"rule": "R-9465-EFILE", "check": "extract refuses when any Active F9465-* arm trips; refusal names the paper path (433-F / 2159)"}},
     {"assertion_id": "FA-9465-EFW", "title": "Line 8 equals the IRSPayment record amount", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "When the return carries an IRS Payment Record (the s76 EFW half), Form 9465 PaymentAmt (line 8) must equal the record's PaymentAmt (F9465-019-02). Pins: (1000, 1000) consistent; (500, 1000) refuses; (anything, None) consistent.",
      "definition": {"rule": "R-9465-EFW", "check": "line8 == IRSPayment.PaymentAmt when the record exists"}},
 ]
@@ -823,7 +824,7 @@ class Command(BaseCommand):
         for a in FLOW_ASSERTIONS:
             a = dict(a)
             FlowAssertion.objects.update_or_create(assertion_id=a.pop("assertion_id"), defaults=a)
-        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (staged DRAFT — the tts leg activates)")
+        self.stdout.write(f"  {len(FLOW_ASSERTIONS)} flow assertions (ACTIVE — tts s85 runners live)")
 
     def _report(self):
         self.stdout.write("\n" + "=" * 60)

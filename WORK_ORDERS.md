@@ -240,9 +240,12 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   (entity_types ['1040']; print + MeF document). On approval: flip, seed, verify export, refresh the tts
   mirror → dispatch the tts unit. ⏭ Batch continues: WO-30 the 1040-V/1040-ES voucher pair.
 
-- **▶ [WO-28] Form 9465 · Installment Agreement Request · greenfield RS-first · status
+- **✅ [WO-28] Form 9465 · Installment Agreement Request · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
-  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all) → DONE 2026-07-14
+  (tts s85: model+compute+17 diagnostics+AcroForm print+IRS9465 MeF document+card shipped; the three
+  FAs ACTIVATED here + runners live in tts test_flow_assertions (both chains) + the 1040 mirror
+  refreshed export-verbatim, flow gate 500→503)`
   (payment-cluster draft-to-gate batch order 1 of 3, tts s77; the batch plan is the tts REVIEW_QUEUE s76
   recommendation Ken has not yet ratified — this draft parks AT the gate either way).** Gap re-confirmed
   2026-07-13 (`lookup/9465/export/` = 404). UNLIKE 2553/2848 the 9465 HAS a MeF channel — IRS9465 rides

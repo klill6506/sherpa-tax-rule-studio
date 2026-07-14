@@ -1,4 +1,14 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-14 — WO-28 (9465) DONE — tts s85 build leg landed; the three FAs ACTIVATED
+- The tts unit shipped (model + compute_9465 pinned to the 10 spec oracles + 17 D_9465_*
+  diagnostics + f9465 AcroForm print (packet FRONT tier) + the IRS9465 MeF document with the
+  full R-9465-EFILE refusal set + the Payments-tab card).
+- **FA-9465-MIN/EFILE/EFW flipped draft → active in `load_9465.py` + reseeded to prod**;
+  deployed 1040 FA export verified = 401 active (397 prior + 3 + the known s71-staged
+  FA-1040-4835-06); tts mirror refreshed export-verbatim (400 = 401 − the staged id);
+  tts runners `_run_9465_assertion` live in BOTH dispatch chains; tts flow gate 500 → 503.
+- WORK_ORDERS WO-28 → ✅ DONE. Remaining dispatched set: 8888 → V/ES → 4868 → 8915-F.
+
 ## 2026-07-14 — ⟨GATE-1⟩ ×5 APPROVED + SEEDED (tts s83) — WO-28/29/30/31/32 cleared in one approve-all
 - **Ken approve-all in-session** (recommendations adopted as filed). Sentinels flipped + approval
   recorded in the five loader docstrings; the five harnesses re-cut to the post-approval guard
