@@ -37,12 +37,13 @@ def check(cond, ok, bad):
 
 call_command("migrate", run_syncdb=True, verbosity=0)
 
-check(L.READY_TO_SEED is False, "READY_TO_SEED ships False (Gate-1 PENDING)", "READY_TO_SEED is not False in the draft")
+check(L.READY_TO_SEED is True, "READY_TO_SEED ships True (Gate-1 APPROVED 2026-07-14)", "READY_TO_SEED is not True post-approval")
+L.READY_TO_SEED = False
 try:
     call_command("load_8888", verbosity=0)
     FAILURES.append("guard FAILED to refuse while READY_TO_SEED=False")
 except CommandError:
-    PASSES.append("guard refuses to seed while the sentinel is off")
+    PASSES.append("guard still refuses when the sentinel is off (mechanism intact)")
 
 L.READY_TO_SEED = True
 try:
@@ -59,7 +60,7 @@ try:
 except Exception as e:  # noqa: BLE001
     FAILURES.append(f"second run raised: {e!r}")
 finally:
-    L.READY_TO_SEED = False
+    L.READY_TO_SEED = True
 
 form = TaxForm.objects.get(form_number="8888")
 

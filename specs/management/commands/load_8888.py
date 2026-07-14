@@ -31,7 +31,7 @@ CARRIED [UNVERIFIED]: none — verbatim vs Form 8888 Rev. 12-2025 (instructions 
 3-page PDF; About page "None at this time" 2026-07-13) + the TY2025v5.3 business rules/XSD.
 Year-watch: continuous-use revision (check the About page each season), the EO 14247 rollout.
 
-SAFETY GUARD — READY_TO_SEED stays False until Ken approves the Gate-1 walk (W1-W4).
+SAFETY GUARD — READY_TO_SEED stayed False until Gate-1 approval. APPROVED: Ken, 2026-07-14 (s83 approve-all, WO-28/29/30/31/32 together; walk recommendations adopted as filed).
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -44,7 +44,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # ⟨GATE 1⟩ flips only on Ken's explicit approval of the W1-W4 walk.
+READY_TO_SEED = True  # FLIPPED 2026-07-14 — Ken approved Gate-1 in-session (s83 approve-all across WO-28/29/30/31/32; recommendations adopted as filed).
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025

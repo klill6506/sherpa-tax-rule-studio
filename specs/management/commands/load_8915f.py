@@ -46,7 +46,7 @@ F8915F rules). About page (reviewed 27-Jun-2026) developments ALL target older r
 20-Dec-2024 Appendix-D off-by-one is FIXED in the current tables (and named the failure class
 our period helpers pin). Year-watch: item A/B enums roll annually; Appendix C/D supersede.
 
-SAFETY GUARD — READY_TO_SEED stays False until Ken approves the Gate-1 walk (W1-W4).
+SAFETY GUARD — READY_TO_SEED stayed False until Gate-1 approval. APPROVED: Ken, 2026-07-14 (s83 approve-all, WO-28/29/30/31/32 together; walk recommendations adopted as filed).
 """
 import datetime as _dt
 
@@ -61,7 +61,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # ⟨GATE 1⟩ flips only on Ken's explicit approval of the W1-W4 walk.
+READY_TO_SEED = True  # FLIPPED 2026-07-14 — Ken approved Gate-1 in-session (s83 approve-all across WO-28/29/30/31/32; recommendations adopted as filed).
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025

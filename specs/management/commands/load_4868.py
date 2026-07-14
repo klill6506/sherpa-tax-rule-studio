@@ -44,7 +44,7 @@ form+instructions, no separate i4868; About page "None at this time" 2026-07-14)
 docs/mef/schemas copy). Year-watch: every date constant, the $525 minimum penalty, the
 address chart, the FPYMT-088-11 date list, and the TY2026 face when it publishes (~Oct 2026).
 
-SAFETY GUARD — READY_TO_SEED stays False until Ken approves the Gate-1 walk (W1-W4).
+SAFETY GUARD — READY_TO_SEED stayed False until Gate-1 approval. APPROVED: Ken, 2026-07-14 (s83 approve-all, WO-28/29/30/31/32 together; walk recommendations adopted as filed).
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -57,7 +57,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # ⟨GATE 1⟩ flips only on Ken's explicit approval of the W1-W4 walk.
+READY_TO_SEED = True  # FLIPPED 2026-07-14 — Ken approved Gate-1 in-session (s83 approve-all across WO-28/29/30/31/32; recommendations adopted as filed).
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025

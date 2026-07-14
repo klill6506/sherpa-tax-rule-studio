@@ -66,9 +66,25 @@ Statuses: `INTAKE → GAP-CHECKED → DRAFTING → ⏳ AWAITING KEN → APPROVED
 *No independent backlog here (see header). Sequence = BUILD_ORDER.md SPINE; statuses seeded
 from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 
+> **⟨GATE-1⟩ ×5 APPROVED + SEEDED — 2026-07-14 (tts s83): Ken approve-all across
+> WO-28 (9465) · WO-29 (8888) · WO-30 (1040-V/ES pair) · WO-31 (4868) · WO-32 (8915-F),
+> recommendations adopted as filed.** Sentinels flipped (+approval in docstrings); the five
+> harnesses re-cut to the post-approval guard pattern (monkeypatch-off proves the mechanism)
+> and re-run: **85/0 · 53/0 · 63/0 · 97/0 · 87/0**. All five prod-seeded (SIX TaxForms —
+> 9465 46L/9R/17D · 8888 16L/6R/12D · 1040V 6L/3R/5D + 1040ES 8L/4R/10D · 4868 17L/11R/16D ·
+> 8915F 44L/10R/15D; 15 FAs staged DRAFT). Deployed `lookup/{9465,8888,1040V,1040ES,4868,
+> 8915F}/export/` = **200 ×6**; tts mirrors cached (`server/specs/{9465,8888,1040v,1040es,
+> 4868,8915f}_spec.json`); the deployed 1040 FA export verified clean — 398 = the tts 397
+> mirror + the known s71-staged FA-1040-4835-06, **zero cluster drafts leaked**; tts flow
+> gate 500 green. → DISPATCHED: **the six tts legs as a set** (9465 print+IRS9465 · 8888
+> print+IRS8888+35a · V/ES print-only w/ suppression ties · 4868 print + the NEW extension
+> submission builder + Sch3-L10 tie · 8915-F full unit: inputs + per-disaster compute +
+> render + IRS8915F + the 5329 suppression seam). Ken-sequenced: SEC-1 (tts authz audit)
+> runs first; the six legs follow.
+
 - **▶ [WO-32] Form 8915-F · Qualified Disaster Retirement Plan Distributions and Repayments ·
-  greenfield RS-first · status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED →
-  ⏳ AWAITING KEN (Gate-1)` (post-payment-cluster order 2, tts s79 — BUILD_ORDER "next NEW item").**
+  greenfield RS-first · status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)` (post-payment-cluster order 2, tts s79 — BUILD_ORDER "next NEW item").**
   Gap confirmed 2026-07-14 (`lookup/8915F|8915-F/export/` = 404 ×2). **The SECURE 2.0 §331 "forever
   form"** — items A/B name the instance; married = a SEPARATE form per spouse; MeF channel EXISTS:
   IRS8915F rides ReturnData1040 (2025v5.3, **maxOccurs=6**, per-document name/SSN) — the tts leg on
@@ -116,7 +132,8 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   (WO-28/29/30/31/32).**
 
 - **▶ [WO-31] Form 4868 · Automatic Extension of Time To File · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
   (post-payment-cluster order, tts s78 — the BUILD_ORDER "next NEW item: 4868, separate MeF family").**
   Gap confirmed 2026-07-14 (`lookup/4868/export/` = 404). **The structural headline: the 4868 is its OWN
   MeF submission family** (ReturnTypeCd "4868" — Return4868/ReturnHeader4868/ReturnData4868), NOT a
@@ -161,7 +178,8 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   item per BUILD_ORDER: 8915-F → W-2G → 8879/8878; A2A preempts the moment the WSDLs land.
 
 - **▶ [WO-30] 1040-V + 1040-ES voucher pair · Payment Vouchers · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
   (payment-cluster draft-to-gate batch order 3 of 3, tts s77 — ONE order, TWO TaxForms: `1040V` + `1040ES`,
   one loader `load_1040v_es.py`).** Gaps re-confirmed 2026-07-13 (`lookup/1040V|1040ES/export/` = 404 ×2).
   PRINT-ONLY pair — the electronic halves shipped in tts s76 (IRSPayment / IRSESPayment), and the spec TIES
@@ -194,7 +212,8 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   payment-cluster RS lane and the tts legs dispatch as a set.
 
 - **▶ [WO-29] Form 8888 · Allocation of Refund · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
   (payment-cluster draft-to-gate batch order 2 of 3, tts s77).** Gap re-confirmed 2026-07-13
   (`lookup/8888/export/` = 404). MeF channel EXISTS: IRS8888 rides ReturnData1040 (2025v5.3, ~1958 slot,
   DirectDepositInfoGroup maxOccurs=3) — the tts leg on approval = print + MeF document + the 1040 line-35a
@@ -222,7 +241,8 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   mirror → dispatch the tts unit. ⏭ Batch continues: WO-30 the 1040-V/1040-ES voucher pair.
 
 - **▶ [WO-28] Form 9465 · Installment Agreement Request · greenfield RS-first · status
-  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
+  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
   (payment-cluster draft-to-gate batch order 1 of 3, tts s77; the batch plan is the tts REVIEW_QUEUE s76
   recommendation Ken has not yet ratified — this draft parks AT the gate either way).** Gap re-confirmed
   2026-07-13 (`lookup/9465/export/` = 404). UNLIKE 2553/2848 the 9465 HAS a MeF channel — IRS9465 rides

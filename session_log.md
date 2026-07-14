@@ -1,4 +1,19 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-14 — ⟨GATE-1⟩ ×5 APPROVED + SEEDED (tts s83) — WO-28/29/30/31/32 cleared in one approve-all
+- **Ken approve-all in-session** (recommendations adopted as filed). Sentinels flipped + approval
+  recorded in the five loader docstrings; the five harnesses re-cut to the post-approval guard
+  pattern (the 2553/2848 precedent: sentinel-True check + monkeypatch-off refusal proof) and
+  re-run — **85/0 (9465) · 53/0 (8888) · 63/0 (1040V/ES) · 97/0 (4868) · 87/0 (8915-F)**.
+- **Prod-seeded, SIX TaxForms**: 9465 (46 lines/9 rules/17 diag/10 tests) · 8888 (16/6/12/8) ·
+  1040V (6/3/5/3) + 1040ES (8/4/10/7) · 4868 (17/11/16/10) · 8915F (44/10/15/10); 15 FAs staged
+  DRAFT. Deployed exports `lookup/{9465,8888,1040V,1040ES,4868,8915F}/export/` = **200 ×6**.
+- **FA export verified clean**: the deployed 1040 export = 398 = the tts 397-mirror + the known
+  s71-staged FA-1040-4835-06; **zero cluster drafts leaked**. tts mirrors cached
+  (`server/specs/{9465,8888,1040v,1040es,4868,8915f}_spec.json`); tts flow gate 500 green.
+- → **DISPATCHED: the six tts legs as a set** (9465 · 8888 · V/ES vouchers · 4868 print +
+  extension submission builder · 8915-F full unit). Ken-sequenced: the tts SEC-1 authz audit
+  runs first (Principle #0), the six legs follow.
+
 ## 2026-07-14 — FORM 8915-F draft-to-gate (tts s79) — WO-32 ⏳ AWAITING KEN; NOT seeded
 - **The s67 recipe, fifth consecutive gated order**: gap 404 ×2 → verbatim research (f8915f +
   i8915f BOTH **Rev. December 2025** — ⚠ the About page's developments all target older revisions;
