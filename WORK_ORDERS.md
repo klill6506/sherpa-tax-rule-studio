@@ -82,6 +82,59 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 > render + IRS8915F + the 5329 suppression seam). Ken-sequenced: SEC-1 (tts authz audit)
 > runs first; the six legs follow.
 
+- **⏳ [WO-33] Forms 8879 + 8878 · IRS e-file Signature Authorization pair · greenfield RS-first ·
+  status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → ⏳ AWAITING KEN (Gate-1)`
+  (the next NEW autonomous item per BUILD_ORDER after the six-leg set landed; tts s90).**
+  Gap confirmed 2026-07-15 (`lookup/{8879,FORM_8879,8878,FORM_8878}/export/` = 404 ×4; local cache
+  holds only the entity-side 8879S/8453S). **The structural headline: NEITHER FORM TRANSMITS** —
+  both faces say "ERO Must Retain This Form — Don't Submit This Form to the IRS Unless Requested To
+  Do So"; there is NO MeF document and NO new family — the electronic mirror is the Return Header
+  signature block tts ALREADY e-files (PINTypeCd/JuratDisclosureCd/PractitionerPINGrp — ATS-proven).
+  The tts leg on approval = a persistent signature-input surface + TWO AcroForm print units +
+  diagnostics tying the print to the header PIN data + extract gating (the s87 print-only recipe
+  with a HEADER tie instead of a payment tie). **✅ RESEARCH-VERIFIED (2026-07-15, verbatim vs Form
+  8879 Rev. 01-2021 (continuous-use, self-contained instructions; About: developments none) + Form
+  8878 (2025) (YEAR-DATED, Created 4/17/25; About: none) + Pub. 1345 signature chapter pp. 14-18 +
+  efileTypes/ReturnHeader1040x XSDs 2025v5.3 + the 47 signature-family Active rules in the 1040
+  Business Rules CSV)** → `f8879_8878_source_brief.md`. **Research catches:** (1) **the 8879 4-row
+  chart collapses to: required iff Practitioner PIN method OR ERO enters/generates any taxpayer
+  PIN** — the counter-intuitive row: PP + taxpayer-keys-own-PIN STILL requires the full form incl.
+  Part III (Pub 1345: PP taxpayers "must ALWAYS sign"); the ONLY skip row = self-select + own PIN;
+  (2) **the 8878's load-bearing negative: a 4868 WITHOUT an EFW election NEVER needs an 8878**
+  (chart row 2 beats everything — the print mirror of the s88 R0000-098 no-payment-no-signature
+  story); the 2350 arm needs ERO-entered only and **NEVER reaches Part III ("Practitioner PIN
+  Method for Form 4868 Only", face verbatim twice)**; (3) **the Pub-1345 $50/$14 re-sign
+  tolerance**: a NEW signature only when post-signing changes exceed $50 Total income/AGI or $14
+  total tax/withholding/refund/owed ("differ by MORE than" — at the boundary exactly, no re-sign)
+  — requires a SIGNED-AT Part I snapshot to compare against recomputes; (4) the 3-day stockpiling
+  clock + sign-BEFORE-transmit + the 20-digit SID-after-filing (or associate Form 9325 — the S-22b
+  triage item) + 3-year retention (Rev. Proc. 97-22); (5) non-PP authentication = DOB + prior-year
+  AGI/PIN from the ORIGINALLY FILED prior-year return (never amended/math-error; IND-025..032);
+  the under-16 ×2 + duplicate-SSN self-select bars (IND-664..667/674..680); (6) the 8878 face is
+  YEAR-DATED (jurat embeds "December 31, 2025") vs the continuous-use 8879 — year-watch, the s48
+  class; (7) 1040-SS filers use 8879 line 4 ONLY (face note; app boundary). **✅ AUTHORED (draft) +
+  SQLite-VALIDATED** (`load_8879_8878.py`, ONE loader TWO TaxForms `8879`+`8878` (the WO-30 pair
+  precedent): 22+14 facts / 8+4 rules / 16+13 lines / 9+7 diag / 8+6 scenarios / 3 FA staged DRAFT;
+  `scratchpad/validate_8879_8878.py` = **77 pass / 0 fail** — all FOUR 8879 chart rows + all FIVE
+  8878 rows pinned, the tolerance at/over the boundary both families, PIN hygiene, the bars, the
+  1040-SS arm, every scenario recomputed, the flagged seams asserted present, guard-refusal +
+  twice-run). **⛔ GATE-1 PENDING — READY_TO_SEED ships False; NOT seeded, NOT exported.**
+  **Gate-1 walk for Ken (W1-W4, recommendations = approve all):** W1 the 8879 need-gate (the
+  4-row chart; house default = PP method → in practice every e-filed 1040 prints one) + Part I
+  amounts off the 1040 face; W2 signature mechanics (PIN hygiene; sign-before-transmit; SID/9325;
+  the $50/$14 tolerance + snapshot; stockpiling; the self-select bars + prior-year authentication);
+  W3 the 8878 EFW gate (no-EFW-never; the 4868-line-7 tie; 2350 = encoded boundary, never Part
+  III); W4 ties + print-only-BY-DESIGN (no MeF document anywhere in ReturnData) + the
+  extract-refusal recommendation. **FOUR seams flagged, not resolved (recommendations attached):
+  (a) 8879 line 3 mapping — face literal is 1040 25a+25b, RECOMMEND 25d (total withholding) so
+  Part I stays self-consistent with L4/L5; divergence only when 25c ≠ 0; (b) the 1040-X arm —
+  RECOMMEND Part I carries the column-C world off the existing 1040-X unit; (c) extract gating —
+  RECOMMEND the extract refuses when a required authorization lacks a signed date (revisit at
+  S-17g transmit); (d) the signed-at snapshot persists Part I at signature time for the tolerance
+  compare.** On approval: flip, seed, verify exports (8879 + 8878), cache the tts mirrors →
+  dispatch the tts print-pair leg. ⏭ Next NEW autonomous item per BUILD_ORDER while gated:
+  SEC-2..6 → S-24; A2A preempts the moment the WSDLs land.
+
 - **✅ [WO-32] Form 8915-F · Qualified Disaster Retirement Plan Distributions and Repayments ·
   greenfield RS-first · status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
   2026-07-14 → DISPATCHED → ✅ DONE 2026-07-15 (tts s89 build leg landed — the LAST of the six dispatched legs; FA-8915F-CAP/SPRD/LAND

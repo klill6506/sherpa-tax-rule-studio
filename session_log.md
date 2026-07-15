@@ -1,3 +1,24 @@
+## 2026-07-15 - WO-33 (8879/8878 signature-authorization pair) DRAFTED TO GATE-1 - AWAITING KEN (tts s90)
+- Gap 404 x4 confirmed (8879/FORM_8879/8878/FORM_8878); verbatim research: f8879 Rev. 01-2021
+  (continuous-use) + f8878 (2025, YEAR-DATED) + Pub 1345 signature chapter + the 2025v5.3 header
+  XSDs + 47 signature-family business rules -> f8879_8878_source_brief.md.
+- NEITHER FORM TRANSMITS (ERO-retained; no MeF document BY DESIGN - the Return Header PIN block
+  tts already e-files is the electronic signature). The tts leg on approval = signature-input
+  surface + two AcroForm prints + header-tie diagnostics + extract gating (the s87 print-only
+  recipe, header tie instead of payment tie).
+- Headline catches: the 8879 4-row chart collapses to PP-method-OR-ERO-entered (PP + own-PIN
+  STILL requires the full form incl. Part III - Pub 1345 always-sign); the 8878 no-EFW-never
+  negative (the s88 R0000-098 print mirror); 2350 never reaches Part III; the Pub-1345 $50/$14
+  re-sign tolerance (needs a signed-at Part I snapshot); 3-day stockpiling clock; the under-16 +
+  duplicate-SSN self-select bars; the year-dated 8878 face (year-watch).
+- load_8879_8878.py authored GATED (READY_TO_SEED=False): one loader, two TaxForms - 22+14 facts /
+  8+4 rules / 16+13 lines / 9+7 diagnostics / 8+6 scenarios / 3 FAs staged DRAFT. Harness
+  scratchpad/validate_8879_8878.py = 77/0 (guard-refusal + twice-run + all nine chart rows +
+  tolerance boundaries + scenario recomputes + flagged-seam presence + ASCII pin).
+- WORK_ORDERS WO-33 filed AWAITING KEN with the W1-W4 walk (recommend approve-all; four seams
+  flagged w/ recommendations: 8879 L3 = 25d, the 1040-X column-C arm, extract-refusal gating,
+  the signed-at snapshot). NOT seeded, NOT exported, no tts code.
+
 ## 2026-07-15 — WO-32 (8915-F) DONE — tts s89 build leg landed; the three FAs ACTIVATED; THE SIX-LEG DISPATCH SET IS COMPLETE
 - The tts unit shipped (Form8915F + Form8915FDisaster migs 0204/0205 BOTH DBs + compute_8915f pinned
   to all 10 spec oracles — the 179/180-day one-day asymmetry pinned both directions against every
