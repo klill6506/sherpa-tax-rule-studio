@@ -1,4 +1,22 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-15 — WO-31 (4868) DONE — tts s88 build leg landed; the three FAs ACTIVATED
+- The tts unit shipped (Form4868 singleton migs 0202/0203 + compute_4868 pinned to all 10 spec
+  oracles — both where-to-file columns partition-pinned, the FOUR-way GA Charlotte trap
+  cross-module-pinned (V 1214 / ES 1300 / 4868 1302 / foreign 1303) + 16 D_4868_* diagnostics +
+  f4868 AcroForm face render (suppression IS the render gate — a recorded e-payment confirmation
+  = IND-900 territory; STANDALONE, never in the packet per the face's own instruction) + **the
+  NEW extension SUBMISSION FAMILY** (Return4868/ReturnHeader4868/ReturnData4868 builder +
+  read-model + Mapper4868TY2025; the no-payment-no-signature story + the two-value jurat ladder
+  encoded; the FPYMT-052-02 tie holds by construction; live-XSD valid both shapes vs the local
+  2026v1.0 Extensions tree) + the R-4868-CREDIT Sch 3 L10 YELLOW feeder (component-sum L5 derive
+  — the subtract-from-line-33 form diverges under an override; caught by test) + the
+  Payments-tab card, PATCH row-locked from birth).
+- **FA-4868-L6/FA-4868-EFW/FA-4868-CREDIT flipped draft → active in `load_4868.py` + reseeded
+  to prod**; deployed 1040 FA export verified = 410 active (407 prior + 3); tts mirror refreshed
+  export-verbatim (409 = 410 − the s71-staged FA-1040-4835-06); tts runners
+  `_run_4868_assertion` live in BOTH dispatch chains; tts flow gate 509 → 512.
+- WORK_ORDERS WO-31 → ✅ DONE. Remaining dispatched set: 8915-F (WO-32, the last leg).
+
 ## 2026-07-15 — WO-30 (1040-V/ES pair) DONE — tts s87 build leg landed; the three FAs ACTIVATED
 - The tts unit shipped (PaymentVouchers singleton migs 0200/0201 + compute_vouchers pinned to
   all 10 spec oracles — both mailing charts partition-pinned (the GA 1214-vs-1300 trap live-probed

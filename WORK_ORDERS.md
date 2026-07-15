@@ -131,9 +131,17 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   W-2G → 8879/8878; A2A preempts the moment the WSDLs land. **Ken now holds FIVE walks
   (WO-28/29/30/31/32).**
 
-- **▶ [WO-31] Form 4868 · Automatic Extension of Time To File · greenfield RS-first · status
+- **✅ [WO-31] Form 4868 · Automatic Extension of Time To File · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
-  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
+  2026-07-14 → ✅ DONE 2026-07-15 (tts s88 build leg landed: Form4868 singleton migs 0202/0203 +
+  compute_4868 pinned to all 10 spec oracles incl. both partition-pinned where-to-file columns (the
+  FOUR-way GA Charlotte trap cross-module-pinned) + 16 D_4868_* + f4868 AcroForm face render
+  (suppression IS the render gate; STANDALONE — never in the packet) + the NEW extension submission
+  family (Return4868 builder/read-model/mapper + schema_locator family root; no-payment = NO
+  signature, the jurat ladder with one; live-XSD valid both shapes) + the R-4868-CREDIT Sch3-L10
+  YELLOW feeder (component-sum L5 derive — the divergence guard) + the Payments-tab card;
+  FA-4868-L6/EFW/CREDIT flipped draft → active + reseeded, deployed 1040 FA export verified 410
+  active, tts mirror refreshed export-verbatim 409, runners in BOTH chains — tts flow gate 509 → 512)`
   (post-payment-cluster order, tts s78 — the BUILD_ORDER "next NEW item: 4868, separate MeF family").**
   Gap confirmed 2026-07-14 (`lookup/4868/export/` = 404). **The structural headline: the 4868 is its OWN
   MeF submission family** (ReturnTypeCd "4868" — Return4868/ReturnHeader4868/ReturnData4868), NOT a

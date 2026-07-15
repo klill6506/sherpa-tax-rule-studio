@@ -604,19 +604,20 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap): the tts build leg activates + writes
-# runners + refreshes the export-verbatim mirrors in ONE motion.
+# Staged DRAFT at Gate-1 (the new-FAs-default-ACTIVE trap); ACTIVATED 2026-07-15 —
+# the tts s88 build leg landed (runners `_run_4868_assertion` in both dispatch
+# chains + mirror refreshed export-verbatim in the same motion).
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-4868-L6", "title": "Line 6 = line 4 - line 5, floored at -0-", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "balance_due = max(0, L4 - L5). Pins: (20000, 15000) -> 5000; (20000, 22000) -> 0; (0, 0) -> 0; (40000, 32000) -> 8000. The face's own floor sentence is the authority.",
      "definition": {"rule": "R-4868-CALC", "check": "L6 == max(0, L4 - L5)"}},
     {"assertion_id": "FA-4868-EFW", "title": "Line 7 equals the IRSPayment record amount", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "When the extension submission carries an IRS Payment Record (the s76 EFW half), its PaymentAmt must equal Form 4868 line 7 (FPYMT-052-02). Pins: (5000, 5000) consistent; (3000, 2500) refuses; (anything, None) consistent.",
      "definition": {"rule": "R-4868-PAY", "check": "line7 == IRSPayment.PaymentAmt when the record exists"}},
     {"assertion_id": "FA-4868-CREDIT", "title": "The 4868 payment lands on Schedule 3 line 10", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "A filed extension's line-7 payment must appear on the season return's Schedule 3 line 10 (1040-SS Part I line 9) — the YELLOW derive the tts leg wires; L5 on the extension side must EXCLUDE that same line (the double-count guard).",
      "definition": {"rule": "R-4868-CREDIT", "check": "Sch3 L10 == 4868 L7 (and 4868 L5 excludes Sch3 L10)"}},
 ]
