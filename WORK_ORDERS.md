@@ -211,9 +211,13 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   Ken holds THREE walks (WO-28 9465 · WO-29 8888 · WO-30 the pair); one approve-all clears the whole
   payment-cluster RS lane and the tts legs dispatch as a set.
 
-- **▶ [WO-29] Form 8888 · Allocation of Refund · greenfield RS-first · status
+- **✅ [WO-29] Form 8888 · Allocation of Refund · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
-  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
+  2026-07-14 → ✅ DONE 2026-07-14 (tts s86 build leg landed: Form8888 singleton mig 0198 + compute_8888
+  pinned to the spec scenarios + 12 D_8888_* + f8888 Rev-12-2025 AcroForm print + the IRS8888 MeF
+  document w/ Form8888Ind/IND-084 ties + the Payments-tab card; FA-8888-TIE/SPLIT/NOBOND flipped
+  draft → active + reseeded, deployed 1040 FA export verified 404 active, tts mirror refreshed
+  export-verbatim, runners in BOTH chains — tts flow gate 503 → 506)`
   (payment-cluster draft-to-gate batch order 2 of 3, tts s77).** Gap re-confirmed 2026-07-13
   (`lookup/8888/export/` = 404). MeF channel EXISTS: IRS8888 rides ReturnData1040 (2025v5.3, ~1958 slot,
   DirectDepositInfoGroup maxOccurs=3) — the tts leg on approval = print + MeF document + the 1040 line-35a

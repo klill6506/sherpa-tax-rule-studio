@@ -1,4 +1,16 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-14 — WO-29 (8888) DONE — tts s86 build leg landed; the three FAs ACTIVATED
+- The tts unit shipped (Form8888 singleton mig 0198 + compute_8888 pinned to the spec
+  scenarios (two-way tie / hygiene / the Active F8888-* gate verbatim) + 12 D_8888_*
+  diagnostics + f8888 Rev-12-2025 AcroForm print (face page only; line 4 unmapped) + the
+  IRS8888 MeF document (Form8888Ind + IND-084 suppression + per-account header
+  RefundDisbursementGrp fan-out) + the Payments-tab card).
+- **FA-8888-TIE/SPLIT/NOBOND flipped draft → active in `load_8888.py` + reseeded to prod**;
+  deployed 1040 FA export verified = 404 active (401 prior + 3); tts mirror refreshed
+  export-verbatim (403 = 404 − the s71-staged FA-1040-4835-06); tts runners
+  `_run_8888_assertion` live in BOTH dispatch chains; tts flow gate 503 → 506.
+- WORK_ORDERS WO-29 → ✅ DONE. Remaining dispatched set: V/ES → 4868 → 8915-F.
+
 ## 2026-07-14 — WO-28 (9465) DONE — tts s85 build leg landed; the three FAs ACTIVATED
 - The tts unit shipped (model + compute_9465 pinned to the 10 spec oracles + 17 D_9465_*
   diagnostics + f9465 AcroForm print (packet FRONT tier) + the IRS9465 MeF document with the

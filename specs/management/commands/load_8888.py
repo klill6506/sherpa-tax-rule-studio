@@ -444,19 +444,20 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap): the tts build leg activates + writes
-# runners + refreshes the export-verbatim mirrors in ONE motion.
+# ACTIVATED 2026-07-14 (tts s86 unit): the tts build leg landed — runners live in
+# tts tests/test_flow_assertions.py (_run_8888_assertion, both dispatch chains) and the
+# 1040 mirror was refreshed export-verbatim in the same motion (the staging note done).
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-8888-TIE", "title": "Line 5 ties both ways (group sum == total == return refund)", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "Sum of DirectDepositRefundAmt == TotalAllocationOfRefundAmt == the return's RefundAmt (F8888-001-04 + F8888-002-03). Pins: (1000, 2000, 500) vs refund 3500 -> valid; vs 3400 total -> refuses.",
      "definition": {"rule": "R-8888-ALLOC", "check": "sum(deposits) == line5 == RefundAmt; extract refuses on mismatch"}},
     {"assertion_id": "FA-8888-SPLIT", "title": "8888 only for 2-3 accounts; single account rides the return", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "The document emits only when >= 2 accounts are listed (each >= $1, max 3 groups); a single-account refund uses the 1040's own 35 b/c/d direct-deposit fields (the S-17b inputs) with no 8888.",
      "definition": {"rule": "R-8888-USE", "check": "2 <= listed accounts <= 3 for the IRS8888 document; 1 account -> return DD path"}},
     {"assertion_id": "FA-8888-NOBOND", "title": "No bond/check surface survives (Rev. 12-2025)", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "The extract never emits RefundByCheckAmt (F8888-023) or any bond element (the group left the XSD); a legacy bond ask refuses with the program-discontinued message; line 4 stays blank on the print.",
      "definition": {"rule": "R-8888-RETIRED", "check": "no RefundByCheckAmt, no bond group, bond asks refuse"}},
 ]
