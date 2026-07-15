@@ -177,9 +177,14 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
   the Sch 3 L10 derive tie + diagnostics + FA runners/activate/mirror-refresh). ⏭ Next NEW autonomous
   item per BUILD_ORDER: 8915-F → W-2G → 8879/8878; A2A preempts the moment the WSDLs land.
 
-- **▶ [WO-30] 1040-V + 1040-ES voucher pair · Payment Vouchers · greenfield RS-first · status
+- **✅ [WO-30] 1040-V + 1040-ES voucher pair · Payment Vouchers · greenfield RS-first · status
   `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
-  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)`
+  2026-07-14 → ✅ DONE 2026-07-15 (tts s87 build leg landed: PaymentVouchers singleton migs 0200/0201 +
+  compute_vouchers pinned to all 10 spec oracles incl. both partition-pinned charts + 15 D_V_*/D_ES_* +
+  f1040v/f1040es AcroForm print legs (v_needed/emission ARE the render gates — a suppressed voucher
+  can't reach paper) + the packet "voucher" back tier + the Payments-tab card; FA-1040V-EFW/FA-ES-RAP/
+  FA-ES-QDEBIT flipped draft → active + reseeded, deployed 1040 FA export verified 407 active, tts
+  mirror refreshed export-verbatim 406, runners in BOTH chains — tts flow gate 506 → 509)`
   (payment-cluster draft-to-gate batch order 3 of 3, tts s77 — ONE order, TWO TaxForms: `1040V` + `1040ES`,
   one loader `load_1040v_es.py`).** Gaps re-confirmed 2026-07-13 (`lookup/1040V|1040ES/export/` = 404 ×2).
   PRINT-ONLY pair — the electronic halves shipped in tts s76 (IRSPayment / IRSESPayment), and the spec TIES

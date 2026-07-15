@@ -1,4 +1,17 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-15 — WO-30 (1040-V/ES pair) DONE — tts s87 build leg landed; the three FAs ACTIVATED
+- The tts unit shipped (PaymentVouchers singleton migs 0200/0201 + compute_vouchers pinned to
+  all 10 spec oracles — both mailing charts partition-pinned (the GA 1214-vs-1300 trap live-probed
+  on a KY demo return: V→931000 / ES→931100) + 15 D_V_*/D_ES_* diagnostics + f1040v/f1040es
+  AcroForm print legs (suppression IS the render gate; ES emits only the sheets carrying an
+  emitted quarter) + the packet "voucher" back tier + the Payments-tab card, PATCH row-locked
+  from birth).
+- **FA-1040V-EFW/FA-ES-RAP/FA-ES-QDEBIT flipped draft → active in `load_1040v_es.py` + reseeded
+  to prod**; deployed 1040 FA export verified = 407 active (404 prior + 3); tts mirror refreshed
+  export-verbatim (406 = 407 − the s71-staged FA-1040-4835-06); tts runners
+  `_run_1040ves_assertion` live in BOTH dispatch chains; tts flow gate 506 → 509.
+- WORK_ORDERS WO-30 → ✅ DONE. Remaining dispatched set: 4868 → 8915-F.
+
 ## 2026-07-14 — WO-29 (8888) DONE — tts s86 build leg landed; the three FAs ACTIVATED
 - The tts unit shipped (Form8888 singleton mig 0198 + compute_8888 pinned to the spec
   scenarios (two-way tie / hygiene / the Active F8888-* gate verbatim) + 12 D_8888_*

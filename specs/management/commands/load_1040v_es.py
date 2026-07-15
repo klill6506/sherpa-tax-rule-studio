@@ -510,19 +510,21 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap): the tts build leg activates + writes
-# runners + refreshes the export-verbatim mirrors in ONE motion.
+# ACTIVATED 2026-07-14 with the tts s87 voucher-pair build leg (the WO-30 Gate-2 motion):
+# runners `_run_1040ves_assertion` live in BOTH tts dispatch chains + the tts 1040 mirror
+# refreshed export-verbatim in the same commit. (Staged DRAFT until then — the
+# new-FAs-default-ACTIVE trap.)
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-1040V-EFW", "title": "EFW election suppresses the 1040-V voucher", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "The packet emits the 1040-V iff balance due > 0 AND the client pays by check AND efw_elected is False (the s76 IRSPayment record and the paper voucher never coexist). Pins: (2000, check, no-EFW) -> printed; (2000, EFW) -> suppressed.",
      "definition": {"rule": "R-V-USE", "check": "v_needed == (balance_due > 0 and paying_by_check and not efw_elected)"}},
     {"assertion_id": "FA-ES-RAP", "title": "Required annual payment = min(90%/66-2/3% expected, 100%/110% prior)", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "Pins: (60000 expected, 40000 prior, 200000 AGI) -> 44000 (the 110% arm); farmer (30000, 28000, 200000) -> 20000 (66-2/3%, and no 110% for farmers); (60000, 40000, 100000 AGI) -> 40000 (plain 100%).",
      "definition": {"rule": "R-ES-RAP", "check": "rap == min(expected * pct_current, prior * pct_prior) with the farmer/high-AGI substitutions"}},
     {"assertion_id": "FA-ES-QDEBIT", "title": "Debited quarters suppress their paper vouchers", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "A quarter carried on an s76 IRSESPayment record (es_debit_q1-4) prints NO paper voucher; check-paid quarters print theirs at the same four statutory dates (2026-04-15 / 06-15 / 09-15 / 2027-01-15). Pins: debits q1,q2 with four amounts -> vouchers q3,q4 only.",
      "definition": {"rule": "R-ES-VOUCH", "check": "voucher set == quarters with amounts minus debited quarters; dates == the FPYMT-088-11 calendar"}},
 ]
