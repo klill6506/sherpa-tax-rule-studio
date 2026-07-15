@@ -1,3 +1,20 @@
+## 2026-07-15 — WO-32 (8915-F) DONE — tts s89 build leg landed; the three FAs ACTIVATED; THE SIX-LEG DISPATCH SET IS COMPLETE
+- The tts unit shipped (Form8915F + Form8915FDisaster migs 0204/0205 BOTH DBs + compute_8915f pinned
+  to all 10 spec oracles — the 179/180-day one-day asymmetry pinned both directions against every
+  published date example incl. the SECURE-floor arm; the 1a-1e ladder + the Rev-12-2025 5a/5b split;
+  the sequential-fill (b)-column allocation; whole-dollar ROUND_HALF_UP adopted for the flagged /3.0
+  convention — tts REVIEW_QUEUE s89 ratification note) + 15 D_8915F_* diagnostics + the f8915f
+  Rev-12-2025 AcroForm print (per-owner per-year copies; the lines-1-5 table SHADING-PROBED: 1a-1e
+  fill column (b), 5a fills column (a)) + the IRS8915F MeF document (ReturnData1040 slot 2014 between
+  IRS8912 and IRS8917, maxOccurs=6; live-XSD valid with TWO documents — the separate-spouse shape)
+  + the 4b/5b landing moves + the 8606 15a/15b/25a/25b face split (owner_lines gained the QDD ties)
+  + the 5329 line-6 waiver seam (owner_inputs suppresses the early-tax base).
+- **FA-8915F-CAP/SPRD/LAND flipped draft → active in `load_8915f.py` + reseeded to prod**; deployed
+  1040 FA export verified = 413 active (410 prior + 3); tts mirror refreshed export-verbatim
+  (412 = 413 − the s71-staged FA-1040-4835-06); tts runners `_run_8915f_assertion` live in BOTH
+  dispatch chains; tts flow gate 512 → 515.
+- WORK_ORDERS WO-32 → ✅ DONE. **All six dispatched legs (WO-28/29/30/31/32) are now built.**
+
 ﻿# Rule Studio â€” Session Log
 ## 2026-07-15 — WO-31 (4868) DONE — tts s88 build leg landed; the three FAs ACTIVATED
 - The tts unit shipped (Form4868 singleton migs 0202/0203 + compute_4868 pinned to all 10 spec

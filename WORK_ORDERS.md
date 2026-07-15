@@ -82,9 +82,10 @@ from live STATUS.md per BUILD_ORDER's own rule. Reconciled 2026-07-05.*
 > render + IRS8915F + the 5329 suppression seam). Ken-sequenced: SEC-1 (tts authz audit)
 > runs first; the six legs follow.
 
-- **▶ [WO-32] Form 8915-F · Qualified Disaster Retirement Plan Distributions and Repayments ·
+- **✅ [WO-32] Form 8915-F · Qualified Disaster Retirement Plan Distributions and Repayments ·
   greenfield RS-first · status `GAP-CHECKED → research-verified → DRAFTED + SQLite-VALIDATED → Gate-1 APPROVED + SEEDED + EXPORTED
-  2026-07-14 → DISPATCHED (the tts leg rides the six-leg set, s83 approve-all)` (post-payment-cluster order 2, tts s79 — BUILD_ORDER "next NEW item").**
+  2026-07-14 → DISPATCHED → ✅ DONE 2026-07-15 (tts s89 build leg landed — the LAST of the six dispatched legs; FA-8915F-CAP/SPRD/LAND
+  flipped draft → active + reseeded; deployed 1040 FA export verified 413 active; tts flow gate 515)` (post-payment-cluster order 2, tts s79).**
   Gap confirmed 2026-07-14 (`lookup/8915F|8915-F/export/` = 404 ×2). **The SECURE 2.0 §331 "forever
   form"** — items A/B name the instance; married = a SEPARATE form per spouse; MeF channel EXISTS:
   IRS8915F rides ReturnData1040 (2025v5.3, **maxOccurs=6**, per-document name/SSN) — the tts leg on

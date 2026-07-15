@@ -693,19 +693,20 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT deliberately (the new-FAs-default-ACTIVE trap): the tts build leg activates + writes
-# runners + refreshes the export-verbatim mirrors in ONE motion.
+# ACTIVATED 2026-07-15 (tts s89 build leg): the three FAs flipped draft -> active with the
+# runners + export-verbatim mirror refresh in ONE motion (the new-FAs-default-ACTIVE trap held
+# until the build leg landed).
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-8915F-CAP", "title": "Line 5b(b) = min(available, 1e); 1d within the F8915F-003 cap", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "5b(b) = min(sum(2-4(a)) - 5a, line 1e); line 6 == 5b(b); line 7 == sum(2-4(a)) - 6. Pins: (18000, 0, 22000) -> 18000/0; (30000, 0, 22000) -> 22000/8000. 1d <= limit x new disasters (44,000 boundary pin).",
      "definition": {"rule": "R-8915F-PART1", "check": "5b(b) caps at 1e; 6 = 5b(b); 7 = excess; 1d <= 22000 x disasters"}},
     {"assertion_id": "FA-8915F-SPRD", "title": "Spread thirds + the 11<->22 box consistency", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "line 11 = line 10 / 3.0 (or the full amount on opt-out); line 22 = line 21 / 3.0 likewise; when both parts engage, the two opt-out boxes MUST match. Pins: 18000 -> 6000; 9000 -> 3000; opt-out -> full.",
      "definition": {"rule": "R-8915F-SPREAD", "check": "spread = taxable/3 unless opted out; box11 == box22 when both parts run"}},
     {"assertion_id": "FA-8915F-LAND", "title": "Landings: 15 -> 1040 5b; 26 -> 4b; line 6 never on 5329", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "Part II line 15 (13 - 14, floored) joins the 1040 line 5b total; Part III line 26 joins 4b; the line 6 amount is exempt from the early-distribution additional tax and generates NO Form 5329 row (line 7 and Part IV line 32 route through normal 5329 logic).",
      "definition": {"rule": "R-8915F-EFILE", "check": "15 -> 5b; 26 -> 4b; 6 suppresses the 5329 early-tax row; 7/32 don't"}},
 ]
