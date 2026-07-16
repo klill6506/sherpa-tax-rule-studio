@@ -656,19 +656,19 @@ FORMS: list[dict] = [
     },
 ]
 
-# Staged DRAFT (the new-FAs-default-ACTIVE trap) - the tts build leg activates them
-# with the runners in the same commit.
+# ACTIVE - the tts build leg shipped (s94, tts `0346354`), so the FAs are activated
+# alongside the runner _run_8879_8878_assertion in the same tts commit.
 FLOW_ASSERTIONS: list[dict] = [
     {"assertion_id": "FA-8879-NEED", "title": "8879 emission matches the chart + the header PIN data", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 1,
+     "entity_types": ["1040"], "status": "active", "sort_order": 1,
      "description": "The printed 8879 exists iff pin_method == 'practitioner' or any PINEnteredByCd == ERO - and Part III fills iff the PP method. Pins: (practitioner, taxpayer-entered) -> printed w/ Part III (the counter-intuitive row 4); (self_select_practitioner, taxpayer-entered) -> NOT printed; (self_select_practitioner, ero-entered) -> printed, Parts I-II only.",
      "definition": {"rule": "R-8879-NEED", "check": "f8879_needed == (pin_method == 'practitioner' or 'ero' in entered_by set); parts include 'III' iff practitioner"}},
     {"assertion_id": "FA-8879-RESIGN", "title": "The $50/$14 re-sign tolerance against the signed-at snapshot", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 2,
+     "entity_types": ["1040"], "status": "active", "sort_order": 2,
      "description": "Post-signing recompute deltas: AGI +50 / tax-family +14 -> NO new signature (at the tolerance exactly); AGI +51 or tax-family +15 -> new 8879 required. The live return compares against the SIGNED-AT Part I snapshot, never against itself.",
      "definition": {"rule": "R-8879-RESIGN", "check": "resign iff abs(delta_income_or_agi) > 50 or abs(delta_tax_family) > 14"}},
     {"assertion_id": "FA-8878-EFW", "title": "8878 emission: EFW-gated for the 4868; line 1 == 4868 line 7", "assertion_type": "reconciliation",
-     "entity_types": ["1040"], "status": "draft", "sort_order": 3,
+     "entity_types": ["1040"], "status": "active", "sort_order": 3,
      "description": "A 4868 without an EFW election prints NO 8878 regardless of PIN method (the s88 R0000-098 mirror); with EFW + (PP or ERO-entered) it prints, and Part I line 1 equals the 4868's computed line 7 (the override-respecting s88 derivation). Pins: (4868, no-EFW, practitioner, ero) -> none; (4868, EFW, practitioner) -> printed w/ Part III, line1 == L7; (2350, ero) -> printed, Parts I-II only.",
      "definition": {"rule": "R-8878-NEED", "check": "f8878_needed per the 5-row chart; part1_line1 == f4868_line7"}},
 ]
