@@ -44,7 +44,12 @@ Active rules in the 1040 Business Rules CSV 2025v5.3. Year-watch: the 8878 face 
 YEAR-DATED (the Part II jurat embeds "December 31, 2025" verbatim); Pub 1345 reissues
 carry the $50/$14 tolerance and the stockpiling clock.
 
-SAFETY GUARD - READY_TO_SEED stays False until Ken approves the Gate-1 walk.
+SAFETY GUARD - READY_TO_SEED stayed False until Ken approves the Gate-1 walk.
+APPROVED: Ken, 2026-07-15 (s94, "approve WO-33" - approve-all, the four walk seams adopted as
+recommended: (a) 8879 Part I line 3 = 1040 line 25d total withholding, not the literal 25a+25b;
+(b) the 1040-X arm carries the amended column-C world off the existing 1040-X unit; (c) the e-file
+extract REFUSES when a required authorization lacks a signed date (D_8879/8878_UNSIGNED = error);
+(d) the tts leg persists a SIGNED-AT Part I snapshot for the $50/$14 re-sign tolerance).
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -57,7 +62,7 @@ from specs.models import (
     FlowAssertion, FormDiagnostic, FormFact, FormLine, FormRule, TaxForm, TestScenario,
 )
 
-READY_TO_SEED = False  # GATE-1: flips only on Ken's explicit approval of the W1-W4 walk.
+READY_TO_SEED = True  # FLIPPED 2026-07-15 - Ken approved Gate-1 in-session (s94, "approve WO-33"; four seams adopted as recommended).
 
 FORM_JURISDICTION = "federal"
 FORM_TAX_YEAR = 2025
