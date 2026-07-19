@@ -807,11 +807,38 @@ B_RULES: list[dict] = [
                  "end of year < $1,000,000) AND 4c (Schedules K-1 filed & furnished timely) AND 4d (not "
                  "filing and not required to file Schedule M-3). When 'Yes,' the partnership is NOT required "
                  "to complete Schedules L, M-1, M-2, item F, or K-1 item L — this drives the "
-                 "m_schb_q4_small gate on 1065_L / 1065_M1 / 1065_M2. ⚠ tts stores B6 (=Q4) as a data-entry "
-                 "boolean with NO gating logic (build-gap #3) — this rule makes it a computed gate."),
+                 "m_schb_q4_small gate on 1065_L / 1065_M1 / 1065_M2. tts: build-gap #3 CLOSED — B6 (=Q4) "
+                 "is auto-answered per R-B4-AUTO (derived/YELLOW, overridable) and the 'Yes' gate is live "
+                 "(D_L_EXEMPT / D_M1_EXEMPT / D_M2_EXEMPT suppress the L/M-1/M-2 checks; GATE-SMALL-PTNR "
+                 "pins it)."),
      "inputs": ["b4a_receipts_under_250k", "b4b_assets_under_1m", "b4c_k1s_timely", "b4d_not_m3"],
      "outputs": ["b4_small_partnership"],
      "description": "f1065 Schedule B Q4. THE load-bearing gate (feeds L/M-1/M-2)."},
+    {"rule_id": "R-B4-AUTO", "title": "Q4 auto-answer — derive the four conditions from return data (YELLOW, overridable)",
+     "rule_type": "calculation", "precedence": 1, "sort_order": 6,
+     "formula": ("The app DERIVES Q4 as a preparer-overridable default (derived/YELLOW; a typed answer sets "
+                 "the override flag, always wins, and is never recomputed over — the 1120S_SCHB R006 "
+                 "recipe; Ken ruling 2026-07-09, extended to the 1065 per the s71 ratified queue). "
+                 "4a — 'Total receipts' per i1065 (2025) Question 4 VERBATIM: the sum of gross receipts or "
+                 "sales (page 1, line 1a); all other income (page 1, lines 4 through 7); income reported on "
+                 "Schedule K, lines 3a, 5, 6a, and 7; income or net gain reported on Schedule K, lines 8, "
+                 "9a, 10, and 11; and income or net gain reported on Form 8825, lines 2, 21, and 22a. "
+                 "Components are read POSITIVE-ONLY (loss components excluded — the interpretive "
+                 "'income'/'income or net gain' reading, mirroring 1120S_SCHB R006); 4a = receipts "
+                 "< $250,000 STRICT (exactly $250,000 fails). "
+                 "4b — 'Total assets' per i1065 Q4 = the amount that would be reported in item F = "
+                 "Schedule L line 14 column (d) (app key L15d); 4b = assets < $1,000,000 STRICT. "
+                 "4c — PRESUMED TRUE (Ken-ratified practitioner-conduct presumption: the app cannot "
+                 "observe filing/furnishing dates; the preparer override is the escape hatch). "
+                 "4d — derived TRUE when 4a AND 4b hold: the app prepares no Schedule M-3, and the i1065 "
+                 "item J M-3 requirements (Sch L assets ≥ $10M / adjusted total assets ≥ $10M / total "
+                 "receipts ≥ $35M) are unreachable when receipts < $250K and assets < $1M. The "
+                 "reportable-entity-partner prong (a ≥50% reportable entity partner forces M-3 regardless "
+                 "of size) is NOT capturable from return data — documented edge; such a partnership "
+                 "answers 'No' by preparer override."),
+     "inputs": [],
+     "outputs": ["b4a_receipts_under_250k", "b4b_assets_under_1m", "b4c_k1s_timely", "b4d_not_m3"],
+     "description": "f1065 Schedule B Q4 auto-answer (S-21c): derive 4a-4d from return data; feeds R-B4-SMALL."},
     {"rule_id": "R-B24-8990", "title": "Q24 §163(j) test → Form 8990 required = any of 24a/24b/24c",
      "rule_type": "calculation", "precedence": 2, "sort_order": 2,
      "formula": ("Q24 'Yes' (b24_form_8990_required) = 24a (owns a pass-through with current or carryover "
@@ -855,6 +882,8 @@ B_RULES: list[dict] = [
 B_RULE_LINKS: list[tuple[str, str, str, str]] = [
     ("R-B4-SMALL", "IRS_2025_F1065", "primary", "f1065 Schedule B Q4 four-condition small-partnership exemption"),
     ("R-B4-SMALL", "IRS_2025_I1065", "secondary", "i1065 Q4 — suppresses L/M-1/M-2/item F/K-1 item L"),
+    ("R-B4-AUTO", "IRS_2025_I1065", "primary", "i1065 Q4 verbatim total-receipts definition (p1 1a; p1 4-7; K 3a/5/6a/7; K 8/9a/10/11 net-gain; 8825 2/21/22a) + total assets = the item F amount"),
+    ("R-B4-AUTO", "IRS_2025_F1065", "secondary", "f1065 Schedule B Q4 four conditions + the item-F waiver on 'Yes'"),
     ("R-B24-8990", "IRS_2025_F1065", "primary", "f1065 Schedule B Q24 §163(j) test → Form 8990"),
     ("R-B24-8990", "IRC_448C", "secondary", "§448(c) $25M base → $31M inflation-adjusted (2025)"),
     ("R-B10-754", "IRS_2025_F1065", "primary", "f1065 Schedule B Q10 §754 / §743(b) / §734(b)"),
@@ -868,7 +897,7 @@ B_LINES: list[dict] = [
     {"line_number": "1", "description": "Type of entity filing this return", "line_type": "input", "sort_order": 1, "source_facts": ["b1_entity_type"]},
     {"line_number": "2", "description": "50%-or-more owners (→ Schedule B-1)", "line_type": "input", "sort_order": 2, "source_facts": ["b2a_50pct_entity_owner", "b2b_50pct_individual_owner"]},
     {"line_number": "3", "description": "Partnership's ownership of corporations / partnerships", "line_type": "input", "sort_order": 3, "source_facts": ["b3a_owns_corp_stock", "b3b_owns_partnership_interest"]},
-    {"line_number": "4", "description": "Small-partnership exemption (all four conditions)", "line_type": "calculated", "sort_order": 4, "source_facts": ["b4_small_partnership"], "source_rules": ["R-B4-SMALL"], "notes": "→ suppresses Schedules L, M-1, M-2, item F, K-1 item L."},
+    {"line_number": "4", "description": "Small-partnership exemption (all four conditions)", "line_type": "calculated", "sort_order": 4, "source_facts": ["b4_small_partnership"], "source_rules": ["R-B4-SMALL", "R-B4-AUTO"], "notes": "→ suppresses Schedules L, M-1, M-2, item F, K-1 item L. Auto-answered from return data (R-B4-AUTO, YELLOW/overridable)."},
     {"line_number": "5", "description": "Publicly traded partnership (§469(k)(2))", "line_type": "input", "sort_order": 5, "source_facts": ["b5_ptp"]},
     {"line_number": "6", "description": "Debt canceled/forgiven/modified", "line_type": "input", "sort_order": 6, "source_facts": ["b6_debt_canceled"]},
     {"line_number": "7", "description": "Form 8918 (Material Advisor Disclosure)", "line_type": "input", "sort_order": 7, "source_facts": ["b7_form_8918"]},
@@ -905,7 +934,7 @@ B_DIAGNOSTICS: list[dict] = [
      "message": ("All four Q4 conditions are met (receipts < $250,000, assets < $1,000,000, timely K-1s, "
                  "not M-3): the partnership is not required to complete Schedules L, M-1, and M-2; item F on "
                  "page 1; or item L on Schedule K-1."),
-     "notes": "Drives m_schb_q4_small on 1065_L / 1065_M1 / 1065_M2. Build-gap #3 (tts doesn't gate)."},
+     "notes": "Drives m_schb_q4_small on 1065_L / 1065_M1 / 1065_M2. tts surfaces: D_L_EXEMPT / D_M1_EXEMPT / D_M2_EXEMPT; B6 auto-answered per R-B4-AUTO (build-gap #3 closed, S-21c)."},
     {"diagnostic_id": "D_B24_8990", "title": "§163(j) applies — Form 8990 required", "severity": "warning",
      "condition": "b24_form_8990_required is True",
      "message": ("The partnership answered 'Yes' to Q24 (owns a pass-through with excess business interest "
@@ -957,6 +986,19 @@ B_SCENARIOS: list[dict] = [
      "inputs": {"b33_section_6221b_election": False, "b33_pr_designated": False},
      "expected_outputs": {"D_B33_PR": True},
      "notes": "Not electing out + PR not designated → D_B33_PR (error): PR is mandatory."},
+    {"scenario_name": "B-6 — Q4 auto-answer boundary: receipts exactly $250,000 fails 4a", "scenario_type": "edge", "sort_order": 6,
+     "inputs": {"b4a_receipts_under_250k": False, "b4b_assets_under_1m": True, "b4c_k1s_timely": True, "b4d_not_m3": True},
+     "expected_outputs": {"b4_small_partnership": False},
+     "notes": "R-B4-AUTO strict-<: total receipts of exactly $250,000 is NOT < $250,000 → 4a False → Q4 No. "
+              "Identical strictness for 4b at exactly $1,000,000. Loss components excluded from the receipts "
+              "sum (positive-only)."},
+    {"scenario_name": "B-7 — Q4 auto-answer derived Yes ($249,999 / $999,999; 4c presumed, 4d derived)", "scenario_type": "normal", "sort_order": 7,
+     "inputs": {"b4a_receipts_under_250k": True, "b4b_assets_under_1m": True, "b4c_k1s_timely": True, "b4d_not_m3": True},
+     "expected_outputs": {"b4_small_partnership": True, "D_B4_SMALL": True},
+     "notes": "R-B4-AUTO: receipts $249,999 (< $250K) + assets $999,999 (< $1M); 4c PRESUMED TRUE "
+              "(Ken-ratified); 4d derived TRUE (no M-3 prepared; item-J thresholds unreachable under 4a·4b; "
+              "reportable-entity-partner edge → preparer override). The derived answer is YELLOW/overridable "
+              "— a preparer click is never recomputed over."},
 ]
 
 
@@ -972,13 +1014,15 @@ FLOW_ASSERTIONS: list[dict] = [
                      "when 'Yes' (receipts < $250,000 AND assets < $1,000,000 AND timely K-1s AND "
                      "not-M-3-required), the partnership is not required to complete Schedules L, M-1, M-2, "
                      "item F, or K-1 item L. Feeds the m_schb_q4_small fact on 1065_L / 1065_M1 / 1065_M2. "
-                     "⚠ tts stores B6 (=Q4) as data-entry with no gating logic — build-gap."),
+                     "tts: B6 (=Q4) is auto-answered from return data (R-B4-AUTO, YELLOW/overridable) and "
+                     "the 'Yes' gate suppresses the L/M-1/M-2 checks (D_L_EXEMPT / D_M1_EXEMPT / "
+                     "D_M2_EXEMPT)."),
      "definition": {"kind": "gating_check", "form": "1065_B",
                     "formula": "b4_small_partnership == (b4a AND b4b AND b4c AND b4d)",
                     "expect": {"suppresses": ["1065_L", "1065_M1", "1065_M2", "item_F", "k1_item_L"]},
                     "when": "b4_small_partnership is True",
-                    "note": "the Q4 four-condition gate; tts B6 is data-entry-only (build-gap #3)"},
-     "bug_reference": "tts stores Q4 (B6) but does not auto-gate L/M-1/M-2", "sort_order": 1},
+                    "note": "the Q4 four-condition gate; tts B6 auto-answered (R-B4-AUTO) + gated (build-gap #3 closed, S-21c)"},
+     "bug_reference": "closed S-21c: tts auto-answers Q4 (B6) and gates L/M-1/M-2 on it", "sort_order": 1},
     {"assertion_id": "RECON-L-BALANCE", "assertion_type": "reconciliation", "entity_types": ["1065"],
      "status": "active",
      "title": "Schedule L must balance: line 14 (total assets) = line 22 (total liab & capital)",
