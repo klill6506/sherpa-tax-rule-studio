@@ -1,3 +1,22 @@
+## 2026-07-19 - 1065_B Q4 auto-answer amendment (S-21c spec leg; tts s99) - SEEDED + tts leg SHIPPED
+- Amended IN THE OWNING LOADER (load_1065_l_b.py, single-entity 1065_B - in-place re-run safe;
+  `7a55f57`): NEW R-B4-AUTO - the app derives Q4 as derived-YELLOW/overridable: 4a = receipts
+  < $250K STRICT per the i1065 (2025) Q4 verbatim sum (p1 1a; p1 4-7; K 3a/5/6a/7;
+  income-or-net-gain K 8/9a/10/11; 8825 2/21/22a; positive-only, the 1120S R006 interpretive
+  mirror) - 4b = item F (Sch L 14(d), app L15d) < $1M STRICT - 4c PRESUMED TRUE (Ken-ratified) -
+  4d derived TRUE under 4a·4b (tts prepares no M-3; item-J thresholds unreachable; the
+  reportable-entity-partner edge rides the preparer override - RULING DEVIATION flagged, tts
+  REVIEW_QUEUE s99a). B-6/B-7 boundary scenarios added (strict-< at exactly $250K; the derived-Yes
+  shape). Stale "build-gap #3" text CLOSED across R-B4-SMALL / D_B4_SMALL / GATE-SMALL-PTNR-B
+  (the tts gate has been live since the L/B unit; now the answer derives too).
+- Reseeded + deployed export verified (6 rules / 7 scenarios / line 4 dual-ruled); tts 1065 FA
+  mirror refreshed export-minus-pending (39; the 4 s64-staged ids stay pending).
+- tts leg landed same-session (`b7f77b6`): _auto_answer_b6_1065_db after the 1065 formula pass;
+  face-verbatim B6 label reseeded BOTH DBs; Auto pill scoped (1120-S,B11)+(1065,B6);
+  test_1065_schb_q4 7/7; flow 518; live demo probe green.
+- FOUND: the tts sched_b block is a stale pre-face paraphrase (non-face B2/B5; missing
+  Q24/Q30/Q33) - the face-renumber filed as its own queued unit (tts REVIEW_QUEUE s99b).
+
 ## 2026-07-15 - WO-33 (8879/8878 signature-authorization pair) DRAFTED TO GATE-1 - AWAITING KEN (tts s90)
 - Gap 404 x4 confirmed (8879/FORM_8879/8878/FORM_8878); verbatim research: f8879 Rev. 01-2021
   (continuous-use) + f8878 (2025, YEAR-DATED) + Pub 1345 signature chapter + the 2025v5.3 header
